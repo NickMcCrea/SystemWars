@@ -41,3 +41,10 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+MonoGameOpenGL/SystemWar/bin/
+MonoGameOpenGL/SystemWar/obj/
+MonoGameOpenGL/MonoGameEngineCore/bin/
+MonoGameOpenGL/MonoGameEngineCore/obj/
+MonoGameOpenGL/MonoGameDirectX11/bin/
+MonoGameOpenGL/MonoGameDirectX11/obj/
