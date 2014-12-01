@@ -177,7 +177,7 @@ namespace MonoGameEngineCore.Procedural
         readyToAddGameObject,
         gameObjectBeingAdded,
         gameObjectBeingRemoved,
-        awaitingChildGeneration,
+        awaitingChildGenerationBeforeRemoval,
         final
     }
 
@@ -515,7 +515,7 @@ namespace MonoGameEngineCore.Procedural
             if (depth == maximumDepth)
                 return;
 
-            patchState = PatchState.awaitingChildGeneration;
+            patchState = PatchState.awaitingChildGenerationBeforeRemoval;
 
             //need to add 4 new quadtree nodes
             PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
@@ -594,13 +594,20 @@ namespace MonoGameEngineCore.Procedural
                     patchState = PatchState.final;
                 }
 
-                //if this has visible children, clear them.
+                //Post-merge case, if this has visible children, clear them.
                 if (ChildrenHaveGenerated())
                     ClearChildNodes();
 
             }
 
-            if (patchState == PatchState.awaitingChildGeneration)
+            if (patchState == PatchState.final)
+            {
+                //Post-merge case, if this has visible children, clear them.
+                if (ChildrenHaveGenerated())
+                    ClearChildNodes();
+            }
+
+            if (patchState == PatchState.awaitingChildGenerationBeforeRemoval)
             {
                 //can now remove itself
                 if (ChildrenHaveGenerated())

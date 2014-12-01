@@ -48,3 +48,6 @@ MonoGameOpenGL/MonoGameEngineCore/bin/
 MonoGameOpenGL/MonoGameEngineCore/obj/
 MonoGameOpenGL/MonoGameDirectX11/bin/
 MonoGameOpenGL/MonoGameDirectX11/obj/
+MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/
+MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/Windows8/
+MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/Windows8/SystemWarsContent.csproj.FileListAbsolute.txt
