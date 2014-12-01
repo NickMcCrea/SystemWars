@@ -490,12 +490,17 @@ namespace MonoGameEngineCore.Procedural
             foreach (PlanetQuadTreeNode child in Children)
                 child.Update(gameTime, splitDistance / 2f, mergeDistance / 2f);
 
+
+
+
             if (isLeaf)
             {
 
                 if (ShouldSplit(splitDistance))
                 {
-                    Split();
+                    //onlt split if fully generated
+                    if (patchState == PatchState.final && ChildrenHaveCleared())
+                        Split();
                 }
 
             }
@@ -503,10 +508,12 @@ namespace MonoGameEngineCore.Procedural
             {
                 if (ShouldMerge(mergeDistance))
                 {
-                    MergeChildren();
+                    if (patchState == PatchState.initial && ChildrenHaveGenerated())
+                        MergeChildren();
                 }
 
             }
+
 
         }
 
@@ -516,6 +523,7 @@ namespace MonoGameEngineCore.Procedural
                 return;
 
             patchState = PatchState.awaitingChildGenerationBeforeRemoval;
+
 
             //need to add 4 new quadtree nodes
             PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
@@ -545,6 +553,7 @@ namespace MonoGameEngineCore.Procedural
             isLeaf = false;
         }
 
+
         public void MergeChildren()
         {
 
@@ -552,7 +561,6 @@ namespace MonoGameEngineCore.Procedural
             //and the merge is needed before the split is finished.
             if (Children.Count == 0)
                 return;
-
 
             if (!isLeaf)
             {
@@ -593,16 +601,11 @@ namespace MonoGameEngineCore.Procedural
                     //we're done.
                     patchState = PatchState.final;
                 }
-
-                //Post-merge case, if this has visible children, clear them.
-                if (ChildrenHaveGenerated())
-                    ClearChildNodes();
-
             }
 
             if (patchState == PatchState.final)
             {
-                //Post-merge case, if this has visible children, clear them.
+                //covers the post-merge case, if this has visible children, clear them.
                 if (ChildrenHaveGenerated())
                     ClearChildNodes();
             }
@@ -691,7 +694,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void AddGameObjectToScene()
         {
-            
+
             SystemCore.GameObjectManager.AddAndInitialiseObjectOnNextFrame(gameObject);
             drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
             patchState = PatchState.gameObjectBeingAdded;
@@ -716,6 +719,18 @@ namespace MonoGameEngineCore.Procedural
             return true;
         }
 
+        private bool ChildrenHaveCleared()
+        {
+            if (Children.Count == 0)
+                return true;
+
+            foreach (PlanetQuadTreeNode child in Children)
+            {
+                if (child.patchState != PatchState.initial)
+                    return false;
+            }
+            return true;
+        }
         private void DetermineVisibility()
         {
             if (patchState != PatchState.final)
