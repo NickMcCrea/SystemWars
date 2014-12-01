@@ -21,7 +21,7 @@ namespace SystemWar.Screens
             earth.AddComponent(new Planet(NoiseGenerator.FastPlanet(6000),
                 EffectLoader.LoadEffect("flatshaded"), 6000, Color.SeaGreen, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10)));
             //earth.AddComponent(new TranslatorComponent(Vector3.Up, 0.0001f));
-            earth.AddComponent(new RotatorComponent(Vector3.Up, 0.00005f));
+            //earth.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
 
            
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
