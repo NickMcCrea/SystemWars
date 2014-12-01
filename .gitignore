@@ -49,8 +49,4 @@ MonoGameOpenGL/MonoGameEngineCore/obj/
 MonoGameOpenGL/MonoGameDirectX11/bin/
 MonoGameOpenGL/MonoGameDirectX11/obj/
 MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/
-MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/Windows8/
-MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/Windows8/SystemWarsContent.csproj.FileListAbsolute.txt
-MonoGameOpenGL/SystemWarsContent/SystemWarsContentContent/obj/Windows8/SystemWarsContentContent.contentprojResolveAssemblyReference.cache
-MonoGameOpenGL/SystemWarsContent/SystemWarsContentContent/obj/Windows8/SystemWarsContentContent.contentproj.FileListAbsolute.txt
-MonoGameOpenGL/SystemWarsContent/SystemWarsContent/obj/Windows8/SystemWarsContent.csproj.FileListAbsolute.txt
+MonoGameOpenGL/SystemWarsContent/SystemWarsContentContent/obj/

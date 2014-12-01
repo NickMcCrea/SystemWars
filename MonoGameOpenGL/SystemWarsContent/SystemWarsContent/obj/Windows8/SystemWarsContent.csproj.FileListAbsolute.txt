@@ -11,3 +11,4 @@ C:\Users\NickMcCrea\Dropbox\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWa
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\bin\Windows8\IgnoreMe.dll
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\obj\Windows8\IgnoreMe.dll
+E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\obj\Windows8\SystemWarsContent.csprojResolveAssemblyReference.cache
