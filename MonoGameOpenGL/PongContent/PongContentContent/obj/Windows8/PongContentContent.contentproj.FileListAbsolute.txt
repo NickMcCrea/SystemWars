@@ -1,0 +1,2 @@
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache

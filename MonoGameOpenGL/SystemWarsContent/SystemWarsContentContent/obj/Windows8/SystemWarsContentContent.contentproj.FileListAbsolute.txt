@@ -1,0 +1,2 @@
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\SystemWarsContent\SystemWarsContentContent\obj\Windows8\SystemWarsContentContent.contentprojResolveAssemblyReference.cache
+C:\Users\NickMcCrea\Dropbox\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContentContent\obj\Windows8\SystemWarsContentContent.contentprojResolveAssemblyReference.cache

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{02D66F0B-5F5C-4F91-89AB-BAF35133A56F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoGameEngineCore</RootNamespace>
+    <AssemblyName>MonoGameEngineCore</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BEPUik">
+      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUik.dll</HintPath>
+    </Reference>
+    <Reference Include="BEPUphysics">
+      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUphysics.dll</HintPath>
+    </Reference>
+    <Reference Include="BEPUutilities">
+      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUutilities.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="MonoGameContentProcessors">
+      <HintPath>..\packages\MonoGame.ContentProcessors.3.2.1\lib\MonoGameContentProcessors.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Audio\AudioManager.cs" />
+    <Compile Include="Audio\IAudioEmitter.cs" />
+    <Compile Include="Events\EventManager.cs" />
+    <Compile Include="GameObject\Components\BasicEffectRenderComponent.cs" />
+    <Compile Include="GameObject\Components\EffectRenderComponent.cs" />
+    <Compile Include="GameObject\Components\GamePadController.cs" />
+    <Compile Include="GameObject\Components\LargeScalePosition.cs" />
+    <Compile Include="GameObject\Components\NormalVisualiser.cs" />
+    <Compile Include="GameObject\Components\PhysicsComponent.cs" />
+    <Compile Include="GameObject\Components\RenderGeometryComponent.cs" />
+    <Compile Include="GameObject\Components\RotatorComponent.cs" />
+    <Compile Include="GameObject\Components\TransformComponent.cs" />
+    <Compile Include="GameObject\GameObject.cs" />
+    <Compile Include="GameObject\Components\IComponent.cs" />
+    <Compile Include="GameObject\GameObjectFactory.cs" />
+    <Compile Include="GameObject\GameObjectManager.cs" />
+    <Compile Include="GUI\Controls\BaseControl.cs" />
+    <Compile Include="GUI\Controls\Button.cs" />
+    <Compile Include="GUI\Controls\ButtonPanel.cs" />
+    <Compile Include="GUI\Controls\ItemCarousel.cs" />
+    <Compile Include="GUI\Controls\Label.cs" />
+    <Compile Include="GUI\Controls\ListBox.cs" />
+    <Compile Include="GUI\Controls\Panel.cs" />
+    <Compile Include="GUI\Controls\ScrollBar.cs" />
+    <Compile Include="GUI\Controls\TextBox.cs" />
+    <Compile Include="GUI\Controls\UITransition.cs" />
+    <Compile Include="GUI\GUIFonts.cs" />
+    <Compile Include="GUI\GUIManager.cs" />
+    <Compile Include="GUI\GUITexture.cs" />
+    <Compile Include="GUI\Palette.cs" />
+    <Compile Include="GUI\UITransitionHelper.cs" />
+    <Compile Include="Helper\DebugShapeRenderer.cs" />
+    <Compile Include="Helper\DebugText.cs" />
+    <Compile Include="Helper\Extensions.cs" />
+    <Compile Include="Helper\CSharpHelper.cs" />
+    <Compile Include="Helper\MonoMathHelper.cs" />
+    <Compile Include="Helper\RandomHelper.cs" />
+    <Compile Include="Helper\Vector3d.cs" />
+    <Compile Include="Helper\XNATimer.cs" />
+    <Compile Include="MonoEngineGame.cs" />
+    <Compile Include="Particles\ParticleEmitter.cs" />
+    <Compile Include="Particles\ParticleSettings.cs" />
+    <Compile Include="Particles\ParticleSystem.cs" />
+    <Compile Include="Particles\ParticleVertex.cs" />
+    <Compile Include="Particles\Projectile.cs" />
+    <Compile Include="Procedural\BufferBuilder.cs" />
+    <Compile Include="Procedural\LargeScalePlanet.cs" />
+    <Compile Include="Procedural\NoiseGenerator.cs" />
+    <Compile Include="Procedural\Shapes\ProceduralShapes.cs" />
+    <Compile Include="Rendering\Camera\ComponentCamera.cs" />
+    <Compile Include="Rendering\Camera\DummyCamera.cs" />
+    <Compile Include="FPSCounter.cs" />
+    <Compile Include="Rendering\Camera\ICamera.cs" />
+    <Compile Include="Procedural\Heightmap.cs" />
+    <Compile Include="Input\InputManager.cs" />
+    <Compile Include="Procedural\LibNoise\Billow.cs" />
+    <Compile Include="Procedural\LibNoise\Checkerboard.cs" />
+    <Compile Include="Procedural\LibNoise\Constant.cs" />
+    <Compile Include="Procedural\LibNoise\Cylinders.cs" />
+    <Compile Include="Procedural\LibNoise\FastBillow.cs" />
+    <Compile Include="Procedural\LibNoise\FastNoise.cs" />
+    <Compile Include="Procedural\LibNoise\FastNoiseBasis.cs" />
+    <Compile Include="Procedural\LibNoise\FastRidgedMultifractal.cs" />
+    <Compile Include="Procedural\LibNoise\FastTurbulence.cs" />
+    <Compile Include="Procedural\LibNoise\GradientNoiseBasis.cs" />
+    <Compile Include="Procedural\LibNoise\IModule.cs" />
+    <Compile Include="Procedural\LibNoise\Math.cs" />
+    <Compile Include="Procedural\LibNoise\Models\Cylinder.cs" />
+    <Compile Include="Procedural\LibNoise\Models\Line.cs" />
+    <Compile Include="Procedural\LibNoise\Models\Plane.cs" />
+    <Compile Include="Procedural\LibNoise\Models\Sphere.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\AbsoluteOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Add.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\BiasOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Blend.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\ClampOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\CurveOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\DisplaceInput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\ExponentialOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\InvertInput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\InvertOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\LargerOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Multiply.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Power.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\RotateInput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\ScaleBiasOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\ScaleInput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\ScaleOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Select.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\SmallerOutput.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\Terrace.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\TranslateInput.cs" />
+    <Compile Include="Procedural\LibNoise\Perlin.cs" />
+    <Compile Include="Procedural\LibNoise\RidgedMultifractal.cs" />
+    <Compile Include="Procedural\LibNoise\Spheres.cs" />
+    <Compile Include="Procedural\LibNoise\Turbulence.cs" />
+    <Compile Include="Procedural\LibNoise\ValueNoiseBasis.cs" />
+    <Compile Include="Procedural\LibNoise\Voronoi.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Procedural\QuadTreeNode.cs" />
+    <Compile Include="Rendering\Camera\MouseFreeCamera.cs" />
+    <Compile Include="Rendering\EffectLoader.cs" />
+    <Compile Include="Rendering\Lights.cs" />
+    <Compile Include="Rendering\RenderHelper.cs" />
+    <Compile Include="Rendering\VertexPositionColorTextureNormal.cs" />
+    <Compile Include="Rendering\GraphicsDeviceSetup.cs" />
+    <Compile Include="Rendering\VertexPositionColorNormal.cs" />
+    <Compile Include="ScreenManagement\MouseCamScreen.cs" />
+    <Compile Include="ScreenManagement\Screen.cs" />
+    <Compile Include="ScreenManagement\ScreenManager.cs" />
+    <Compile Include="SystemCore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

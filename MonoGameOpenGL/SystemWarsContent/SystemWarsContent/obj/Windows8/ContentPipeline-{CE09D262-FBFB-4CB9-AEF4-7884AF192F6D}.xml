@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
+  <Asset Type="Pipeline:BuildItemCollection">
+    <BuildSuccessful>true</BuildSuccessful>
+    <Settings>
+      <ContentProjectGUID>{CE09D262-FBFB-4CB9-AEF4-7884AF192F6D}</ContentProjectGUID>
+      <TargetPlatform>Windows</TargetPlatform>
+      <TargetProfile>HiDef</TargetProfile>
+      <BuildConfiguration>Windows8</BuildConfiguration>
+      <CompressContent>false</CompressContent>
+      <RootDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContentContent\</RootDirectory>
+      <LoggerRootDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\</LoggerRootDirectory>
+      <IntermediateDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\obj\Windows8\</IntermediateDirectory>
+      <OutputDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\SystemWarsContent\SystemWarsContent\bin\Windows8\Content\</OutputDirectory>
+    </Settings>
+    <Assemblies>
+      <Assembly>
+        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2013-10-19T22:31:24.4602211+01:00</Value>
+      </Assembly>
+    </Assemblies>
+  </Asset>
+</XnaContent>

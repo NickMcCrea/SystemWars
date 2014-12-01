@@ -1,0 +1,7 @@
+Content\Fonts\Arial.xnb
+Content\Fonts\neuropolitical.xnb
+Content\blank.xnb
+Content\smoke.xnb
+Content\Effects\SM5.0\Simple.xnb
+Content\Effects\SM5.0\FlatShaded.xnb
+Content\Effects\SM5.0\SkyDome.xnb

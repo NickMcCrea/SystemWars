@@ -1,0 +1,7 @@
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\PSM\IgnoreMe.dll
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\PSM\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\PSM\IgnoreMe.dll
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\PSM\Content\Content\Pericles.xnb
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\PSM\Content\Content\TestEffect.xnb
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\PSM\Content\Content\Pericles.spritefont
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\PSM\Content\Content\TestEffect.fx

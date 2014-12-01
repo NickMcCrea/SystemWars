@@ -1,0 +1,12 @@
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\Pong.xnb
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\blip.xnb
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\IgnoreMe.dll
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\IgnoreMe.dll
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\Pong.xnb
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\blip.xnb
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\IgnoreMe.dll
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\IgnoreMe.dll
+C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\PongContent.csprojResolveAssemblyReference.cache
+C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\PongContent.csprojResolveAssemblyReference.cache

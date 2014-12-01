@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
+  <Asset Type="Pipeline:BuildItemCollection">
+    <Item>
+      <Source>Fonts\Arial.spritefont</Source>
+      <Name>Fonts\Arial</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\Fonts\Arial.xnb</Output>
+      <Time>2014-10-26T23:54:17.1332025+00:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\neuropolitical.spritefont</Source>
+      <Name>Fonts\neuropolitical</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\Fonts\neuropolitical.xnb</Output>
+      <Time>2014-11-15T12:10:39.0560952+00:00</Time>
+    </Item>
+    <Item>
+      <Source>blank.png</Source>
+      <Name>blank</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\blank.xnb</Output>
+      <Time>2014-08-21T15:43:29+01:00</Time>
+    </Item>
+    <Item>
+      <Source>smoke.png</Source>
+      <Name>smoke</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\smoke.xnb</Output>
+      <Time>2014-08-27T22:38:42+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Effects\SM5.0\Simple.fx</Source>
+      <Name>Effects\SM5.0\Simple</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>MGEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\Effects\SM5.0\Simple.xnb</Output>
+      <Time>2014-11-11T23:03:39.1448544+00:00</Time>
+    </Item>
+    <Item>
+      <Source>Effects\SM5.0\FlatShaded.fx</Source>
+      <Name>Effects\SM5.0\FlatShaded</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>MGEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\Effects\SM5.0\FlatShaded.xnb</Output>
+      <Time>2014-11-23T22:39:17.6144433+00:00</Time>
+    </Item>
+    <Item>
+      <Source>Effects\SM5.0\SkyDome.fx</Source>
+      <Name>Effects\SM5.0\SkyDome</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>MGEffectProcessor</Processor>
+      <Options>None</Options>
+      <Output>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\Effects\SM5.0\SkyDome.xnb</Output>
+      <Time>2014-11-16T15:22:58.4662866+00:00</Time>
+    </Item>
+    <BuildSuccessful>true</BuildSuccessful>
+    <Settings>
+      <ContentProjectGUID>{BA99A0AD-A157-4B83-85FE-5CF3740A8223}</ContentProjectGUID>
+      <TargetPlatform>Windows</TargetPlatform>
+      <TargetProfile>HiDef</TargetProfile>
+      <BuildConfiguration>Windows8</BuildConfiguration>
+      <CompressContent>false</CompressContent>
+      <RootDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProjectContent\</RootDirectory>
+      <LoggerRootDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\</LoggerRootDirectory>
+      <IntermediateDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Windows8\</IntermediateDirectory>
+      <OutputDirectory>E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows8\Content\</OutputDirectory>
+    </Settings>
+    <Assemblies>
+      <Assembly>
+        <Key>C:\Program Files (x86)\MSBuild\MonoGame\v3.0\MonoGameContentProcessors.dll</Key>
+        <Value>2014-11-09T03:45:02+00:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.XImporter.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.VideoImporters.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.TextureImporter.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.FBXImporter.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.EffectImporter.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Program Files (x86)\Microsoft XNA\XNA Game Studio\v4.0\References\Windows\x86\Microsoft.Xna.Framework.Content.Pipeline.AudioImporters.dll</Key>
+        <Value>2011-09-01T16:22:30+01:00</Value>
+      </Assembly>
+      <Assembly>
+        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2013-10-19T22:31:24.4602211+01:00</Value>
+      </Assembly>
+    </Assemblies>
+  </Asset>
+</XnaContent>
