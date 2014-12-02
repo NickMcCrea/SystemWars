@@ -36,6 +36,7 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 min { get; set; }
         public float step { get; set; }
         public List<PlanetQuadTreeNode> Children;
+        private Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours; 
         public VertexPositionColorTextureNormal[] vertices;
         public short[] indices;
         public int heightMapSize;
@@ -49,11 +50,17 @@ namespace MonoGameEngineCore.Procedural
         public Color NodeColor { get; set; }
         public int quadTreeNodeID;
         private readonly int rootNodeId;
+        
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
         public PlanetQuadTreeNode(int sideId, int quadrant, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
+            neighbours = new Dictionary<Direction, List<PlanetQuadTreeNode>>();
+            neighbours.Add(Direction.north, new List<PlanetQuadTreeNode>());
+            neighbours.Add(Direction.south, new List<PlanetQuadTreeNode>());
+            neighbours.Add(Direction.east, new List<PlanetQuadTreeNode>());
+            neighbours.Add(Direction.west, new List<PlanetQuadTreeNode>());
 
             patchState = PatchState.initial;
             this.Planet = rootObject;
@@ -83,6 +90,24 @@ namespace MonoGameEngineCore.Procedural
             Children = new List<PlanetQuadTreeNode>();
 
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+        }
+
+        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode [] nodes)
+        {
+            foreach (PlanetQuadTreeNode node in nodes)
+            {
+                neighbours[dir].Add(node);
+               
+            }
+       }
+
+        public void RemoveNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
+        {
+            foreach (PlanetQuadTreeNode node in nodes)
+            {
+                neighbours[dir].Remove(node);
+
+            }
         }
 
         public void StartGeometryGeneration(Effect testEffect, IModule module)
@@ -146,6 +171,7 @@ namespace MonoGameEngineCore.Procedural
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
 
+
             gameObject = SystemCore.GameObjectManager.GetObject(quadTreeNodeID);
 
             //if the object is null this is the first time we've seen it.
@@ -156,8 +182,9 @@ namespace MonoGameEngineCore.Procedural
 
             SetHighPrecisionPosition();
 
-
             UpdatePosition();
+
+
 
             isLeaf = true;
         }
@@ -366,16 +393,20 @@ namespace MonoGameEngineCore.Procedural
 
 
             //need to add 4 new quadtree nodes
+
+            //bottom right, inherits east and south neighbours
             PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
             a.StartGeometryGeneration(effect, module);
 
+            //top left, inherits north and west
             PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
             b.StartGeometryGeneration(effect, module);
 
-
+            //bottom left, inherits south and west
             PlanetQuadTreeNode c = new PlanetQuadTreeNode(rootNodeId, 3, Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
             c.StartGeometryGeneration(effect, module);
 
+            //inherits north and east
             PlanetQuadTreeNode d = new PlanetQuadTreeNode(rootNodeId, 4, Planet, this, midRight, midTop, step / 2, normal, sphereSize);
             d.StartGeometryGeneration(effect, module);
 

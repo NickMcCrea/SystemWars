@@ -26,6 +26,7 @@ namespace MonoGameEngineCore.Procedural
         public int planetId;
         private static int planetIdList;
 
+       
         public Planet(IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             planetId = ++planetIdList;
@@ -108,6 +109,13 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(n5);
             rootNodes.Add(n6);
 
+
+            n1.AddNeighbour(Direction.north, n3);
+            n1.AddNeighbour(Direction.south, n4);
+            n1.AddNeighbour(Direction.west, n6);
+            n1.AddNeighbour(Direction.east, n5);
+
+
             n1.Planet = this;
             n2.Planet = this;
             n3.Planet = this;
@@ -134,7 +142,6 @@ namespace MonoGameEngineCore.Procedural
 
             }
 
-
             Vector3 toCenterOfPlanet = ParentObject.Transform.WorldMatrix.Translation;
             float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
 
@@ -150,6 +157,20 @@ namespace MonoGameEngineCore.Procedural
             //var frustrum = new BoundingFrustum(SystemCore.GetCamera("main").View * customProjection);
             //DebugShapeRenderer.AddBoundingFrustum(frustrum, Color.Blue);
 
+            FixSeams();
+
+        }
+
+        private void FixSeams()
+        {
+            //we want to walk down the tree, and ensure that where we have adjacent leaf nodes of different depths
+            //that we 'collapse' the vertices of the edge of the greater depth patch to match the coarser patch.
+
+            //walk down tree, if not leaf node, continue.
+            //if leaf node, determine neighbours of lower depth (e.g. less detailed). 
+            //walk through verts of shared edge and re-position non-shared verts onto shared ones.
+
+            //keep going
 
         }
 
