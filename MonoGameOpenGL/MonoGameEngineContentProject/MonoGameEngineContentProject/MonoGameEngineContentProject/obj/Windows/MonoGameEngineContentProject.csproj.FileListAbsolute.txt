@@ -1,8 +1,0 @@
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Windows\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows\Content\Arial.xnb
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows\Content\blank.xnb
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows\Content\smoke.xnb
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Windows\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Windows\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Windows\Content\Simple.xnb

@@ -1,4 +1,0 @@
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Android\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Android\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\obj\Android\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\bin\Android\Content\Pericles.xnb
