@@ -11,13 +11,24 @@ using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.Procedural
 {
+    
+
     public class PlanetQuadTreeNode
     {
+        public enum PatchState
+        {
+            initial,
+            building,
+            readyToAddGameObject,
+            gameObjectBeingAdded,
+            gameObjectBeingRemoved,
+            awaitingChildGenerationBeforeRemoval,
+            final
+        }
 
         private PatchState patchState;
-        int depth;
-        private bool highPrecisionMode = false;
-        static int maximumDepth = 12;
+        readonly int depth;
+        private const int maximumDepth = 12;
         public PlanetQuadTreeNode Parent { get; set; }
         public Planet Planet { get; set; }
         public Vector3 normal { get; set; }
@@ -37,7 +48,7 @@ namespace MonoGameEngineCore.Procedural
         private IModule module;
         public Color NodeColor { get; set; }
         public int quadTreeNodeID;
-        private int rootNodeId;
+        private readonly int rootNodeId;
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -93,7 +104,7 @@ namespace MonoGameEngineCore.Procedural
         {
             this.effect = testEffect;
             this.module = module;
-            vertices = new VertexPositionColorTextureNormal[heightMapSize * heightMapSize];
+            vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
 
@@ -114,7 +125,6 @@ namespace MonoGameEngineCore.Procedural
                 }
             }
 
-
             GenerateIndices();
 
             if (normal == Vector3.Down || normal == Vector3.Backward || normal == Vector3.Right)
@@ -134,6 +144,7 @@ namespace MonoGameEngineCore.Procedural
             boundingSphere = BoundingSphere.CreateFromPoints(p);
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
+
 
             gameObject = SystemCore.GameObjectManager.GetObject(quadTreeNodeID);
 
@@ -220,7 +231,6 @@ namespace MonoGameEngineCore.Procedural
                 vertArray[i].Normal = -vertArray[i].Normal;
             }
         }
-
 
         private void ClearChildNodes()
         {
@@ -382,7 +392,6 @@ namespace MonoGameEngineCore.Procedural
 
             isLeaf = false;
         }
-
 
         public void MergeChildren()
         {
@@ -561,6 +570,7 @@ namespace MonoGameEngineCore.Procedural
             }
             return true;
         }
+
         private void DetermineVisibility()
         {
             if (patchState != PatchState.final)
@@ -622,7 +632,6 @@ namespace MonoGameEngineCore.Procedural
             //    DebugShapeRenderer.AddBoundingSphere(boundingSphere, Color.Red);
 
         }
-
 
     }
 }

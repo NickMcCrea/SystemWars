@@ -165,14 +165,4 @@ namespace MonoGameEngineCore.Procedural
     }
 
 
-    public enum PatchState
-    {
-        initial,
-        building,
-        readyToAddGameObject,
-        gameObjectBeingAdded,
-        gameObjectBeingRemoved,
-        awaitingChildGenerationBeforeRemoval,
-        final
-    }
 }
