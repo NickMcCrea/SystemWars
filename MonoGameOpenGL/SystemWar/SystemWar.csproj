@@ -35,10 +35,13 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Components\ShipController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\MainGameScreen.cs" />
     <Compile Include="Screens\MainMenu.cs" />
+    <Compile Include="SolarSystem\Planet.cs" />
+    <Compile Include="SolarSystem\PlanetQuadTreeNode.cs" />
     <Compile Include="SolarSystem\SolarSystemGenerator.cs" />
     <Compile Include="SolarSystem\SolarSystemSettings.cs" />
     <Compile Include="SolarSystem\SkyDomeHelper.cs" />
