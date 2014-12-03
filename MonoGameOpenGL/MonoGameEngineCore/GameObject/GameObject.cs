@@ -45,6 +45,12 @@ namespace MonoGameEngineCore.GameObject
             component.ParentObject = this;
         }
 
+        public void AddAndInitialise(IComponent component)
+        {
+            AddComponent(component);
+            component.Initialise();
+        }
+
         public T GetComponent<T>()
         {
             var component = components.Find(x => (x.GetType() == typeof(T)));

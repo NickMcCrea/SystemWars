@@ -177,15 +177,13 @@ namespace MonoGameEngineCore.Procedural
             //if the object is null this is the first time we've seen it.
 
             gameObject = GameObjectFactory.CreateRenderableGameObjectFromShape(quadTreeNodeID, spherePatch, effect);
-            //gameObject.AddComponent(new MeshColliderComponent());
+
             gameObject.Name = Planet.ParentObject.Name + ": planetPatch : ";
             patchState = PatchState.readyToAddGameObject;
 
             SetHighPrecisionPosition();
 
             UpdatePosition();
-
-
 
             isLeaf = true;
         }
@@ -358,6 +356,12 @@ namespace MonoGameEngineCore.Procedural
             foreach (PlanetQuadTreeNode child in Children)
                 child.Update(gameTime, splitDistance / 2f, mergeDistance / 2f);
 
+            //add collision data when we get close
+            float distanceFromSurface = CalculateDistanceToPatch();
+            if (distanceFromSurface < 100 && patchState == PatchState.final)
+            {
+                gameObject.AddAndInitialise(new MeshColliderComponent());
+            }
 
 
 
