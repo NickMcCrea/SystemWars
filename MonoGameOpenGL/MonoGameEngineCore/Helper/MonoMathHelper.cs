@@ -998,5 +998,28 @@ namespace MonoGameEngineCore.Helper
         {
             return new Vector3(position.X, position.Y, position.Z);
         }
+
+        internal static List<BEPUutilities.Vector3> ConvertVertsToBepu(List<Vector3> vertices)
+        {
+           List<BEPUutilities.Vector3> bepuVectors = new List<BEPUutilities.Vector3>(vertices.Count);
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                bepuVectors.Add(new BEPUutilities.Vector3(vertices[i].X, vertices[i].Y, vertices[i].Z));
+            }
+
+            return bepuVectors;
+        }
+
+        public static int[] ConvertShortToInt(short[] shortIntArray)
+        {
+            var intarray = new int[shortIntArray.Length];
+
+            for (int i = 0; i < shortIntArray.Length; i++)
+            {
+                intarray[i] = shortIntArray[i];
+            }
+            return intarray;
+        }
     }
 }

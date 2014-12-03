@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 
@@ -47,6 +48,13 @@ namespace MonoGameEngineCore.GameObject.Components
             }
 
             return vertices;
+        }
+
+        internal short[] GetIndices()
+        {
+            var list = new short[IndexBuffer.IndexCount];
+            IndexBuffer.GetData(list);
+            return list;
         }
     }
 }

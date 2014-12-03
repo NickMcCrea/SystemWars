@@ -71,6 +71,10 @@ namespace MonoGameEngineCore.Helper
             return new Color((int)col.R+changeAmount, (int)col.G+changeAmount, (int)col.B+changeAmount, (int)col.A);
         }
 
+        public static BEPUutilities.Vector3 ToBepuVector(this Vector3 vec)
+        {
+            return new BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
+        }
 
         public static Vector3 ReplaceXComponent(this Vector3 vec, float replacement)
         {
