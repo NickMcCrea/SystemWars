@@ -110,11 +110,7 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(n6);
 
 
-            n1.AddNeighbour(Direction.north, n3);
-            n1.AddNeighbour(Direction.south, n4);
-            n1.AddNeighbour(Direction.west, n6);
-            n1.AddNeighbour(Direction.east, n5);
-
+            DefineAdjacency(n1, n3, n4, n6, n5, n2);
 
             n1.Planet = this;
             n2.Planet = this;
@@ -124,6 +120,40 @@ namespace MonoGameEngineCore.Procedural
             n6.Planet = this;
 
             Enabled = true;
+        }
+
+        private static void DefineAdjacency(PlanetQuadTreeNode top, PlanetQuadTreeNode bottom, PlanetQuadTreeNode forward, PlanetQuadTreeNode backward,
+            PlanetQuadTreeNode left, PlanetQuadTreeNode right)
+        {
+            top.AddNeighbour(Direction.north, forward);
+            top.AddNeighbour(Direction.south, backward);
+            top.AddNeighbour(Direction.west, left);
+            top.AddNeighbour(Direction.east, right);
+
+            bottom.AddNeighbour(Direction.north, forward);
+            bottom.AddNeighbour(Direction.south, backward);
+            bottom.AddNeighbour(Direction.west, left);
+            bottom.AddNeighbour(Direction.east, right);
+
+            forward.AddNeighbour(Direction.north, top);
+            forward.AddNeighbour(Direction.south, bottom);
+            forward.AddNeighbour(Direction.west, right);
+            forward.AddNeighbour(Direction.east, left);
+
+            backward.AddNeighbour(Direction.north, top);
+            backward.AddNeighbour(Direction.south, bottom);
+            backward.AddNeighbour(Direction.west, left);
+            backward.AddNeighbour(Direction.east, right);
+
+            right.AddNeighbour(Direction.north, top);
+            right.AddNeighbour(Direction.south, bottom);
+            right.AddNeighbour(Direction.west, backward);
+            right.AddNeighbour(Direction.east, forward);
+
+            left.AddNeighbour(Direction.north, top);
+            left.AddNeighbour(Direction.south, bottom);
+            left.AddNeighbour(Direction.west, forward);
+            left.AddNeighbour(Direction.east, backward);
         }
 
         public bool Enabled

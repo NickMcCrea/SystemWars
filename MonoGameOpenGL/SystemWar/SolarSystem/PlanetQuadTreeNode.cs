@@ -177,6 +177,7 @@ namespace MonoGameEngineCore.Procedural
             //if the object is null this is the first time we've seen it.
 
             gameObject = GameObjectFactory.CreateRenderableGameObjectFromShape(quadTreeNodeID, spherePatch, effect);
+            //gameObject.AddComponent(new MeshColliderComponent());
             gameObject.Name = Planet.ParentObject.Name + ": planetPatch : ";
             patchState = PatchState.readyToAddGameObject;
 
@@ -392,12 +393,12 @@ namespace MonoGameEngineCore.Procedural
             patchState = PatchState.awaitingChildGenerationBeforeRemoval;
 
 
-            //need to add 4 new quadtree nodes
+            //need to add 4 new quadtree nodes, and do neighbours bookkeeping.
 
             //bottom right, inherits east and south neighbours
             PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
             a.StartGeometryGeneration(effect, module);
-
+        
             //top left, inherits north and west
             PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
             b.StartGeometryGeneration(effect, module);
@@ -406,9 +407,29 @@ namespace MonoGameEngineCore.Procedural
             PlanetQuadTreeNode c = new PlanetQuadTreeNode(rootNodeId, 3, Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
             c.StartGeometryGeneration(effect, module);
 
-            //inherits north and east
+            //top right inherits north and east
             PlanetQuadTreeNode d = new PlanetQuadTreeNode(rootNodeId, 4, Planet, this, midRight, midTop, step / 2, normal, sphereSize);
             d.StartGeometryGeneration(effect, module);
+
+            //bottom right
+            a.AddNeighbour(Direction.west, c);
+            a.AddNeighbour(Direction.north,d);
+            a.FixNeighbours(neighbours, Direction.east, Direction.south);
+
+            //top left
+            b.AddNeighbour(Direction.south, c);
+            b.AddNeighbour(Direction.east, d);
+            b.FixNeighbours(neighbours, Direction.north, Direction.west);
+
+            //bottom left
+            c.AddNeighbour(Direction.north, b);
+            c.AddNeighbour(Direction.east, a);
+            c.FixNeighbours(neighbours, Direction.south, Direction.west);
+
+            //top right
+            d.AddNeighbour(Direction.south, a);
+            d.AddNeighbour(Direction.west, b);
+            d.FixNeighbours(neighbours, Direction.north, Direction.east);
 
 
             Children.Add(a);
@@ -422,6 +443,17 @@ namespace MonoGameEngineCore.Procedural
             }
 
             isLeaf = false;
+        }
+
+        private void FixNeighbours(Dictionary<Direction, List<PlanetQuadTreeNode>> parentNeighbours, params Direction[] fixDirections)
+        {
+            //when a new node is made, 2 of its neighbours will be siblings from the same parent.
+            //the other two will be neighbouring patches of possibly different LOD, inherited from parent
+            foreach (Direction direction in fixDirections)
+            {
+                neighbours[direction] = parentNeighbours[direction];
+            }
+
         }
 
         public void MergeChildren()
