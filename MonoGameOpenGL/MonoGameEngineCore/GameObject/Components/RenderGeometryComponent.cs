@@ -4,10 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using System;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class RenderGeometryComponent : IComponent
+    public class RenderGeometryComponent : IComponent, IDisposable
     {
         public GameObject ParentObject { get; set; }
         public VertexBuffer VertexBuffer { get; set; }
@@ -32,6 +33,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Initialise()
         {
+            
         }
 
         internal List<Vector3> GetVertices()
@@ -55,6 +57,12 @@ namespace MonoGameEngineCore.GameObject.Components
             var list = new short[IndexBuffer.IndexCount];
             IndexBuffer.GetData(list);
             return list;
+        }
+
+        public void Dispose()
+        {
+            VertexBuffer.Dispose();
+            IndexBuffer.Dispose();
         }
     }
 }

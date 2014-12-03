@@ -361,8 +361,8 @@ namespace MonoGameEngineCore.Procedural
 
             if (distanceFromSurface < 100 && patchState == PatchState.final)
             {
-                if (!gameObject.ContainsComponent<MeshColliderComponent>())
-                    gameObject.AddAndInitialise(new MeshColliderComponent());
+                //if (!gameObject.ContainsComponent<MeshColliderComponent>())
+                //    gameObject.AddAndInitialise(new MeshColliderComponent());
             }
 
 
@@ -437,6 +437,8 @@ namespace MonoGameEngineCore.Procedural
             d.AddNeighbour(Direction.west, b);
             d.FixNeighbours(neighbours, Direction.north, Direction.east);
 
+            if (Children.Count > 0)
+                throw new Exception("Um...");
 
             Children.Add(a);
             Children.Add(b);
@@ -645,6 +647,13 @@ namespace MonoGameEngineCore.Procedural
             if (patchState != PatchState.final)
                 return;
 
+            if (!isLeaf)
+            {
+                drawableComponent.Visible = false;
+                return;
+            }
+
+
             Matrix view = SystemCore.GetCamera("main").View;
 
             //shift the view matrix back slightly to ensure we are rendering patches just behind us.
@@ -658,12 +667,9 @@ namespace MonoGameEngineCore.Procedural
 
             if (intersetcts)
             {
-                if (isLeaf)
-                    drawableComponent.Visible = true;
-                else
-                {
-                    drawableComponent.Visible = false;
-                }
+
+                drawableComponent.Visible = true;
+                
                 foreach (PlanetQuadTreeNode quadTreeNode in Children)
                 {
                     quadTreeNode.DetermineVisibility();
