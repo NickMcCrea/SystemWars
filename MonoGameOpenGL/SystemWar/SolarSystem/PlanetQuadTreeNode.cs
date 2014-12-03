@@ -358,9 +358,11 @@ namespace MonoGameEngineCore.Procedural
 
             //add collision data when we get close
             float distanceFromSurface = CalculateDistanceToPatch();
+
             if (distanceFromSurface < 100 && patchState == PatchState.final)
             {
-                gameObject.AddAndInitialise(new MeshColliderComponent());
+                if (!gameObject.ContainsComponent<MeshColliderComponent>())
+                    gameObject.AddAndInitialise(new MeshColliderComponent());
             }
 
 
