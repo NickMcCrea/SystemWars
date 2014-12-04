@@ -206,6 +206,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+        
 
         public bool RayCast(Vector3 pos, Vector3 dir, float distance, out Vector3 hitLocation)
         {
@@ -220,7 +221,7 @@ namespace MonoGameEngineCore.Procedural
             foreach (PlanetQuadTreeNode node in potentialCollisions)
             {
                 var collider = node.gameObject.GetComponent<MeshColliderComponent>();
-                if (collider!= null)
+                if (collider != null)
                 {
                     RayHit hit;
                     if (collider.RayCollision(pos, dir, distance, out hit))
@@ -228,7 +229,10 @@ namespace MonoGameEngineCore.Procedural
                         hitLocation = hit.Location.ToXNAVector();
                         return true;
                     }
-                 
+                }
+                else
+                {
+                  
                 }
             }
 

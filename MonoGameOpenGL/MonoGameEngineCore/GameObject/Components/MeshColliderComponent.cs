@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.CollisionShapes;
+using BEPUphysics.Entities.Prefabs;
 using BEPUutilities;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
@@ -14,7 +16,8 @@ namespace MonoGameEngineCore.GameObject.Components
     public class MeshColliderComponent : IComponent, IUpdateable
     {
         public GameObject ParentObject { get; set; }
-        private StaticMesh staticMesh;
+        private MobileMesh mobileMesh;
+      
 
         public void Initialise()
         {
@@ -23,8 +26,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
             var vertices = renderGeometry.GetVertices();
             List<BEPUutilities.Vector3> bepuVerts = MonoMathHelper.ConvertVertsToBepu(vertices);
-
-            staticMesh = new StaticMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()));
+       
+            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
         }
 
         public bool Enabled { get; set; }
@@ -33,9 +36,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Update(GameTime gameTime)
         {
-            var bepuTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
-            var quat = BEPUutilities.Quaternion.CreateFromRotationMatrix(bepuTransform);
-            staticMesh.WorldTransform = new AffineTransform(quat, bepuTransform.Translation);
+
         }
 
         public int UpdateOrder { get; set; }
@@ -44,8 +45,15 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public bool RayCollision(Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Vector3 dir, float distance, out RayHit hit)
         {
+            PositionMesh();
             BepuRay ray = new BepuRay(pos.ToBepuVector(), dir.ToBepuVector());
-            return staticMesh.RayCast(ray, distance, out hit);
+            return mobileMesh.CollisionInformation.RayCast(ray, distance, out hit);
+        }
+
+        private void PositionMesh()
+        {
+            var bepuTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+            mobileMesh.WorldTransform = bepuTransform;
         }
     }
 }

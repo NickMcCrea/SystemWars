@@ -49,6 +49,7 @@ namespace MonoGameEngineCore.GameObject
         {
             AddComponent(component);
             component.Initialise();
+            SystemCore.GameObjectManager.AddComponent(component);
         }
 
         public T GetComponent<T>()

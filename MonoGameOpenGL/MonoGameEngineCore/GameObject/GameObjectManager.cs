@@ -15,9 +15,11 @@ namespace MonoGameEngineCore.GameObject
         private List<IDrawable> drawableGameObjectComponents;
         private Dictionary<int, GameObject> objectsToRemoveNextFrame;
         private Dictionary<int, GameObject> objectsToAddNextFrame;
+        private List<IComponent> pendingComponents; 
         public static int drawCalls;
         public static int verts;
         public static int primitives;
+
 
         public void Initalise()
         {
@@ -26,6 +28,7 @@ namespace MonoGameEngineCore.GameObject
             drawableGameObjectComponents = new List<IDrawable>();
             objectsToRemoveNextFrame = new Dictionary<int, GameObject>();
             objectsToAddNextFrame = new Dictionary<int, GameObject>();
+            pendingComponents = new List<IComponent>();
 
         }
 
@@ -116,6 +119,21 @@ namespace MonoGameEngineCore.GameObject
             updateableGameOjectComponents = updateableGameOjectComponents.OrderBy(x => x.UpdateOrder).ToList();
         }
 
+        public void AddComponent(IComponent component)
+        {
+            pendingComponents.Add(component);
+            
+        }
+
+        private void AddPendingComponent(IComponent component)
+        {
+            if (component is IUpdateable)
+                updateableGameOjectComponents.Add(component as IUpdateable);
+
+            if (component is IDrawable)
+                drawableGameObjectComponents.Add(component as IDrawable);
+        }
+
         public void Update(GameTime gameTime)
         {
 
@@ -136,6 +154,13 @@ namespace MonoGameEngineCore.GameObject
                 RemoveObjectImmediately(o);
             }
             objectsToRemoveNextFrame.Clear();
+
+
+            foreach (IComponent component in pendingComponents)
+            {
+                AddPendingComponent(component);
+            }
+            pendingComponents.Clear();
         }
 
         private static void UpdateComponents(GameTime gameTime, GameObject o)
