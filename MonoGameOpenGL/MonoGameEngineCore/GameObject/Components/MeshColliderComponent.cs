@@ -42,10 +42,10 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public event EventHandler<EventArgs> UpdateOrderChanged;
 
-        public void RayCollision(Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Vector3 dir, float distance, out RayHit hit)
+        public bool RayCollision(Microsoft.Xna.Framework.Vector3 pos, Microsoft.Xna.Framework.Vector3 dir, float distance, out RayHit hit)
         {
             BepuRay ray = new BepuRay(pos.ToBepuVector(), dir.ToBepuVector());
-            staticMesh.RayCast(ray, distance, out hit);
+            return staticMesh.RayCast(ray, distance, out hit);
         }
     }
 }

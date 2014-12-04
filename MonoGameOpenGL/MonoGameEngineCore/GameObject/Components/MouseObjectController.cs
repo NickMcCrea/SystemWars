@@ -53,6 +53,11 @@ namespace MonoGameEngineCore.GameObject.Components
                 movementSpeed = 100f;
 
 
+            if (inputManager.IsKeyDown(Keys.NumPad0))
+                movementSpeed = 0.1f;
+
+
+
             ParentObject.Transform.Translate(translation * movementSpeed);
 
             ParentObject.Transform.Rotate(Vector3.Up, -inputManager.MouseDelta.X * gameTime.ElapsedGameTime.Milliseconds * 0.001f);

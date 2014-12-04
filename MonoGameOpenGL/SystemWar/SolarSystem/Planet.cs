@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using BEPUutilities;
 using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.GameObject;
+using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
+using MathHelper = Microsoft.Xna.Framework.MathHelper;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Ray = Microsoft.Xna.Framework.Ray;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -29,7 +35,7 @@ namespace MonoGameEngineCore.Procedural
         public int BuildTally;
         private TimeSpan lastClearTime;
         public bool visualisePatches = true;
-       
+
         public Planet(IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             planetId = ++planetIdList;
@@ -190,8 +196,6 @@ namespace MonoGameEngineCore.Procedural
             //var frustrum = new BoundingFrustum(SystemCore.GetCamera("main").View * customProjection);
             //DebugShapeRenderer.AddBoundingFrustum(frustrum, Color.Blue);
 
-            FixSeams();
-
             lastClearTime += new TimeSpan(0, 0, 0, 0, gameTime.ElapsedGameTime.Milliseconds);
             if (lastClearTime.TotalMilliseconds > 1000)
             {
@@ -202,17 +206,50 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private void FixSeams()
+
+        public bool RayCast(Vector3 pos, Vector3 dir, float distance, out Vector3 hitLocation)
         {
-            //we want to walk down the tree, and ensure that where we have adjacent leaf nodes of different depths
-            //that we 'collapse' the vertices of the edge of the greater depth patch to match the coarser patch.
+            List<PlanetQuadTreeNode> potentialCollisions = new List<PlanetQuadTreeNode>();
+            Ray ray = new Ray(pos, dir);
 
-            //walk down tree, if not leaf node, continue.
-            //if leaf node, determine neighbours of lower depth (e.g. less detailed). 
-            //walk through verts of shared edge and re-position non-shared verts onto shared ones.
+            for (int i = 0; i < rootNodes.Count; i++)
+            {
+                BroadPhaseRayCast(rootNodes[i], ray, ref potentialCollisions);
+            }
 
-            //keep going
+            foreach (PlanetQuadTreeNode node in potentialCollisions)
+            {
+                var collider = node.gameObject.GetComponent<MeshColliderComponent>();
+                if (collider!= null)
+                {
+                    RayHit hit;
+                    if (collider.RayCollision(pos, dir, distance, out hit))
+                    {
+                        hitLocation = hit.Location.ToXNAVector();
+                        return true;
+                    }
+                 
+                }
+            }
 
+            hitLocation = Vector3.Zero;
+            return false;
+        }
+
+        private void BroadPhaseRayCast(PlanetQuadTreeNode node, Ray ray, ref List<PlanetQuadTreeNode> potentialCollisions)
+        {
+            if (node.isLeaf)
+            {
+                if (node.boundingSphere.Intersects(ray).HasValue == true)
+                    potentialCollisions.Add(node);
+            }
+            else
+            {
+                foreach (PlanetQuadTreeNode child in node.Children)
+                {
+                    BroadPhaseRayCast(child, ray, ref potentialCollisions);
+                }
+            }
         }
 
         public int UpdateOrder

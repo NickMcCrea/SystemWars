@@ -1,35 +1,36 @@
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Camera;
-using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class EffectRenderComponent : IComponent, IDrawable
+    public class SkyDomeRenderer : IComponent, IDrawable
     {
 
+        
         protected readonly Effect effect;
         private ICamera camera;
         public GameObject ParentObject { get; set; }
         public int DrawOrder { get; set; }
         public bool Visible { get; set; }
-        public float ColorSaturation { get; set; }
-        public string Camera { get; set; }
 
-        public EffectRenderComponent(Effect effect)
+
+        public Color AmbientLightColor { get; set; }
+        public float AmbientLightIntensity { get; set; }
+        public Color DiffuseLightColor { get; set; }
+        public float DiffuseLightIntensity { get; set; }
+        public Vector3 DiffuseLightDirection { get; set; }
+
+        public SkyDomeRenderer(Effect effect)
         {
             this.effect = effect;
             Visible = true;
 
-            //default to main active camera in scene. But overridable via property.
-            Camera = "main";
         }
 
         public void Initialise()
         {
-            ColorSaturation = 1;
+
         }
 
         public virtual void PreDraw(GameTime gameTime)
@@ -54,6 +55,7 @@ namespace MonoGameEngineCore.GameObject.Components
             if (!Visible)
                 return;
 
+            SystemCore.GraphicsDevice.DepthStencilState.DepthBufferWriteEnable = false;
             PreDraw(gameTime);
 
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
@@ -63,6 +65,7 @@ namespace MonoGameEngineCore.GameObject.Components
             GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
             GameObjectManager.primitives += renderGeometry.PrimitiveCount;
 
+
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -71,6 +74,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
             PostDraw(gameTime);
 
+            var depthState = new DepthStencilState();
+            depthState.DepthBufferEnable = true;
+            depthState.DepthBufferWriteEnable = true;
+            SystemCore.GraphicsDevice.DepthStencilState = depthState;
+
 
 
         }
@@ -78,18 +86,19 @@ namespace MonoGameEngineCore.GameObject.Components
         public virtual void AssignMatrixParameters()
         {
             var transform = ParentObject.GetComponent<TransformComponent>();
-            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix;
-            worldViewProj *= SystemCore.GetCamera(Camera).View;
-            worldViewProj *= SystemCore.GetCamera(Camera).Projection;
+            Matrix world = Matrix.CreateWorld(SystemCore.ActiveCamera.Position, Vector3.Forward, Vector3.Up);
+            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * world;
+            worldViewProj *= SystemCore.ActiveCamera.View;
+            worldViewProj *= SystemCore.ActiveCamera.Projection;
 
             if (ParameterExists("World"))
-                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix);
+                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * world);
 
             if (ParameterExists("View"))
-                effect.Parameters["View"].SetValue(SystemCore.GetCamera(Camera).View);
+                effect.Parameters["View"].SetValue(SystemCore.ActiveCamera.View);
 
             if (ParameterExists("Projection"))
-                effect.Parameters["Projection"].SetValue(SystemCore.GetCamera(Camera).Projection);
+                effect.Parameters["Projection"].SetValue(SystemCore.ActiveCamera.Projection);
 
             if (ParameterExists("WorldViewProjection"))
                 effect.Parameters["WorldViewProjection"].SetValue(worldViewProj);
@@ -98,34 +107,25 @@ namespace MonoGameEngineCore.GameObject.Components
         public virtual void AssignLightingParameters()
         {
             if (ParameterExists("AmbientLightColor"))
-                effect.Parameters["AmbientLightColor"].SetValue(SystemCore.ActiveScene.AmbientLight.LightColor.ToVector4());
+                effect.Parameters["AmbientLightColor"].SetValue(AmbientLightColor.ToVector4());
 
             if (ParameterExists("AmbientLightIntensity"))
-                effect.Parameters["AmbientLightIntensity"].SetValue(SystemCore.ActiveScene.AmbientLight.LightIntensity);
+                effect.Parameters["AmbientLightIntensity"].SetValue(AmbientLightIntensity);
 
 
             if (ParameterExists("ColorSaturation"))
-                effect.Parameters["ColorSaturation"].SetValue(ColorSaturation);
+                effect.Parameters["ColorSaturation"].SetValue(1);
 
-            foreach (SceneLight light in SystemCore.ActiveScene.LightsInScene)
-            {
-                if (light is DiffuseLight)
-                    AddDiffuseLight(light as DiffuseLight);
-            }
-
-        }
-
-        private void AddDiffuseLight(DiffuseLight diffuseLight)
-        {
             if (ParameterExists("DiffuseLightColor"))
-                effect.Parameters["DiffuseLightColor"].SetValue(diffuseLight.LightColor.ToVector4());
+                effect.Parameters["DiffuseLightColor"].SetValue(DiffuseLightColor.ToVector4());
             if (ParameterExists("DiffuseLightDirection"))
-                effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLight.LightDirection);
+                effect.Parameters["DiffuseLightDirection"].SetValue(DiffuseLightDirection);
             if (ParameterExists("DiffuseLightIntensity"))
-                effect.Parameters["DiffuseLightIntensity"].SetValue(diffuseLight.LightIntensity);
+                effect.Parameters["DiffuseLightIntensity"].SetValue(DiffuseLightIntensity);
 
         }
 
+     
         protected bool ParameterExists(string parameter)
         {
             foreach (EffectParameter effectParameter in effect.Parameters)

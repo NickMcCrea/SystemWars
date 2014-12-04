@@ -12,12 +12,10 @@ namespace MonoGameEngineCore.Helper
     /// </summary>
     public static class MonoMathHelper
     {
-
         public static float MapFloatRange(float lowIn, float highIn, float lowOut, float highOut, float input)
         {
-
             float inputRange = highIn - lowIn;
-            float ratio = input / inputRange;
+            float ratio = input/inputRange;
 
             float transformedOutputRange = highOut - lowOut;
 
@@ -25,7 +23,6 @@ namespace MonoGameEngineCore.Helper
             transformedOutputRange += lowOut;
 
             return transformedOutputRange;
-
         }
 
         /// <summary>
@@ -33,7 +30,6 @@ namespace MonoGameEngineCore.Helper
         /// </summary>
         public class XComparison : IComparer<Vector3>
         {
-
             public int Compare(Vector3 x, Vector3 y)
             {
                 if (x.X < y.X)
@@ -49,7 +45,6 @@ namespace MonoGameEngineCore.Helper
         /// </summary>
         public class ZComparison : IComparer<Vector3>
         {
-
             public int Compare(Vector3 x, Vector3 y)
             {
                 if (x.Z < y.Z)
@@ -82,7 +77,7 @@ namespace MonoGameEngineCore.Helper
             // for help and check out the Dot Product section ^^
             // Both vectors are normalized so we can save deviding through the
             // lengths.
-            return (float)Math.Acos(Vector3.Dot(vec1, vec2));
+            return (float) Math.Acos(Vector3.Dot(vec1, vec2));
         }
 
         /// <summary>
@@ -92,7 +87,7 @@ namespace MonoGameEngineCore.Helper
         /// <returns></returns>
         public static float GetHeadingFromVector(Vector2 heading)
         {
-            return (float)Math.Atan2(heading.Y, heading.X);
+            return (float) Math.Atan2(heading.Y, heading.X);
         }
 
         /// <summary>
@@ -103,13 +98,13 @@ namespace MonoGameEngineCore.Helper
         /// <param name="linePos2">Line position 2</param>
         /// <returns>Float</returns>
         public static float DistanceToLine(Vector3 point,
-                                           Vector3 linePos1, Vector3 linePos2)
+            Vector3 linePos1, Vector3 linePos2)
         {
             // For help check out this article:
             // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
             Vector3 lineVec = linePos2 - linePos1;
             Vector3 pointVec = linePos1 - point;
-            return Vector3.Cross(lineVec, pointVec).Length() / lineVec.Length();
+            return Vector3.Cross(lineVec, pointVec).Length()/lineVec.Length();
         }
 
         public static float DistanceLineSegmentToPoint(Vector2 A, Vector2 B, Vector2 p)
@@ -134,7 +129,7 @@ namespace MonoGameEngineCore.Helper
             else
             {
                 //closest point is between A and B... A + d  * ( ||B-A|| )
-                nearestPoint = A + distanceAlongLine * v;
+                nearestPoint = A + distanceAlongLine*v;
             }
 
             //Calculate the distance between the two points
@@ -158,7 +153,7 @@ namespace MonoGameEngineCore.Helper
             if (t < 0) return lineA;
             float d = (lineB - lineA).Length();
             if (t > d) return lineB;
-            return lineA + v * t;
+            return lineA + v*t;
         }
 
         /// <summary>
@@ -274,7 +269,6 @@ namespace MonoGameEngineCore.Helper
             world.Right = right;
             world.Translation = pos;
             return world;
-
         }
 
 
@@ -298,7 +292,6 @@ namespace MonoGameEngineCore.Helper
             world.Right = right;
             world.Translation = pos;
             return world;
-
         }
 
 
@@ -310,7 +303,7 @@ namespace MonoGameEngineCore.Helper
         /// <param name="planeNormal">Plane normal</param>
         /// <returns>Float</returns>
         public static float SignedDistanceToPlane(Vector3 point,
-                                                  Vector3 planePosition, Vector3 planeNormal)
+            Vector3 planePosition, Vector3 planeNormal)
         {
             Vector3 pointVec = planePosition - point;
             return Vector3.Dot(planeNormal, pointVec);
@@ -325,8 +318,6 @@ namespace MonoGameEngineCore.Helper
 
 
             return point + r.Direction*distance.Value;
-
-
         }
 
         public static Vector3 MirrorInPlane(Vector3 point, Plane p)
@@ -350,7 +341,8 @@ namespace MonoGameEngineCore.Helper
         /// <returns>Velocity vector of deflection.</returns>
         public static Vector3 CalculateDeflectionEx(Vector3 currentVelocity, float elasticity, Vector3 collisionNormal)
         {
-            Vector3 newDirection = elasticity * (-2 * Vector3.Dot(currentVelocity, collisionNormal) * collisionNormal + currentVelocity);
+            Vector3 newDirection = elasticity*
+                                   (-2*Vector3.Dot(currentVelocity, collisionNormal)*collisionNormal + currentVelocity);
             return newDirection;
         }
 
@@ -363,7 +355,7 @@ namespace MonoGameEngineCore.Helper
         /// <returns>Velocity vector of deflection.</returns>
         public static Vector3 CalculateDeflection(Vector3 currentVelocity, float elasticity, Vector3 collisionNormal)
         {
-            return Vector3.Reflect(currentVelocity, collisionNormal) * elasticity;
+            return Vector3.Reflect(currentVelocity, collisionNormal)*elasticity;
         }
 
         /// <summary>
@@ -374,7 +366,8 @@ namespace MonoGameEngineCore.Helper
         /// <param name="rotationAxis">Axis to rotate around, this Vector should be a unit vector (normalized).</param>
         /// <param name="radiansToRotate">Radians to rotate.</param>
         /// <returns>Translated point.</returns>
-        public static Vector3 RotateAroundPoint(Vector3 point, Vector3 originPoint, Vector3 rotationAxis, float radiansToRotate)
+        public static Vector3 RotateAroundPoint(Vector3 point, Vector3 originPoint, Vector3 rotationAxis,
+            float radiansToRotate)
         {
             Vector3 diffVect = point - originPoint;
             Vector3 rotatedVect = Vector3.Transform(diffVect, Matrix.CreateFromAxisAngle(rotationAxis, radiansToRotate));
@@ -386,15 +379,15 @@ namespace MonoGameEngineCore.Helper
         {
             if (angleInRadians == 0) return unitVector;
 
-            double x = unitVector.X * Math.Cos(angleInRadians) - unitVector.Y * Math.Sin(angleInRadians);
-            double y = unitVector.X * Math.Sin(angleInRadians) - unitVector.Y * Math.Cos(angleInRadians);
-            return new Vector2((float)x, -(float)y);
+            double x = unitVector.X*Math.Cos(angleInRadians) - unitVector.Y*Math.Sin(angleInRadians);
+            double y = unitVector.X*Math.Sin(angleInRadians) - unitVector.Y*Math.Cos(angleInRadians);
+            return new Vector2((float) x, -(float) y);
         }
 
         public static Vector2 Rotate(float angle, Vector2 currentPos, Vector2 centre)
         {
             double distance = Math.Sqrt(Math.Pow(currentPos.X - centre.X, 2) + Math.Pow(currentPos.Y - centre.Y, 2));
-            return new Vector2((float)(distance * Math.Cos(angle)), (float)(distance * Math.Sin(angle))) + centre;
+            return new Vector2((float) (distance*Math.Cos(angle)), (float) (distance*Math.Sin(angle))) + centre;
         }
 
         /// <summary>
@@ -410,31 +403,33 @@ namespace MonoGameEngineCore.Helper
 
             if (sp <= -1.0f) x = -MathHelper.PiOver2;
             else if (sp >= 1.0) x = MathHelper.PiOver2;
-            else x = (float)Math.Asin(sp);
+            else x = (float) Math.Asin(sp);
 
             // check for the Gimbal lock case, giving a slight tolerance for numerical imprecision
             if (sp > 0.9999f)
             {
                 // we are looking straight up or down. just set heading and slam bank to zero
-                y = (float)Math.Atan2(-orientation.M31, orientation.M11);
+                y = (float) Math.Atan2(-orientation.M31, orientation.M11);
                 z = 0.0f;
             }
             else
             {
-                y = (float)Math.Atan2(orientation.M13, orientation.M33);
-                z = (float)Math.Atan2(orientation.M21, orientation.M22);
+                y = (float) Math.Atan2(orientation.M13, orientation.M33);
+                z = (float) Math.Atan2(orientation.M21, orientation.M22);
             }
 
             return new Vector3(-x, -y, -z);
         }
 
-        public static bool LineIntersection(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4, out Vector2 intersectOut)
+        public static bool LineIntersection(Vector2 point1, Vector2 point2, Vector2 point3, Vector2 point4,
+            out Vector2 intersectOut)
         {
             intersectOut = Vector2.Zero;
 
-            float ua = (point4.X - point3.X) * (point1.Y - point3.Y) - (point4.Y - point3.Y) * (point1.X - point3.X);
-            float ub = (point2.X - point1.X) * (point1.Y - point3.Y) - (point2.Y - point1.Y) * (point1.X - point3.X);
-            float denominator = (point4.Y - point3.Y) * (point2.X - point1.X) - (point4.X - point3.X) * (point2.Y - point1.Y);
+            float ua = (point4.X - point3.X)*(point1.Y - point3.Y) - (point4.Y - point3.Y)*(point1.X - point3.X);
+            float ub = (point2.X - point1.X)*(point1.Y - point3.Y) - (point2.Y - point1.Y)*(point1.X - point3.X);
+            float denominator = (point4.Y - point3.Y)*(point2.X - point1.X) -
+                                (point4.X - point3.X)*(point2.Y - point1.Y);
             bool intersection = false;
 
             if (Math.Abs(denominator) <= 0.00001f)
@@ -442,8 +437,7 @@ namespace MonoGameEngineCore.Helper
                 if (Math.Abs(ua) <= 0.00001f && Math.Abs(ub) <= 0.00001f)
                 {
                     intersection = true;
-                    intersectOut = (point1 + point2) / 2;
-
+                    intersectOut = (point1 + point2)/2;
                 }
             }
             else
@@ -454,15 +448,15 @@ namespace MonoGameEngineCore.Helper
                 if (ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1)
                 {
                     intersection = true;
-                    intersectOut.X = point1.X + ua * (point2.X - point1.X);
-                    intersectOut.Y = point1.Y + ua * (point2.Y - point1.Y);
+                    intersectOut.X = point1.X + ua*(point2.X - point1.X);
+                    intersectOut.Y = point1.Y + ua*(point2.Y - point1.Y);
                 }
             }
             return intersection;
-
         }
 
-        public static bool LineSegmentIntersection(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2, out Vector3 intersectionPoint)
+        public static bool LineSegmentIntersection(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2,
+            out Vector3 intersectionPoint)
         {
             float firstLineSlopeX, firstLineSlopeY, secondLineSlopeX, secondLineSlopeY;
 
@@ -473,13 +467,15 @@ namespace MonoGameEngineCore.Helper
             secondLineSlopeY = b2.Y - b1.Y;
 
             float s, t;
-            s = (-firstLineSlopeY * (a1.X - b1.X) + firstLineSlopeX * (a1.Y - b1.Y)) / (-secondLineSlopeX * firstLineSlopeY + firstLineSlopeX * secondLineSlopeY);
-            t = (secondLineSlopeX * (a1.Y - b1.Y) - secondLineSlopeY * (a1.X - b1.X)) / (-secondLineSlopeX * firstLineSlopeY + firstLineSlopeX * secondLineSlopeY);
+            s = (-firstLineSlopeY*(a1.X - b1.X) + firstLineSlopeX*(a1.Y - b1.Y))/
+                (-secondLineSlopeX*firstLineSlopeY + firstLineSlopeX*secondLineSlopeY);
+            t = (secondLineSlopeX*(a1.Y - b1.Y) - secondLineSlopeY*(a1.X - b1.X))/
+                (-secondLineSlopeX*firstLineSlopeY + firstLineSlopeX*secondLineSlopeY);
 
             if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
             {
-                float intersectionPointX = a1.X + (t * firstLineSlopeX);
-                float intersectionPointY = a1.Y + (t * firstLineSlopeY);
+                float intersectionPointX = a1.X + (t*firstLineSlopeX);
+                float intersectionPointY = a1.Y + (t*firstLineSlopeY);
 
                 // Collision detected
                 intersectionPoint = new Vector3(intersectionPointX, intersectionPointY, 0);
@@ -502,6 +498,7 @@ namespace MonoGameEngineCore.Helper
 
             return vecArray;
         }
+
         public static Vector2[] Vector3ToVector2UsingZY(Vector3[] vec3Array)
         {
             Vector2[] vecArray = new Vector2[vec3Array.Length];
@@ -513,6 +510,7 @@ namespace MonoGameEngineCore.Helper
 
             return vecArray;
         }
+
         public static Vector2[] Vector3ToVector2UsingXY(Vector3[] vec3Array)
         {
             Vector2[] vecArray = new Vector2[vec3Array.Length];
@@ -577,9 +575,9 @@ namespace MonoGameEngineCore.Helper
                 for (i = 0, j = nvert - 1; i < nvert; j = i++)
                 {
                     if (((polygonVertex[i].Y > testVertex.Y) != (polygonVertex[j].Y > testVertex.Y)) &&
-                        (testVertex.X < (polygonVertex[j].X - polygonVertex[i].X) *
-                                        (testVertex.Y - polygonVertex[i].Y) /
-                                        (polygonVertex[j].Y - polygonVertex[i].Y) + polygonVertex[i].X))
+                        (testVertex.X < (polygonVertex[j].X - polygonVertex[i].X)*
+                         (testVertex.Y - polygonVertex[i].Y)/
+                         (polygonVertex[j].Y - polygonVertex[i].Y) + polygonVertex[i].X))
                     {
                         c = !c;
                     }
@@ -628,8 +626,8 @@ namespace MonoGameEngineCore.Helper
 
 
                 if ((newPoint.X < p.X) == (p.X <= oldPoint.X)
-                    && (p.Y - p1.Y) * (p2.X - p1.X)
-                    < (p2.Y - p1.Y) * (p.X - p1.X))
+                    && (p.Y - p1.Y)*(p2.X - p1.X)
+                    < (p2.Y - p1.Y)*(p.X - p1.X))
                 {
                     inside = !inside;
                 }
@@ -661,9 +659,9 @@ namespace MonoGameEngineCore.Helper
                 for (i = 0, j = nvert - 1; i < nvert; j = i++)
                 {
                     if (((polygonVertex[i].Z > testVertex.Z) != (polygonVertex[j].Z > testVertex.Z)) &&
-                        (testVertex.X < (polygonVertex[j].X - polygonVertex[i].X) *
-                                        (testVertex.Z - polygonVertex[i].Z) /
-                                        (polygonVertex[j].Z - polygonVertex[i].Z) + polygonVertex[i].X))
+                        (testVertex.X < (polygonVertex[j].X - polygonVertex[i].X)*
+                         (testVertex.Z - polygonVertex[i].Z)/
+                         (polygonVertex[j].Z - polygonVertex[i].Z) + polygonVertex[i].X))
                     {
                         c = !c;
                     }
@@ -682,7 +680,8 @@ namespace MonoGameEngineCore.Helper
         /// <param name="projection"></param>
         /// <param name="world"></param>
         /// <returns></returns>
-        public static Vector3 ScreenProject(Vector3 point, Viewport wholeViewport, Matrix view, Matrix projection, Matrix world)
+        public static Vector3 ScreenProject(Vector3 point, Viewport wholeViewport, Matrix view, Matrix projection,
+            Matrix world)
         {
             Vector4 mp = Vector4.Transform(new Vector4(point, 1.0f), Matrix.Invert(world));
             Vector3 pt = wholeViewport.Project(new Vector3(mp.X, mp.Y, mp.Z), projection, view, world);
@@ -696,13 +695,13 @@ namespace MonoGameEngineCore.Helper
         /// <param name="projectionMatrix"></param>
         /// <param name="viewMatrix"></param>
         /// <returns></returns>
-        public static Ray GetProjectedMouseRay(Matrix _cameraView, Matrix _cameraProjection, GraphicsDevice _device, int mouseX, int mouseY)
+        public static Ray GetProjectedMouseRay(Matrix _cameraView, Matrix _cameraProjection, GraphicsDevice _device,
+            int mouseX, int mouseY)
         {
-
             // create 2 positions in screenspace using the cursor position. 0 is as
             // close as possible to the camera, 1 is as far away as possible.
-            Vector3 nearSource = new Vector3((float)mouseX, (float)mouseY, 0f);
-            Vector3 farSource = new Vector3((float)mouseX, (float)mouseY, 0.99f);
+            Vector3 nearSource = new Vector3((float) mouseX, (float) mouseY, 0f);
+            Vector3 farSource = new Vector3((float) mouseX, (float) mouseY, 0.99f);
 
             Matrix world = Matrix.CreateTranslation(Vector3.Zero);
 
@@ -711,10 +710,10 @@ namespace MonoGameEngineCore.Helper
             // matrix, which we have saved as member variables. We also need a world
             // matrix, which can just be identity.
             Vector3 nearPoint = _device.Viewport.Unproject(nearSource,
-                                                           _cameraProjection, _cameraView, world);
+                _cameraProjection, _cameraView, world);
 
             Vector3 farPoint = _device.Viewport.Unproject(farSource,
-                                                          _cameraProjection, _cameraView, world);
+                _cameraProjection, _cameraView, world);
 
             // find the direction vector that goes from the nearPoint to the farPoint
             // and normalize it....
@@ -736,7 +735,7 @@ namespace MonoGameEngineCore.Helper
 
             if (dist.HasValue)
             {
-                result = r.Position + (r.Direction * dist.Value);
+                result = r.Position + (r.Direction*dist.Value);
                 return true;
             }
             result = Vector3.Zero;
@@ -756,7 +755,8 @@ namespace MonoGameEngineCore.Helper
             Vector3 Backwards = Vector3.Cross(Right, U);
             Vector3.Normalize(ref Backwards, out Backwards);
             Vector3 Up = Vector3.Cross(Backwards, Right);
-            Matrix rot = new Matrix(Right.X, Right.Y, Right.Z, 0, Up.X, Up.Y, Up.Z, 0, Backwards.X, Backwards.Y, Backwards.Z, 0, 0, 0, 0, 1);
+            Matrix rot = new Matrix(Right.X, Right.Y, Right.Z, 0, Up.X, Up.Y, Up.Z, 0, Backwards.X, Backwards.Y,
+                Backwards.Z, 0, 0, 0, 0, 1);
             return rot;
         }
 
@@ -768,8 +768,7 @@ namespace MonoGameEngineCore.Helper
         /// <returns></returns>
         public static Vector3 CalculateRepulsionVector(BoundingSphere CollisionSphere, BoundingBox boundingBox)
         {
-
-            Vector3 boxCenter = (boundingBox.Min + boundingBox.Max) / 2;
+            Vector3 boxCenter = (boundingBox.Min + boundingBox.Max)/2;
 
             float boxMidLength;
 
@@ -784,7 +783,9 @@ namespace MonoGameEngineCore.Helper
             //vert collision
             if (CollisionSphere.Center.Y < boundingBox.Min.Y || CollisionSphere.Center.Y > boundingBox.Max.Y)
             {
-                boxMidLength = (boxCenter - new Vector3((boundingBox.Min.X + boundingBox.Max.X) / 2, boundingBox.Min.Y, boxCenter.Z)).Length();
+                boxMidLength =
+                    (boxCenter - new Vector3((boundingBox.Min.X + boundingBox.Max.X)/2, boundingBox.Min.Y, boxCenter.Z))
+                        .Length();
 
                 vertical = true;
                 Vector3 sphereCenter = CollisionSphere.Center;
@@ -795,13 +796,14 @@ namespace MonoGameEngineCore.Helper
 
                 vertPen = distanceBetweenCenters - boxMidLength;
                 vertPen = CollisionSphere.Radius - vertPen;
-
             }
 
             //horizontal collision
             if (CollisionSphere.Center.X > boundingBox.Max.X || CollisionSphere.Center.X < boundingBox.Min.X)
             {
-                boxMidLength = (boxCenter - new Vector3(boundingBox.Min.X, (boundingBox.Min.Y + boundingBox.Max.Y) / 2, boxCenter.Z)).Length();
+                boxMidLength =
+                    (boxCenter - new Vector3(boundingBox.Min.X, (boundingBox.Min.Y + boundingBox.Max.Y)/2, boxCenter.Z))
+                        .Length();
 
 
                 horizontal = true;
@@ -820,23 +822,19 @@ namespace MonoGameEngineCore.Helper
             {
                 //determine which distance is shorter, and deal with that.
                 if (horizPen < vertPen)
-                    return new Vector3(horizontalDirVector.X * horizPen / 2, 0, 0);
+                    return new Vector3(horizontalDirVector.X*horizPen/2, 0, 0);
                 else
-                    return new Vector3(0, verticalDirVector.Y * vertPen / 2, 0);
-
+                    return new Vector3(0, verticalDirVector.Y*vertPen/2, 0);
             }
 
 
-
-
             if (vertical && !horizontal)
-                return new Vector3(0, verticalDirVector.Y * vertPen, 0);
+                return new Vector3(0, verticalDirVector.Y*vertPen, 0);
 
             if (horizontal && !vertical)
-                return new Vector3(horizontalDirVector.X * horizPen, 0, 0);
+                return new Vector3(horizontalDirVector.X*horizPen, 0, 0);
 
             return Vector3.Zero;
-
         }
 
         public static Vector3 CalculateRepulsionVector(BoundingSphere collisionSphere, BoundingSphere boundingSphere)
@@ -851,14 +849,14 @@ namespace MonoGameEngineCore.Helper
 
             toCollision.Normalize();
 
-            return -toCollision * pushDistance;
+            return -toCollision*pushDistance;
         }
 
         public static int RoundToNearest(int x, int roundToNearest)
         {
-            int remainder = x % roundToNearest;
+            int remainder = x%roundToNearest;
 
-            if (remainder < (roundToNearest / 2))
+            if (remainder < (roundToNearest/2))
                 return x - remainder;
             else
                 return x + (roundToNearest - remainder);
@@ -866,22 +864,26 @@ namespace MonoGameEngineCore.Helper
 
         public static double Round(double i, int v)
         {
-            return Math.Round(i / v) * v;
+            return Math.Round(i/v)*v;
         }
+
         public static float Round(float i, int v)
         {
-            return (float)Math.Round(i / v) * v;
+            return (float) Math.Round(i/v)*v;
         }
+
         public static void TransformVectorsInList(List<Vector3> vectors, Matrix transform)
         {
             for (int i = 0; i < vectors.Count; i++)
                 vectors[i] = Vector3.Transform(vectors[i], transform);
         }
+
         public static void TranslateVectorsInList(List<Vector3> vectors, Vector3 translation)
         {
             for (int i = 0; i < vectors.Count; i++)
                 vectors[i] += translation;
         }
+
         public static void ScaleVectorsInList(List<Vector3> vectors, float scaleFactor)
         {
             for (int i = 0; i < vectors.Count; i++)
@@ -898,10 +900,10 @@ namespace MonoGameEngineCore.Helper
             if (v.Y == currentMousePoint.Y)
                 alignCount++;
 
-            if(v.Z == currentMousePoint.Z)
+            if (v.Z == currentMousePoint.Z)
                 alignCount++;
 
-            if(alignCount > 1)
+            if (alignCount > 1)
                 return true;
             return false;
         }
@@ -929,7 +931,7 @@ namespace MonoGameEngineCore.Helper
                 return;
             }
 
-            float inverseDeterminant = 1.0f / determinant;
+            float inverseDeterminant = 1.0f/determinant;
 
             // Calculate the U parameter of the intersection point.
             Vector3 distanceVector;
@@ -964,7 +966,7 @@ namespace MonoGameEngineCore.Helper
             // Compute the distance along the ray to the triangle.
             float length = 0;
             Vector3.Dot(ref edge2, ref distanceCrossEdge1, out length);
-            distance = length * inverseDeterminant;
+            distance = length*inverseDeterminant;
         }
 
         public static Matrix GenerateMonoMatrixFromBepu(BEPUutilities.Matrix matrix)
@@ -981,17 +983,17 @@ namespace MonoGameEngineCore.Helper
         public static BEPUutilities.Matrix GenerateBepuMatrixFromMono(Matrix matrix)
         {
             BEPUutilities.Matrix world = new BEPUutilities.Matrix(
-               matrix.M11, matrix.M12, matrix.M13, matrix.M14,
-               matrix.M21, matrix.M22, matrix.M23, matrix.M24,
-               matrix.M31, matrix.M32, matrix.M33, matrix.M34,
-               matrix.M41, matrix.M42, matrix.M43, matrix.M44);
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44);
 
             return world;
         }
 
         public static BEPUutilities.Vector3 Translate(Vector3 position)
         {
-            return new BEPUutilities.Vector3(position.X,position.Y,position.Z);
+            return new BEPUutilities.Vector3(position.X, position.Y, position.Z);
         }
 
         public static Vector3 Translate(BEPUutilities.Vector3 position)
@@ -1001,7 +1003,7 @@ namespace MonoGameEngineCore.Helper
 
         internal static List<BEPUutilities.Vector3> ConvertVertsToBepu(List<Vector3> vertices)
         {
-           List<BEPUutilities.Vector3> bepuVectors = new List<BEPUutilities.Vector3>(vertices.Count);
+            List<BEPUutilities.Vector3> bepuVectors = new List<BEPUutilities.Vector3>(vertices.Count);
 
             for (int i = 0; i < vertices.Count; i++)
             {

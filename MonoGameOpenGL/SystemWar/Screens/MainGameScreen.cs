@@ -25,6 +25,7 @@ namespace SystemWar.Screens
         GameObject sun;
         private DummyCamera testCamera;
         Planet earthPlanet;
+
         public MainGameScreen()
             : base()
         {
@@ -40,7 +41,7 @@ namespace SystemWar.Screens
 
 
             ship = new GameObject("ship");
-            ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, 400000000, true));
+            ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
            
@@ -80,6 +81,15 @@ namespace SystemWar.Screens
 
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
+
+            if (input.KeyPress(Keys.Enter))
+            {
+                Vector3 location;
+                if (earthPlanet.RayCast(ship.Position, ship.Transform.WorldMatrix.Forward, 10000f, out location))
+                {
+                    
+                }
+            }
 
 
             var earth = SystemCore.GameObjectManager.GetObject("earth");

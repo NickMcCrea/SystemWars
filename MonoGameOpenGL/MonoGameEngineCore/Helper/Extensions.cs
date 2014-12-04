@@ -76,17 +76,27 @@ namespace MonoGameEngineCore.Helper
             return new BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
         }
 
+        public static Vector3 ToXNAVector(this BEPUutilities.Vector3 vec)
+        {
+            return new Vector3(vec.X, vec.Y, vec.Z);
+        }
+
         public static Vector3 ReplaceXComponent(this Vector3 vec, float replacement)
         {
             return new Vector3(replacement, vec.Y, vec.Z);
         }
+
         public static Vector3 ReplaceYComponent(this Vector3 vec, float replacement)
         {
             return new Vector3(vec.X, replacement, vec.Z);
         }
+
         public static Vector3 ReplaceZComponent(this Vector3 vec, float replacement)
         {
             return new Vector3(vec.X, vec.Y, replacement);
         }
+
+
+
     }
 }

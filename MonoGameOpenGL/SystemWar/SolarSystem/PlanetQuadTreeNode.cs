@@ -46,7 +46,7 @@ namespace MonoGameEngineCore.Procedural
         public bool isLeaf;
         private float sphereSize;
         EffectRenderComponent drawableComponent;
-        private BoundingSphere boundingSphere;
+        public BoundingSphere boundingSphere;
         private IModule module;
         public Color NodeColor { get; set; }
         public int quadTreeNodeID;
@@ -270,20 +270,6 @@ namespace MonoGameEngineCore.Procedural
             Children.Clear();
         }
 
-        /// <summary>
-        /// Generates helpful coordinates for the splitting of a node into four children, 
-        /// including the four corner coordinates and various midpoints of the node about to be split.
-        /// </summary>
-        /// <param name="se"></param>
-        /// <param name="sw"></param>
-        /// <param name="mid1"></param>
-        /// <param name="mid2"></param>
-        /// <param name="nw"></param>
-        /// <param name="ne"></param>
-        /// <param name="midBottom"></param>
-        /// <param name="midRight"></param>
-        /// <param name="midLeft"></param>
-        /// <param name="midTop"></param>
         private void CalculatePatchBoundaries(out Vector3 se, out Vector3 sw, out Vector3 mid1, out Vector3 mid2, out Vector3 nw, out Vector3 ne, out Vector3 midBottom, out Vector3 midRight, out Vector3 midLeft, out Vector3 midTop)
         {
             if (normal == Vector3.Forward || normal == Vector3.Backward)
@@ -363,8 +349,8 @@ namespace MonoGameEngineCore.Procedural
 
             if (distanceFromSurface < 100 && patchState == PatchState.final)
             {
-                //if (!gameObject.ContainsComponent<MeshColliderComponent>())
-                //    gameObject.AddAndInitialise(new MeshColliderComponent());
+                if (!gameObject.ContainsComponent<MeshColliderComponent>())
+                   gameObject.AddAndInitialise(new MeshColliderComponent());
             }
 
 
@@ -578,13 +564,6 @@ namespace MonoGameEngineCore.Procedural
                 verts += n.CountVertsInTree();
 
             return verts;
-        }
-
-        public List<PlanetQuadTreeNode> FindNeighbours(Direction direction)
-        {
-            //the siblings of this node will comprise at least 2 of its neighbours.
-            throw new NotImplementedException();
-
         }
 
         private bool ShouldSplit(float splitDistance)
