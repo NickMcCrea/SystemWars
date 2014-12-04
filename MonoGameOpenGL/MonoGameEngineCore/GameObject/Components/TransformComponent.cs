@@ -19,9 +19,10 @@ namespace MonoGameEngineCore.GameObject.Components
             Enabled = true;
         }
 
-
         public void Initialise()
         {
+            //if a highprecisionposition component is detected, the transform will assume a coordinate system where the camera 
+            //is always centered at zero, and transformations will behave accordingly.
             highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
             if (highPrecisionPosition != null)
                 highPrecisionmode = true;
@@ -33,9 +34,6 @@ namespace MonoGameEngineCore.GameObject.Components
             WorldMatrix.Translation = Vector3.Zero;
             WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
             WorldMatrix.Translation = pos;
-
-        
-          
         }
 
         internal void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)

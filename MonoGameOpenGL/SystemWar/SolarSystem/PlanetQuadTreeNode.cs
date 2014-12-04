@@ -614,6 +614,12 @@ namespace MonoGameEngineCore.Procedural
 
             foreach (PlanetQuadTreeNode child in Children)
             {
+                //if the child nodes have children of their own, we may have moved so fast 
+                //that we've split twice before the first set of nodes have completed.
+                //in which case, best to get out of the way.
+                if (child.Children.Count > 0)
+                    return true;
+
                 if (child.patchState != PatchState.final)
                     return false;
             }

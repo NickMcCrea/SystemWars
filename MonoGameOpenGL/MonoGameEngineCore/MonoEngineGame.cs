@@ -36,7 +36,7 @@ namespace MonoGameEngineCore
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+           
             SystemCore.InitialiseGameSystems();
             base.Initialize();
         }
@@ -70,7 +70,6 @@ namespace MonoGameEngineCore
          
 
             SystemCore.Update(gameTime);
-
             base.Update(gameTime);
         }
 
