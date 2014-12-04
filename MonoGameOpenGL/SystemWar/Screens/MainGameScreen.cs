@@ -46,7 +46,7 @@ namespace SystemWar.Screens
            
             ship.AddComponent(new ShipController());
 
-            if (Environment.MachineName == "NICKMCCREA-PC")
+            if (Environment.MachineName == "NICK-PC")
                 ship.AddComponent(new MouseObjectController());
 
 
