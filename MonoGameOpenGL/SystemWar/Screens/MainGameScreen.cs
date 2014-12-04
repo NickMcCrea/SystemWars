@@ -43,8 +43,11 @@ namespace SystemWar.Screens
             ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, 400000000, true));
             SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
+           
             ship.AddComponent(new ShipController());
-            //ship.AddComponent(new MouseObjectController());
+
+            if (Environment.MachineName == "NICKMCCREA-PC")
+                ship.AddComponent(new MouseObjectController());
 
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
