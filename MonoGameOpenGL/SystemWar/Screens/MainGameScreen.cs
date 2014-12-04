@@ -24,6 +24,7 @@ namespace SystemWar.Screens
         DiffuseLight sunLight;
         GameObject sun;
         private DummyCamera testCamera;
+        Planet earthPlanet;
         public MainGameScreen()
             : base()
         {
@@ -54,7 +55,10 @@ namespace SystemWar.Screens
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
             sun = SystemCore.GameObjectManager.GetObject("sun");
 
+            var earth = SystemCore.GameObjectManager.GetObject("earth");
 
+            earthPlanet = earth.GetComponent<Planet>();
+        
         }
 
         public override void OnRemove()
@@ -121,6 +125,7 @@ namespace SystemWar.Screens
             DebugText.Write("Primitives " + GameObjectManager.primitives.ToString());
             DebugText.Write("Verts " + GameObjectManager.verts.ToString());
 
+            DebugText.Write("Patch Builds Per Second: " + earthPlanet.BuildCountPerSecond);
 
             oldPos = currentPos;
         }

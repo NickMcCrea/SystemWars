@@ -25,7 +25,10 @@ namespace MonoGameEngineCore.Procedural
         public Color MountainColor;
         public int planetId;
         private static int planetIdList;
-
+        public int BuildCountPerSecond;
+        public int BuildTally;
+        private TimeSpan lastClearTime;
+        public bool visualisePatches = true;
        
         public Planet(IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
@@ -188,6 +191,14 @@ namespace MonoGameEngineCore.Procedural
             //DebugShapeRenderer.AddBoundingFrustum(frustrum, Color.Blue);
 
             FixSeams();
+
+            lastClearTime += new TimeSpan(0, 0, 0, 0, gameTime.ElapsedGameTime.Milliseconds);
+            if (lastClearTime.TotalMilliseconds > 1000)
+            {
+                lastClearTime = new TimeSpan();
+                BuildCountPerSecond = BuildTally;
+                BuildTally = 0;
+            }
 
         }
 

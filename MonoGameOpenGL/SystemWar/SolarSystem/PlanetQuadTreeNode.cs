@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Helper;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -114,6 +115,7 @@ namespace MonoGameEngineCore.Procedural
         {
 
             patchState = PatchState.building;
+            Planet.BuildTally++;
 
             //background thread this
             Task.Factory.StartNew(() =>
@@ -127,12 +129,12 @@ namespace MonoGameEngineCore.Procedural
 
         private void BuildGeometry(Effect testEffect, IModule module)
         {
+            
             this.effect = testEffect;
             this.module = module;
             vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
-
 
 
             for (float i = 0; i < heightMapSize; i++)
@@ -530,12 +532,14 @@ namespace MonoGameEngineCore.Procedural
 
             if (patchState == PatchState.readyToAddGameObject)
             {
+                
                 AddGameObjectToScene();
             }
         }
 
         private void Sphereify(float radius)
         {
+            Color randomColor = RandomHelper.RandomColor;
             for (int i = 0; i < vertices.Length; i++)
             {
                 vertices[i].Position = (Vector3.Normalize(vertices[i].Position)) * radius;
@@ -552,6 +556,11 @@ namespace MonoGameEngineCore.Procedural
                     vertices[i].Color = Planet.LandColor;
                 if (length > radius + 5)
                     vertices[i].Color = Planet.MountainColor;
+
+                if (Planet.visualisePatches)
+                {
+                    vertices[i].Color = randomColor;
+                }
 
             }
         }
@@ -581,6 +590,9 @@ namespace MonoGameEngineCore.Procedural
         private bool ShouldSplit(float splitDistance)
         {
             if (patchState != PatchState.final)
+                return false;
+
+            if (!drawableComponent.Visible)
                 return false;
 
             float distanceToPatch = CalculateDistanceToPatch();
