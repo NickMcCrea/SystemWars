@@ -86,5 +86,11 @@ namespace MonoGameEngineCore.GameObject
             if (Children.Contains(child))
                 Children.Remove(child);
         }
+
+        public void RemoveComponent(IComponent component)
+        {
+            components.Remove(component);
+            SystemCore.GameObjectManager.RemoveComponent(component);
+        }
     }
 }

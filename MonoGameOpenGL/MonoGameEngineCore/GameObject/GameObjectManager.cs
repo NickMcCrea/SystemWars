@@ -15,7 +15,8 @@ namespace MonoGameEngineCore.GameObject
         private List<IDrawable> drawableGameObjectComponents;
         private Dictionary<int, GameObject> objectsToRemoveNextFrame;
         private Dictionary<int, GameObject> objectsToAddNextFrame;
-        private List<IComponent> pendingComponents; 
+        private List<IComponent> pendingComponents;
+        private List<IComponent> pendingRemoveComponents;
         public static int drawCalls;
         public static int verts;
         public static int primitives;
@@ -29,6 +30,7 @@ namespace MonoGameEngineCore.GameObject
             objectsToRemoveNextFrame = new Dictionary<int, GameObject>();
             objectsToAddNextFrame = new Dictionary<int, GameObject>();
             pendingComponents = new List<IComponent>();
+            pendingRemoveComponents = new List<IComponent>();
 
         }
 
@@ -161,6 +163,25 @@ namespace MonoGameEngineCore.GameObject
                 AddPendingComponent(component);
             }
             pendingComponents.Clear();
+
+            foreach (IComponent component in pendingRemoveComponents)
+            {
+                RemovePendingComponent(component);
+            }
+            pendingRemoveComponents.Clear();
+        }
+
+        private void RemovePendingComponent(IComponent component)
+        {
+            if (component is IDisposable)
+                ((IDisposable)component).Dispose();
+
+            if (component is IUpdateable)
+                updateableGameOjectComponents.Remove(component as IUpdateable);
+
+            if (component is IDrawable)
+                drawableGameObjectComponents.Remove(component as IDrawable);
+
         }
 
         private static void UpdateComponents(GameTime gameTime, GameObject o)
@@ -236,6 +257,13 @@ namespace MonoGameEngineCore.GameObject
         public bool ObjectInManager(int id)
         {
             return gameObjects.ContainsKey(id);
+        }
+
+        internal void RemoveComponent(IComponent component)
+        {
+            pendingRemoveComponents.Add(component);
+
+           
         }
     }
 }

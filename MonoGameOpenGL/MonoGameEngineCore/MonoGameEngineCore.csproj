@@ -92,6 +92,7 @@
     <Compile Include="Helper\DebugText.cs" />
     <Compile Include="Helper\Extensions.cs" />
     <Compile Include="Helper\CSharpHelper.cs" />
+    <Compile Include="Helper\MathConverter.cs" />
     <Compile Include="Helper\MonoMathHelper.cs" />
     <Compile Include="Helper\RandomHelper.cs" />
     <Compile Include="Helper\ScaleHelper.cs" />
