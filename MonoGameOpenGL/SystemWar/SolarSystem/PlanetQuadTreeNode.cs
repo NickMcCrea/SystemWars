@@ -30,7 +30,7 @@ namespace MonoGameEngineCore.Procedural
 
         private PatchState patchState;
         readonly int depth;
-        private const int maximumDepth = 12;
+        private const int maximumDepth = 8;
         public PlanetQuadTreeNode Parent { get; set; }
         public Planet Planet { get; set; }
         public Vector3 normal { get; set; }
@@ -38,7 +38,7 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 min { get; set; }
         public float step { get; set; }
         public List<PlanetQuadTreeNode> Children;
-        private Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours;
+        public Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours;
         public VertexPositionColorTextureNormal[] vertices;
         public short[] indices;
         public int heightMapSize;
@@ -587,7 +587,7 @@ namespace MonoGameEngineCore.Procedural
         private void AddGameObjectToScene()
         {
             if (!gameObject.ContainsComponent<MeshColliderComponent>())
-                gameObject.AddAndInitialise(new MeshColliderComponent());
+                gameObject.AddAndInitialise(new MeshColliderComponent(this));
 
             SystemCore.GameObjectManager.AddAndInitialiseObjectOnNextFrame(gameObject);
             drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
@@ -696,5 +696,15 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+
+        internal List<PlanetQuadTreeNode> GetAllNeighbours()
+        {
+            List<PlanetQuadTreeNode> neighbourList = new List<PlanetQuadTreeNode>();
+
+            foreach (List<PlanetQuadTreeNode> nList in neighbours.Values)
+                neighbourList.AddRange(nList);
+
+            return neighbourList;
+        }
     }
 }

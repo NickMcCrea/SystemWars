@@ -19,6 +19,14 @@ namespace MonoGameEngineCore.GameObject.Components
         public GameObject ParentObject { get; set; }
         public MobileMesh mobileMesh;
         Microsoft.Xna.Framework.Vector3 offset;
+        public object Tag { get; set; }
+
+        public MeshColliderComponent(object tag)
+        {
+            if (tag != null)
+                Tag = tag;
+        }
+
         public void Initialise()
         {
             Enabled = true;
@@ -34,6 +42,9 @@ namespace MonoGameEngineCore.GameObject.Components
             SystemCore.PhysicsSimulation.Add(mobileMesh);
 
             offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
+
+
+            mobileMesh.CollisionInformation.Tag = this.Tag;
         }
 
         public bool Enabled { get; set; }

@@ -1,4 +1,5 @@
 ﻿using BEPUphysics;
+using ConversionHelper;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
@@ -28,6 +29,8 @@ namespace SystemWar.Screens
         private DummyCamera testCamera;
         Planet earthPlanet;
         Vector3 collisionPoint;
+        RayCastResult result;
+        PlanetQuadTreeNode lookAtNode;
         public MainGameScreen()
             : base()
         {
@@ -89,6 +92,8 @@ namespace SystemWar.Screens
             if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
             {
                 collisionPoint = result.HitData.Location.ToXNAVector();
+                lookAtNode = result.HitObject.Tag as PlanetQuadTreeNode;
+
             }
 
 
@@ -144,8 +149,21 @@ namespace SystemWar.Screens
 
             oldPos = currentPos;
 
+            if (lookAtNode != null)
+            {
+                List<PlanetQuadTreeNode> neighbours = lookAtNode.GetAllNeighbours();
+                foreach (PlanetQuadTreeNode neighbour in neighbours)
+                {
+                    MeshColliderComponent meshCollider = neighbour.gameObject.GetComponent<MeshColliderComponent>();
+                    if (meshCollider != null)
+                        DebugShapeRenderer.AddBoundingBox(MathConverter.Convert(neighbour.gameObject.GetComponent<MeshColliderComponent>().mobileMesh.CollisionInformation.BoundingBox), Color.Blue);
+                }
 
-            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 50f), Color.Red);
+
+            }
+
+
+            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 5f), Color.Red);
         }
     }
 }
