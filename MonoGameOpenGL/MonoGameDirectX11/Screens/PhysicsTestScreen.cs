@@ -1,4 +1,5 @@
-﻿using BEPUphysics.Entities.Prefabs;
+﻿using BEPUphysics;
+using BEPUphysics.Entities.Prefabs;
 using BEPUphysics.EntityStateManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,6 +13,7 @@ using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MonoGameDirectX11
 {
@@ -94,6 +96,17 @@ namespace MonoGameDirectX11
             if (input.EvaluateInputBinding("CameraRight"))
                 mouseCamera.Right();
 
+            RayCastResult result;
+            if (input.MouseLeftPress())
+            {
+                Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
+                BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector(), camWorld.Forward.ToBepuVector());
+                
+                if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
+                {
+                    Debugger.Break();
+                }
+            }
 
             mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
             input.CenterMouse();
@@ -112,6 +125,8 @@ namespace MonoGameDirectX11
 
             base.Update(gameTime);
         }
+
+     
 
         public override void Render(GameTime gameTime)
         {

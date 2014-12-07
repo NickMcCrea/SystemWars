@@ -9,10 +9,11 @@ using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Helper;
+using ConversionHelper;
 
 namespace MonoGameEngineCore.Procedural
 {
-    
+
 
     public class PlanetQuadTreeNode
     {
@@ -37,7 +38,7 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 min { get; set; }
         public float step { get; set; }
         public List<PlanetQuadTreeNode> Children;
-        private Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours; 
+        private Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours;
         public VertexPositionColorTextureNormal[] vertices;
         public short[] indices;
         public int heightMapSize;
@@ -51,7 +52,7 @@ namespace MonoGameEngineCore.Procedural
         public Color NodeColor { get; set; }
         public int quadTreeNodeID;
         private readonly int rootNodeId;
-        
+
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -93,14 +94,14 @@ namespace MonoGameEngineCore.Procedural
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
         }
 
-        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode [] nodes)
+        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
         {
             foreach (PlanetQuadTreeNode node in nodes)
             {
                 neighbours[dir].Add(node);
-               
+
             }
-       }
+        }
 
         public void RemoveNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
         {
@@ -129,7 +130,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void BuildGeometry(Effect testEffect, IModule module)
         {
-            
+
             this.effect = testEffect;
             this.module = module;
             vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
@@ -173,11 +174,6 @@ namespace MonoGameEngineCore.Procedural
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
 
-
-            gameObject = SystemCore.GameObjectManager.GetObject(quadTreeNodeID);
-
-            //if the object is null this is the first time we've seen it.
-
             gameObject = GameObjectFactory.CreateRenderableGameObjectFromShape(quadTreeNodeID, spherePatch, effect);
 
             gameObject.Name = Planet.ParentObject.Name + ": planetPatch : ";
@@ -186,6 +182,8 @@ namespace MonoGameEngineCore.Procedural
             SetHighPrecisionPosition();
 
             UpdatePosition();
+
+
 
             isLeaf = true;
         }
@@ -347,21 +345,14 @@ namespace MonoGameEngineCore.Procedural
             //add collision data when we get close
             float distanceFromSurface = CalculateDistanceToPatch();
 
-            if (distanceFromSurface < 100 && patchState == PatchState.final)
-            {
-                if (!gameObject.ContainsComponent<MeshColliderComponent>())
-                   gameObject.AddAndInitialise(new MeshColliderComponent());
-            }
-
-
-
+ 
             if (isLeaf)
             {
 
                 if (ShouldSplit(splitDistance))
                 {
                     //onlt split if fully generated
-                    if (patchState == PatchState.final && ChildrenHaveCleared())
+                    if (patchState == PatchState.final && ChildrenHaveCleared()) ;
                         Split();
                 }
 
@@ -392,7 +383,7 @@ namespace MonoGameEngineCore.Procedural
             //bottom right, inherits east and south neighbours
             PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
             a.StartGeometryGeneration(effect, module);
-        
+
             //top left, inherits north and west
             PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
             b.StartGeometryGeneration(effect, module);
@@ -407,7 +398,7 @@ namespace MonoGameEngineCore.Procedural
 
             //bottom right
             a.AddNeighbour(Direction.west, c);
-            a.AddNeighbour(Direction.north,d);
+            a.AddNeighbour(Direction.north, d);
             a.FixNeighbours(neighbours, Direction.east, Direction.south);
 
             //top left
@@ -518,7 +509,7 @@ namespace MonoGameEngineCore.Procedural
 
             if (patchState == PatchState.readyToAddGameObject)
             {
-                
+
                 AddGameObjectToScene();
             }
         }
@@ -595,6 +586,8 @@ namespace MonoGameEngineCore.Procedural
 
         private void AddGameObjectToScene()
         {
+            if (!gameObject.ContainsComponent<MeshColliderComponent>())
+                gameObject.AddAndInitialise(new MeshColliderComponent());
 
             SystemCore.GameObjectManager.AddAndInitialiseObjectOnNextFrame(gameObject);
             drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
@@ -603,6 +596,9 @@ namespace MonoGameEngineCore.Procedural
 
         private void RemoveGameObjectFromScene()
         {
+            if (gameObject.ContainsComponent<MeshColliderComponent>())
+                gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
+
             SystemCore.GameObjectManager.RemoveGameObjectOnNextFrame(gameObject);
             patchState = PatchState.gameObjectBeingRemoved;
         }
@@ -614,7 +610,7 @@ namespace MonoGameEngineCore.Procedural
 
             foreach (PlanetQuadTreeNode child in Children)
             {
-                
+
                 if (child.patchState != PatchState.final)
                     return false;
             }
@@ -661,7 +657,7 @@ namespace MonoGameEngineCore.Procedural
             {
 
                 drawableComponent.Visible = true;
-                
+
                 foreach (PlanetQuadTreeNode quadTreeNode in Children)
                 {
                     quadTreeNode.DetermineVisibility();

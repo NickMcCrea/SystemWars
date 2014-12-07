@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.Camera;
@@ -11,6 +12,7 @@ using MonoGameEngineCore.Rendering.Camera;
 using MonoGameEngineCore.ScreenManagement;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using SystemWar.SolarSystem;
@@ -25,7 +27,7 @@ namespace SystemWar.Screens
         GameObject sun;
         private DummyCamera testCamera;
         Planet earthPlanet;
-
+        Vector3 collisionPoint;
         public MainGameScreen()
             : base()
         {
@@ -34,7 +36,7 @@ namespace SystemWar.Screens
 
             SystemCore.AddNewSubSystem(new SkyDome());
 
-            
+            collisionPoint = new Vector3(1000, 1000, 1000);
 
             var solarSystemSettings = new SolarSystemSettings();
             SolarSystemGenerator.Generate(solarSystemSettings);
@@ -44,11 +46,9 @@ namespace SystemWar.Screens
             ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
-           
-            ship.AddComponent(new ShipController());
 
-            if (Environment.MachineName == "NICK-PC")
-                ship.AddComponent(new MouseObjectController());
+            ship.AddComponent(new ShipController());
+            //ship.AddComponent(new MouseObjectController());
 
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
@@ -62,7 +62,7 @@ namespace SystemWar.Screens
             var earth = SystemCore.GameObjectManager.GetObject("earth");
 
             earthPlanet = earth.GetComponent<Planet>();
-        
+
         }
 
         public override void OnRemove()
@@ -82,14 +82,16 @@ namespace SystemWar.Screens
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-            if (input.KeyPress(Keys.Enter))
+            RayCastResult result;
+
+
+            BEPUutilities.Ray ray = new BEPUutilities.Ray(SystemCore.ActiveCamera.Position.ToBepuVector(), Matrix.Invert(SystemCore.ActiveCamera.View).Forward.ToBepuVector());
+            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
             {
-                Vector3 location;
-                if (earthPlanet.RayCast(ship.Position, ship.Transform.WorldMatrix.Forward, 10000f, out location))
-                {
-                    
-                }
+                collisionPoint = result.HitData.Location.ToXNAVector();
             }
+
+
 
 
             var earth = SystemCore.GameObjectManager.GetObject("earth");
@@ -123,11 +125,11 @@ namespace SystemWar.Screens
 
             Vector3d distanceTravelled = currentPos - oldPos;
             double speedPerFrame = distanceTravelled.Length;
-            double speedPerSecond = speedPerFrame*(1000/gameTime.ElapsedGameTime.Milliseconds);
+            double speedPerSecond = speedPerFrame * (1000 / gameTime.ElapsedGameTime.Milliseconds);
             string formattedSpeed = String.Format("{0:#,###,###.##}", speedPerSecond);
 
             Vector3d distanceFromEarthCore = currentPos - new Vector3d(150000000, 0, 0);
-            float distanceFromSurface = (float) distanceFromEarthCore.Length - 6000;
+            float distanceFromSurface = (float)distanceFromEarthCore.Length - 6000;
             DebugText.WritePositionedText("Distance From Star in km: " + formattedDistance, new Vector2(500, 20));
             DebugText.WritePositionedText("Speed km/s: " + formattedSpeed, new Vector2(500, 40));
             DebugText.WritePositionedText("Distance From Surface: " + distanceFromSurface, new Vector2(500, 60));
@@ -141,6 +143,9 @@ namespace SystemWar.Screens
             DebugText.Write("Patch Builds Per Second: " + earthPlanet.BuildCountPerSecond);
 
             oldPos = currentPos;
+
+
+            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 50f), Color.Red);
         }
     }
 }

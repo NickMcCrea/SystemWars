@@ -206,40 +206,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        
-
-        public bool RayCast(Vector3 pos, Vector3 dir, float distance, out Vector3 hitLocation)
-        {
-            List<PlanetQuadTreeNode> potentialCollisions = new List<PlanetQuadTreeNode>();
-            Ray ray = new Ray(pos, dir);
-
-            for (int i = 0; i < rootNodes.Count; i++)
-            {
-                BroadPhaseRayCast(rootNodes[i], ray, ref potentialCollisions);
-            }
-
-            foreach (PlanetQuadTreeNode node in potentialCollisions)
-            {
-                var collider = node.gameObject.GetComponent<MeshColliderComponent>();
-                if (collider != null)
-                {
-                    RayHit hit;
-                    if (collider.RayCollision(pos, dir, distance, out hit))
-                    {
-                        hitLocation = hit.Location.ToXNAVector();
-                        return true;
-                    }
-                }
-                else
-                {
-                  
-                }
-            }
-
-            hitLocation = Vector3.Zero;
-            return false;
-        }
-
+      
         private void BroadPhaseRayCast(PlanetQuadTreeNode node, Ray ray, ref List<PlanetQuadTreeNode> potentialCollisions)
         {
             if (node.isLeaf)
