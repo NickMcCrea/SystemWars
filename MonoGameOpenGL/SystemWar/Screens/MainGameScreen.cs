@@ -51,7 +51,7 @@ namespace SystemWar.Screens
             ship.AddComponent(new HighPrecisionPosition());
 
             ship.AddComponent(new ShipController());
-            //ship.AddComponent(new MouseObjectController());
+            ship.AddComponent(new MouseObjectController());
 
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;

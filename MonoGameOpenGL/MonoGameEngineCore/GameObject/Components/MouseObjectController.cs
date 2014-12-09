@@ -47,7 +47,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 translation -= (ParentObject.Transform.WorldMatrix.Forward);
 
             if (inputManager.IsKeyDown(Keys.RightShift))
-                movementSpeed = 1000000f;
+                movementSpeed = 1000f;
 
             if (inputManager.IsKeyDown(Keys.RightControl))
                 movementSpeed = 100f;

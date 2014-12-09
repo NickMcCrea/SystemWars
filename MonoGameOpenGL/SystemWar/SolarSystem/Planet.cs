@@ -119,7 +119,7 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(n6);
 
 
-            DefineAdjacency(n1, n3, n4, n6, n5, n2);
+            DefineAdjacency(n1, n2, n3, n4, n6, n5);
 
             n1.Planet = this;
             n2.Planet = this;
