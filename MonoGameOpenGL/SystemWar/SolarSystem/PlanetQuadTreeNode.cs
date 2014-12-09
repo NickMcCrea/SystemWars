@@ -94,14 +94,7 @@ namespace MonoGameEngineCore.Procedural
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
         }
 
-        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
-        {
-            foreach (PlanetQuadTreeNode node in nodes)
-            {
-                neighbours[dir].Add(node);
-
-            }
-        }
+      
 
         public void RemoveNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
         {
@@ -399,22 +392,28 @@ namespace MonoGameEngineCore.Procedural
             //bottom right
             a.AddNeighbour(Direction.west, c);
             a.AddNeighbour(Direction.north, d);
-            a.FixNeighbours(neighbours, Direction.east, Direction.south);
+            a.AddNeighbour(Direction.east, neighbours[Direction.east]);
+            a.AddNeighbour(Direction.south, neighbours[Direction.south]);
 
             //top left
             b.AddNeighbour(Direction.south, c);
             b.AddNeighbour(Direction.east, d);
-            b.FixNeighbours(neighbours, Direction.north, Direction.west);
+            b.AddNeighbour(Direction.north, neighbours[Direction.north]);
+            b.AddNeighbour(Direction.west, neighbours[Direction.west]);
 
-            //bottom left
+             //bottom left
             c.AddNeighbour(Direction.north, b);
             c.AddNeighbour(Direction.east, a);
-            c.FixNeighbours(neighbours, Direction.south, Direction.west);
-
+            c.AddNeighbour(Direction.south, neighbours[Direction.south]);
+            c.AddNeighbour(Direction.west, neighbours[Direction.west]);
+            
+        
             //top right
             d.AddNeighbour(Direction.south, a);
             d.AddNeighbour(Direction.west, b);
-            d.FixNeighbours(neighbours, Direction.north, Direction.east);
+            d.AddNeighbour(Direction.north, neighbours[Direction.north]);
+            d.AddNeighbour(Direction.east, neighbours[Direction.east]);
+
 
             if (Children.Count > 0)
                 throw new Exception("Um...");
@@ -432,10 +431,22 @@ namespace MonoGameEngineCore.Procedural
             isLeaf = false;
         }
 
-        private void FixNeighbours(Dictionary<Direction, List<PlanetQuadTreeNode>> parentNeighbours, params Direction[] fixDirections)
+        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
         {
-            //when a new node is made, 2 of its neighbours will be siblings from the same parent.
-            //the other two will be neighbouring patches of possibly different LOD, inherited from parent
+            foreach (PlanetQuadTreeNode node in nodes)
+            {
+                neighbours[dir].Add(node);
+            }
+        }
+
+        private void AddNeighbour(Direction direction, List<PlanetQuadTreeNode> list)
+        {
+            foreach (PlanetQuadTreeNode node in list)
+                AddNeighbour(direction, node);
+        }
+
+        private void ReplaceNeighbours(Dictionary<Direction, List<PlanetQuadTreeNode>> parentNeighbours, params Direction[] fixDirections)
+        {
             foreach (Direction direction in fixDirections)
             {
                 neighbours[direction] = parentNeighbours[direction];
