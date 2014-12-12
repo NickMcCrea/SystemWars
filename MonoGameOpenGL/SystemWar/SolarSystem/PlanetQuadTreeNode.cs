@@ -53,6 +53,8 @@ namespace MonoGameEngineCore.Procedural
         public int quadTreeNodeID;
         private readonly int rootNodeId;
 
+     
+
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -555,8 +557,13 @@ namespace MonoGameEngineCore.Procedural
 
         private float CalculateDistanceToPatch()
         {
-            Vector3 surfacePoint = Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.ParentObject.Transform.WorldMatrix);
+            Vector3 surfacePoint = GetSurfaceMidPoint();
             return surfacePoint.Length();
+        }
+
+        public Vector3 GetSurfaceMidPoint()
+        {
+            return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.ParentObject.Transform.WorldMatrix);
         }
 
         public int CountVertsInTree()

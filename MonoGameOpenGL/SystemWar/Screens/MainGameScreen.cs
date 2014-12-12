@@ -97,18 +97,6 @@ namespace SystemWar.Screens
             }
 
 
-
-
-            var earth = SystemCore.GameObjectManager.GetObject("earth");
-
-            var distance = earth.GetComponent<HighPrecisionPosition>().Position - ship.GetComponent<HighPrecisionPosition>().Position;
-            if (distance.Length < 20000)
-            {
-                earth.AddChild(ship);
-            }
-            else
-                earth.Children.Remove(ship);
-
             base.Update(gameTime);
         }
 
@@ -144,7 +132,6 @@ namespace SystemWar.Screens
             DebugText.Write("Draw calls " + GameObjectManager.drawCalls.ToString());
             DebugText.Write("Primitives " + GameObjectManager.primitives.ToString());
             DebugText.Write("Verts " + GameObjectManager.verts.ToString());
-
             DebugText.Write("Patch Builds Per Second: " + earthPlanet.BuildCountPerSecond);
 
             oldPos = currentPos;
@@ -154,9 +141,8 @@ namespace SystemWar.Screens
                 List<PlanetQuadTreeNode> neighbours = lookAtNode.GetAllNeighbours();
                 foreach (PlanetQuadTreeNode neighbour in neighbours)
                 {
-                    MeshColliderComponent meshCollider = neighbour.gameObject.GetComponent<MeshColliderComponent>();
-                    if (meshCollider != null)
-                        DebugShapeRenderer.AddBoundingBox(MathConverter.Convert(neighbour.gameObject.GetComponent<MeshColliderComponent>().mobileMesh.CollisionInformation.BoundingBox), Color.Blue);
+                    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(neighbour.GetSurfaceMidPoint(), 100f),
+                        Color.Red);
                 }
 
 
