@@ -29,9 +29,12 @@ namespace Vector.Screens
             dummyCamera = new DummyCamera();
             dummyCamera.SetPositionAndLookDir(new Vector3(0, 10, 0), Vector3.Zero, Vector3.UnitZ);
             SystemCore.SetActiveCamera(dummyCamera);
+            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
 
             player = new Player(Vector3.Zero);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(player);
+
 
             //things to think about.
             //1. Game entity system. Handles creation and management of in game entities.
@@ -45,14 +48,14 @@ namespace Vector.Screens
 
         public override void Update(GameTime gameTime)
         {
-            Player.Update(PlayerIndex.One);
+            player.Update(PlayerIndex.One);
+
             base.Update(gameTime);
         }
 
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.Black);
-            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(Vector3.Zero, 1f), Color.Blue);
            
             base.Render(gameTime);
         }

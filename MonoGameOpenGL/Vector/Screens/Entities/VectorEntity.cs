@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.Procedural;
+using MonoGameEngineCore.Rendering;
 
 namespace Vector.Screens.Entities
 {
@@ -34,13 +36,16 @@ namespace Vector.Screens.Entities
 
     class Player : VectorEntity
     {
+
         public Player(Vector3 startPos)
             : base(startPos)
         {
-            components.Add(new PhysicsComponent(true, true, PhysicsMeshType.box));
+            AddComponent(new RenderGeometryComponent(new ProceduralCube()));
+            AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("FlatShaded")));
+            AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
         }
 
-        internal static void Update(PlayerIndex playerIndex)
+        internal void Update(PlayerIndex playerIndex)
         {
             
         }
