@@ -24,8 +24,12 @@ namespace MonoGameDirectX11
         static void Main()
         {
             SystemCore.ActiveColorScheme = ColorScheme.ColorSchemes["space"];
+            ScreenResolutionName resToUse = ScreenResolutionName.WXGA;
 
-            using (var game = new MonoEngineGame(typeof(MainMenuScreen), ScreenResolutionName.WUXGA, DepthFormat.Depth24))
+            if (System.Environment.MachineName == "NICKMCCREA-PC")
+                resToUse = ScreenResolutionName.WUXGA;
+
+            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24))
                 game.Run();
         }
     }

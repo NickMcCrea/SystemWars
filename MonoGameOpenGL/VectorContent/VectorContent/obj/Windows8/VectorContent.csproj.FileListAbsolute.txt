@@ -1,0 +1,4 @@
+D:\GitHub\SystemWars\MonoGameOpenGL\VectorContent\VectorContent\bin\Windows8\IgnoreMe.dll
+D:\GitHub\SystemWars\MonoGameOpenGL\VectorContent\VectorContent\obj\Windows8\VectorContent.csprojResolveAssemblyReference.cache
+D:\GitHub\SystemWars\MonoGameOpenGL\VectorContent\VectorContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
+D:\GitHub\SystemWars\MonoGameOpenGL\VectorContent\VectorContent\obj\Windows8\IgnoreMe.dll

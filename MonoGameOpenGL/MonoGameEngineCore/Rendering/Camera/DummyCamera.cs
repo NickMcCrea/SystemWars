@@ -20,7 +20,7 @@ namespace MonoGameEngineCore.Camera
 
         public DummyCamera()
         {
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.3f, 1000.0f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.3f, 100.0f);
         }
 
         public DummyCamera(float fov, float aspect, float near, float far)
@@ -30,9 +30,10 @@ namespace MonoGameEngineCore.Camera
 
         }
 
-        public void SetPositionAndLookDir(Vector3 pos, Vector3 target)
+        public void SetPositionAndLookDir(Vector3 pos, Vector3 target, Vector3 up)
         {
-            World = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(pos, target, Vector3.Up);
+
+            World = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(pos, target, up);
             View = Matrix.Invert(World);
         }
 

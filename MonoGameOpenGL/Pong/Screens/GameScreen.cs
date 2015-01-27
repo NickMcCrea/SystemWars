@@ -39,7 +39,7 @@ namespace Pong
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             ((DiffuseLight)SystemCore.ActiveScene.LightsInScene[0]).LightDirection = new Vector3(0, 0, -1);
 
-            var effect = SystemCore.ContentManager.Load<Effect>("FlatShaded");
+            var effect = EffectLoader.LoadEffect("FlatShaded");
             var font = SystemCore.ContentManager.Load<SpriteFont>("Pong");
             plainTexture = SystemCore.ContentManager.Load<Texture2D>("blank");
 

@@ -6,10 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.Rendering;
+using Vector.Screens;
 
 #endregion
 
-namespace Pong
+namespace Vector
 {
 #if WINDOWS || LINUX
     /// <summary>
