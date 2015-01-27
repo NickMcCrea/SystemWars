@@ -14,30 +14,40 @@ using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using Vector.Screens.Entities;
 
 namespace Vector.Screens
 {
     class GameScreen : Screen
     {
         private DummyCamera dummyCamera;
-
+        private Player player;
         public GameScreen()
             : base()
         {
+            
             dummyCamera = new DummyCamera();
             dummyCamera.SetPositionAndLookDir(new Vector3(0, 10, 0), Vector3.Zero, Vector3.UnitZ);
             SystemCore.SetActiveCamera(dummyCamera);
+
+
+            player = new Player(Vector3.Zero);
+
+            //things to think about.
+            //1. Game entity system. Handles creation and management of in game entities.
+            //2. Collisions, both projectile, and entity / environment.
+            //3. Particles.
+            //4. 
         }
 
+        
+     
 
         public override void Update(GameTime gameTime)
         {
-
-
-
+            Player.Update(PlayerIndex.One);
             base.Update(gameTime);
         }
-
 
         public override void Render(GameTime gameTime)
         {

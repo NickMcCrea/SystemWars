@@ -8,10 +8,10 @@ namespace MonoGameEngineCore.GameObject
     public class GameObject
     {
         public List<GameObject> Children = new List<GameObject>();
-        private static int nextId;
+        protected static int nextId;
         public Vector3 Position { get { return Transform.WorldMatrix.Translation; } set { Transform.SetPosition(value); } }
         public int ID { get; set; }
-        private List<IComponent> components;
+        protected List<IComponent> components;
         public TransformComponent Transform { get; private set; }
         public string Name { get; set; }
        
