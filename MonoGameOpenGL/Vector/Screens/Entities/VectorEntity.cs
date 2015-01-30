@@ -42,7 +42,7 @@ namespace Vector.Screens.Entities
         {
             AddComponent(new RenderGeometryComponent(new ProceduralCube()));
             AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("FlatShaded")));
-            AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
+            //AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
         }
 
         internal void Update(PlayerIndex playerIndex)

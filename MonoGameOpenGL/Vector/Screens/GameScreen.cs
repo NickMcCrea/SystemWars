@@ -27,12 +27,13 @@ namespace Vector.Screens
         {
             
             dummyCamera = new DummyCamera();
-            dummyCamera.SetPositionAndLookDir(new Vector3(0, 10, 0), Vector3.Zero, Vector3.UnitZ);
+            dummyCamera.SetPositionAndLookDir(new Vector3(5, 20, -5), Vector3.Zero, Vector3.UnitZ);
             SystemCore.SetActiveCamera(dummyCamera);
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
 
             player = new Player(Vector3.Zero);
+           
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(player);
 
 
@@ -43,8 +44,6 @@ namespace Vector.Screens
             //4. 
         }
 
-        
-     
 
         public override void Update(GameTime gameTime)
         {
@@ -56,7 +55,7 @@ namespace Vector.Screens
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.Black);
-           
+            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(Vector3.Zero, 1f), Color.Blue);
             base.Render(gameTime);
         }
 
