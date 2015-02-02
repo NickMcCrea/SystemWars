@@ -14,7 +14,6 @@ using ConversionHelper;
 namespace MonoGameEngineCore.Procedural
 {
 
-
     public class PlanetQuadTreeNode
     {
         public enum PatchState
@@ -27,7 +26,6 @@ namespace MonoGameEngineCore.Procedural
             awaitingChildGenerationBeforeRemoval,
             final
         }
-
         private PatchState patchState;
         readonly int depth;
         private const int maximumDepth = 8;
@@ -96,8 +94,6 @@ namespace MonoGameEngineCore.Procedural
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
         }
 
-      
-
         public void RemoveNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
         {
             foreach (PlanetQuadTreeNode node in nodes)
@@ -112,22 +108,24 @@ namespace MonoGameEngineCore.Procedural
 
             patchState = PatchState.building;
             Planet.BuildTally++;
+            this.effect = testEffect;
+            this.module = module;
 
-            //background thread this
-            Task.Factory.StartNew(() =>
-            {
-                BuildGeometry(testEffect, module);
-            });
+            PlanetBuilder.Enqueue(this);
+            //enqueue this
+            //Task.Factory.StartNew(() =>
+            //{
+            //    BuildGeometry();
+            //});
 
 
 
         }
 
-        private void BuildGeometry(Effect testEffect, IModule module)
+        public void BuildGeometry()
         {
 
-            this.effect = testEffect;
-            this.module = module;
+           
             vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
@@ -172,7 +170,7 @@ namespace MonoGameEngineCore.Procedural
             gameObject = GameObjectFactory.CreateRenderableGameObjectFromShape(quadTreeNodeID, spherePatch, effect);
 
             gameObject.Name = Planet.ParentObject.Name + ": planetPatch : ";
-            patchState = PatchState.readyToAddGameObject;
+           
 
             SetHighPrecisionPosition();
 
@@ -181,6 +179,7 @@ namespace MonoGameEngineCore.Procedural
 
 
             isLeaf = true;
+            patchState = PatchState.readyToAddGameObject;
         }
 
         private void SetHighPrecisionPosition()

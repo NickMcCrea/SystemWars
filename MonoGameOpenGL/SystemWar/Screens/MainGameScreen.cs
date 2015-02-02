@@ -31,6 +31,7 @@ namespace SystemWar.Screens
         Vector3 collisionPoint;
         RayCastResult result;
         PlanetQuadTreeNode lookAtNode;
+
         public MainGameScreen()
             : base()
         {
@@ -49,7 +50,6 @@ namespace SystemWar.Screens
             ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
-
             ship.AddComponent(new ShipController());
             ship.AddComponent(new MouseObjectController());
 
@@ -88,13 +88,13 @@ namespace SystemWar.Screens
             RayCastResult result;
 
 
-            BEPUutilities.Ray ray = new BEPUutilities.Ray(SystemCore.ActiveCamera.Position.ToBepuVector(), Matrix.Invert(SystemCore.ActiveCamera.View).Forward.ToBepuVector());
-            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
-            {
-                collisionPoint = result.HitData.Location.ToXNAVector();
-                lookAtNode = result.HitObject.Tag as PlanetQuadTreeNode;
+            //BEPUutilities.Ray ray = new BEPUutilities.Ray(SystemCore.ActiveCamera.Position.ToBepuVector(), Matrix.Invert(SystemCore.ActiveCamera.View).Forward.ToBepuVector());
+            //if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
+            //{
+            //    collisionPoint = result.HitData.Location.ToXNAVector();
+            //    lookAtNode = result.HitObject.Tag as PlanetQuadTreeNode;
 
-            }
+            //}
 
 
             base.Update(gameTime);
@@ -138,12 +138,12 @@ namespace SystemWar.Screens
 
             if (lookAtNode != null)
             {
-                List<PlanetQuadTreeNode> neighbours = lookAtNode.GetAllNeighbours();
-                foreach (PlanetQuadTreeNode neighbour in neighbours)
-                {
-                    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(neighbour.GetSurfaceMidPoint(), 100f),
-                        Color.Red);
-                }
+                //List<PlanetQuadTreeNode> neighbours = lookAtNode.GetAllNeighbours();
+                //foreach (PlanetQuadTreeNode neighbour in neighbours)
+                //{
+                //    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(neighbour.GetSurfaceMidPoint(), 100f),
+                //        Color.Red);
+                //}
 
 
             }

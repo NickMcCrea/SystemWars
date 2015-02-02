@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using BEPUutilities;
 using LibNoise;
 using Microsoft.Xna.Framework;
@@ -14,7 +16,38 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace MonoGameEngineCore.Procedural
 {
+    public static class PlanetBuilder
+    {
+        private static ConcurrentQueue<PlanetQuadTreeNode> nodesAwaitingBuilding;
+        private static int maxThreads;
+        private static Thread buildThread;
+        private static volatile bool building = false;
 
+        static PlanetBuilder()
+        {
+            nodesAwaitingBuilding = new ConcurrentQueue<PlanetQuadTreeNode>();
+            buildThread = new Thread(Update);
+            buildThread.Start();
+        }
+
+        public static void Enqueue(PlanetQuadTreeNode node)
+        {
+            nodesAwaitingBuilding.Enqueue(node);
+        }
+
+        public static void Update()
+        {
+            while (true)
+            {
+                PlanetQuadTreeNode node;
+                if (nodesAwaitingBuilding.TryDequeue(out node))
+                {
+                    node.BuildGeometry();
+                }
+                Thread.Sleep(10);
+            }
+        }
+    }
 
     public class Planet : IComponent, IUpdateable
     {
@@ -34,7 +67,7 @@ namespace MonoGameEngineCore.Procedural
         public int BuildCountPerSecond;
         public int BuildTally;
         private TimeSpan lastClearTime;
-        public bool visualisePatches = true;
+        public bool visualisePatches = false;
 
         public Planet(IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
@@ -206,7 +239,6 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-      
         private void BroadPhaseRayCast(PlanetQuadTreeNode node, Ray ray, ref List<PlanetQuadTreeNode> potentialCollisions)
         {
             if (node.isLeaf)
