@@ -285,7 +285,7 @@ namespace MonoGameEngineCore.Procedural
                 return;
 
 
-            SystemCore.GameObjectManager.RemoveGameObjectOnNextFrame(gameObject);
+            SystemCore.GameObjectManager.RemoveObject(gameObject);
 
 
             //need to add 4 new quadtree nodes
@@ -318,7 +318,7 @@ namespace MonoGameEngineCore.Procedural
         {
             foreach (QuadTreeNode n in Children)
             {
-                SystemCore.GameObjectManager.RemoveGameObjectOnNextFrame(n.gameObject);
+                SystemCore.GameObjectManager.RemoveObject(n.gameObject);
                 n.ClearChildNodes();
             }
             Children.Clear();

@@ -16,18 +16,19 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace MonoGameEngineCore.Procedural
 {
+    
     public static class PlanetBuilder
     {
         private static ConcurrentQueue<PlanetQuadTreeNode> nodesAwaitingBuilding;
-        private static int maxThreads;
         private static Thread buildThread;
-        private static volatile bool building = false;
+        private static volatile bool quit = false;
 
         static PlanetBuilder()
         {
             nodesAwaitingBuilding = new ConcurrentQueue<PlanetQuadTreeNode>();
             buildThread = new Thread(Update);
             buildThread.Start();
+            SystemCore.Game.Exiting += (x,y) => { quit = true; };
         }
 
         public static void Enqueue(PlanetQuadTreeNode node)
@@ -37,8 +38,8 @@ namespace MonoGameEngineCore.Procedural
 
         public static void Update()
         {
-            while (true)
-            {
+            while (!quit)
+            {  
                 PlanetQuadTreeNode node;
                 if (nodesAwaitingBuilding.TryDequeue(out node))
                 {

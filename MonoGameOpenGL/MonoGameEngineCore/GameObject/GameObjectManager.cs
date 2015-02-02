@@ -13,10 +13,6 @@ namespace MonoGameEngineCore.GameObject
         private Dictionary<int, GameObject> gameObjects;
         private List<IUpdateable> updateableGameOjectComponents;
         private List<IDrawable> drawableGameObjectComponents;
-        private Dictionary<int, GameObject> objectsToRemoveNextFrame;
-        private Dictionary<int, GameObject> objectsToAddNextFrame;
-        private List<IComponent> pendingComponents;
-        private List<IComponent> pendingRemoveComponents;
         public static int drawCalls;
         public static int verts;
         public static int primitives;
@@ -27,19 +23,7 @@ namespace MonoGameEngineCore.GameObject
             gameObjects = new Dictionary<int, GameObject>();
             updateableGameOjectComponents = new List<IUpdateable>();
             drawableGameObjectComponents = new List<IDrawable>();
-            objectsToRemoveNextFrame = new Dictionary<int, GameObject>();
-            objectsToAddNextFrame = new Dictionary<int, GameObject>();
-            pendingComponents = new List<IComponent>();
-            pendingRemoveComponents = new List<IComponent>();
-
-        }
-
-        public void AddAndInitialiseObjectOnNextFrame(GameObject obj)
-        {
-            if (objectsToAddNextFrame.ContainsKey(obj.ID))
-                throw new Exception("FAIL");
-
-            objectsToAddNextFrame.Add(obj.ID, obj);
+           
 
         }
 
@@ -56,20 +40,10 @@ namespace MonoGameEngineCore.GameObject
             FindUpdatableComponents(componentList);
             FindRenderableComponents(componentList);
 
-            if (gameObjects.ContainsKey(obj.ID))
-                throw new Exception("FAIL");
-
-
             gameObjects.Add(obj.ID, obj);
         }
 
-        public void RemoveGameObjectOnNextFrame(GameObject obj)
-        {
-
-            objectsToRemoveNextFrame.Add(obj.ID, obj);
-        }
-
-        public bool RemoveObjectImmediately(GameObject obj)
+        public bool RemoveObject(GameObject obj)
         {
 
             var componentList = obj.GetAllComponents();
@@ -93,7 +67,7 @@ namespace MonoGameEngineCore.GameObject
         public void RemoveGameObjects(List<GameObject> objects)
         {
             foreach (GameObject o in objects)
-                RemoveGameObjectOnNextFrame(o);
+                RemoveObject(o);
         }
 
         public List<GameObject> GetCollisions(GameObject objectUnderTest)
@@ -123,55 +97,29 @@ namespace MonoGameEngineCore.GameObject
 
         public void AddComponent(IComponent component)
         {
-            pendingComponents.Add(component);
-            
-        }
-
-        private void AddPendingComponent(IComponent component)
-        {
             if (component is IUpdateable)
                 updateableGameOjectComponents.Add(component as IUpdateable);
 
             if (component is IDrawable)
                 drawableGameObjectComponents.Add(component as IDrawable);
+            
         }
+
 
         public void Update(GameTime gameTime)
         {
 
-            foreach (IUpdateable updateable in updateableGameOjectComponents)
+            for(int i = 0;i<updateableGameOjectComponents.Count;i++)
             {
-                if (updateable.Enabled)
-                    updateable.Update(gameTime);
+                if (updateableGameOjectComponents[i].Enabled)
+                    updateableGameOjectComponents[i].Update(gameTime);
             }
 
-            foreach (GameObject o in objectsToAddNextFrame.Values)
-            {
-                AddAndInitialiseGameObject(o);
-            }
-            objectsToAddNextFrame.Clear();
 
-            foreach (GameObject o in objectsToRemoveNextFrame.Values)
-            {
-                RemoveObjectImmediately(o);
-            }
-            objectsToRemoveNextFrame.Clear();
-
-
-            foreach (IComponent component in pendingComponents)
-            {
-                AddPendingComponent(component);
-            }
-            pendingComponents.Clear();
-
-            foreach (IComponent component in pendingRemoveComponents)
-            {
-                RemovePendingComponent(component);
-            }
-            pendingRemoveComponents.Clear();
+           
         }
 
-        private void RemovePendingComponent(IComponent component)
+        public void RemoveComponent(IComponent component)
         {
             if (component is IDisposable)
                 ((IDisposable)component).Dispose();
@@ -234,36 +182,13 @@ namespace MonoGameEngineCore.GameObject
             return null;
         }
 
-        public void ReAssignObject(GameObject obj)
-        {
-            gameObjects[obj.ID] = obj;
-        }
-
-        public void ReAssignPendingObject(GameObject obj)
-        {
-            objectsToAddNextFrame[obj.ID] = obj;
-        }
-
-        public bool ObjectAboutToBeAdded(int id)
-        {
-            return objectsToAddNextFrame.ContainsKey(id);
-        }
-
-        public bool ObjectsAboutToBeRemove(int id)
-        {
-            return objectsToRemoveNextFrame.ContainsKey(id);
-        }
+        
 
         public bool ObjectInManager(int id)
         {
             return gameObjects.ContainsKey(id);
         }
 
-        internal void RemoveComponent(IComponent component)
-        {
-            pendingRemoveComponents.Add(component);
-
-           
-        }
+      
     }
 }

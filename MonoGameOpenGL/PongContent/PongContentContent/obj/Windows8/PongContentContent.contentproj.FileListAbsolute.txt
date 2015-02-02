@@ -1,3 +1,4 @@
 C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache
 C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache
+E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContentContent\obj\Windows8\PongContentContent.contentprojResolveAssemblyReference.cache

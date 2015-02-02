@@ -18,13 +18,12 @@ namespace MonoGameEngineCore.Procedural
     {
         public enum PatchState
         {
-            initial,
-            building,
-            readyToAddGameObject,
-            gameObjectBeingAdded,
-            gameObjectBeingRemoved,
-            awaitingChildGenerationBeforeRemoval,
-            final
+            uninitialised,
+            buildingGeometry,
+            finishedBuildingGeometry,
+            complete,
+            splitting,
+            merging,
         }
         private PatchState patchState;
         readonly int depth;
@@ -64,7 +63,7 @@ namespace MonoGameEngineCore.Procedural
             neighbours.Add(Direction.east, new List<PlanetQuadTreeNode>());
             neighbours.Add(Direction.west, new List<PlanetQuadTreeNode>());
 
-            patchState = PatchState.initial;
+            patchState = PatchState.uninitialised;
             this.Planet = rootObject;
             this.sphereSize = sphereSize;
             this.Parent = parent;
@@ -106,19 +105,12 @@ namespace MonoGameEngineCore.Procedural
         public void StartGeometryGeneration(Effect testEffect, IModule module)
         {
 
-            patchState = PatchState.building;
+            patchState = PatchState.buildingGeometry;
             Planet.BuildTally++;
             this.effect = testEffect;
             this.module = module;
 
             PlanetBuilder.Enqueue(this);
-            //enqueue this
-            //Task.Factory.StartNew(() =>
-            //{
-            //    BuildGeometry();
-            //});
-
-
 
         }
 
@@ -179,7 +171,7 @@ namespace MonoGameEngineCore.Procedural
 
 
             isLeaf = true;
-            patchState = PatchState.readyToAddGameObject;
+            patchState = PatchState.finishedBuildingGeometry;
         }
 
         private void SetHighPrecisionPosition()
@@ -346,7 +338,7 @@ namespace MonoGameEngineCore.Procedural
                 if (ShouldSplit(splitDistance))
                 {
                     //onlt split if fully generated
-                    if (patchState == PatchState.final && ChildrenHaveCleared()) ;
+                    if (patchState == PatchState.complete)
                         Split();
                 }
 
@@ -355,7 +347,8 @@ namespace MonoGameEngineCore.Procedural
             {
                 if (ShouldMerge(mergeDistance))
                 {
-                    if (patchState == PatchState.initial && ChildrenHaveGenerated())
+                    //only merge if cleared back to initial state
+                    if (patchState == PatchState.uninitialised)
                         MergeChildren();
                 }
 
@@ -369,8 +362,8 @@ namespace MonoGameEngineCore.Procedural
             if (depth == maximumDepth)
                 return;
 
-            patchState = PatchState.awaitingChildGenerationBeforeRemoval;
-
+            patchState = PatchState.splitting;
+            
 
             //need to add 4 new quadtree nodes, and do neighbours bookkeeping.
 
@@ -469,6 +462,9 @@ namespace MonoGameEngineCore.Procedural
                 if (Children[0].isLeaf)
                 {
                     StartGeometryGeneration(effect, module);
+
+                    foreach (PlanetQuadTreeNode child in Children)
+                        child.patchState = PatchState.merging;
                 }
                 else //or else go further down the heirarchy until you reach the leaves of the tree
                 {
@@ -486,43 +482,26 @@ namespace MonoGameEngineCore.Procedural
 
         private void UpdateStates()
         {
-            if (patchState == PatchState.gameObjectBeingRemoved)
+           
+            if (patchState == PatchState.finishedBuildingGeometry)
             {
-                if (!SystemCore.GameObjectManager.ObjectInManager(gameObject.ID))
-                {
-                    //back to initial state.
-                    patchState = PatchState.initial;
-                }
-            }
-
-            if (patchState == PatchState.gameObjectBeingAdded)
-            {
-                if (SystemCore.GameObjectManager.ObjectInManager(gameObject.ID))
-                {
-                    //we're done.
-                    patchState = PatchState.final;
-                }
-            }
-
-            if (patchState == PatchState.final)
-            {
-                //covers the post-merge case, if this has visible children, clear them.
-                if (ChildrenHaveGenerated())
-                    ClearChildNodes();
-            }
-
-            if (patchState == PatchState.awaitingChildGenerationBeforeRemoval)
-            {
-                //can now remove itself
-                if (ChildrenHaveGenerated())
-                    RemoveGameObjectFromScene();
-
-            }
-
-            if (patchState == PatchState.readyToAddGameObject)
-            {
-
                 AddGameObjectToScene();
+                patchState = PatchState.complete;
+            }
+
+            if (patchState == PatchState.complete)
+            {
+
+            }
+
+            if (patchState == PatchState.merging)
+            {
+                RemoveGameObjectFromScene();
+            }
+
+            if (patchState == PatchState.splitting)
+            {
+                RemoveGameObjectFromScene();
             }
         }
 
@@ -576,7 +555,7 @@ namespace MonoGameEngineCore.Procedural
 
         private bool ShouldSplit(float splitDistance)
         {
-            if (patchState != PatchState.final)
+            if (patchState != PatchState.complete)
                 return false;
 
             if (!drawableComponent.Visible)
@@ -591,7 +570,7 @@ namespace MonoGameEngineCore.Procedural
 
         private bool ShouldMerge(float mergeDistance)
         {
-            if (patchState != PatchState.initial)
+            if (patchState != PatchState.uninitialised)
                 return false;
 
             float distanceToPatch = CalculateDistanceToPatch();
@@ -603,53 +582,26 @@ namespace MonoGameEngineCore.Procedural
 
         private void AddGameObjectToScene()
         {
-            if (!gameObject.ContainsComponent<MeshColliderComponent>())
-                gameObject.AddAndInitialise(new MeshColliderComponent(this));
-
-            SystemCore.GameObjectManager.AddAndInitialiseObjectOnNextFrame(gameObject);
+            //if (!gameObject.ContainsComponent<MeshColliderComponent>())
+            //    gameObject.AddAndInitialise(new MeshColliderComponent(this));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
-            patchState = PatchState.gameObjectBeingAdded;
         }
 
         private void RemoveGameObjectFromScene()
         {
-            if (gameObject.ContainsComponent<MeshColliderComponent>())
-                gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
-
-            SystemCore.GameObjectManager.RemoveGameObjectOnNextFrame(gameObject);
-            patchState = PatchState.gameObjectBeingRemoved;
+            //if (gameObject.ContainsComponent<MeshColliderComponent>())
+            //    gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
+            patchState = PatchState.uninitialised;
+            drawableComponent.Visible = false;
+            SystemCore.GameObjectManager.RemoveObject(gameObject);
+            
         }
 
-        private bool ChildrenHaveGenerated()
-        {
-            if (Children.Count == 0)
-                return false;
-
-            foreach (PlanetQuadTreeNode child in Children)
-            {
-
-                if (child.patchState != PatchState.final)
-                    return false;
-            }
-            return true;
-        }
-
-        private bool ChildrenHaveCleared()
-        {
-            if (Children.Count == 0)
-                return true;
-
-            foreach (PlanetQuadTreeNode child in Children)
-            {
-                if (child.patchState != PatchState.initial)
-                    return false;
-            }
-            return true;
-        }
-
+       
         private void DetermineVisibility()
         {
-            if (patchState != PatchState.final)
+            if (patchState != PatchState.complete)
                 return;
 
             if (!isLeaf)
