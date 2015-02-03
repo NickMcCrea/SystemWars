@@ -13,6 +13,7 @@ namespace MonoGameEngineCore.GameObject
         private Dictionary<int, GameObject> gameObjects;
         private List<IUpdateable> updateableGameOjectComponents;
         private List<IDrawable> drawableGameObjectComponents;
+        private List<IUpdateable> updateableObjects;
         public static int drawCalls;
         public static int verts;
         public static int primitives;
@@ -23,12 +24,14 @@ namespace MonoGameEngineCore.GameObject
             gameObjects = new Dictionary<int, GameObject>();
             updateableGameOjectComponents = new List<IUpdateable>();
             drawableGameObjectComponents = new List<IDrawable>();
-           
+            updateableObjects = new List<IUpdateable>();
 
         }
 
         public void AddAndInitialiseGameObject(GameObject obj)
         {
+            if (obj is IUpdateable)
+                updateableObjects.Add(obj as IUpdateable);
 
             var componentList = obj.GetAllComponents();
 
@@ -108,6 +111,10 @@ namespace MonoGameEngineCore.GameObject
 
         public void Update(GameTime gameTime)
         {
+            for (int i = 0; i < updateableObjects.Count; i++)
+            {
+                updateableObjects[i].Update(gameTime);
+            }
 
             for(int i = 0;i<updateableGameOjectComponents.Count;i++)
             {

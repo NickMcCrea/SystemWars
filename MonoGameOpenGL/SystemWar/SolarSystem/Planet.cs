@@ -55,7 +55,7 @@ namespace MonoGameEngineCore.Procedural
         }
     }
 
-    public class Planet : GameObject.GameObject
+    public class Planet : GameObject.GameObject, IUpdateable
     {
         private readonly IModule module;
         private readonly Effect testEffect;
@@ -161,7 +161,20 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
- 
+
+
+        public bool Enabled
+        {
+            get;
+            set;
+        }
+        public event EventHandler<EventArgs> EnabledChanged;
+        public int UpdateOrder
+        {
+            get;
+            set;
+        }
+        public event EventHandler<EventArgs> UpdateOrderChanged;
     }
 
 

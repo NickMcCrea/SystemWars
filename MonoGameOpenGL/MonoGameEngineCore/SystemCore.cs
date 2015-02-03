@@ -46,6 +46,7 @@ namespace MonoGameEngineCore
         public static bool Wireframe { get; set; }
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
+       
         private static  Dictionary<string, ICamera> cameras;  
 
         private static List<IGameSubSystem> gameSubSystems;
