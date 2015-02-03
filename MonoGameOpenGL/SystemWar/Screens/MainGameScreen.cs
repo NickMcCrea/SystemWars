@@ -62,9 +62,8 @@ namespace SystemWar.Screens
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
             sun = SystemCore.GameObjectManager.GetObject("sun");
 
-            var earth = SystemCore.GameObjectManager.GetObject("earth");
 
-            earthPlanet = earth.GetComponent<Planet>();
+            earthPlanet = SystemCore.GameObjectManager.GetObject("earth") as Planet;
 
         }
 
@@ -86,15 +85,6 @@ namespace SystemWar.Screens
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
             RayCastResult result;
-
-
-            //BEPUutilities.Ray ray = new BEPUutilities.Ray(SystemCore.ActiveCamera.Position.ToBepuVector(), Matrix.Invert(SystemCore.ActiveCamera.View).Forward.ToBepuVector());
-            //if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
-            //{
-            //    collisionPoint = result.HitData.Location.ToXNAVector();
-            //    lookAtNode = result.HitObject.Tag as PlanetQuadTreeNode;
-
-            //}
 
 
             base.Update(gameTime);
@@ -136,17 +126,7 @@ namespace SystemWar.Screens
 
             oldPos = currentPos;
 
-            if (lookAtNode != null)
-            {
-                //List<PlanetQuadTreeNode> neighbours = lookAtNode.GetAllNeighbours();
-                //foreach (PlanetQuadTreeNode neighbour in neighbours)
-                //{
-                //    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(neighbour.GetSurfaceMidPoint(), 100f),
-                //        Color.Red);
-                //}
-
-
-            }
+          
 
 
             DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 5f), Color.Red);

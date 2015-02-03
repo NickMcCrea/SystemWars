@@ -55,7 +55,7 @@ namespace MonoGameEngineCore.Procedural
         }
     }
 
-    public class Planet : IComponent, IUpdateable
+    public class Planet : GameObject.GameObject
     {
         private readonly IModule module;
         private readonly Effect testEffect;
@@ -63,7 +63,6 @@ namespace MonoGameEngineCore.Procedural
         private float splitDistance;
         private float mergeDistance;
         public Matrix customProjection;
-        public BasicEffect planetEffect;
         public List<PlanetQuadTreeNode> rootNodes;
         public Color SeaColor;
         public Color LandColor;
@@ -75,16 +74,18 @@ namespace MonoGameEngineCore.Procedural
         private TimeSpan lastClearTime;
         public bool visualisePatches = false;
 
-        public Planet(IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
+        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
+            this.Name = name;
             planetId = ++planetIdList;
             this.module = module;
             this.testEffect = testEffect;
             this.radius = radius;
 
-            planetEffect = new BasicEffect(SystemCore.GraphicsDevice);
-            planetEffect.EnableDefaultLighting();
-            planetEffect.VertexColorEnabled = true;
+            this.AddComponent(new HighPrecisionPosition());
+            this.AddComponent(new RotatorComponent(Vector3.Up));
+
+            Transform.SetPosition(position);
 
             splitDistance = radius * 4;
             mergeDistance = radius * 4.5f;
@@ -95,28 +96,13 @@ namespace MonoGameEngineCore.Procedural
             this.SeaColor = sea;
             this.LandColor = land;
             this.MountainColor = mountains;
+
+            Initialise();
         }
 
-        private void GenerateCustomProjectionMatrix(float far)
-        {
-            if (far <= 0)
-                far = 2;
-
-            customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
-                SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, far);
-        }
-
-        public GameObject.GameObject ParentObject
-        {
-            get;
-            set;
-        }
-
-        public void Initialise()
+        private void Initialise()
         {
             rootNodes = new List<PlanetQuadTreeNode>();
-
-
 
             float vectorSpacing = 1f;
             float cubeVerts = 21;
@@ -124,31 +110,30 @@ namespace MonoGameEngineCore.Procedural
 
 
             //top
-            PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(1, 1, this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            n1.QueueGeometryGeneration(testEffect, module);
-
+            PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(testEffect,module, 1, 1, this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n1);
 
             //bottom
-            PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(2, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            n2.QueueGeometryGeneration(testEffect, module);
+            PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(testEffect, module, 2, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n2);
 
 
             //forward
-            PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(3, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            n3.QueueGeometryGeneration(testEffect, module);
+            PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(testEffect, module, 3, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n3);
 
 
             //backward
-            PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(4, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            n4.QueueGeometryGeneration(testEffect, module);
+            PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(testEffect, module, 4, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n4);
 
             //right
-            PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(5, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            n5.QueueGeometryGeneration(testEffect, module);
+            PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(testEffect, module, 5, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n5);
 
             //left
-            PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(6, 1, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
-            n6.QueueGeometryGeneration(testEffect, module);
+            PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(testEffect, module, 6, 1, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n6);
 
             rootNodes.Add(n1);
             rootNodes.Add(n2);
@@ -156,10 +141,7 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(n4);
             rootNodes.Add(n5);
             rootNodes.Add(n6);
-
-
-            DefineAdjacency(n1, n2, n3, n4, n6, n5);
-
+   
             n1.Planet = this;
             n2.Planet = this;
             n3.Planet = this;
@@ -167,109 +149,19 @@ namespace MonoGameEngineCore.Procedural
             n5.Planet = this;
             n6.Planet = this;
 
-            Enabled = true;
         }
-
-        private static void DefineAdjacency(PlanetQuadTreeNode top, PlanetQuadTreeNode bottom, PlanetQuadTreeNode forward, PlanetQuadTreeNode backward,
-            PlanetQuadTreeNode left, PlanetQuadTreeNode right)
-        {
-            top.AddNeighbour(Direction.north, forward);
-            top.AddNeighbour(Direction.south, backward);
-            top.AddNeighbour(Direction.west, left);
-            top.AddNeighbour(Direction.east, right);
-
-            bottom.AddNeighbour(Direction.north, forward);
-            bottom.AddNeighbour(Direction.south, backward);
-            bottom.AddNeighbour(Direction.west, left);
-            bottom.AddNeighbour(Direction.east, right);
-
-            forward.AddNeighbour(Direction.north, top);
-            forward.AddNeighbour(Direction.south, bottom);
-            forward.AddNeighbour(Direction.west, right);
-            forward.AddNeighbour(Direction.east, left);
-
-            backward.AddNeighbour(Direction.north, top);
-            backward.AddNeighbour(Direction.south, bottom);
-            backward.AddNeighbour(Direction.west, left);
-            backward.AddNeighbour(Direction.east, right);
-
-            right.AddNeighbour(Direction.north, top);
-            right.AddNeighbour(Direction.south, bottom);
-            right.AddNeighbour(Direction.west, backward);
-            right.AddNeighbour(Direction.east, forward);
-
-            left.AddNeighbour(Direction.north, top);
-            left.AddNeighbour(Direction.south, bottom);
-            left.AddNeighbour(Direction.west, forward);
-            left.AddNeighbour(Direction.east, backward);
-        }
-
-        public bool Enabled
-        {
-            get;
-            set;
-        }
-
-        public event EventHandler<EventArgs> EnabledChanged;
+ 
 
         public void Update(GameTime gameTime)
         {
             foreach (PlanetQuadTreeNode n in rootNodes)
             {
-                n.Update(gameTime, splitDistance, mergeDistance);
-
-            }
-
-            Vector3 toCenterOfPlanet = ParentObject.Transform.WorldMatrix.Translation;
-            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
-
-            float surfaceDistance = distanceToCenterOfPlanet - radius;
-
-
-            //we want to draw in the far plane the closer we get to the surface.
-            float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
-            GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
-
-
-            //GenerateCustomProjectionMatrix(10000);
-            //var frustrum = new BoundingFrustum(SystemCore.GetCamera("main").View * customProjection);
-            //DebugShapeRenderer.AddBoundingFrustum(frustrum, Color.Blue);
-
-            lastClearTime += new TimeSpan(0, 0, 0, 0, gameTime.ElapsedGameTime.Milliseconds);
-            if (lastClearTime.TotalMilliseconds > 1000)
-            {
-                lastClearTime = new TimeSpan();
-                BuildCountPerSecond = BuildTally;
-                BuildTally = 0;
+                //n.UpdatePosition();
             }
 
         }
 
-        private void BroadPhaseRayCast(PlanetQuadTreeNode node, Ray ray, ref List<PlanetQuadTreeNode> potentialCollisions)
-        {
-            if (node.isLeaf)
-            {
-                if (node.boundingSphere.Intersects(ray).HasValue == true)
-                    potentialCollisions.Add(node);
-            }
-            else
-            {
-                foreach (PlanetQuadTreeNode child in node.Children)
-                {
-                    BroadPhaseRayCast(child, ray, ref potentialCollisions);
-                }
-            }
-        }
-
-        public int UpdateOrder
-        {
-            get;
-            set;
-        }
-
-        public event EventHandler<EventArgs> UpdateOrderChanged;
-
-
+ 
     }
 
 

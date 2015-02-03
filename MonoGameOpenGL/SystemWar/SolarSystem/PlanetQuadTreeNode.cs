@@ -14,42 +14,24 @@ using ConversionHelper;
 namespace MonoGameEngineCore.Procedural
 {
 
-    public class PlanetQuadTreeNode
+    public class PlanetQuadTreeNode : GameObject.GameObject
     {
-        public enum PatchState
-        {
-            uninitialised,
-            buildingGeometry,
-            finishedBuildingGeometry,
-            flaggedForRemoval,
-            flaggedForAdding,
-            flaggedForSplit,
-            splitting,
-            flaggedForMerge,
-            complete, //geometry built and added to object manager.
-            removed, //removed from object manager.
-        }
-        private volatile PatchState patchState;
-        private volatile PatchState oldState;
-        public volatile bool isLeaf;
+     
+       
 
         readonly int depth;
         private const int maximumDepth = 8;
-        public PlanetQuadTreeNode Parent { get; set; }
         public Planet Planet { get; set; }
         public Vector3 normal { get; set; }
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
-        public float step { get; set; }
-        public List<PlanetQuadTreeNode> Children;
-        public Dictionary<Direction, List<PlanetQuadTreeNode>> neighbours;
+        public float step { get; set; } 
         public VertexPositionColorTextureNormal[] vertices;
         public short[] indices;
         public int heightMapSize;
-        public GameObject.GameObject gameObject;
+       
         private Effect effect;
         private float sphereSize;
-        EffectRenderComponent drawableComponent;
         public BoundingSphere boundingSphere;
         private IModule module;
         public Color NodeColor { get; set; }
@@ -58,19 +40,15 @@ namespace MonoGameEngineCore.Procedural
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
-        public PlanetQuadTreeNode(int sideId, int quadrant, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public PlanetQuadTreeNode(Effect effect, IModule module, int sideId, int quadrant, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
-            neighbours = new Dictionary<Direction, List<PlanetQuadTreeNode>>();
-            neighbours.Add(Direction.north, new List<PlanetQuadTreeNode>());
-            neighbours.Add(Direction.south, new List<PlanetQuadTreeNode>());
-            neighbours.Add(Direction.east, new List<PlanetQuadTreeNode>());
-            neighbours.Add(Direction.west, new List<PlanetQuadTreeNode>());
 
-            patchState = PatchState.uninitialised;
-            oldState = PatchState.uninitialised;
+
+            this.effect = effect;
+            this.module = module;
             this.Planet = rootObject;
             this.sphereSize = sphereSize;
-            this.Parent = parent;
+         
             this.min = min;
             this.max = max;
             this.step = step;
@@ -78,54 +56,34 @@ namespace MonoGameEngineCore.Procedural
             heightMapSize = System.Math.Max((int)((max.X - min.X) / step), (int)((max.Z - min.Z) / step)); ;
             NodeColor = SystemCore.ActiveColorScheme.Color1;
 
-            if (Parent == null)
-                depth = 1;
-            else
-                depth = Parent.depth + 1;
+         
 
             this.rootNodeId = sideId;
 
             //unique id per patch, composition of planet + side of cube + depth.
             string idString = Planet.planetId.ToString() + sideId.ToString() + depth.ToString() + quadrant.ToString();
-            if (Parent != null)
-                idString += Parent.quadTreeNodeID.ToString();
+          
 
             quadTreeNodeID = idString.GetHashCode();
 
-            Children = new List<PlanetQuadTreeNode>();
+          
 
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+
+            BuildGeometry();
         }
 
-        public void RemoveNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
-        {
-            foreach (PlanetQuadTreeNode node in nodes)
-            {
-                neighbours[dir].Remove(node);
-            }
-        }
+       
 
-        public void QueueGeometryGeneration(Effect testEffect, IModule module)
-        {
-
-            SetState(PatchState.buildingGeometry);
-            Planet.BuildTally++;
-            this.effect = testEffect;
-            this.module = module;
-            isLeaf = true;
-            PlanetBuilder.Enqueue(this);
-            
-
-        }
+      
 
         public void BuildGeometry()
         {
 
-
             vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
-            //jobby
+           
 
             for (float i = 0; i < heightMapSize; i++)
             {
@@ -163,22 +121,19 @@ namespace MonoGameEngineCore.Procedural
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
 
-            gameObject = GameObjectFactory.CreateRenderableGameObjectFromShape(quadTreeNodeID, spherePatch, effect);
-            gameObject.Name = Planet.ParentObject.Name + ": planetPatch : ";
+            this.AddComponent(new RenderGeometryComponent(spherePatch));
+            this.AddComponent(new EffectRenderComponent(effect));
+           
 
+            SetHighPrecisionPosition(this);
 
-            SetHighPrecisionPosition(gameObject);
-
-            UpdatePosition(gameObject);
-
-
-            SetState(PatchState.finishedBuildingGeometry);
+           
         }
 
         private void SetHighPrecisionPosition(GameObject.GameObject obj)
         {
             var highPrecision = new HighPrecisionPosition();
-            highPrecision.Position = Planet.ParentObject.GetComponent<HighPrecisionPosition>().Position;
+            highPrecision.Position = Planet.GetComponent<HighPrecisionPosition>().Position;
             obj.AddComponent(highPrecision);
         }
 
@@ -244,16 +199,7 @@ namespace MonoGameEngineCore.Procedural
                 vertArray[i].Normal = -vertArray[i].Normal;
             }
         }
-
-        private void ClearChildNodes()
-        {
-            foreach (PlanetQuadTreeNode n in Children)
-            {
-                n.SetState(PatchState.flaggedForRemoval);
-                n.ClearChildNodes();
-            }
-        }
-
+     
         private void CalculatePatchBoundaries(out Vector3 se, out Vector3 sw, out Vector3 mid1, out Vector3 mid2, out Vector3 nw, out Vector3 ne, out Vector3 midBottom, out Vector3 midRight, out Vector3 midLeft, out Vector3 midTop)
         {
             if (normal == Vector3.Forward || normal == Vector3.Backward)
@@ -316,259 +262,73 @@ namespace MonoGameEngineCore.Procedural
             throw new Exception();
         }
 
-        internal void Update(GameTime gameTime, float splitDistance, float mergeDistance)
-        {
-
-            UpdatePosition(gameObject);
-
-            DetermineVisibility();
-
-            UpdateStates();
-
-            for (int i = 0; i < Children.Count; i++)
-                Children[i].Update(gameTime, splitDistance/2f, mergeDistance/2f);
-
-
-            if (isLeaf)
-            {
-
-                if (ShouldSplit(splitDistance))
-                {
-                    SetState(PatchState.flaggedForSplit);
-                }
-
-            }
-            else
-            {
-                if (ShouldMerge(mergeDistance))
-                {
-                   SetState(PatchState.flaggedForMerge);
-                }
-
-            }
-        }
-
-        private void SetState(PatchState newState)
-        {
-            oldState = patchState;
-            patchState = newState;
-        }
-
-        public void MergeChildren()
-        {
-            if (Children.Count == 0)
-                return;
-
-            //if your children are leaves, you're now a leaf node. Generate geometry to replace the child nodes
-            if (Children[0].isLeaf)
-            {
-                QueueGeometryGeneration(effect, module);
-            }
-            else //or else go further down the heirarchy until you reach the leaves of the tree
-            {
-
-                foreach (PlanetQuadTreeNode child in Children)
-                {
-                    child.MergeChildren();
-                }
-            }
-
-        }
-
-        private void UpdateStates()
-        {
-
-
-            //we've finished building. Add to the scene, clear any children.
-            if (patchState == PatchState.finishedBuildingGeometry)
-            {
-                ClearChildNodes();
-                SetState(PatchState.flaggedForAdding);
-            }
-
-            if (patchState == PatchState.flaggedForSplit)
-            {
-                Split();
-            }
-
-            if (patchState == PatchState.flaggedForMerge)
-            {
-                MergeChildren();
-            }
-
-            if (patchState == PatchState.splitting)
-            {
-                SetState(PatchState.flaggedForRemoval);
-               
-            }
-
-            if (patchState == PatchState.flaggedForAdding)
-            {
-                AddGameObjectToScene();
-            }
-
-            if (patchState == PatchState.flaggedForRemoval)
-            {
-                RemoveGameObjectFromScene();
-            }
-
-        }
-
-        private bool ChildrenHaveGenerated()
-        {
-            if (Children[3].patchState == PatchState.complete)
-                return true;
-            return false;
-        }
-
         private void Split()
         {
-            if (depth == maximumDepth)
-                return;
+            //if (depth == maximumDepth)
+            //    return;
 
-            SetState(PatchState.splitting);
+            //SetState(PatchState.splitting);
 
-            Children.Clear();
+            //Children.Clear();
 
-            //need to add 4 new quadtree nodes, and do neighbours bookkeeping.
+            ////need to add 4 new quadtree nodes, and do neighbours bookkeeping.
 
-            //bottom right, inherits east and south neighbours
-            PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
-            a.QueueGeometryGeneration(effect, module);
+            ////bottom right, inherits east and south neighbours
+            //PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
+            //a.QueueGeometryGeneration(effect, module);
 
-            //top left, inherits north and west
-            PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
-            b.QueueGeometryGeneration(effect, module);
+            ////top left, inherits north and west
+            //PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
+            //b.QueueGeometryGeneration(effect, module);
 
-            //bottom left, inherits south and west
-            PlanetQuadTreeNode c = new PlanetQuadTreeNode(rootNodeId, 3, Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
-            c.QueueGeometryGeneration(effect, module);
+            ////bottom left, inherits south and west
+            //PlanetQuadTreeNode c = new PlanetQuadTreeNode(rootNodeId, 3, Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
+            //c.QueueGeometryGeneration(effect, module);
 
-            //top right inherits north and east
-            PlanetQuadTreeNode d = new PlanetQuadTreeNode(rootNodeId, 4, Planet, this, midRight, midTop, step / 2, normal, sphereSize);
-            d.QueueGeometryGeneration(effect, module);
+            ////top right inherits north and east
+            //PlanetQuadTreeNode d = new PlanetQuadTreeNode(rootNodeId, 4, Planet, this, midRight, midTop, step / 2, normal, sphereSize);
+            //d.QueueGeometryGeneration(effect, module);
 
-            //bottom right
-            a.AddNeighbour(Direction.west, c);
-            a.AddNeighbour(Direction.north, d);
-            a.AddNeighbour(Direction.east, neighbours[Direction.east]);
-            a.AddNeighbour(Direction.south, neighbours[Direction.south]);
+            ////bottom right
+            //a.AddNeighbour(Direction.west, c);
+            //a.AddNeighbour(Direction.north, d);
+            //a.AddNeighbour(Direction.east, neighbours[Direction.east]);
+            //a.AddNeighbour(Direction.south, neighbours[Direction.south]);
 
-            //top left
-            b.AddNeighbour(Direction.south, c);
-            b.AddNeighbour(Direction.east, d);
-            b.AddNeighbour(Direction.north, neighbours[Direction.north]);
-            b.AddNeighbour(Direction.west, neighbours[Direction.west]);
+            ////top left
+            //b.AddNeighbour(Direction.south, c);
+            //b.AddNeighbour(Direction.east, d);
+            //b.AddNeighbour(Direction.north, neighbours[Direction.north]);
+            //b.AddNeighbour(Direction.west, neighbours[Direction.west]);
 
-            //bottom left
-            c.AddNeighbour(Direction.north, b);
-            c.AddNeighbour(Direction.east, a);
-            c.AddNeighbour(Direction.south, neighbours[Direction.south]);
-            c.AddNeighbour(Direction.west, neighbours[Direction.west]);
-
-
-            //top right
-            d.AddNeighbour(Direction.south, a);
-            d.AddNeighbour(Direction.west, b);
-            d.AddNeighbour(Direction.north, neighbours[Direction.north]);
-            d.AddNeighbour(Direction.east, neighbours[Direction.east]);
+            ////bottom left
+            //c.AddNeighbour(Direction.north, b);
+            //c.AddNeighbour(Direction.east, a);
+            //c.AddNeighbour(Direction.south, neighbours[Direction.south]);
+            //c.AddNeighbour(Direction.west, neighbours[Direction.west]);
 
 
-            if (Children.Count > 0)
-                throw new Exception("Um...");
+            ////top right
+            //d.AddNeighbour(Direction.south, a);
+            //d.AddNeighbour(Direction.west, b);
+            //d.AddNeighbour(Direction.north, neighbours[Direction.north]);
+            //d.AddNeighbour(Direction.east, neighbours[Direction.east]);
 
-            Children.Add(a);
-            Children.Add(b);
-            Children.Add(c);
-            Children.Add(d);
 
-            foreach (PlanetQuadTreeNode n in Children)
-            {
-                n.Planet = Planet;
-            }
+            //if (Children.Count > 0)
+            //    throw new Exception("Um...");
 
-            isLeaf = false;
-        }
+            //Children.Add(a);
+            //Children.Add(b);
+            //Children.Add(c);
+            //Children.Add(d);
 
-        private bool ShouldSplit(float splitDistance)
-        {
-            if (patchState != PatchState.complete)
-                return false;
+            //foreach (PlanetQuadTreeNode n in Children)
+            //{
+            //    n.Planet = Planet;
+            //}
 
-            float distanceToPatch = CalculateDistanceToPatch();
-            if (distanceToPatch < splitDistance)
-                return true;
-
-            return false;
-        }
-
-        private bool ShouldMerge(float mergeDistance)
-        {
-            if (patchState != PatchState.removed)
-                return false;
-
-            if (Children.Count == 0)
-                return false;
-
-            float distanceToPatch = CalculateDistanceToPatch();
-            if (distanceToPatch > mergeDistance)
-                return true;
-
-            return false;
-        }
-
-        private void AddGameObjectToScene()
-        {
-            //if (!gameObject.ContainsComponent<MeshColliderComponent>())
-            //    gameObject.AddAndInitialise(new MeshColliderComponent(this));
-            if (SystemCore.GameObjectManager.ObjectInManager(gameObject.ID))
-                SystemCore.GameObjectManager.RemoveObject(gameObject);
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
-            drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
-           SetState(PatchState.complete);
-        }
-
-        private void RemoveGameObjectFromScene()
-        {
-            //if (gameObject.ContainsComponent<MeshColliderComponent>())
-            //    gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
-            if (gameObject != null)
-            {
-                SystemCore.GameObjectManager.RemoveObject(gameObject);
-                gameObject = null;
-
-                if (drawableComponent != null)
-                    drawableComponent = null;
-            }
-            else
-            {
-               SetState(PatchState.removed);
-            }
-
-        }
-
-        public void AddNeighbour(Direction dir, params PlanetQuadTreeNode[] nodes)
-        {
-            foreach (PlanetQuadTreeNode node in nodes)
-            {
-                neighbours[dir].Add(node);
-            }
-        }
-
-        private void AddNeighbour(Direction direction, List<PlanetQuadTreeNode> list)
-        {
-            foreach (PlanetQuadTreeNode node in list)
-                AddNeighbour(direction, node);
-        }
-
-        private void ReplaceNeighbours(Dictionary<Direction, List<PlanetQuadTreeNode>> parentNeighbours, params Direction[] fixDirections)
-        {
-            foreach (Direction direction in fixDirections)
-            {
-                neighbours[direction] = parentNeighbours[direction];
-            }
-
+            //isLeaf = false;
         }
 
         private void Sphereify(float radius)
@@ -607,7 +367,7 @@ namespace MonoGameEngineCore.Procedural
 
         public Vector3 GetSurfaceMidPoint()
         {
-            return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.ParentObject.Transform.WorldMatrix);
+            return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.Transform.WorldMatrix);
         }
 
         public int CountVertsInTree()
@@ -618,85 +378,21 @@ namespace MonoGameEngineCore.Procedural
 
             return verts;
         }
-
-        private void DetermineVisibility()
+  
+        public void UpdatePosition()
         {
-            if (patchState != PatchState.complete)
-                return;
+           
 
-            if (!isLeaf)
-            {
-                drawableComponent.Visible = false;
-                return;
-            }
-
-
-            Matrix view = SystemCore.GetCamera("main").View;
-
-            //shift the view matrix back slightly to ensure we are rendering patches just behind us.
-            view.Translation += Planet.ParentObject.Transform.WorldMatrix.Forward * 50;
-
-            BoundingFrustum planetCullFrustrum =
-                new BoundingFrustum(view * Planet.customProjection);
-
-
-            bool intersetcts = planetCullFrustrum.Intersects(boundingSphere);
-
-            if (intersetcts)
-            {
-
-                drawableComponent.Visible = true;
-
-                foreach (PlanetQuadTreeNode quadTreeNode in Children)
-                {
-                    quadTreeNode.DetermineVisibility();
-                }
-            }
-            else
-            {
-                drawableComponent.Visible = false;
-                SetAllChildrenVisible(false);
-            }
-        }
-
-        private void SetAllChildrenVisible(bool visible)
-        {
-            foreach (PlanetQuadTreeNode node in Children)
-            {
-
-                if (node.drawableComponent != null)
-                    node.drawableComponent.Visible = visible;
-
-                node.SetAllChildrenVisible(visible);
-
-            }
-        }
-
-        private void UpdatePosition(GameObject.GameObject obj)
-        {
-            //only null whilst waiting for first-time generation.
-            if (obj == null)
-                return;
-
-            obj.Transform.WorldMatrix = Planet.ParentObject.Transform.WorldMatrix;
+            Transform.WorldMatrix = Planet.Transform.WorldMatrix;
 
             //midpoint of the patch, transformed to the right scale and location
             boundingSphere.Center = Vector3.Transform(Vector3.Normalize(mid1) * sphereSize,
-                Planet.ParentObject.Transform.WorldMatrix);
+                Planet.Transform.WorldMatrix);
 
-            //if (drawableComponent.Visible)
-            //    DebugShapeRenderer.AddBoundingSphere(boundingSphere, Color.Red);
+            
 
         }
 
-        internal List<PlanetQuadTreeNode> GetAllNeighbours()
-        {
-            List<PlanetQuadTreeNode> neighbourList = new List<PlanetQuadTreeNode>();
-
-            foreach (List<PlanetQuadTreeNode> nList in neighbours.Values)
-                neighbourList.AddRange(nList);
-
-            return neighbourList;
-        }
+       
     }
 }

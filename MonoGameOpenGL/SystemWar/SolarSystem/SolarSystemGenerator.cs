@@ -16,25 +16,25 @@ namespace SystemWar.Screens
 
             StarHelper.CreateAndInitialiseSystemStar(1000000f, StarHelper.BasicSunColor());
 
-            GameObject earth = new GameObject("earth");
-            earth.AddComponent(new HighPrecisionPosition());
-            earth.AddComponent(new Planet(NoiseGenerator.FastPlanet(6000),
-                EffectLoader.LoadEffect("flatshaded"), 6000, Color.SeaGreen, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10)));
-            //earth.AddComponent(new TranslatorComponent(Vector3.Up, 0.0001f));
-            //earth.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
 
-           
+
+
+            Planet earth = new Planet("earth", new Vector3d(150000000, 0, 0),
+                NoiseGenerator.FastPlanet(6000),
+                EffectLoader.LoadEffect("flatshaded"),
+                6000, Color.SeaGreen, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
+
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
-            earth.Transform.SetPosition(new Vector3d(150000000, 0, 0));
+            //earth.Transform.SetPosition(new Vector3d(150000000, 0, 0));
 
 
-            GameObject moon = new GameObject("moon");
-            moon.AddComponent(new HighPrecisionPosition());
-            moon.AddComponent(new Planet(NoiseGenerator.RidgedMultiFractal(0.05f),
-                EffectLoader.LoadEffect("flatshaded"), 2500, Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100)));
+            //GameObject moon = new GameObject("moon");
+            //moon.AddComponent(new HighPrecisionPosition());
+            //moon.AddComponent(new Planet(NoiseGenerator.RidgedMultiFractal(0.05f),
+            //    EffectLoader.LoadEffect("flatshaded"), 2500, Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100)));
 
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
-            moon.Transform.SetPosition(new Vector3d(150250000, 0, 0));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
+            //moon.Transform.SetPosition(new Vector3d(150250000, 0, 0));
 
             
         }
