@@ -20,15 +20,20 @@ namespace MonoGameEngineCore.Procedural
     public static class PlanetBuilder
     {
         private static ConcurrentQueue<PlanetQuadTreeNode> nodesAwaitingBuilding;
-        private static Thread buildThread;
         private static volatile bool quit = false;
+        private static int numThreads = 2;
 
         static PlanetBuilder()
         {
             nodesAwaitingBuilding = new ConcurrentQueue<PlanetQuadTreeNode>();
-            buildThread = new Thread(Update);
-            buildThread.Start();
+
+            for (int i = 0; i < numThreads; i++)
+            {
+                Thread buildThread = new Thread(Update);
+                buildThread.Start();
+            }
             SystemCore.Game.Exiting += (x,y) => { quit = true; };
+
         }
 
         public static void Enqueue(PlanetQuadTreeNode node)
@@ -120,30 +125,30 @@ namespace MonoGameEngineCore.Procedural
 
             //top
             PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(1, 1, this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            n1.StartGeometryGeneration(testEffect, module);
+            n1.QueueGeometryGeneration(testEffect, module);
 
 
             //bottom
             PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(2, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            n2.StartGeometryGeneration(testEffect, module);
+            n2.QueueGeometryGeneration(testEffect, module);
 
 
             //forward
             PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(3, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            n3.StartGeometryGeneration(testEffect, module);
+            n3.QueueGeometryGeneration(testEffect, module);
 
 
             //backward
             PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(4, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            n4.StartGeometryGeneration(testEffect, module);
+            n4.QueueGeometryGeneration(testEffect, module);
 
             //right
             PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(5, 1, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            n5.StartGeometryGeneration(testEffect, module);
+            n5.QueueGeometryGeneration(testEffect, module);
 
             //left
             PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(6, 1, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
-            n6.StartGeometryGeneration(testEffect, module);
+            n6.QueueGeometryGeneration(testEffect, module);
 
             rootNodes.Add(n1);
             rootNodes.Add(n2);

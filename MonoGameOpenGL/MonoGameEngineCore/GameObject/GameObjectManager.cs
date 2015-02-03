@@ -48,8 +48,9 @@ namespace MonoGameEngineCore.GameObject
 
             var componentList = obj.GetAllComponents();
 
-            foreach (IComponent comp in componentList)
+            for(int i = 0;i<componentList.Count;i++)
             {
+                IComponent comp = componentList[i];
                 if (comp is IDrawable)
                     drawableGameObjectComponents.Remove(comp as IDrawable);
                 if (comp is IUpdateable)
@@ -104,7 +105,6 @@ namespace MonoGameEngineCore.GameObject
                 drawableGameObjectComponents.Add(component as IDrawable);
             
         }
-
 
         public void Update(GameTime gameTime)
         {
@@ -181,8 +181,6 @@ namespace MonoGameEngineCore.GameObject
 
             return null;
         }
-
-        
 
         public bool ObjectInManager(int id)
         {
