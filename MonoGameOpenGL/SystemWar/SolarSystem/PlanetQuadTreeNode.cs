@@ -19,7 +19,6 @@ namespace MonoGameEngineCore.Procedural
         public enum PatchState
         {
             uninitialised,
-
             buildingGeometry,
             finishedBuildingGeometry,
             flaggedForRemoval,
@@ -324,8 +323,8 @@ namespace MonoGameEngineCore.Procedural
 
             UpdateStates();
 
-            foreach (PlanetQuadTreeNode child in Children)
-                child.Update(gameTime, splitDistance / 2f, mergeDistance / 2f);
+            for (int i = 0; i < Children.Count; i++)
+                Children[i].Update(gameTime, splitDistance/2f, mergeDistance/2f);
 
 
             if (isLeaf)
@@ -392,6 +391,8 @@ namespace MonoGameEngineCore.Procedural
             if (patchState == PatchState.splitting)
             {
                 patchState = PatchState.flaggedForRemoval;
+                //if(ChildrenHaveGenerated())
+                //    patchState = PatchState.flaggedForRemoval;
             }
 
             if (patchState == PatchState.flaggedForAdding)
@@ -404,6 +405,13 @@ namespace MonoGameEngineCore.Procedural
                 RemoveGameObjectFromScene();
             }
 
+        }
+
+        private bool ChildrenHaveGenerated()
+        {
+            if (Children[3].patchState == PatchState.complete)
+                return true;
+            return false;
         }
 
         private void Split()
@@ -520,7 +528,12 @@ namespace MonoGameEngineCore.Procedural
             //    gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
             if (gameObject != null)
             {
-                SystemCore.GameObjectManager.RemoveObject(gameObject);
+                SystemCore.GameObjectManager.RemoveObject(gameObject); 
+                gameObject = null;
+                drawableComponent = null;
+            }
+            else
+            {
                 patchState = PatchState.removed;
             }
 
@@ -641,8 +654,12 @@ namespace MonoGameEngineCore.Procedural
         {
             foreach (PlanetQuadTreeNode node in Children)
             {
-                node.drawableComponent.Visible = visible;
+
+                if (node.drawableComponent != null)
+                    node.drawableComponent.Visible = visible;
+
                 node.SetAllChildrenVisible(visible);
+
             }
         }
 
