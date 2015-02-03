@@ -30,6 +30,7 @@ namespace MonoGameEngineCore.Procedural
             removed, //removed from object manager.
         }
         private volatile PatchState patchState;
+        private volatile PatchState oldState;
         public volatile bool isLeaf;
 
         readonly int depth;
@@ -66,6 +67,7 @@ namespace MonoGameEngineCore.Procedural
             neighbours.Add(Direction.west, new List<PlanetQuadTreeNode>());
 
             patchState = PatchState.uninitialised;
+            oldState = PatchState.uninitialised;
             this.Planet = rootObject;
             this.sphereSize = sphereSize;
             this.Parent = parent;
@@ -106,7 +108,7 @@ namespace MonoGameEngineCore.Procedural
         public void QueueGeometryGeneration(Effect testEffect, IModule module)
         {
 
-            patchState = PatchState.buildingGeometry;
+            SetState(PatchState.buildingGeometry);
             Planet.BuildTally++;
             this.effect = testEffect;
             this.module = module;
@@ -170,7 +172,7 @@ namespace MonoGameEngineCore.Procedural
             UpdatePosition(gameObject);
 
 
-            patchState = PatchState.finishedBuildingGeometry;
+            SetState(PatchState.finishedBuildingGeometry);
         }
 
         private void SetHighPrecisionPosition(GameObject.GameObject obj)
@@ -247,7 +249,7 @@ namespace MonoGameEngineCore.Procedural
         {
             foreach (PlanetQuadTreeNode n in Children)
             {
-                n.patchState = PatchState.flaggedForRemoval;
+                n.SetState(PatchState.flaggedForRemoval);
                 n.ClearChildNodes();
             }
         }
@@ -332,7 +334,7 @@ namespace MonoGameEngineCore.Procedural
 
                 if (ShouldSplit(splitDistance))
                 {
-                    patchState = PatchState.flaggedForSplit;
+                    SetState(PatchState.flaggedForSplit);
                 }
 
             }
@@ -340,10 +342,16 @@ namespace MonoGameEngineCore.Procedural
             {
                 if (ShouldMerge(mergeDistance))
                 {
-                    patchState = PatchState.flaggedForMerge;
+                   SetState(PatchState.flaggedForMerge);
                 }
 
             }
+        }
+
+        private void SetState(PatchState newState)
+        {
+            oldState = patchState;
+            patchState = newState;
         }
 
         public void MergeChildren()
@@ -375,7 +383,7 @@ namespace MonoGameEngineCore.Procedural
             if (patchState == PatchState.finishedBuildingGeometry)
             {
                 ClearChildNodes();
-                patchState = PatchState.flaggedForAdding;
+                SetState(PatchState.flaggedForAdding);
             }
 
             if (patchState == PatchState.flaggedForSplit)
@@ -390,7 +398,7 @@ namespace MonoGameEngineCore.Procedural
 
             if (patchState == PatchState.splitting)
             {
-                patchState = PatchState.flaggedForRemoval;
+                SetState(PatchState.flaggedForRemoval);
                
             }
 
@@ -418,7 +426,7 @@ namespace MonoGameEngineCore.Procedural
             if (depth == maximumDepth)
                 return;
 
-            patchState = PatchState.splitting;
+            SetState(PatchState.splitting);
 
             Children.Clear();
 
@@ -518,7 +526,7 @@ namespace MonoGameEngineCore.Procedural
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             drawableComponent = gameObject.GetComponent<EffectRenderComponent>();
-            patchState = PatchState.complete;
+           SetState(PatchState.complete);
         }
 
         private void RemoveGameObjectFromScene()
@@ -534,7 +542,7 @@ namespace MonoGameEngineCore.Procedural
             }
             else
             {
-                patchState = PatchState.removed;
+               SetState(PatchState.removed);
             }
 
         }
