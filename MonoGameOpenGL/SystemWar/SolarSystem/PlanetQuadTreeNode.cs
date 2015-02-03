@@ -125,7 +125,7 @@ namespace MonoGameEngineCore.Procedural
             vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
-
+            //jobby
 
             for (float i = 0; i < heightMapSize; i++)
             {
