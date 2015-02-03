@@ -536,9 +536,10 @@ namespace MonoGameEngineCore.Procedural
             if (gameObject != null)
             {
                 SystemCore.GameObjectManager.RemoveObject(gameObject);
-                drawableComponent.Visible = false;
                 gameObject = null;
-                drawableComponent = null;
+
+                if (drawableComponent != null)
+                    drawableComponent = null;
             }
             else
             {
