@@ -82,8 +82,8 @@ namespace MonoGameEngineCore.Procedural
             this.testEffect = testEffect;
             this.radius = radius;
 
-            this.AddComponent(new HighPrecisionPosition());
-            this.AddComponent(new RotatorComponent(Vector3.Up));
+            AddComponent(new HighPrecisionPosition());
+            AddComponent(new RotatorComponent(Vector3.Up));
 
             Transform.SetPosition(position);
 
@@ -156,7 +156,7 @@ namespace MonoGameEngineCore.Procedural
         {
             foreach (PlanetQuadTreeNode n in rootNodes)
             {
-                //n.UpdatePosition();
+                n.UpdatePosition();
             }
 
         }

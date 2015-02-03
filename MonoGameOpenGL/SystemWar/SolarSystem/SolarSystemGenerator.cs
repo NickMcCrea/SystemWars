@@ -25,16 +25,7 @@ namespace SystemWar.Screens
                 6000, Color.SeaGreen, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
-            //earth.Transform.SetPosition(new Vector3d(150000000, 0, 0));
 
-
-            //GameObject moon = new GameObject("moon");
-            //moon.AddComponent(new HighPrecisionPosition());
-            //moon.AddComponent(new Planet(NoiseGenerator.RidgedMultiFractal(0.05f),
-            //    EffectLoader.LoadEffect("flatshaded"), 2500, Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100), Color.DarkGray.ChangeTone(-100)));
-
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
-            //moon.Transform.SetPosition(new Vector3d(150250000, 0, 0));
 
             
         }
