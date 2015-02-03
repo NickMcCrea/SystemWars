@@ -57,6 +57,7 @@ namespace MonoGameEngineCore.GameObject.Components
             PreDraw(gameTime);
 
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
+
             SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
             SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
 

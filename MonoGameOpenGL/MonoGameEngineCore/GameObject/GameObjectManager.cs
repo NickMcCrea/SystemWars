@@ -115,7 +115,6 @@ namespace MonoGameEngineCore.GameObject
                     updateableGameOjectComponents[i].Update(gameTime);
             }
 
-
            
         }
 

@@ -112,7 +112,7 @@ namespace MonoGameEngineCore.Procedural
             this.module = module;
             isLeaf = true;
             PlanetBuilder.Enqueue(this);
-            //BuildGeometry();
+            
 
         }
 
@@ -391,8 +391,7 @@ namespace MonoGameEngineCore.Procedural
             if (patchState == PatchState.splitting)
             {
                 patchState = PatchState.flaggedForRemoval;
-                //if(ChildrenHaveGenerated())
-                //    patchState = PatchState.flaggedForRemoval;
+               
             }
 
             if (patchState == PatchState.flaggedForAdding)
@@ -528,7 +527,8 @@ namespace MonoGameEngineCore.Procedural
             //    gameObject.RemoveComponent(gameObject.GetComponent<MeshColliderComponent>() as IComponent);
             if (gameObject != null)
             {
-                SystemCore.GameObjectManager.RemoveObject(gameObject); 
+                SystemCore.GameObjectManager.RemoveObject(gameObject);
+                drawableComponent.Visible = false;
                 gameObject = null;
                 drawableComponent = null;
             }
