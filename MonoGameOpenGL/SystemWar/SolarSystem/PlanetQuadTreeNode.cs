@@ -16,12 +16,12 @@ namespace MonoGameEngineCore.Procedural
 
     public class PlanetQuadTreeNode : GameObject.GameObject
     {
-     
-       
 
+
+        private readonly int maxDepth = 8;
         readonly int depth;
-        private const int maximumDepth = 8;
         public Planet Planet { get; set; }
+        public PlanetQuadTreeNode Parent { get; set; }
         public Vector3 normal { get; set; }
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
@@ -40,10 +40,10 @@ namespace MonoGameEngineCore.Procedural
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
-        public PlanetQuadTreeNode(Effect effect, IModule module, Planet rootObject, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public PlanetQuadTreeNode(Effect effect, IModule module, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
 
-
+            Parent = parent;
             this.effect = effect;
             this.module = module;
             this.Planet = rootObject;
@@ -55,7 +55,14 @@ namespace MonoGameEngineCore.Procedural
             heightMapSize = System.Math.Max((int)((max.X - min.X) / step), (int)((max.Z - min.Z) / step)); ;
             NodeColor = SystemCore.ActiveColorScheme.Color1;
 
-      
+
+            if (parent == null)
+                depth = 1;
+            else
+            {
+                depth = Parent.depth + 1;
+            }
+
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
             
@@ -246,73 +253,44 @@ namespace MonoGameEngineCore.Procedural
             throw new Exception();
         }
 
+        public void BuildQuadtree()
+        {
+            if(depth == maxDepth)
+                return;
+            
+            Split();
+            foreach (PlanetQuadTreeNode child in Children)
+            {
+                child.BuildQuadtree();
+            }
+        }
+
         private void Split()
         {
-            //if (depth == maximumDepth)
-            //    return;
 
-            //SetState(PatchState.splitting);
-
-            //Children.Clear();
-
-            ////need to add 4 new quadtree nodes, and do neighbours bookkeeping.
-
-            ////bottom right, inherits east and south neighbours
-            //PlanetQuadTreeNode a = new PlanetQuadTreeNode(rootNodeId, 1, Planet, this, se, mid1, step / 2, normal, sphereSize);
-            //a.QueueGeometryGeneration(effect, module);
-
-            ////top left, inherits north and west
-            //PlanetQuadTreeNode b = new PlanetQuadTreeNode(rootNodeId, 2, Planet, this, mid2, nw, step / 2, normal, sphereSize);
-            //b.QueueGeometryGeneration(effect, module);
-
-            ////bottom left, inherits south and west
-            //PlanetQuadTreeNode c = new PlanetQuadTreeNode(rootNodeId, 3, Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
-            //c.QueueGeometryGeneration(effect, module);
-
-            ////top right inherits north and east
-            //PlanetQuadTreeNode d = new PlanetQuadTreeNode(rootNodeId, 4, Planet, this, midRight, midTop, step / 2, normal, sphereSize);
-            //d.QueueGeometryGeneration(effect, module);
-
-            ////bottom right
-            //a.AddNeighbour(Direction.west, c);
-            //a.AddNeighbour(Direction.north, d);
-            //a.AddNeighbour(Direction.east, neighbours[Direction.east]);
-            //a.AddNeighbour(Direction.south, neighbours[Direction.south]);
-
-            ////top left
-            //b.AddNeighbour(Direction.south, c);
-            //b.AddNeighbour(Direction.east, d);
-            //b.AddNeighbour(Direction.north, neighbours[Direction.north]);
-            //b.AddNeighbour(Direction.west, neighbours[Direction.west]);
-
-            ////bottom left
-            //c.AddNeighbour(Direction.north, b);
-            //c.AddNeighbour(Direction.east, a);
-            //c.AddNeighbour(Direction.south, neighbours[Direction.south]);
-            //c.AddNeighbour(Direction.west, neighbours[Direction.west]);
+            //bottom right, inherits east and south neighbours
+            PlanetQuadTreeNode a = new PlanetQuadTreeNode(effect, module, Planet, this, se, mid1, step / 2, normal, sphereSize);
+          
+            //top left, inherits north and west
+            PlanetQuadTreeNode b = new PlanetQuadTreeNode(effect,module, Planet, this, mid2, nw, step / 2, normal, sphereSize);
+            //bottom left, inherits south and west
+            PlanetQuadTreeNode c = new PlanetQuadTreeNode(effect,module,Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
+         
+            //top right inherits north and east
+            PlanetQuadTreeNode d = new PlanetQuadTreeNode(effect,module,Planet, this, midRight, midTop, step / 2, normal, sphereSize);
 
 
-            ////top right
-            //d.AddNeighbour(Direction.south, a);
-            //d.AddNeighbour(Direction.west, b);
-            //d.AddNeighbour(Direction.north, neighbours[Direction.north]);
-            //d.AddNeighbour(Direction.east, neighbours[Direction.east]);
+            Children.Add(a);
+            Children.Add(b);
+            Children.Add(c);
+            Children.Add(d);
 
+            foreach (PlanetQuadTreeNode n in Children)
+            {
+                n.Planet = Planet;
+            }
 
-            //if (Children.Count > 0)
-            //    throw new Exception("Um...");
-
-            //Children.Add(a);
-            //Children.Add(b);
-            //Children.Add(c);
-            //Children.Add(d);
-
-            //foreach (PlanetQuadTreeNode n in Children)
-            //{
-            //    n.Planet = Planet;
-            //}
-
-            //isLeaf = false;
+            
         }
 
         private void Sphereify(float radius)

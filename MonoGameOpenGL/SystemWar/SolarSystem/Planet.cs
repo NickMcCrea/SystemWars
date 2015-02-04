@@ -39,9 +39,9 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        public static void Enqueue(Effect effect, IModule module, Planet rootObject, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
-            nodesAwaitingBuilding.Enqueue(new PlanetQuadTreeNode(effect,module,rootObject,min,max,step,normal,sphereSize));
+            nodesAwaitingBuilding.Enqueue(new PlanetQuadTreeNode(effect,module,rootObject, parent, min,max,step,normal,sphereSize));
         }
 
         public static void Update()
@@ -137,34 +137,34 @@ namespace MonoGameEngineCore.Procedural
             //    new Vector3(cubeVerts/2 - 1, cubeVerts/2, cubeVerts/2), vectorSpacing, Vector3.Left, sphereSize);
 
             //top
-            PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(testEffect,module,this, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(testEffect,module,this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
             n1.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n1);
 
             //bottom
-            PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(testEffect, module, this, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
             n2.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n2);
 
 
             //forward
-            PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(testEffect, module,  this,  new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
             n3.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n3);
 
 
             //backward
-            PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(testEffect, module,  this,  new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
             n4.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n4);
 
             //right
-            PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(testEffect, module, this,  new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
             n5.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n5);
 
             //left
-            PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(testEffect, module, this,  new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
+            PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
             n6.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n6);
 
@@ -175,12 +175,12 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(n5);
             rootNodes.Add(n6);
 
-            n1.Planet = this;
-            n2.Planet = this;
-            n3.Planet = this;
-            n4.Planet = this;
-            n5.Planet = this;
-            n6.Planet = this;
+
+            foreach (PlanetQuadTreeNode node in rootNodes)
+            {
+                node.BuildQuadtree();
+            }
+
 
         }
  
