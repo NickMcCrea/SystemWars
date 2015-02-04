@@ -40,7 +40,7 @@ namespace MonoGameEngineCore.Procedural
 
         Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
-        public PlanetQuadTreeNode(Effect effect, IModule module, int sideId, int quadrant, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public PlanetQuadTreeNode(Effect effect, IModule module, Planet rootObject, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
 
 
@@ -48,7 +48,6 @@ namespace MonoGameEngineCore.Procedural
             this.module = module;
             this.Planet = rootObject;
             this.sphereSize = sphereSize;
-         
             this.min = min;
             this.max = max;
             this.step = step;
@@ -56,26 +55,11 @@ namespace MonoGameEngineCore.Procedural
             heightMapSize = System.Math.Max((int)((max.X - min.X) / step), (int)((max.Z - min.Z) / step)); ;
             NodeColor = SystemCore.ActiveColorScheme.Color1;
 
-         
-
-            this.rootNodeId = sideId;
-
-            //unique id per patch, composition of planet + side of cube + depth.
-            string idString = Planet.planetId.ToString() + sideId.ToString() + depth.ToString() + quadrant.ToString();
-          
-
-            quadTreeNodeID = idString.GetHashCode();
-
-          
-
+      
             CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
-            BuildGeometry();
+            
         }
-
-       
-
-      
 
         public void BuildGeometry()
         {

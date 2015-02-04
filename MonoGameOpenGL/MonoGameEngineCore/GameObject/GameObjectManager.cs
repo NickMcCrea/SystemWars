@@ -64,6 +64,8 @@ namespace MonoGameEngineCore.GameObject
 
             gameObjects.Remove(obj.ID);
 
+            if (updateableObjects.Contains(obj as IUpdateable))
+                updateableObjects.Remove(obj as IUpdateable);
 
             return true;
         }
