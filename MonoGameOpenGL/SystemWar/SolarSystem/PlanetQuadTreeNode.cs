@@ -253,18 +253,6 @@ namespace MonoGameEngineCore.Procedural
             throw new Exception();
         }
 
-        public void BuildQuadtree()
-        {
-            if(depth == maxDepth)
-                return;
-            
-            Split();
-            foreach (PlanetQuadTreeNode child in Children)
-            {
-                child.BuildQuadtree();
-            }
-        }
-
         private void Split()
         {
 
@@ -355,6 +343,6 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-       
+      
     }
 }
