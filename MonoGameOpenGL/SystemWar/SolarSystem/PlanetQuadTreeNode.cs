@@ -14,21 +14,21 @@ using ConversionHelper;
 namespace MonoGameEngineCore.Procedural
 {
 
-    public class PlanetQuadTreeNode : GameObject.GameObject
+    public class PlanetNode : GameObject.GameObject
     {
 
 
-        private readonly int maxDepth = 8;
         public int depth;
         public Planet Planet { get; set; }
-        public PlanetQuadTreeNode Parent { get; set; }
         public Vector3 normal { get; set; }
+        public int SiblingId { get; set; }
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
-        public float step { get; set; } 
-    
+        public float step { get; set; }
+        public PlanetNode Parent { get; set; }
+        public volatile bool built;
         public int heightMapSize;
-       
+
         private Effect effect;
         private float sphereSize;
         public BoundingSphere boundingSphere;
@@ -39,32 +39,34 @@ namespace MonoGameEngineCore.Procedural
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
-        public PlanetQuadTreeNode(Effect effect, IModule module, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public PlanetNode(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
 
-            Parent = parent;
+
             this.effect = effect;
             this.module = module;
             this.Planet = rootObject;
+            this.Parent = parent;
             this.sphereSize = sphereSize;
             this.min = min;
             this.max = max;
+
             this.step = step;
             this.normal = normal;
+
             heightMapSize = System.Math.Max((int)((max.X - min.X) / step), (int)((max.Z - min.Z) / step)); ;
             NodeColor = SystemCore.ActiveColorScheme.Color1;
-
 
             if (parent == null)
                 depth = 1;
             else
             {
-                depth = Parent.depth + 1;
+                depth = parent.depth + 1;
             }
 
-            CalculatePatchBoundaries(normal,step,min,max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+            CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
-            
+
         }
 
         public void BuildGeometry()
@@ -73,7 +75,7 @@ namespace MonoGameEngineCore.Procedural
             var vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
-           
+
 
             for (float i = 0; i < heightMapSize; i++)
             {
@@ -110,14 +112,21 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
+          
+            //remove if already present. will be disposed.
+            if(ContainsComponent<RenderGeometryComponent>())
+                RemoveComponent(GetComponent<RenderGeometryComponent>());
+
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
             this.AddComponent(new EffectRenderComponent(effect));
-           
+
 
             SetHighPrecisionPosition(this);
 
-           
+            built = true;
+
+
         }
 
         private void SetHighPrecisionPosition(GameObject.GameObject obj)
@@ -144,7 +153,7 @@ namespace MonoGameEngineCore.Procedural
             return pos;
         }
 
-        private short [] GenerateIndices()
+        private short[] GenerateIndices()
         {
 
             // Construct the index array.
@@ -190,7 +199,7 @@ namespace MonoGameEngineCore.Procedural
                 vertArray[i].Normal = -vertArray[i].Normal;
             }
         }
-     
+
         public static void CalculatePatchBoundaries(Vector3 normal, float step, Vector3 min, Vector3 max, out Vector3 se, out Vector3 sw, out Vector3 mid1, out Vector3 mid2, out Vector3 nw, out Vector3 ne, out Vector3 midBottom, out Vector3 midRight, out Vector3 midLeft, out Vector3 midTop)
         {
             if (normal == Vector3.Forward || normal == Vector3.Backward)
@@ -253,7 +262,7 @@ namespace MonoGameEngineCore.Procedural
             throw new Exception();
         }
 
-        private void Sphereify(float radius, ref VertexPositionColorTextureNormal [] vertices)
+        private void Sphereify(float radius, ref VertexPositionColorTextureNormal[] vertices)
         {
             Color randomColor = RandomHelper.RandomColor;
             for (int i = 0; i < vertices.Length; i++)
@@ -294,7 +303,7 @@ namespace MonoGameEngineCore.Procedural
 
         public void UpdatePosition()
         {
-           
+
 
             Transform.WorldMatrix = Planet.Transform.WorldMatrix;
 
@@ -302,7 +311,7 @@ namespace MonoGameEngineCore.Procedural
             boundingSphere.Center = Vector3.Transform(Vector3.Normalize(mid1) * sphereSize,
                 Planet.Transform.WorldMatrix);
 
-            
+
 
         }
 

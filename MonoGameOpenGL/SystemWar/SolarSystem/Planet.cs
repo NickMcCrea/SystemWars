@@ -18,18 +18,20 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 namespace MonoGameEngineCore.Procedural
 {
 
+
+
     public static class PlanetBuilder
     {
-        private static ConcurrentQueue<PlanetQuadTreeNode> nodesAwaitingBuilding;
-        private static ConcurrentQueue<PlanetQuadTreeNode> finishedNodes;
+        private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
+        private static ConcurrentQueue<PlanetNode> finishedNodes;
 
         private static volatile bool quit = false;
         private static int numThreads = 2;
 
         static PlanetBuilder()
         {
-            nodesAwaitingBuilding = new ConcurrentQueue<PlanetQuadTreeNode>();
-            finishedNodes = new ConcurrentQueue<PlanetQuadTreeNode>();
+            nodesAwaitingBuilding = new ConcurrentQueue<PlanetNode>();
+            finishedNodes = new ConcurrentQueue<PlanetNode>();
             for (int i = 0; i < numThreads; i++)
             {
                 Thread buildThread = new Thread(Update);
@@ -39,16 +41,21 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public static void Enqueue(PlanetNode nodeToBuild)
         {
-            nodesAwaitingBuilding.Enqueue(new PlanetQuadTreeNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize));
+            nodesAwaitingBuilding.Enqueue(nodeToBuild);
+        }
+
+        public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        {
+            nodesAwaitingBuilding.Enqueue(new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize));
         }
 
         public static void Update()
         {
             while (!quit)
             {
-                PlanetQuadTreeNode node;
+                PlanetNode node;
                 if (nodesAwaitingBuilding.TryDequeue(out node))
                 {
                     node.BuildGeometry();
@@ -58,7 +65,7 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
-        public static bool GetBuiltNodes(out PlanetQuadTreeNode finishedNode)
+        public static bool GetBuiltNodes(out PlanetNode finishedNode)
         {
             return finishedNodes.TryDequeue(out finishedNode);
         }
@@ -72,7 +79,8 @@ namespace MonoGameEngineCore.Procedural
         private float splitDistance;
         private float mergeDistance;
         public Matrix customProjection;
-        public List<PlanetQuadTreeNode> activeNodes;
+        public List<PlanetNode> activePatches;
+
         public Color SeaColor;
         public Color LandColor;
         public Color MountainColor;
@@ -82,9 +90,12 @@ namespace MonoGameEngineCore.Procedural
         public int BuildTally;
         private TimeSpan lastClearTime;
         public bool visualisePatches = false;
+        private decimal maxDepth = 8;
+        private int siblingId;
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
+            siblingId = 1;
             this.Name = name;
             planetId = ++planetIdList;
             this.module = module;
@@ -111,69 +122,47 @@ namespace MonoGameEngineCore.Procedural
 
         private void Initialise()
         {
-            activeNodes = new List<PlanetQuadTreeNode>();
+            activePatches = new List<PlanetNode>();
 
             float vectorSpacing = 1f;
             float cubeVerts = 21;
             float sphereSize = radius;
 
 
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(-cubeVerts/2, cubeVerts/2 - 1, -cubeVerts/2),
-            //    new Vector3(cubeVerts/2, cubeVerts/2 - 1, cubeVerts/2), vectorSpacing, Vector3.Up, sphereSize);
 
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(-cubeVerts/2, -cubeVerts/2, -cubeVerts/2),
-            //    new Vector3(cubeVerts/2, -cubeVerts/2, cubeVerts/2), vectorSpacing, Vector3.Down, sphereSize);
-
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(-cubeVerts/2, -cubeVerts/2, -cubeVerts/2),
-            //    new Vector3(cubeVerts/2, cubeVerts/2, cubeVerts/2), vectorSpacing, Vector3.Forward, sphereSize);
-
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(-cubeVerts/2, -cubeVerts/2, cubeVerts/2 - 1),
-            //    new Vector3(cubeVerts/2, cubeVerts/2, cubeVerts/2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(-cubeVerts/2, -cubeVerts/2, -cubeVerts/2),
-            //    new Vector3(-cubeVerts/2, cubeVerts/2, cubeVerts/2), vectorSpacing, Vector3.Right, sphereSize);
-
-            //PlanetBuilder.Enqueue(testEffect, module, this, new Vector3(cubeVerts/2 - 1, -cubeVerts/2, -cubeVerts/2),
-            //    new Vector3(cubeVerts/2 - 1, cubeVerts/2, cubeVerts/2), vectorSpacing, Vector3.Left, sphereSize);
 
             //top
-            PlanetQuadTreeNode n1 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            PlanetNode n1 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
             n1.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n1);
 
-            //bottom
-            PlanetQuadTreeNode n2 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            ////bottom
+            PlanetNode n2 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
             n2.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n2);
 
 
             //forward
-            PlanetQuadTreeNode n3 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            PlanetNode n3 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
             n3.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n3);
 
 
             //backward
-            PlanetQuadTreeNode n4 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            PlanetNode n4 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
             n4.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n4);
 
             //right
-            PlanetQuadTreeNode n5 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            PlanetNode n5 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
             n5.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n5);
 
             //left
-            PlanetQuadTreeNode n6 = new PlanetQuadTreeNode(testEffect, module, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
+            PlanetNode n6 = new PlanetNode(testEffect, module, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
             n6.BuildGeometry();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(n6);
 
-            activeNodes.Add(n1);
-            activeNodes.Add(n2);
-            activeNodes.Add(n3);
-            activeNodes.Add(n4);
-            activeNodes.Add(n5);
-            activeNodes.Add(n6);
+            AddPatch(n1);
+            AddPatch(n2);
+            AddPatch(n3);
+            AddPatch(n4);
+            AddPatch(n5);
+            AddPatch(n6);
 
 
 
@@ -181,10 +170,14 @@ namespace MonoGameEngineCore.Procedural
             //min, max, normal, radius, depth of node in the tree, vectorspacing
 
 
+
         }
 
         private bool ShouldSplit(Vector3 min, Vector3 max, float radius, int depth)
         {
+            if (depth >= maxDepth)
+                return false;
+
             float adjustedDistance = splitDistance;
             for (int i = 1; i < depth; i++)
                 adjustedDistance *= 0.5f;
@@ -197,6 +190,9 @@ namespace MonoGameEngineCore.Procedural
 
         private bool ShouldMerge(Vector3 min, Vector3 max, float radius, int depth)
         {
+            if (depth == 1)
+                return false;
+
             float adjustedDistance = mergeDistance;
             for (int i = 1; i < depth; i++)
                 adjustedDistance *= 0.5f;
@@ -218,67 +214,115 @@ namespace MonoGameEngineCore.Procedural
 
             ICamera activeCamera = SystemCore.ActiveCamera;
 
-            for (int i = 0; i < activeNodes.Count; i++)
+            for (int i = 0; i < activePatches.Count; i++)
             {
-                PlanetQuadTreeNode currentNode = activeNodes[i];
+                PlanetNode currentNode = activePatches[i];
                 currentNode.UpdatePosition();
+
 
                 if (ShouldSplit(currentNode.min, currentNode.max, radius, currentNode.depth))
                 {
 
                     //todo - don't remove node until children generated.
                     FormChildNodes(currentNode);
-                  
+
                 }
 
                 if (ShouldMerge(currentNode.min, currentNode.max, radius, currentNode.depth))
                 {
-                 
+                    bool allChildrenPresent = true;
+                    foreach (GameObject.GameObject obj in currentNode.Parent.Children)
+                    {
+                        PlanetNode node = obj as PlanetNode;
+                        if (!node.built)
+                            allChildrenPresent = false;
+                    }
+
+                    if (allChildrenPresent)
+                    {
+                        //PlanetBuilder.Enqueue(currentNode.Parent);
+                        //foreach (GameObject.GameObject obj in currentNode.Parent.Children)
+                        //{
+                        //    PlanetNode node = obj as PlanetNode;
+                        //    RemovePatch(node);
+                        //}
+                    }
+
                 }
 
             }
 
 
 
-            PlanetQuadTreeNode finishedNode;
+            PlanetNode finishedNode;
             if (PlanetBuilder.GetBuiltNodes(out finishedNode))
             {
-                SystemCore.GameObjectManager.AddAndInitialiseGameObject(finishedNode);
-                activeNodes.Add(finishedNode);
+                AddPatch(finishedNode);
             }
-
         }
 
-        private void FormChildNodes(PlanetQuadTreeNode currentNode)
+        private void AddPatch(PlanetNode finishedNode)
         {
-            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.se, currentNode.mid1,
-                currentNode.step / 2, currentNode.normal, radius);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(finishedNode);
+            activePatches.Add(finishedNode);
+        }
 
-            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.mid2, currentNode.nw,
-                currentNode.step / 2, currentNode.normal, radius);
-
-            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.midBottom, currentNode.midLeft,
-                currentNode.step / 2, currentNode.normal, radius);
-
-            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.midRight, currentNode.midTop,
-                currentNode.step / 2, currentNode.normal, radius);
-
-            activeNodes.Remove(currentNode);
+        private void RemovePatch(PlanetNode currentNode)
+        {
+            activePatches.Remove(currentNode);
             SystemCore.GameObjectManager.RemoveObject(currentNode);
         }
 
+        
+
+        private void FormChildNodes(PlanetNode currentNode)
+        {
+
+            PlanetNode a = new PlanetNode(testEffect, module, this, currentNode, currentNode.se, currentNode.mid1,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            PlanetNode b = new PlanetNode(testEffect, module, this, currentNode, currentNode.mid2, currentNode.nw,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            PlanetNode c = new PlanetNode(testEffect, module, this, currentNode, currentNode.midBottom, currentNode.midLeft,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            PlanetNode d = new PlanetNode(testEffect, module, this, currentNode, currentNode.midRight, currentNode.midTop,
+                currentNode.step / 2, currentNode.normal, radius);
+       
+            PlanetBuilder.Enqueue(a);
+            PlanetBuilder.Enqueue(b);
+            PlanetBuilder.Enqueue(c);
+            PlanetBuilder.Enqueue(d);
+
+            currentNode.Children.Add(a);
+            currentNode.Children.Add(b);
+            currentNode.Children.Add(c);
+            currentNode.Children.Add(d);
+
+            RemovePatch(currentNode);
+        }
+
+        private void FormParentNode(List<PlanetNode> children)
+        {
+
+
+        }
 
         public bool Enabled
         {
             get;
             set;
         }
+
         public event EventHandler<EventArgs> EnabledChanged;
+
         public int UpdateOrder
         {
             get;
             set;
         }
+
         public event EventHandler<EventArgs> UpdateOrderChanged;
     }
 
