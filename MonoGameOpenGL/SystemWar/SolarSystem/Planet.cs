@@ -72,7 +72,7 @@ namespace MonoGameEngineCore.Procedural
         private float splitDistance;
         private float mergeDistance;
         public Matrix customProjection;
-        public List<PlanetQuadTreeNode> rootNodes;
+        public List<PlanetQuadTreeNode> activeNodes;
         public Color SeaColor;
         public Color LandColor;
         public Color MountainColor;
@@ -92,7 +92,7 @@ namespace MonoGameEngineCore.Procedural
             this.radius = radius;
 
             AddComponent(new HighPrecisionPosition());
-            AddComponent(new RotatorComponent(Vector3.Up));
+            //AddComponent(new RotatorComponent(Vector3.Up));
 
             Transform.SetPosition(position);
 
@@ -111,7 +111,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void Initialise()
         {
-            rootNodes = new List<PlanetQuadTreeNode>();
+            activeNodes = new List<PlanetQuadTreeNode>();
 
             float vectorSpacing = 1f;
             float cubeVerts = 21;
@@ -168,52 +168,104 @@ namespace MonoGameEngineCore.Procedural
             n6.BuildGeometry();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(n6);
 
-            rootNodes.Add(n1);
-            rootNodes.Add(n2);
-            rootNodes.Add(n3);
-            rootNodes.Add(n4);
-            rootNodes.Add(n5);
-            rootNodes.Add(n6);
+            activeNodes.Add(n1);
+            activeNodes.Add(n2);
+            activeNodes.Add(n3);
+            activeNodes.Add(n4);
+            activeNodes.Add(n5);
+            activeNodes.Add(n6);
 
 
-            
+
+            //to generate a node, we need...
+            //min, max, normal, radius, depth of node in the tree, vectorspacing
 
 
+        }
+
+        private bool ShouldSplit(Vector3 min, Vector3 max, float radius, int depth)
+        {
+            float adjustedDistance = splitDistance;
+            for (int i = 1; i < depth; i++)
+                adjustedDistance *= 0.5f;
+
+            float distanceToPatch = DistanceToPatch(min, max, radius);
+            if (distanceToPatch < (adjustedDistance))
+                return true;
+            return false;
+        }
+
+        private bool ShouldMerge(Vector3 min, Vector3 max, float radius, int depth)
+        {
+            float adjustedDistance = mergeDistance;
+            for (int i = 1; i < depth; i++)
+                adjustedDistance *= 0.5f;
+
+            if (DistanceToPatch(min, max, radius) > (adjustedDistance))
+                return true;
+            return false;
         }
 
         private float DistanceToPatch(Vector3 min, Vector3 max, float radius)
         {
             Vector3 mid1 = (min + max) / 2;
-            return Vector3.Transform(Vector3.Normalize(mid1) * radius, Transform.WorldMatrix).Length();
+            Vector3 surfaceMidPoint = Vector3.Transform(Vector3.Normalize(mid1) * radius, Transform.WorldMatrix);
+            return surfaceMidPoint.Length();
         }
-
 
         public void Update(GameTime gameTime)
         {
 
             ICamera activeCamera = SystemCore.ActiveCamera;
 
-            foreach (PlanetQuadTreeNode n in rootNodes)
+            for (int i = 0; i < activeNodes.Count; i++)
             {
+                PlanetQuadTreeNode currentNode = activeNodes[i];
+                currentNode.UpdatePosition();
 
-                //n.UpdatePosition();
+                if (ShouldSplit(currentNode.min, currentNode.max, radius, currentNode.depth))
+                {
+
+                    //todo - don't remove node until children generated.
+                    FormChildNodes(currentNode);
+                  
+                }
+
+                if (ShouldMerge(currentNode.min, currentNode.max, radius, currentNode.depth))
+                {
+                 
+                }
+
             }
+
+
 
             PlanetQuadTreeNode finishedNode;
             if (PlanetBuilder.GetBuiltNodes(out finishedNode))
             {
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(finishedNode);
+                activeNodes.Add(finishedNode);
             }
 
-
-
         }
 
-        private void DetermineLOD(PlanetQuadTreeNode n)
+        private void FormChildNodes(PlanetQuadTreeNode currentNode)
         {
+            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.se, currentNode.mid1,
+                currentNode.step / 2, currentNode.normal, radius);
 
+            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.mid2, currentNode.nw,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.midBottom, currentNode.midLeft,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            PlanetBuilder.Enqueue(testEffect, module, this, currentNode, currentNode.midRight, currentNode.midTop,
+                currentNode.step / 2, currentNode.normal, radius);
+
+            activeNodes.Remove(currentNode);
+            SystemCore.GameObjectManager.RemoveObject(currentNode);
         }
-
 
 
         public bool Enabled

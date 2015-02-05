@@ -26,11 +26,9 @@ namespace SystemWar.Screens
         Vector3d oldPos;
         DiffuseLight sunLight;
         GameObject sun;
-        private DummyCamera testCamera;
         Planet earthPlanet;
         Vector3 collisionPoint;
         RayCastResult result;
-        PlanetQuadTreeNode lookAtNode;
 
         public MainGameScreen()
             : base()
@@ -56,7 +54,7 @@ namespace SystemWar.Screens
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
-            ship.Transform.SetPosition(new Vector3d(150020000, 0, 0));
+            ship.Transform.SetPosition(new Vector3d(150040000, 0, 0));
 
 
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
@@ -64,6 +62,8 @@ namespace SystemWar.Screens
 
 
             earthPlanet = SystemCore.GameObjectManager.GetObject("earth") as Planet;
+
+            SolarSystemHelper.AdjustObjectsForRendering(ship.GetComponent<HighPrecisionPosition>().Position);
 
         }
 
@@ -84,9 +84,7 @@ namespace SystemWar.Screens
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-            RayCastResult result;
-
-
+          
             base.Update(gameTime);
         }
 

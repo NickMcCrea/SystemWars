@@ -19,15 +19,14 @@ namespace MonoGameEngineCore.Procedural
 
 
         private readonly int maxDepth = 8;
-        readonly int depth;
+        public int depth;
         public Planet Planet { get; set; }
         public PlanetQuadTreeNode Parent { get; set; }
         public Vector3 normal { get; set; }
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
         public float step { get; set; } 
-        public VertexPositionColorTextureNormal[] vertices;
-        public short[] indices;
+    
         public int heightMapSize;
        
         private Effect effect;
@@ -38,7 +37,7 @@ namespace MonoGameEngineCore.Procedural
         public int quadTreeNodeID;
         private readonly int rootNodeId;
 
-        Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
+        public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
         public PlanetQuadTreeNode(Effect effect, IModule module, Planet rootObject, PlanetQuadTreeNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
@@ -63,7 +62,7 @@ namespace MonoGameEngineCore.Procedural
                 depth = Parent.depth + 1;
             }
 
-            CalculatePatchBoundaries(out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+            CalculatePatchBoundaries(normal,step,min,max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
             
         }
@@ -71,7 +70,7 @@ namespace MonoGameEngineCore.Procedural
         public void BuildGeometry()
         {
 
-            vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
+            var vertices = new VertexPositionColorTextureNormal[(heightMapSize * heightMapSize)];
 
             int vertIndex = 0;
            
@@ -91,7 +90,7 @@ namespace MonoGameEngineCore.Procedural
                 }
             }
 
-            GenerateIndices();
+            var indices = GenerateIndices();
 
             if (normal == Vector3.Down || normal == Vector3.Backward || normal == Vector3.Right)
                 indices = indices.Reverse().ToArray();
@@ -101,9 +100,9 @@ namespace MonoGameEngineCore.Procedural
             indices = indices.Reverse().ToArray();
 
 
-            Sphereify(sphereSize);
+            Sphereify(sphereSize, ref vertices);
 
-            GenerateNormals(ref vertices);
+            GenerateNormals(ref vertices, ref indices);
 
 
             var p = vertices.Select(x => x.Position).ToList();
@@ -145,11 +144,11 @@ namespace MonoGameEngineCore.Procedural
             return pos;
         }
 
-        public void GenerateIndices()
+        private short [] GenerateIndices()
         {
 
             // Construct the index array.
-            indices = new short[(heightMapSize - 1) * (heightMapSize - 1) * 6];    // 2 triangles per grid square x 3 vertices per triangle
+            var indices = new short[(heightMapSize - 1) * (heightMapSize - 1) * 6];    // 2 triangles per grid square x 3 vertices per triangle
 
             int indicesIndex = 0;
             for (int y = 0; y < heightMapSize - 1; ++y)
@@ -165,9 +164,10 @@ namespace MonoGameEngineCore.Procedural
                     indices[indicesIndex++] = (short)(start + heightMapSize);
                 }
             }
+            return indices;
         }
 
-        private void GenerateNormals(ref VertexPositionColorTextureNormal[] vertArray)
+        private void GenerateNormals(ref VertexPositionColorTextureNormal[] vertArray, ref short[] indices)
         {
 
             for (int i = 0; i < vertArray.Length; i++)
@@ -191,7 +191,7 @@ namespace MonoGameEngineCore.Procedural
             }
         }
      
-        private void CalculatePatchBoundaries(out Vector3 se, out Vector3 sw, out Vector3 mid1, out Vector3 mid2, out Vector3 nw, out Vector3 ne, out Vector3 midBottom, out Vector3 midRight, out Vector3 midLeft, out Vector3 midTop)
+        public static void CalculatePatchBoundaries(Vector3 normal, float step, Vector3 min, Vector3 max, out Vector3 se, out Vector3 sw, out Vector3 mid1, out Vector3 mid2, out Vector3 nw, out Vector3 ne, out Vector3 midBottom, out Vector3 midRight, out Vector3 midLeft, out Vector3 midTop)
         {
             if (normal == Vector3.Forward || normal == Vector3.Backward)
             {
@@ -253,35 +253,7 @@ namespace MonoGameEngineCore.Procedural
             throw new Exception();
         }
 
-        private void Split()
-        {
-
-            //bottom right, inherits east and south neighbours
-            PlanetQuadTreeNode a = new PlanetQuadTreeNode(effect, module, Planet, this, se, mid1, step / 2, normal, sphereSize);
-          
-            //top left, inherits north and west
-            PlanetQuadTreeNode b = new PlanetQuadTreeNode(effect,module, Planet, this, mid2, nw, step / 2, normal, sphereSize);
-            //bottom left, inherits south and west
-            PlanetQuadTreeNode c = new PlanetQuadTreeNode(effect,module,Planet, this, midBottom, midLeft, step / 2, normal, sphereSize);
-         
-            //top right inherits north and east
-            PlanetQuadTreeNode d = new PlanetQuadTreeNode(effect,module,Planet, this, midRight, midTop, step / 2, normal, sphereSize);
-
-
-            Children.Add(a);
-            Children.Add(b);
-            Children.Add(c);
-            Children.Add(d);
-
-            foreach (PlanetQuadTreeNode n in Children)
-            {
-                n.Planet = Planet;
-            }
-
-            
-        }
-
-        private void Sphereify(float radius)
+        private void Sphereify(float radius, ref VertexPositionColorTextureNormal [] vertices)
         {
             Color randomColor = RandomHelper.RandomColor;
             for (int i = 0; i < vertices.Length; i++)
@@ -320,15 +292,6 @@ namespace MonoGameEngineCore.Procedural
             return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.Transform.WorldMatrix);
         }
 
-        public int CountVertsInTree()
-        {
-            int verts = vertices.Length;
-            foreach (PlanetQuadTreeNode n in Children)
-                verts += n.CountVertsInTree();
-
-            return verts;
-        }
-  
         public void UpdatePosition()
         {
            
@@ -343,6 +306,5 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-      
     }
 }
