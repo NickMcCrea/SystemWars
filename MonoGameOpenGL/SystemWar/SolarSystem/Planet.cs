@@ -241,7 +241,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void ClearAnyChildNodes(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
         {
-            if (depth > maxDepth)
+            if (depth >= maxDepth)
                 return;
 
             Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
