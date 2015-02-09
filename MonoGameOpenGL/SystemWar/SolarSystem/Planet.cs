@@ -18,7 +18,17 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 namespace MonoGameEngineCore.Procedural
 {
 
+    struct PatchMinMax
+    {
+        public Vector3 Min;
+        public Vector3 Max;
 
+        public PatchMinMax(Vector3 min, Vector3 max)
+        {
+            Max = max;
+            Min = min;
+        }
+    }
 
     public static class PlanetBuilder
     {
@@ -48,7 +58,8 @@ namespace MonoGameEngineCore.Procedural
 
         public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
-            nodesAwaitingBuilding.Enqueue(new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize));
+            var node = new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize);
+            nodesAwaitingBuilding.Enqueue(node);
         }
 
         public static void Update()
@@ -80,7 +91,8 @@ namespace MonoGameEngineCore.Procedural
         private float mergeDistance;
         public Matrix customProjection;
         public List<PlanetNode> activePatches;
-
+        private List<PlanetNode> rootNodes;
+        private List<PatchMinMax> nodesBeingBuilt;
         public Color SeaColor;
         public Color LandColor;
         public Color MountainColor;
@@ -95,6 +107,7 @@ namespace MonoGameEngineCore.Procedural
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
+            nodesBeingBuilt = new List<PatchMinMax>();
             siblingId = 1;
             this.Name = name;
             planetId = ++planetIdList;
@@ -123,7 +136,7 @@ namespace MonoGameEngineCore.Procedural
         private void Initialise()
         {
             activePatches = new List<PlanetNode>();
-
+            rootNodes = new List<PlanetNode>();
             float vectorSpacing = 1f;
             float cubeVerts = 21;
             float sphereSize = radius;
@@ -149,26 +162,26 @@ namespace MonoGameEngineCore.Procedural
             PlanetNode n4 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
             n4.BuildGeometry();
 
-            //right
-            PlanetNode n5 = new PlanetNode(testEffect, module, this, null, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            n5.BuildGeometry();
+
 
             //left
             PlanetNode n6 = new PlanetNode(testEffect, module, this, null, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
             n6.BuildGeometry();
 
-            AddPatch(n1);
-            AddPatch(n2);
+
+            //AddPatch(n1);
+            //AddPatch(n2);
             AddPatch(n3);
-            AddPatch(n4);
-            AddPatch(n5);
-            AddPatch(n6);
+            //AddPatch(n4);
+            //AddPatch(n5);
+           // AddPatch(n6);
 
-
-
-            //to generate a node, we need...
-            //min, max, normal, radius, depth of node in the tree, vectorspacing
-
+            //rootNodes.Add(n1);
+            //rootNodes.Add(n2);
+            rootNodes.Add(n3);
+            //rootNodes.Add(n4);
+            //rootNodes.Add(n5);
+           // rootNodes.Add(n6);
 
 
         }
@@ -188,18 +201,124 @@ namespace MonoGameEngineCore.Procedural
             return false;
         }
 
-        private bool ShouldMerge(Vector3 min, Vector3 max, float radius, int depth)
+        private void CalculatePatchLOD(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
         {
-            if (depth == 1)
-                return false;
 
-            float adjustedDistance = mergeDistance;
-            for (int i = 1; i < depth; i++)
-                adjustedDistance *= 0.5f;
 
-            if (DistanceToPatch(min, max, radius) > (adjustedDistance))
-                return true;
-            return false;
+            //recurse down through the tree. For each node on the way down, we decide if it should split or not.
+            //if it should, calculate the split and move down. Remove the node if it's currently visible.
+
+            if (ShouldSplit(min, max, radius, depth))
+            {
+                Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
+                PlanetNode.CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+
+                //this node should be invisible. If it's in the active list, remove it.
+                RemoveNodeIfPresent(normal, step, depth, min, max);
+
+
+                //se mid1
+                CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1);
+
+                //mid2 nw
+                CalculatePatchLOD(normal, step / 2, depth + 1, mid2, nw);
+
+                //midbottom midleft
+                CalculatePatchLOD(normal, step / 2, depth + 1, midBottom, midLeft);
+
+                //midright midtop
+                CalculatePatchLOD(normal, step / 2, depth + 1, midRight, midTop);
+
+            }
+            else
+            {
+                if (depth <= maxDepth)
+                {
+                    AddNodeIfNotPresent(normal, step, depth, min, max);
+                    //ClearAnyChildNodes(normal, step, depth, min, max);
+                }
+            }
+        }
+
+    
+
+        private void ClearAnyChildNodes(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
+        {
+            if (depth > maxDepth)
+                return;
+
+            Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
+            PlanetNode.CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+
+            RemoveNodeIfPresent(normal, step / 2, depth + 1, se, mid1);
+            ClearAnyChildNodes(normal, step / 2, depth + 1, se, mid1);
+
+            RemoveNodeIfPresent(normal, step / 2, depth + 1, mid2, nw);
+            ClearAnyChildNodes(normal, step / 2, depth + 1, mid2, nw);
+
+            RemoveNodeIfPresent(normal, step / 2, depth + 1, midBottom, midLeft);
+            ClearAnyChildNodes(normal, step / 2, depth + 1, midBottom, midLeft);
+
+            RemoveNodeIfPresent(normal, step / 2, depth + 1, midRight, midTop);
+            ClearAnyChildNodes(normal, step / 2, depth + 1, midRight, midTop);
+
+            
+        }
+
+        private void AddNodeIfNotPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
+        {
+            //don't build if already under way.
+            for (int i = 0; i < nodesBeingBuilt.Count; i++)
+            {
+                if (nodesBeingBuilt[i].Max == max)
+                    if (nodesBeingBuilt[i].Min == min)
+                        return;
+            }
+
+            for (int i = 0; i < activePatches.Count; i++)
+            {
+                PlanetNode node = activePatches[i];
+
+                if (node.min == min && node.max == max)
+                {
+
+                    if (node.depth == 1)
+                    {
+                        node.GetComponent<EffectRenderComponent>().Visible = true;
+                        return;
+                    }
+                    else
+                    {
+                        throw new Exception("Added twice");
+                    }
+                }
+            }
+
+            var patchBeingBuilt = new PatchMinMax(min, max);
+            nodesBeingBuilt.Add(patchBeingBuilt);
+            PlanetBuilder.Enqueue(testEffect, module, this, null, min, max, step, normal, radius);
+        }
+
+        private void RemoveNodeIfPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
+        {
+
+            for (int i = 0; i < activePatches.Count; i++)
+            {
+                PlanetNode node = activePatches[i];
+                if (node.min == min && node.max == max)
+                {
+
+                    if (node.depth == 1)
+                    {
+                        node.GetComponent<EffectRenderComponent>().Visible = false;
+                        return;
+                    }
+                    else
+                    {
+                        RemovePatch(node);
+                    }
+                }
+            }
         }
 
         private float DistanceToPatch(Vector3 min, Vector3 max, float radius)
@@ -209,6 +328,7 @@ namespace MonoGameEngineCore.Procedural
             return surfaceMidPoint.Length();
         }
 
+        DateTime lastUpdate = DateTime.Now;
         public void Update(GameTime gameTime)
         {
 
@@ -219,37 +339,18 @@ namespace MonoGameEngineCore.Procedural
                 PlanetNode currentNode = activePatches[i];
                 currentNode.UpdatePosition();
 
+            }
 
-                if (ShouldSplit(currentNode.min, currentNode.max, radius, currentNode.depth))
+            TimeSpan t = DateTime.Now - lastUpdate;
+
+            if (t.TotalSeconds > 5)
+            {
+                lastUpdate = DateTime.Now;
+                for (int i = 0; i < rootNodes.Count; i++)
                 {
-
-                    //todo - don't remove node until children generated.
-                    FormChildNodes(currentNode);
-
+                    PlanetNode root = rootNodes[i];
+                    CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
                 }
-
-                if (ShouldMerge(currentNode.min, currentNode.max, radius, currentNode.depth))
-                {
-                    bool allChildrenPresent = true;
-                    foreach (GameObject.GameObject obj in currentNode.Parent.Children)
-                    {
-                        PlanetNode node = obj as PlanetNode;
-                        if (!node.built)
-                            allChildrenPresent = false;
-                    }
-
-                    if (allChildrenPresent)
-                    {
-                        //PlanetBuilder.Enqueue(currentNode.Parent);
-                        //foreach (GameObject.GameObject obj in currentNode.Parent.Children)
-                        //{
-                        //    PlanetNode node = obj as PlanetNode;
-                        //    RemovePatch(node);
-                        //}
-                    }
-
-                }
-
             }
 
 
@@ -265,6 +366,16 @@ namespace MonoGameEngineCore.Procedural
         {
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(finishedNode);
             activePatches.Add(finishedNode);
+
+            
+
+            //don't build if already under way.
+            for (int i = 0; i < nodesBeingBuilt.Count; i++)
+            {
+                if (nodesBeingBuilt[i].Max == finishedNode.max)
+                    if (nodesBeingBuilt[i].Min == finishedNode.min)
+                        nodesBeingBuilt.Remove(nodesBeingBuilt[i]);
+            }
         }
 
         private void RemovePatch(PlanetNode currentNode)
@@ -272,8 +383,6 @@ namespace MonoGameEngineCore.Procedural
             activePatches.Remove(currentNode);
             SystemCore.GameObjectManager.RemoveObject(currentNode);
         }
-
-        
 
         private void FormChildNodes(PlanetNode currentNode)
         {
@@ -289,24 +398,13 @@ namespace MonoGameEngineCore.Procedural
 
             PlanetNode d = new PlanetNode(testEffect, module, this, currentNode, currentNode.midRight, currentNode.midTop,
                 currentNode.step / 2, currentNode.normal, radius);
-       
+
             PlanetBuilder.Enqueue(a);
             PlanetBuilder.Enqueue(b);
             PlanetBuilder.Enqueue(c);
             PlanetBuilder.Enqueue(d);
 
-            currentNode.Children.Add(a);
-            currentNode.Children.Add(b);
-            currentNode.Children.Add(c);
-            currentNode.Children.Add(d);
-
             RemovePatch(currentNode);
-        }
-
-        private void FormParentNode(List<PlanetNode> children)
-        {
-
-
         }
 
         public bool Enabled

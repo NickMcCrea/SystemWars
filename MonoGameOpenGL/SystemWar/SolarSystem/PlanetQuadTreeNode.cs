@@ -25,7 +25,7 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
         public float step { get; set; }
-        public PlanetNode Parent { get; set; }
+       
         public volatile bool built;
         public int heightMapSize;
 
@@ -46,7 +46,7 @@ namespace MonoGameEngineCore.Procedural
             this.effect = effect;
             this.module = module;
             this.Planet = rootObject;
-            this.Parent = parent;
+           
             this.sphereSize = sphereSize;
             this.min = min;
             this.max = max;
@@ -260,6 +260,7 @@ namespace MonoGameEngineCore.Procedural
             }
 
             throw new Exception();
+           
         }
 
         private void Sphereify(float radius, ref VertexPositionColorTextureNormal[] vertices)
