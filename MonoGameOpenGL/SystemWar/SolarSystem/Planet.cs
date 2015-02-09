@@ -235,7 +235,6 @@ namespace MonoGameEngineCore.Procedural
                 if (depth <= maxDepth)
                 {
                     AddNodeIfNotPresent(normal, step, depth, min, max);
-                    ClearAnyChildNodes(normal, step, depth, min, max);
                 }
             }
         }
@@ -274,6 +273,7 @@ namespace MonoGameEngineCore.Procedural
             if (activePatches.ContainsKey(mid))
             {
                 activePatches[mid].GetComponent<EffectRenderComponent>().Visible = true;
+                ClearAnyChildNodes(normal, step, depth, min, max);
                 return;
             }
 
@@ -281,6 +281,9 @@ namespace MonoGameEngineCore.Procedural
             var patchBeingBuilt = new PatchMinMax(min, max);
             nodesBeingBuilt.Add(mid, patchBeingBuilt);
             PlanetBuilder.Enqueue(testEffect, module, this, null, min, max, step, normal, radius);
+
+            //clear this subtree
+            ClearAnyChildNodes(normal, step, depth, min, max);
         }
 
         private void RemoveNodeIfPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
@@ -326,7 +329,7 @@ namespace MonoGameEngineCore.Procedural
 
 
             TimeSpan t = DateTime.Now - lastUpdate;
-            if (t.TotalSeconds > 5)
+            if (t.TotalSeconds > 1)
             {
                 lastUpdate = DateTime.Now;
                 for (int i = 0; i < rootNodes.Count; i++)
