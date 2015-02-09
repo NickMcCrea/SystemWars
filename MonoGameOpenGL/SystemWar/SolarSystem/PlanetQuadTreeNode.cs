@@ -25,7 +25,7 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 max { get; set; }
         public Vector3 min { get; set; }
         public float step { get; set; }
-       
+        public bool remove;
         public volatile bool built;
         public int heightMapSize;
 

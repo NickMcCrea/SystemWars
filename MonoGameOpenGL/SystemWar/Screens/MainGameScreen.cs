@@ -121,7 +121,9 @@ namespace SystemWar.Screens
             DebugText.Write("Primitives " + GameObjectManager.primitives.ToString());
             DebugText.Write("Verts " + GameObjectManager.verts.ToString());
             DebugText.Write("Patch Builds Per Second: " + earthPlanet.BuildCountPerSecond);
-
+            DebugText.Write("Build Queue Size: " + PlanetBuilder.GetQueueSize());
+            DebugText.Write("Finished Queue Size: " + PlanetBuilder.GetBuiltNodesQueueSize());
+           
             oldPos = currentPos;
 
           

@@ -35,8 +35,17 @@ namespace MonoGameEngineCore.Procedural
         private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
         private static ConcurrentQueue<PlanetNode> finishedNodes;
 
+        public static int GetQueueSize()
+        {
+            return nodesAwaitingBuilding.Count;
+        }
+        public static int GetBuiltNodesQueueSize()
+        {
+            return finishedNodes.Count;
+        }
+
         private static volatile bool quit = false;
-        private static int numThreads = 2;
+        private static int numThreads = 3;
 
         static PlanetBuilder()
         {
@@ -105,6 +114,7 @@ namespace MonoGameEngineCore.Procedural
         private decimal maxDepth = 8;
         private int siblingId;
 
+
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
@@ -131,6 +141,15 @@ namespace MonoGameEngineCore.Procedural
             this.MountainColor = mountains;
 
             Initialise();
+        }
+
+        private void GenerateCustomProjectionMatrix(float far)
+        {
+            if (far <= 0)
+                far = 2;
+
+            customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
+                SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, far);
         }
 
         private void Initialise()
@@ -239,29 +258,6 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
-        private void ClearAnyChildNodes(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
-        {
-            if (depth >= maxDepth)
-                return;
-
-            Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
-            PlanetNode.CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
-
-            RemoveNodeIfPresent(normal, step / 2, depth + 1, se, mid1);
-            ClearAnyChildNodes(normal, step / 2, depth + 1, se, mid1);
-
-            RemoveNodeIfPresent(normal, step / 2, depth + 1, mid2, nw);
-            ClearAnyChildNodes(normal, step / 2, depth + 1, mid2, nw);
-
-            RemoveNodeIfPresent(normal, step / 2, depth + 1, midBottom, midLeft);
-            ClearAnyChildNodes(normal, step / 2, depth + 1, midBottom, midLeft);
-
-            RemoveNodeIfPresent(normal, step / 2, depth + 1, midRight, midTop);
-            ClearAnyChildNodes(normal, step / 2, depth + 1, midRight, midTop);
-
-
-        }
-
         private void AddNodeIfNotPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
         {
             //don't build if already under way.
@@ -272,8 +268,9 @@ namespace MonoGameEngineCore.Procedural
 
             if (activePatches.ContainsKey(mid))
             {
-                activePatches[mid].GetComponent<EffectRenderComponent>().Visible = true;
-                ClearAnyChildNodes(normal, step, depth, min, max);
+                PlanetNode node = activePatches[mid];
+                node.GetComponent<EffectRenderComponent>().Visible = true;
+                node.remove = false;
                 return;
             }
 
@@ -282,8 +279,7 @@ namespace MonoGameEngineCore.Procedural
             nodesBeingBuilt.Add(mid, patchBeingBuilt);
             PlanetBuilder.Enqueue(testEffect, module, this, null, min, max, step, normal, radius);
 
-            //clear this subtree
-            ClearAnyChildNodes(normal, step, depth, min, max);
+
         }
 
         private void RemoveNodeIfPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
@@ -316,36 +312,65 @@ namespace MonoGameEngineCore.Procedural
             return surfaceMidPoint.Length();
         }
 
-        DateTime lastUpdate = DateTime.Now;
         public void Update(GameTime gameTime)
         {
 
             ICamera activeCamera = SystemCore.ActiveCamera;
 
+            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
+            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
+            float surfaceDistance = distanceToCenterOfPlanet - radius;
+            float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
+            GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
+            var frustrum = new BoundingFrustum(activeCamera.View * customProjection);
+
             foreach (PlanetNode node in activePatches.Values)
             {
                 node.UpdatePosition();
+
+                node.remove = true;
+
+                if (node.depth == 1)
+                    continue;
+
+                if (!frustrum.Intersects(node.boundingSphere))
+                    node.GetComponent<EffectRenderComponent>().Visible = false;
+                else
+                    node.GetComponent<EffectRenderComponent>().Visible = true;
+
+
             }
 
 
-            TimeSpan t = DateTime.Now - lastUpdate;
-            if (t.TotalSeconds > 1)
+
+            for (int i = 0; i < rootNodes.Count; i++)
             {
-                lastUpdate = DateTime.Now;
-                for (int i = 0; i < rootNodes.Count; i++)
+                PlanetNode root = rootNodes[i];
+                CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
+            }
+
+
+            List<PlanetNode> nodesToRemove = new List<PlanetNode>();
+            foreach (PlanetNode n in activePatches.Values)
+            {
+                if (n.remove)
+                    nodesToRemove.Add(n);
+            }
+
+            foreach (PlanetNode n in nodesToRemove)
+                RemovePatch(n);
+
+            nodesToRemove.Clear();
+
+            int patchCountPerFrame = 10;
+
+            for (int i = 0; i < patchCountPerFrame; i++)
+            {
+                PlanetNode finishedNode;
+                if (PlanetBuilder.GetBuiltNodes(out finishedNode))
                 {
-                    PlanetNode root = rootNodes[i];
-                    CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
+                    AddPatch(finishedNode);
                 }
-            }
-
-
-
-
-            PlanetNode finishedNode;
-            if (PlanetBuilder.GetBuiltNodes(out finishedNode))
-            {
-                AddPatch(finishedNode);
             }
         }
 
@@ -358,8 +383,8 @@ namespace MonoGameEngineCore.Procedural
 
 
             nodesBeingBuilt.Remove(mid);
-           
-        
+
+
         }
 
         private void RemovePatch(PlanetNode currentNode)
