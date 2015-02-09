@@ -34,7 +34,7 @@ namespace MonoGameEngineCore.Procedural
     {
         private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
         private static ConcurrentQueue<PlanetNode> finishedNodes;
-
+    
         public static int GetQueueSize()
         {
             return nodesAwaitingBuilding.Count;
@@ -87,7 +87,9 @@ namespace MonoGameEngineCore.Procedural
 
         public static bool GetBuiltNodes(out PlanetNode finishedNode)
         {
-            return finishedNodes.TryDequeue(out finishedNode);
+
+            bool success = finishedNodes.TryDequeue(out finishedNode);
+            return success;
         }
     }
 
@@ -279,25 +281,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private void RemoveNodeIfPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
-        {
-
-            Vector3 mid = (min + max) / 2;
-            if (activePatches.ContainsKey(mid))
-            {
-                PlanetNode node = activePatches[mid];
-                if (node.depth == 1)
-                {
-                    node.GetComponent<EffectRenderComponent>().Visible = false;
-                    return;
-                }
-                else
-                {
-                    RemovePatch(node);
-                }
-            }
-        }
-
+       
         private float DistanceToPatch(Vector3 min, Vector3 max, float radius)
         {
             Vector3 mid1 = (min + max) / 2;
@@ -330,10 +314,10 @@ namespace MonoGameEngineCore.Procedural
                 if (node.depth == 1)
                     continue;
 
-                if (!frustrum.Intersects(node.boundingSphere))
-                    node.GetComponent<EffectRenderComponent>().Visible = false;
-                else
-                    node.GetComponent<EffectRenderComponent>().Visible = true;
+                //if (!frustrum.Intersects(node.boundingSphere))
+                //    node.GetComponent<EffectRenderComponent>().Visible = false;
+                //else
+                //    node.GetComponent<EffectRenderComponent>().Visible = true;
 
 
             }
@@ -347,17 +331,8 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-            List<PlanetNode> nodesToRemove = new List<PlanetNode>();
-            foreach (PlanetNode n in activePatches.Values)
-            {
-                if (n.remove)
-                    nodesToRemove.Add(n);
-            }
-
-            foreach (PlanetNode n in nodesToRemove)
-                RemovePatch(n);
-
-            nodesToRemove.Clear();
+            //removes nodes that have not had their flags refreshed by the LOD pass
+            RemoveStaleNodes();
 
             int patchCountPerFrame = 10;
 
@@ -369,6 +344,26 @@ namespace MonoGameEngineCore.Procedural
                     AddPatch(finishedNode);
                 }
             }
+
+        
+        }
+
+        private void RemoveStaleNodes()
+        {
+            List<PlanetNode> nodesToRemove = new List<PlanetNode>();
+            foreach (PlanetNode n in activePatches.Values)
+            {
+                if (n.remove)
+                    nodesToRemove.Add(n);
+            }
+
+            if (PlanetBuilder.GetBuiltNodesQueueSize() == 0 && PlanetBuilder.GetQueueSize() == 0)
+            {
+                foreach (PlanetNode n in nodesToRemove)
+                    RemovePatch(n);
+
+                nodesToRemove.Clear();
+            }
         }
 
         private void AddPatch(PlanetNode finishedNode)
@@ -376,9 +371,6 @@ namespace MonoGameEngineCore.Procedural
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(finishedNode);
             Vector3 mid = (finishedNode.min + finishedNode.max) / 2;
             activePatches.Add(mid, finishedNode);
-
-
-
             nodesBeingBuilt.Remove(mid);
 
 
