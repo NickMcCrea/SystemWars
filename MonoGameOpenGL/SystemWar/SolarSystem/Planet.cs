@@ -280,8 +280,7 @@ namespace MonoGameEngineCore.Procedural
 
 
         }
-
-       
+ 
         private float DistanceToPatch(Vector3 min, Vector3 max, float radius)
         {
             Vector3 mid1 = (min + max) / 2;
