@@ -232,9 +232,6 @@ namespace MonoGameEngineCore.Procedural
                 Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
                 PlanetNode.CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
-                //this node should be invisible. If it's in the active list, remove it.
-                RemoveNodeIfPresent(normal, step, depth, min, max);
-
 
                 //se mid1
                 CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1);
