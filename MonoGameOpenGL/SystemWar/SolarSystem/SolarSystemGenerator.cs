@@ -1,5 +1,6 @@
 ﻿using SystemWar.SolarSystem;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -15,19 +16,21 @@ namespace SystemWar.Screens
 
         internal static void Generate(SolarSystemSettings solarSystemSettings)
         {
+            //BasicEffect effect = new BasicEffect(SystemCore.GraphicsDevice);
+            Effect effect = EffectLoader.LoadEffect("flatshaded");
 
             StarHelper.CreateAndInitialiseSystemStar(ScaleHelper.Millions(1), StarHelper.BasicSunColor());
 
 
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
-                EffectLoader.LoadEffect("flatshaded"),
+               effect,
                 6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
             //earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), ScaleHelper.Millionths(10));
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
              NoiseGenerator.FastPlanet(2000),
-             EffectLoader.LoadEffect("flatshaded"),
+             effect,
              2000, Color.SaddleBrown.ChangeTone(10), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
             //moon.Orbit(earth, 20000, ScaleHelper.Tenths(0.1f));
 

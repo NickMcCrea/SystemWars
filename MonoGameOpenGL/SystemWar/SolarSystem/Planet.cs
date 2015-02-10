@@ -306,7 +306,7 @@ namespace MonoGameEngineCore.Procedural
             if (activePatches.ContainsKey(mid))
             {
                 PlanetNode node = activePatches[mid];
-                node.GetComponent<BasicEffectRenderComponent>().Visible = true;
+                //node.GetComponent<BasicEffectRenderComponent>().Visible = true;
                 node.remove = false;
                 return;
             }

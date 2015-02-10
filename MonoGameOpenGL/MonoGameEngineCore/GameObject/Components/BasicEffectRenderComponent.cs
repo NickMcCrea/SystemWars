@@ -25,7 +25,7 @@ namespace MonoGameEngineCore.GameObject.Components
             effect.FogEnabled = true;
             effect.FogColor = Color.CornflowerBlue.ToVector3();
             effect.FogStart = 50;
-            effect.FogEnd = 500;
+            effect.FogEnd = 1000;
             Visible = true;
         }
 
