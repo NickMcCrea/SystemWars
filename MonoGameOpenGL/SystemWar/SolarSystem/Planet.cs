@@ -33,15 +33,17 @@ namespace MonoGameEngineCore.Procedural
     public static class PlanetBuilder
     {
         private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
-        private static ConcurrentQueue<PlanetNode> finishedNodes;
-    
+        private static Dictionary<string, ConcurrentQueue<PlanetNode>> finishedNodes;
+
         public static int GetQueueSize()
         {
             return nodesAwaitingBuilding.Count;
         }
-        public static int GetBuiltNodesQueueSize()
+        public static int GetBuiltNodesQueueSize(string name)
         {
-            return finishedNodes.Count;
+            if (finishedNodes.ContainsKey(name))
+                return finishedNodes[name].Count;
+            return 0;
         }
 
         private static volatile bool quit = false;
@@ -50,7 +52,8 @@ namespace MonoGameEngineCore.Procedural
         static PlanetBuilder()
         {
             nodesAwaitingBuilding = new ConcurrentQueue<PlanetNode>();
-            finishedNodes = new ConcurrentQueue<PlanetNode>();
+            finishedNodes = new Dictionary<string, ConcurrentQueue<PlanetNode>>();
+
             for (int i = 0; i < numThreads; i++)
             {
                 Thread buildThread = new Thread(Update);
@@ -62,13 +65,16 @@ namespace MonoGameEngineCore.Procedural
 
         public static void Enqueue(PlanetNode nodeToBuild)
         {
+            if (!finishedNodes.ContainsKey(nodeToBuild.Planet.Name))
+                finishedNodes.Add(nodeToBuild.Planet.Name, new ConcurrentQueue<PlanetNode>());
+
             nodesAwaitingBuilding.Enqueue(nodeToBuild);
         }
 
         public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
             var node = new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize);
-            nodesAwaitingBuilding.Enqueue(node);
+            Enqueue(node);
         }
 
         public static void Update()
@@ -79,17 +85,19 @@ namespace MonoGameEngineCore.Procedural
                 if (nodesAwaitingBuilding.TryDequeue(out node))
                 {
                     node.BuildGeometry();
-                    finishedNodes.Enqueue(node);
+                    finishedNodes[node.Planet.Name].Enqueue(node);
                 }
                 Thread.Sleep(10);
             }
         }
 
-        public static bool GetBuiltNodes(out PlanetNode finishedNode)
+        public static bool GetBuiltNodes(string planetName, out PlanetNode finishedNode)
         {
+            if (finishedNodes.ContainsKey(planetName))
+                return finishedNodes[planetName].TryDequeue(out finishedNode);
 
-            bool success = finishedNodes.TryDequeue(out finishedNode);
-            return success;
+            finishedNode = null;
+            return false;
         }
     }
 
@@ -280,7 +288,7 @@ namespace MonoGameEngineCore.Procedural
 
 
         }
- 
+
         private float DistanceToPatch(Vector3 min, Vector3 max, float radius)
         {
             Vector3 mid1 = (min + max) / 2;
@@ -338,13 +346,13 @@ namespace MonoGameEngineCore.Procedural
             for (int i = 0; i < patchCountPerFrame; i++)
             {
                 PlanetNode finishedNode;
-                if (PlanetBuilder.GetBuiltNodes(out finishedNode))
+                if (PlanetBuilder.GetBuiltNodes(Name, out finishedNode))
                 {
                     AddPatch(finishedNode);
                 }
             }
 
-        
+
         }
 
         private void RemoveStaleNodes()
@@ -356,7 +364,7 @@ namespace MonoGameEngineCore.Procedural
                     nodesToRemove.Add(n);
             }
 
-            if (PlanetBuilder.GetBuiltNodesQueueSize() == 0 && PlanetBuilder.GetQueueSize() == 0)
+            if (PlanetBuilder.GetBuiltNodesQueueSize(Name) == 0 && PlanetBuilder.GetQueueSize() == 0)
             {
                 foreach (PlanetNode n in nodesToRemove)
                     RemovePatch(n);
