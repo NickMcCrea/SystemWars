@@ -12,6 +12,11 @@
             return x/1000f;
         }
 
+        public static float Millionths(float x)
+        {
+            return x/1000000f;
+        }
+
         public static float Hundreds(float x)
         {
             return x*100;

@@ -106,7 +106,7 @@ namespace MonoGameEngineCore.Procedural
     {
         private readonly IModule module;
         private readonly Effect testEffect;
-        private readonly float radius;
+        public readonly float radius;
         private float splitDistance;
         private float mergeDistance;
         public Matrix customProjection;
@@ -129,8 +129,8 @@ namespace MonoGameEngineCore.Procedural
         private float orbitSpeed;
         private double orbitRadius;
         private bool orbitEnabled;
-
         private float angle;
+
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
@@ -142,7 +142,7 @@ namespace MonoGameEngineCore.Procedural
             this.radius = radius;
 
             AddComponent(new HighPrecisionPosition());
-            AddComponent(new RotatorComponent(Vector3.Up, 0.00001f));
+
             Transform.SetPosition(position);
 
             splitDistance = radius * 4;
@@ -157,6 +157,15 @@ namespace MonoGameEngineCore.Procedural
 
             Initialise();
         }
+
+        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea,
+            Color land, Color mountains, float rotation)
+            : this(name, position, module, testEffect, radius, sea,
+                land, mountains)
+        {
+            AddComponent(new RotatorComponent(Vector3.Up, rotation));
+        }
+
 
         private void GenerateCustomProjectionMatrix(float far)
         {
@@ -297,7 +306,7 @@ namespace MonoGameEngineCore.Procedural
             if (activePatches.ContainsKey(mid))
             {
                 PlanetNode node = activePatches[mid];
-                node.GetComponent<EffectRenderComponent>().Visible = true;
+                node.GetComponent<BasicEffectRenderComponent>().Visible = true;
                 node.remove = false;
                 return;
             }
@@ -353,7 +362,7 @@ namespace MonoGameEngineCore.Procedural
 
             }
 
-       
+
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
@@ -380,7 +389,7 @@ namespace MonoGameEngineCore.Procedural
         }
 
         private void CalculateOrbit(GameTime gameTime)
-        {        
+        {
             //we're orbiting another body.
             if (orbitBody != null)
             {
@@ -394,9 +403,9 @@ namespace MonoGameEngineCore.Procedural
 
         private void CalcOrbit(GameTime gameTime, Vector3d posToOrbit)
         {
-         
-            Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius*System.Math.Sin(angle)), posToOrbit.Y,
-                posToOrbit.Z + (orbitRadius*System.Math.Cos(angle)));
+
+            Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius * System.Math.Sin(angle)), posToOrbit.Y,
+                posToOrbit.Z + (orbitRadius * System.Math.Cos(angle)));
 
             angle += orbitSpeed;
             if (angle > 360)

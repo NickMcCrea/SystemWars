@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Camera;
+using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
@@ -14,6 +15,17 @@ namespace MonoGameEngineCore.GameObject.Components
         public BasicEffectRenderComponent(BasicEffect effect)
         {
             this.effect = effect;
+            effect.EnableDefaultLighting();
+            effect.VertexColorEnabled = true;
+            effect.PreferPerPixelLighting = true;
+            effect.DirectionalLight1.Enabled = false;
+            effect.DirectionalLight2.Enabled = false;
+            effect.AmbientLightColor = SystemCore.ActiveScene.AmbientLight.LightColor.ToVector3();
+            effect.AmbientLightColor *= 0.1f;
+            effect.FogEnabled = true;
+            effect.FogColor = Color.CornflowerBlue.ToVector3();
+            effect.FogStart = 50;
+            effect.FogEnd = 500;
             Visible = true;
         }
 
@@ -29,6 +41,12 @@ namespace MonoGameEngineCore.GameObject.Components
             effect.View = SystemCore.ActiveCamera.View;
             effect.Projection = SystemCore.ActiveCamera.Projection;
 
+
+            DiffuseLight sun = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
+            effect.DirectionalLight0.Direction = sun.LightDirection;
+            effect.DirectionalLight0.DiffuseColor = sun.LightColor.ToVector3();
+      
+        
             SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
             SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
 

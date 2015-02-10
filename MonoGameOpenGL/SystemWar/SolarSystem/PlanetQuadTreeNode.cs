@@ -119,7 +119,7 @@ namespace MonoGameEngineCore.Procedural
 
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
-            this.AddComponent(new EffectRenderComponent(effect));
+            this.AddComponent(new BasicEffectRenderComponent(new BasicEffect(SystemCore.GraphicsDevice)));
 
 
             SetHighPrecisionPosition(this);
