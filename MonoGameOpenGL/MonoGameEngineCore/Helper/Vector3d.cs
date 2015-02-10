@@ -77,5 +77,12 @@ namespace MonoGameEngineCore.Helper
         {
             get { return Math.Sqrt((this.X * this.X) + (this.Y * this.Y) + (this.Z * this.Z)); }
         }
+
+        public Vector3d Normalize()
+        {
+            double length = this.Length;
+            Vector3d normalized = new Vector3d(X/length, Y/length, Z/length);
+            return normalized;
+        }
     }
 }

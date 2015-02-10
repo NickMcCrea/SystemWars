@@ -112,12 +112,31 @@ namespace SystemWar.SolarSystem
 
                 if (largeScalePositionComponent != null)
                 {
-                    Vector3d distanceFromCamera = largeScalePositionComponent.Position - cameraPosition;
-                    Vector3 renderPosition = distanceFromCamera.ToVector3();
+                    var renderPosition = GetRenderPosition(cameraPosition, largeScalePositionComponent.Position);
                     o.Transform.WorldMatrix.Translation = renderPosition;
                 }
             }
         }
+
+        public static Vector3 GetRenderPosition(Vector3d camPosition, Vector3d solarSystemPosition)
+        {
+            Vector3d distanceFromCamera = solarSystemPosition - camPosition;
+            Vector3 renderPosition = distanceFromCamera.ToVector3();
+            return renderPosition;
+        }
+
+        internal static double CalculateDistanceToPlanet(string planet, Vector3d position)
+        {
+            Planet p = SystemCore.GameObjectManager.GetObject(planet) as Planet;
+            var toPlanet = p.GetComponent<HighPrecisionPosition>().Position - position;
+            return toPlanet.Length;
+        }
+        internal static double CalculateDistanceToPlanet(Planet planet, Vector3d position)
+        {      
+            var toPlanet = planet.GetComponent<HighPrecisionPosition>().Position - position;
+            return toPlanet.Length;
+        }
+
     }
 
 

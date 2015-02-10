@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using SystemWar.SolarSystem;
 using BEPUutilities;
 using LibNoise;
 using Microsoft.Xna.Framework;
@@ -123,8 +124,12 @@ namespace MonoGameEngineCore.Procedural
         public bool visualisePatches = false;
         private decimal maxDepth = 8;
         private int siblingId;
+        private Planet orbitBody;
+        private Vector3d positionToOrbit;
+        private float orbitSpeed;
+        private bool orbitEnabled;
 
-
+        private float angle;
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
@@ -136,8 +141,7 @@ namespace MonoGameEngineCore.Procedural
             this.radius = radius;
 
             AddComponent(new HighPrecisionPosition());
-            //AddComponent(new RotatorComponent(Vector3.Up));
-
+            AddComponent(new RotatorComponent(Vector3.Up, 0.00001f));
             Transform.SetPosition(position);
 
             splitDistance = radius * 4;
@@ -160,6 +164,20 @@ namespace MonoGameEngineCore.Procedural
 
             customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, far);
+        }
+
+        public void Orbit(Vector3d positionToOrbit, float orbitSpeed)
+        {
+            this.positionToOrbit = positionToOrbit;
+            this.orbitSpeed = orbitSpeed;
+            orbitEnabled = true;
+        }
+
+        public void Orbit(Planet planetToOrbit, float orbitSpeed)
+        {
+            orbitBody = planetToOrbit;
+            this.orbitSpeed = orbitSpeed;
+            orbitEnabled = true;
         }
 
         private void Initialise()
@@ -302,6 +320,8 @@ namespace MonoGameEngineCore.Procedural
 
         public void Update(GameTime gameTime)
         {
+            if (orbitEnabled)
+                CalculateOrbit(gameTime);
 
             ICamera activeCamera = SystemCore.ActiveCamera;
 
@@ -311,6 +331,7 @@ namespace MonoGameEngineCore.Procedural
             float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
             GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
             var frustrum = new BoundingFrustum(activeCamera.View * customProjection);
+
 
             foreach (PlanetNode node in activePatches.Values)
             {
@@ -329,7 +350,7 @@ namespace MonoGameEngineCore.Procedural
 
             }
 
-
+       
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
@@ -353,6 +374,37 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
+        }
+
+        private void CalculateOrbit(GameTime gameTime)
+        {        
+            //we're orbiting another body.
+            if (orbitBody != null)
+            {
+                CalcOrbit(gameTime, orbitBody.GetComponent<HighPrecisionPosition>().Position);
+            }
+            else //we're orbiting an arbitrary point.
+            {
+                CalcOrbit(gameTime, positionToOrbit);
+            }
+        }
+
+        private void CalcOrbit(GameTime gameTime, Vector3d posToOrbit)
+        {
+         
+            var positionComponent = GetComponent<HighPrecisionPosition>();   
+            Vector3d toOrbitTarget = posToOrbit - positionComponent.Position;
+            double orbitRadius = toOrbitTarget.Length;
+
+            Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius*System.Math.Sin(angle)), posToOrbit.Y,
+                positionToOrbit.Z + (orbitRadius*System.Math.Cos(angle)));
+
+            angle += orbitSpeed;
+            if (angle > 360)
+                angle = 0;
+
+            //move us in the direction of the orbit.
+            Transform.SetPosition(newPos);
         }
 
         private void RemoveStaleNodes()
@@ -405,6 +457,18 @@ namespace MonoGameEngineCore.Procedural
         }
 
         public event EventHandler<EventArgs> UpdateOrderChanged;
+
+        internal void AddToOrbit(GameObject.GameObject ship)
+        {
+            if (!Children.Contains(ship))
+                Children.Add(ship);
+        }
+
+        internal void RemoveFromOrbit(GameObject.GameObject ship)
+        {
+            if (Children.Contains(ship))
+                Children.Remove(ship);
+        }
     }
 
 

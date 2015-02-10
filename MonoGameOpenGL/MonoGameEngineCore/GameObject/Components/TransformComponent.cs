@@ -36,7 +36,7 @@ namespace MonoGameEngineCore.GameObject.Components
             WorldMatrix.Translation = pos;
         }
 
-        internal void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
+        public void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
         {
 
             WorldMatrix.Translation -= OrbitPoint;

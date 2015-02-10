@@ -27,6 +27,7 @@ namespace SystemWar.Screens
         DiffuseLight sunLight;
         GameObject sun;
         Planet earthPlanet;
+        Planet moon;
         Vector3 collisionPoint;
         RayCastResult result;
 
@@ -54,14 +55,15 @@ namespace SystemWar.Screens
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
-            ship.Transform.SetPosition(new Vector3d(150040000, 0, 0));
-
+          
 
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
             sun = SystemCore.GameObjectManager.GetObject("sun");
 
 
             earthPlanet = SystemCore.GameObjectManager.GetObject("earth") as Planet;
+            moon = SystemCore.GameObjectManager.GetObject("moon") as Planet;
+            ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position);
 
             SolarSystemHelper.AdjustObjectsForRendering(ship.GetComponent<HighPrecisionPosition>().Position);
 
@@ -84,7 +86,26 @@ namespace SystemWar.Screens
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-          
+            if(input.KeyPress(Keys.Enter))
+                   ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position);
+
+            if (input.KeyPress(Keys.M))
+                ship.Transform.SetPosition(moon.GetComponent<HighPrecisionPosition>().Position);
+
+            double distanceToPlanet = SolarSystemHelper.CalculateDistanceToPlanet(earthPlanet,
+                ship.GetComponent<HighPrecisionPosition>().Position);
+
+
+            if (distanceToPlanet < 12000)
+            {
+                earthPlanet.AddToOrbit(ship);
+            }
+            else
+            {
+                earthPlanet.RemoveFromOrbit(ship);
+            }
+
+
             base.Update(gameTime);
         }
 

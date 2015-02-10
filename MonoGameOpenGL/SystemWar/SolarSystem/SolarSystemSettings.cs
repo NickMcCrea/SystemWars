@@ -8,4 +8,5 @@ namespace SystemWar.Screens
     class SolarSystemSettings
     {
     }
+
 }

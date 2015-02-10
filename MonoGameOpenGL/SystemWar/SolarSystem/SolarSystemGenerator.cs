@@ -14,22 +14,26 @@ namespace SystemWar.Screens
         internal static void Generate(SolarSystemSettings solarSystemSettings)
         {
 
-            StarHelper.CreateAndInitialiseSystemStar(1000000f, StarHelper.BasicSunColor());
+            StarHelper.CreateAndInitialiseSystemStar(ScaleHelper.Millions(1), StarHelper.BasicSunColor());
 
 
-            Planet earth = new Planet("earth", new Vector3d(150000000, 0, 0),
+            Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
                 EffectLoader.LoadEffect("flatshaded"),
                 6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
+            earth.Orbit(Vector3d.Zero, 0.0000001f);
 
-            Planet moon = new Planet("moon", new Vector3d(150050000, 0, 0),
+            Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 50000, 0, 0),
              NoiseGenerator.FastPlanet(2000),
              EffectLoader.LoadEffect("flatshaded"),
-             6000, Color.Black, Color.Black, Color.Black.ChangeTone(-10));
+             6000, Color.SaddleBrown.ChangeTone(10), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
+            moon.Orbit(earth, 0.001f);
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
+            
 
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
+
             
         }
 
