@@ -127,6 +127,7 @@ namespace MonoGameEngineCore.Procedural
         private Planet orbitBody;
         private Vector3d positionToOrbit;
         private float orbitSpeed;
+        private double orbitRadius;
         private bool orbitEnabled;
 
         private float angle;
@@ -166,15 +167,17 @@ namespace MonoGameEngineCore.Procedural
                 SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, far);
         }
 
-        public void Orbit(Vector3d positionToOrbit, float orbitSpeed)
+        public void Orbit(Vector3d positionToOrbit, double orbitRadius, float orbitSpeed)
         {
             this.positionToOrbit = positionToOrbit;
             this.orbitSpeed = orbitSpeed;
             orbitEnabled = true;
+            this.orbitRadius = orbitRadius;
         }
 
-        public void Orbit(Planet planetToOrbit, float orbitSpeed)
+        public void Orbit(Planet planetToOrbit, double orbitRadius, float orbitSpeed)
         {
+            this.orbitRadius = orbitRadius;
             orbitBody = planetToOrbit;
             this.orbitSpeed = orbitSpeed;
             orbitEnabled = true;
@@ -392,12 +395,8 @@ namespace MonoGameEngineCore.Procedural
         private void CalcOrbit(GameTime gameTime, Vector3d posToOrbit)
         {
          
-            var positionComponent = GetComponent<HighPrecisionPosition>();   
-            Vector3d toOrbitTarget = posToOrbit - positionComponent.Position;
-            double orbitRadius = toOrbitTarget.Length;
-
             Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius*System.Math.Sin(angle)), posToOrbit.Y,
-                positionToOrbit.Z + (orbitRadius*System.Math.Cos(angle)));
+                posToOrbit.Z + (orbitRadius*System.Math.Cos(angle)));
 
             angle += orbitSpeed;
             if (angle > 360)

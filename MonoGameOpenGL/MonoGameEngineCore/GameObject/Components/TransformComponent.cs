@@ -21,7 +21,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Initialise()
         {
-            //if a highprecisionposition component is detected, the transform will assume a coordinate system where the camera 
+            //if a high precisionposition component is detected, the transform will assume a coordinate system where the camera 
             //is always centered at zero, and transformations will behave accordingly.
             highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
             if (highPrecisionPosition != null)

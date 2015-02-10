@@ -21,16 +21,16 @@ namespace SystemWar.Screens
                 NoiseGenerator.FastPlanet(6000),
                 EffectLoader.LoadEffect("flatshaded"),
                 6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
-            earth.Orbit(Vector3d.Zero, 0.0000001f);
+            earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), 0.0000001f);
 
-            Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 50000, 0, 0),
+            Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
              NoiseGenerator.FastPlanet(2000),
              EffectLoader.LoadEffect("flatshaded"),
-             6000, Color.SaddleBrown.ChangeTone(10), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
-            moon.Orbit(earth, 0.001f);
+             2000, Color.SaddleBrown.ChangeTone(10), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
+            moon.Orbit(earth, 20000, 0.001f);
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
             
 
 
