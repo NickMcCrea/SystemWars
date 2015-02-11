@@ -335,6 +335,17 @@ namespace MonoGameEngineCore.Procedural
             if (orbitEnabled)
                 CalculateOrbit(gameTime);
 
+            foreach (GameObject.GameObject child in Children)
+            {
+                OrbiterComponent comp = child.GetComponent<OrbiterComponent>();
+                comp.Axis = Vector3.Up;
+               var orbitPoint =
+                    SolarSystemHelper.GetRenderPosition(child.GetComponent<HighPrecisionPosition>().Position,
+                        GetComponent<HighPrecisionPosition>().Position);
+
+                comp.OrbitPoint = orbitPoint;
+            }
+
             ICamera activeCamera = SystemCore.ActiveCamera;
 
             Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
@@ -354,11 +365,7 @@ namespace MonoGameEngineCore.Procedural
                 if (node.depth == 1)
                     continue;
 
-                //if (!frustrum.Intersects(node.boundingSphere))
-                //    node.GetComponent<EffectRenderComponent>().Visible = false;
-                //else
-                //    node.GetComponent<EffectRenderComponent>().Visible = true;
-
+                
 
             }
 
@@ -469,13 +476,20 @@ namespace MonoGameEngineCore.Procedural
         internal void AddToOrbit(GameObject.GameObject ship)
         {
             if (!Children.Contains(ship))
+            {
+                ship.AddAndInitialise(new OrbiterComponent(Vector3.Up, Vector3.Zero, GetComponent<RotatorComponent>().RotationSpeed));
                 Children.Add(ship);
+            }
         }
 
         internal void RemoveFromOrbit(GameObject.GameObject ship)
         {
             if (Children.Contains(ship))
+            {
+                var orbitComponent = ship.GetComponent<OrbiterComponent>();
+                ship.RemoveComponent(orbitComponent);
                 Children.Remove(ship);
+            }
         }
     }
 

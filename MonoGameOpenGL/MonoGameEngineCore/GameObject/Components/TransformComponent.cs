@@ -39,9 +39,9 @@ namespace MonoGameEngineCore.GameObject.Components
         public void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
         {
 
-            WorldMatrix.Translation -= OrbitPoint;
-            WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
             WorldMatrix.Translation += OrbitPoint;
+            WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
+            WorldMatrix.Translation -= OrbitPoint;
         }
 
         public void SetPosition(Vector3d position)
