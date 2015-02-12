@@ -65,8 +65,8 @@ namespace MonoGameEngineCore.Procedural
     
             //mountains scaled to 1000th the radius, and biased that amount upwards.
             ScaleBiasOutput fastPlanetMountainsScaled = new ScaleBiasOutput(fastPlanetMountainsBase);
-            fastPlanetMountainsScaled.Scale = planetRadius / 500;
-            fastPlanetMountainsScaled.Bias = planetRadius / 500;
+            fastPlanetMountainsScaled.Scale = planetRadius / 200;
+            fastPlanetMountainsScaled.Bias = planetRadius / 200;
 
             FastTurbulence fastPlanetMountains = new FastTurbulence(fastPlanetMountainsScaled);
             fastPlanetMountains.Power = 1;
