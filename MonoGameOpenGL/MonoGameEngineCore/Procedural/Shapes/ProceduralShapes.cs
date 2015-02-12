@@ -400,7 +400,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        internal void Scale(float scaleFactor)
+        public void Scale(float scaleFactor)
         {
             Vector3 midPoint = GetMidPoint();
 
@@ -497,6 +497,7 @@ namespace MonoGameEngineCore.Procedural
             newShape.FlipNormals();
             return newShape;
         }
+
     }
 
     public class ProceduralCuboid : ProceduralShape

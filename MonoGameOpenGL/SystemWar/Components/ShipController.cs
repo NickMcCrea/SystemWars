@@ -46,8 +46,8 @@ namespace MonoGameEngineCore.GameObject.Components
         
 
             float bleedRate = 0.95f;
-            float turnRate = 0.00005f;
-            float thrustRate = 0.0005f;
+            float turnRate = 0.00004f;
+            float thrustRate = 0.0003f;
             float rightTrigger = inputManager.GetRightTrigger();
             float leftTrigger = inputManager.GetLeftTrigger();
             float leftStickHorizontal = inputManager.GetLeftStickState().X;
