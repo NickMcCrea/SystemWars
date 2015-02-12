@@ -25,19 +25,32 @@ namespace SystemWar.Screens
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
                effect,
-                6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10),0.0001f);
+                6000, Color.Navy, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10),0.0001f);
             earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
-             NoiseGenerator.FastPlanet(1000),
+             NoiseGenerator.RidgedMultiFractal(0.02f),
              effect,
-             1000, Color.DarkRed.ChangeTone(10), Color.DarkRed, Color.DarkRed.ChangeTone(-10));
-            moon.Orbit(earth, 20000, ScaleHelper.Millionths(100f));
+             2000, Color.DarkGray.ChangeTone(10), Color.DarkGray, Color.DarkGray.ChangeTone(-10), 0.0001f);
+            moon.Orbit(earth, 20000, ScaleHelper.Millionths(1000f));
+
+            Planet moon2 = new Planet("moon2", new Vector3d(ScaleHelper.Millions(20) + 40000, 0, 0),
+            NoiseGenerator.RidgedMultiFractal(0.02f),
+            effect,
+            1000, Color.DarkRed.ChangeTone(10), Color.DarkRed, Color.DarkRed.ChangeTone(-10), 0.00005f);
+            moon2.Orbit(earth, 40000, ScaleHelper.Millionths(500f));
+
+            Planet moon3 = new Planet("moon3", new Vector3d(ScaleHelper.Millions(20) + 45000, 0, 0),
+           NoiseGenerator.RidgedMultiFractal(0.02f),
+           effect,
+           500, Color.DarkSlateGray.ChangeTone(10), Color.DarkSlateGray, Color.DarkSlateGray.ChangeTone(-10), 0.00005f);
+            moon3.Orbit(moon2, 5000, ScaleHelper.Millionths(5000f));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
-            
-
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon2);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon3);
+         
 
             
         }

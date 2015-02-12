@@ -87,7 +87,7 @@ namespace SystemWar.Screens
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
             if (input.KeyPress(Keys.Enter))
-                ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0));
+                ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(6500, 0, 0));
 
             if (input.KeyPress(Keys.M))
                 ship.Transform.SetPosition(moon.GetComponent<HighPrecisionPosition>().Position);
