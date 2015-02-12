@@ -55,7 +55,7 @@ namespace SystemWar.Screens
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
-          
+
 
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
             sun = SystemCore.GameObjectManager.GetObject("sun");
@@ -86,26 +86,29 @@ namespace SystemWar.Screens
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-            if(input.KeyPress(Keys.Enter))
-                   ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000,0,0));
+            if (input.KeyPress(Keys.Enter))
+                ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0));
 
             if (input.KeyPress(Keys.M))
                 ship.Transform.SetPosition(moon.GetComponent<HighPrecisionPosition>().Position);
 
-            double distanceToPlanet = SolarSystemHelper.CalculateDistanceToPlanet(earthPlanet,
+
+
+            List<GameObject> planets = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Planet);
+            foreach (Planet p in planets)
+            {
+                double distanceToPlanet = SolarSystemHelper.CalculateDistanceToPlanet(p,
                 ship.GetComponent<HighPrecisionPosition>().Position);
+                if (distanceToPlanet < p.radius * 2)
+                {
+                    p.AddToInfluence(ship);
 
-
-            if (distanceToPlanet < 12000)
-            {
-                earthPlanet.AddToOrbit(ship);
-                
+                }
+                else
+                {
+                    p.RemoveFromInfluence(ship);
+                }
             }
-            else
-            {
-                earthPlanet.RemoveFromOrbit(ship);
-            }
-
 
             base.Update(gameTime);
         }
@@ -142,10 +145,10 @@ namespace SystemWar.Screens
             DebugText.Write("Draw calls " + GameObjectManager.drawCalls.ToString());
             DebugText.Write("Primitives " + GameObjectManager.primitives.ToString());
             DebugText.Write("Verts " + GameObjectManager.verts.ToString());
-         
+
             oldPos = currentPos;
 
-          
+
 
 
             DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 5f), Color.Red);

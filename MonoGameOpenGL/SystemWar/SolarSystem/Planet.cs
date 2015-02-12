@@ -130,6 +130,7 @@ namespace MonoGameEngineCore.Procedural
         private double orbitRadius;
         private bool orbitEnabled;
         private float angle;
+        private Vector3d positionLastFrame;
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
@@ -335,25 +336,50 @@ namespace MonoGameEngineCore.Procedural
             if (orbitEnabled)
                 CalculateOrbit(gameTime);
 
+            Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
+
             foreach (GameObject.GameObject child in Children)
             {
-                OrbiterComponent comp = child.GetComponent<OrbiterComponent>();
-                comp.Axis = Vector3.Up;
-               var orbitPoint =
-                    SolarSystemHelper.GetRenderPosition(child.GetComponent<HighPrecisionPosition>().Position,
-                        GetComponent<HighPrecisionPosition>().Position);
+                var highPrecisionComponent = child.GetComponent<HighPrecisionPosition>();
+                Vector3d movementLastFrame = planetCenter - positionLastFrame;
+                highPrecisionComponent.Position += movementLastFrame;
+               
+                //we want to rotate the high precision component around the up vector, around the planet center.
 
-                comp.OrbitPoint = orbitPoint;
+                if (GetComponent<RotatorComponent>() != null)
+                {
+                    double angleRotatedLastFrame = GetComponent<RotatorComponent>().RotationSpeed * gameTime.ElapsedGameTime.TotalMilliseconds;
+
+
+                    double s = System.Math.Sin(angleRotatedLastFrame);
+                    double c = System.Math.Cos(angleRotatedLastFrame);
+                    Vector3d shipPos = highPrecisionComponent.Position;
+                    shipPos.X -= planetCenter.X;
+                    shipPos.Z -= planetCenter.Z;
+
+                    double xNew = shipPos.X * c + shipPos.Z * s;
+                    double zNew = -shipPos.X * s + shipPos.Z * c;
+
+                    shipPos.X = xNew + planetCenter.X;
+                    shipPos.Z = zNew + planetCenter.Z;
+
+                    highPrecisionComponent.Position = shipPos;
+
+                    child.Transform.Rotate(Vector3.Up, (float)angleRotatedLastFrame);
+                   
+                }
+              
+           
             }
 
             ICamera activeCamera = SystemCore.ActiveCamera;
 
-            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
-            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
-            float surfaceDistance = distanceToCenterOfPlanet - radius;
-            float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
-            GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
-            var frustrum = new BoundingFrustum(activeCamera.View * customProjection);
+            //Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
+            //float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
+            //float surfaceDistance = distanceToCenterOfPlanet - radius;
+            //float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
+            //GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
+            //var frustrum = new BoundingFrustum(activeCamera.View * customProjection);
 
 
             foreach (PlanetNode node in activePatches.Values)
@@ -392,6 +418,7 @@ namespace MonoGameEngineCore.Procedural
                 }
             }
 
+            positionLastFrame = GetComponent<HighPrecisionPosition>().Position;
 
         }
 
@@ -473,22 +500,20 @@ namespace MonoGameEngineCore.Procedural
 
         public event EventHandler<EventArgs> UpdateOrderChanged;
 
-        internal void AddToOrbit(GameObject.GameObject ship)
+        internal void AddToInfluence(GameObject.GameObject gameObject)
         {
-            if (!Children.Contains(ship))
+            if (!Children.Contains(gameObject))
             {
-                ship.AddAndInitialise(new OrbiterComponent(Vector3.Up, Vector3.Zero, GetComponent<RotatorComponent>().RotationSpeed));
-                Children.Add(ship);
+               
+                Children.Add(gameObject);
             }
         }
 
-        internal void RemoveFromOrbit(GameObject.GameObject ship)
+        internal void RemoveFromInfluence(GameObject.GameObject gameObject)
         {
-            if (Children.Contains(ship))
+            if (Children.Contains(gameObject))
             {
-                var orbitComponent = ship.GetComponent<OrbiterComponent>();
-                ship.RemoveComponent(orbitComponent);
-                Children.Remove(ship);
+                Children.Remove(gameObject);
             }
         }
     }

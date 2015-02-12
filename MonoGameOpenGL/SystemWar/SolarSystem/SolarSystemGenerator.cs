@@ -25,14 +25,14 @@ namespace SystemWar.Screens
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
                effect,
-                6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0.0001f);
-            //earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), ScaleHelper.Millionths(0.01f));
+                6000, Color.CornflowerBlue, Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10),0.0001f);
+            earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
              NoiseGenerator.FastPlanet(1000),
              effect,
              1000, Color.DarkRed.ChangeTone(10), Color.DarkRed, Color.DarkRed.ChangeTone(-10));
-            moon.Orbit(earth, 20000, ScaleHelper.Millionths(1f));
+            moon.Orbit(earth, 20000, ScaleHelper.Millionths(100f));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
