@@ -17,7 +17,7 @@ namespace SystemWar
         private float pitchThrust, desiredPitchThrust;
         private float rollThrust, desiredRollThrust;
 
-        private float mainThrustAlterationSpeed = 0.05f;
+        private float mainThrustAlterationSpeed = 0.01f;
         private float otherThrustAlterationSpeed = 0.04f;
         private float maxThrust = 1;
         private float minThrust = -1;
@@ -81,20 +81,40 @@ namespace SystemWar
             {
                 currentMainThrust = MathHelper.Lerp(currentMainThrust, desiredMainThrust, mainThrustAlterationSpeed);
             }
+            else
+            {
+                desiredMainThrust = 0;
+                currentMainThrust = 0;
+            }
 
             if (!MonoMathHelper.AlmostEquals(desiredRollThrust, rollThrust, threshold))
             {
                 rollThrust = MathHelper.Lerp(rollThrust, desiredRollThrust, otherThrustAlterationSpeed);
+            }
+            else
+            {
+                rollThrust = 0;
+                desiredRollThrust = 0;
             }
 
             if (!MonoMathHelper.AlmostEquals(desiredPitchThrust, pitchThrust, threshold))
             {
                 pitchThrust = MathHelper.Lerp(pitchThrust, desiredPitchThrust, otherThrustAlterationSpeed);
             }
+            else
+            {
+                pitchThrust = 0;
+                desiredPitchThrust = 0;
+            }
 
             if (!MonoMathHelper.AlmostEquals(desiredYawThrust, yawThrust, threshold))
             {
                 yawThrust = MathHelper.Lerp(yawThrust, desiredYawThrust, otherThrustAlterationSpeed);
+            }
+            else
+            {
+                yawThrust = 0;
+                desiredYawThrust = 0;
             }
 
             if (currentMainThrust != 0)
@@ -118,13 +138,14 @@ namespace SystemWar
 
             DebugText.Write(currentMainThrust.ToString());
             DebugText.Write(rollThrust.ToString());
+
+
             velocity *= mainThrustBleed;
+
             desiredRollThrust *= otherThrustBleed;
             desiredPitchThrust *= otherThrustBleed;
             desiredYawThrust *= otherThrustBleed;
-            //ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left, pitch);
-            // ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Forward, roll);
-            // ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Up, yaw);
+            
         }
 
         public int UpdateOrder { get; set; }
