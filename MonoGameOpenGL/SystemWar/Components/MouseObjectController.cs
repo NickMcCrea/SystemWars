@@ -6,6 +6,10 @@ namespace MonoGameEngineCore.GameObject.Components
 {
     public class MouseObjectController : IComponent, IUpdateable
     {
+        private Vector2 mouseSteer;
+
+        float movementSpeed = 1f;
+
         public GameObject ParentObject
         {
             get;
@@ -33,13 +37,17 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Update(GameTime gameTime)
         {
-            float movementSpeed = 1f;
+
+            if (inputManager.ScrollDelta > 0)
+                movementSpeed *= 2;
+            if (inputManager.ScrollDelta < 0)
+                movementSpeed /= 2;
 
             Vector3 translation = Vector3.Zero;
             if (inputManager.IsKeyDown(Keys.Left))
-                translation += (ParentObject.Transform.WorldMatrix.Left);
+                ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Forward, -0.01f);
             if (inputManager.IsKeyDown(Keys.Right))
-                translation -= (ParentObject.Transform.WorldMatrix.Left);
+                ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Forward, 0.01f);
 
             if (inputManager.IsKeyDown(Keys.Up))
                 translation += (ParentObject.Transform.WorldMatrix.Forward);
@@ -56,12 +64,18 @@ namespace MonoGameEngineCore.GameObject.Components
             if (inputManager.IsKeyDown(Keys.NumPad0))
                 movementSpeed = 0.1f;
 
+            int deadZoneSize = 30;
+            if (inputManager.MouseOffsetFromCenter.X > deadZoneSize || inputManager.MouseOffsetFromCenter.X < -deadZoneSize
+                || inputManager.MouseOffsetFromCenter.Y < -deadZoneSize || inputManager.MouseOffsetFromCenter.Y > deadZoneSize)
+                mouseSteer = new Vector2(inputManager.MouseOffsetFromCenter.X, inputManager.MouseOffsetFromCenter.Y);
+
+
+            mouseSteer *= 0.000005f;
 
 
             ParentObject.Transform.Translate(translation * movementSpeed);
-
-            ParentObject.Transform.Rotate(Vector3.Up, -inputManager.MouseDelta.X * gameTime.ElapsedGameTime.Milliseconds * 0.001f);
-            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left, inputManager.MouseDelta.Y * gameTime.ElapsedGameTime.Milliseconds * 0.001f);
+            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Up, -mouseSteer.X * gameTime.ElapsedGameTime.Milliseconds);
+            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left, mouseSteer.Y * gameTime.ElapsedGameTime.Milliseconds);
 
 
         }

@@ -198,5 +198,10 @@ namespace MonoGameEngineCore.Helper
         {
             return vector3 + (RandomNormalVector3 * p);
         }
+
+        public static float GetRandomeAngle()
+        {
+            return GetRandomFloat(0, MathHelper.TwoPi);
+        }
     }
 }

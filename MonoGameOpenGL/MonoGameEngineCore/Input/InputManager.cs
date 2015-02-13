@@ -161,9 +161,10 @@ namespace MonoGameEngineCore
         private GamePadState oldGamePadState;
         private GamePadState currentGamePadState;
         private Dictionary<string,List<InputBinding>> inputBindings;
-
+        private Point screenMidPoint;
         public Point MouseDelta { get; private set; }
-
+        public Point MouseOffsetFromCenter { get; private set; }
+        public int ScrollDelta { get; private set; }
         public Point MousePosition
         {
             get;
@@ -176,6 +177,12 @@ namespace MonoGameEngineCore
             currentKeyboardState = Keyboard.GetState();
             currentGamePadState = GamePad.GetState(currentIndex);
             inputBindings =new Dictionary<string, List<InputBinding>>();
+            screenMidPoint = new Point(SystemCore.GraphicsDevice.Viewport.Width/2,
+                SystemCore.GraphicsDevice.Viewport.Height/2);
+
+
+
+
         }
 
         public void Update(GameTime gameTime)
@@ -184,7 +191,7 @@ namespace MonoGameEngineCore
             CalculateMouseDelta();
             MousePosition = currentMouseState.Position;
             EvaluateBindings(gameTime);
-           
+          
         }
 
         private void EvaluateBindings(GameTime gametime)
@@ -262,6 +269,11 @@ namespace MonoGameEngineCore
         public void CalculateMouseDelta()
         {
             MouseDelta = currentMouseState.Position - oldMouseState.Position;
+
+            MouseOffsetFromCenter = new Point(currentMouseState.Position.X - screenMidPoint.X,
+                currentMouseState.Position.Y - screenMidPoint.Y);
+
+            ScrollDelta = currentMouseState.ScrollWheelValue - oldMouseState.ScrollWheelValue;
         }
 
         public Vector2 GetLeftStickState()

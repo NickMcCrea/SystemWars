@@ -129,7 +129,7 @@ namespace MonoGameEngineCore.Procedural
         private float orbitSpeed;
         private double orbitRadius;
         private bool orbitEnabled;
-        private float angle;
+        public  float orbitAngle;
         private Vector3d positionLastFrame;
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
@@ -438,12 +438,10 @@ namespace MonoGameEngineCore.Procedural
         private void CalcOrbit(GameTime gameTime, Vector3d posToOrbit)
         {
 
-            Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius * System.Math.Sin(angle)), posToOrbit.Y,
-                posToOrbit.Z + (orbitRadius * System.Math.Cos(angle)));
+            Vector3d newPos = new Vector3d(posToOrbit.X + (orbitRadius * System.Math.Sin(orbitAngle)), posToOrbit.Y,
+                posToOrbit.Z + (orbitRadius * System.Math.Cos(orbitAngle)));
 
-            angle += orbitSpeed;
-            if (angle > 360)
-                angle = 0;
+            orbitAngle += orbitSpeed;
 
             //move us in the direction of the orbit.
             Transform.SetPosition(newPos);

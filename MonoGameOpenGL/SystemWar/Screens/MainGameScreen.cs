@@ -60,22 +60,22 @@ namespace SystemWar.Screens
             cockpit.SetColor(Color.DarkGray);
             cockpit.Scale(0.7f);
 
-            var panel = SystemWarShapes.CockpitPanel();
-            panel.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(45)));
-            panel.Translate(Vector3.Forward*2 + Vector3.Left * 1.1f + Vector3.Up * 0.5f);
-            panel.Scale(0.2f);
-            panel.SetColor(Color.DarkGray);
+            //var panel = SystemWarShapes.CockpitPanel();
+            //panel.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(45)));
+            //panel.Translate(Vector3.Forward*2 + Vector3.Left * 1.1f + Vector3.Up * 0.5f);
+            //panel.Scale(0.2f);
+            //panel.SetColor(Color.DarkGray);
 
            
-            var panel2 = SystemWarShapes.CockpitPanel();
-            panel2.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(-45)));
-            panel2.Translate(Vector3.Forward * 2 + Vector3.Right * 1.1f + Vector3.Up * 0.5f);
-            panel2.Scale(0.2f);
-            panel2.SetColor(Color.DarkGray);
+            //var panel2 = SystemWarShapes.CockpitPanel();
+            //panel2.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(-45)));
+            //panel2.Translate(Vector3.Forward * 2 + Vector3.Right * 1.1f + Vector3.Up * 0.5f);
+            //panel2.Scale(0.2f);
+            //panel2.SetColor(Color.DarkGray);
 
-            var finalShape = ProceduralShape.Combine(cockpit, panel, panel2);
+            //var finalShape = ProceduralShape.Combine(cockpit, panel, panel2);
 
-            ship.AddComponent(new RenderGeometryComponent(finalShape));
+            ship.AddComponent(new RenderGeometryComponent(cockpit));
             ship.AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("flatshaded")));
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
