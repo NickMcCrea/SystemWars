@@ -23,7 +23,7 @@ namespace SystemWar.Screens
 {
     public class MainGameScreen : Screen
     {
-        GameObject ship;
+        Ship ship;
         Vector3d oldPos;
         DiffuseLight sunLight;
         GameObject sun;
@@ -46,12 +46,12 @@ namespace SystemWar.Screens
             SolarSystemGenerator.Generate(solarSystemSettings);
 
 
-            ship = new GameObject("ship");
+            ship = new Ship("ship");
             ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
             ship.AddComponent(new ShipController());
-            ship.AddComponent(new MouseObjectController());
+            ship.AddComponent(new MouseKeyboardShipController());
 
 
             var cockpit = SystemWarShapes.CockpitBar();
@@ -143,7 +143,7 @@ namespace SystemWar.Screens
             SystemCore.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //PrintDebugInfo(gameTime);
-
+           
             base.Render(gameTime);
         }
 
