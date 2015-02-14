@@ -40,38 +40,35 @@ namespace MonoGameEngineCore.GameObject.Components
         public void Update(GameTime gameTime)
         {
 
-            if (inputManager.IsKeyDown(Keys.W))
-                ship.AlterThrust(0.1f);
-            if (inputManager.IsKeyDown(Keys.S))
-                ship.AlterThrust(-0.1f);
+
+            float thrustChange = 0.1f;
+            float rollPitchYawChange = 0.01f;
+            if (inputManager.KeyPress(Keys.W))
+                ship.AlterThrust(thrustChange);
+            if (inputManager.KeyPress(Keys.S))
+                ship.AlterThrust(-thrustChange/2);
             if (inputManager.IsKeyDown(Keys.A))
-                ship.Roll(-0.01f);
+                ship.Roll(-rollPitchYawChange);
             if (inputManager.IsKeyDown(Keys.D))
-                ship.Roll(0.01f);
+                ship.Roll(rollPitchYawChange);
           
 
             if (inputManager.IsKeyDown(Keys.Up))
-               ship.Pitch(0.01f);
+                ship.Pitch(rollPitchYawChange);
             if (inputManager.IsKeyDown(Keys.Down))
-               ship.Pitch(-0.01f);
+                ship.Pitch(-rollPitchYawChange);
             if (inputManager.IsKeyDown(Keys.Left))
-                ship.Yaw(0.01f);
+                ship.Yaw(rollPitchYawChange);
             if (inputManager.IsKeyDown(Keys.Right))
-                ship.Yaw(-0.01f);
+                ship.Yaw(-rollPitchYawChange);
 
 
 
 
-            int deadZoneSize = 30;
-            //if (inputManager.MouseOffsetFromCenter.X > deadZoneSize || inputManager.MouseOffsetFromCenter.X < -deadZoneSize
-            //    || inputManager.MouseOffsetFromCenter.Y < -deadZoneSize || inputManager.MouseOffsetFromCenter.Y > deadZoneSize)
-            //    mouseSteer = new Vector2(inputManager.MouseOffsetFromCenter.X, inputManager.MouseOffsetFromCenter.Y);
+            
+        
 
-
-            //mouseSteer *= 0.000005f;
-
-            //ship.Yaw(-mouseSteer.X);
-            //ship.Pitch(mouseSteer.Y);
+            
 
         }
 

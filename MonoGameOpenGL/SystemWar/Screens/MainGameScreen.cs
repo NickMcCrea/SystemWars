@@ -31,6 +31,7 @@ namespace SystemWar.Screens
         Planet moon;
         Vector3 collisionPoint;
         RayCastResult result;
+        bool firstTimePlacement = false;
 
         public MainGameScreen()
             : base()
@@ -85,12 +86,12 @@ namespace SystemWar.Screens
             sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
             sun = SystemCore.GameObjectManager.GetObject("sun");
 
-
+         
             earthPlanet = SystemCore.GameObjectManager.GetObject("earth") as Planet;
             moon = SystemCore.GameObjectManager.GetObject("moon") as Planet;
-            ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position);
+          
+            
 
-            SolarSystemHelper.AdjustObjectsForRendering(ship.GetComponent<HighPrecisionPosition>().Position);
 
         }
 
@@ -133,6 +134,12 @@ namespace SystemWar.Screens
                 {
                     p.RemoveFromInfluence(ship);
                 }
+            }
+
+            if (!firstTimePlacement)
+            {
+                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(0, 0, 50000);
+                firstTimePlacement = true;
             }
 
             base.Update(gameTime);

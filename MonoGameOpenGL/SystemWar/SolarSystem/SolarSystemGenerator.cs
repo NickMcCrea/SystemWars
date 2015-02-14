@@ -26,21 +26,21 @@ namespace SystemWar.Screens
                 NoiseGenerator.FastPlanet(6000),
                effect,
                 6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10));
-            //earth.Orbit(Vector3d.Zero,ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
+            earth.Orbit(Vector3d.Zero, ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
              NoiseGenerator.RidgedMultiFractal(0.02f),
              effect,
              2000, Color.DarkGray.ChangeTone(10), Color.DarkGray, Color.DarkGray.ChangeTone(-10));
-            //moon.Orbit(earth, 20000, ScaleHelper.Millionths(1000f));
-           // moon.orbitAngle = RandomHelper.GetRandomeAngle();
+            moon.Orbit(earth, 20000, ScaleHelper.Millionths(1000f));
+            moon.orbitAngle = RandomHelper.GetRandomeAngle();
 
             Planet moon2 = new Planet("moon2", new Vector3d(ScaleHelper.Millions(20) + 40000, 0, 0),
             NoiseGenerator.RidgedMultiFractal(0.02f),
             effect,
             1000, Color.SandyBrown.ChangeTone(-80), Color.SandyBrown.ChangeTone(-90), Color.SandyBrown.ChangeTone(-100));
-            //moon2.Orbit(earth, 40000, ScaleHelper.Millionths(500f));
-           // moon2.orbitAngle = RandomHelper.GetRandomeAngle();
+            moon2.Orbit(earth, 40000, ScaleHelper.Millionths(500f));
+            moon2.orbitAngle = RandomHelper.GetRandomeAngle();
 
             Planet moon3 = new Planet("moon3", new Vector3d(ScaleHelper.Millions(20) + 45000, 0, 0),
            NoiseGenerator.RidgedMultiFractal(0.02f),
@@ -53,9 +53,9 @@ namespace SystemWar.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon2);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(moon3);
-         
 
-            
+
+
         }
 
         public static Color GetRandomSeaColor()

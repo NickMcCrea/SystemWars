@@ -15,6 +15,7 @@ using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = Microsoft.Xna.Framework.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
+using SystemWar;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -504,6 +505,10 @@ namespace MonoGameEngineCore.Procedural
             {
                
                 Children.Add(gameObject);
+                if (gameObject is Ship)
+                {
+                    ((Ship)gameObject).SetInAtmosphere(this);
+                }
             }
         }
 
@@ -512,6 +517,10 @@ namespace MonoGameEngineCore.Procedural
             if (Children.Contains(gameObject))
             {
                 Children.Remove(gameObject);
+                if (gameObject is Ship)
+                {
+                    ((Ship)gameObject).ExitedAtmosphere();
+                }
             }
         }
     }
