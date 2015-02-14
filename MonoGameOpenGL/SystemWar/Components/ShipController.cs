@@ -54,31 +54,41 @@ namespace MonoGameEngineCore.GameObject.Components
           
             float rightTrigger = inputManager.GetRightTrigger();
             float leftTrigger = inputManager.GetLeftTrigger();
+
+            if (rightTrigger < 0.01f)
+                rightTrigger = 0;
+            if (leftTrigger < 0.01f)
+                leftTrigger = 0;
+
             float leftStickHorizontal = inputManager.GetLeftStickState().X;
             float leftStickVertical = inputManager.GetLeftStickState().Y;
             float rightStickHorizontal = inputManager.GetRightStickState().X;
             float rightStickVertical = inputManager.GetRightStickState().Y;
-          
 
-
-
-            ship.SetThrust(rightTrigger);
-            ship.SetSuperThrust(leftTrigger);
-            //ship.SetThrust(-leftTrigger);
-          
-            ship.LateralThrust(-leftStickHorizontal, leftStickVertical);
-            ship.Yaw(-rightStickHorizontal * 0.01f);
-            ship.Pitch(-rightStickVertical * 0.01f);
-
-
-            if (inputManager.GamePadButtonDown(Buttons.RightShoulder))
-                ship.Roll(0.01f);
-            if (inputManager.GamePadButtonDown(Buttons.LeftShoulder))
-                ship.Roll(-0.01f);
-            else
+            if (inputManager.RightStickClick())
             {
-                if (ship.InAtmosphere)
-                    ship.RealignShip();
+                ship.ToggleCameraCoupling();
+            }
+
+            if (!ship.LookMode)
+            {
+                ship.SetThrust(rightTrigger);
+                ship.SetSuperThrust(leftTrigger);
+              
+                ship.LateralThrust(-leftStickHorizontal, leftStickVertical);
+                ship.Yaw(-rightStickHorizontal * 0.01f);
+                ship.Pitch(-rightStickVertical * 0.01f);
+
+
+                if (inputManager.GamePadButtonDown(Buttons.RightShoulder))
+                    ship.Roll(0.01f);
+                if (inputManager.GamePadButtonDown(Buttons.LeftShoulder))
+                    ship.Roll(-0.01f);
+                else
+                {
+                    if (ship.InAtmosphere)
+                        ship.RealignShip();
+                }
             }
            
 

@@ -48,8 +48,8 @@ namespace SystemWar.Screens
 
 
             ship = new Ship("ship");
-            ship.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
-            SystemCore.SetActiveCamera(ship.GetComponent<ComponentCamera>());
+            
+            SystemCore.SetActiveCamera(ship.shipCameraObject.GetComponent<ComponentCamera>());
             ship.AddComponent(new HighPrecisionPosition());
             ship.AddComponent(new ShipController());
             ship.AddComponent(new MouseKeyboardShipController());

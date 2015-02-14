@@ -296,6 +296,16 @@ namespace MonoGameEngineCore
             return currentGamePadState.ThumbSticks.Right - oldGamePadState.ThumbSticks.Right;
         }
 
+        public bool RightStickClick()
+        {
+            return currentGamePadState.Buttons.RightStick == ButtonState.Pressed && oldGamePadState.Buttons.RightStick == ButtonState.Released;
+        }
+
+        public bool LeftStickClick()
+        {
+            return currentGamePadState.Buttons.LeftStick == ButtonState.Pressed && oldGamePadState.Buttons.LeftStick == ButtonState.Released;
+        }
+
         public float GetLeftTrigger()
         {
             return currentGamePadState.Triggers.Left;
