@@ -94,6 +94,9 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (ParameterExists("WorldViewProjection"))
                 effect.Parameters["WorldViewProjection"].SetValue(worldViewProj);
+
+            if (ParameterExists("CameraPosition"))
+                effect.Parameters["CameraPosition"].SetValue(SystemCore.GetCamera(Camera).Position);
         }
 
         public virtual void AssignLightingParameters()

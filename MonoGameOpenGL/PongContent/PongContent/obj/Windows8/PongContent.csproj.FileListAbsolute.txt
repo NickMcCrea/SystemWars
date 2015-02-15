@@ -21,4 +21,3 @@ E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windo
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\IgnoreMe.dll
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\IgnoreMe.dll
-E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\PongContent.csprojResolveAssemblyReference.cache

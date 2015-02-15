@@ -24,8 +24,7 @@ namespace SystemWar.Shapes
                 Vector3.Right + new Vector3(0, 0.1f, 0),
                 Vector3.Right * 2 + Vector3.Backward + new Vector3(0, 0.1f, 0),
                 Vector3.Right * 2 + Vector3.Backward);
-
-
+            var b = Vector3.Forward;
 
             return builder.BakeShape();
         }

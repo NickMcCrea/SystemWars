@@ -1,2 +1,1 @@
 D:\GitHub\SystemWars\MonoGameOpenGL\VectorContent\VectorContentContent\obj\Windows8\VectorContentContent.contentprojResolveAssemblyReference.cache
-E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\VectorContent\VectorContentContent\obj\Windows8\VectorContentContent.contentprojResolveAssemblyReference.cache
