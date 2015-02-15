@@ -19,12 +19,12 @@ namespace SystemWar.SolarSystem
 
         public void Initalise()
         {
-            var skyDomeGameObject = GameObjectFactory.CreateSkyDomeObject(new Color(10, 10, 50, 255), 100, 10);
+            var skyDomeGameObject = GameObjectFactory.CreateSkyDomeObject(Color.Black, 100, 10);
 
             skyDomeRenderer = skyDomeGameObject.GetComponent<SkyDomeRenderer>();
             skyDomeRenderer.AmbientLightColor = Color.Black;
             skyDomeRenderer.AmbientLightIntensity = 0.2f;
-            skyDomeRenderer.DiffuseLightColor = Color.LightBlue;
+            skyDomeRenderer.DiffuseLightColor = Color.Black;
             skyDomeRenderer.DiffuseLightIntensity = 0.3f;
             skyDomeRenderer.DiffuseLightDirection = Vector3.Forward;
 

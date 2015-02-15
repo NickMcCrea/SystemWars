@@ -349,25 +349,11 @@ namespace MonoGameEngineCore.Procedural
                 CalculateOrbit(gameTime);
 
 
-            if (HasAtmosphere)
-            {
-                //set fog color
-                SetFogValues(AtmosphereColor);
 
 
-            }
-            else
-            {
-                Ship playerShip = SystemCore.GameObjectManager.GetObject("ship") as Ship;
-                if (playerShip.InAtmosphere && playerShip.CurrentPlanet.HasAtmosphere)
-                {
-                    SetFogValues(playerShip.CurrentPlanet.AtmosphereColor);
-                }
-                else
-                {
-                    testEffect.Parameters["FogEnabled"].SetValue(false);
-                }
-            }
+            testEffect.Parameters["FogEnabled"].SetValue(false);
+                
+            
 
 
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
