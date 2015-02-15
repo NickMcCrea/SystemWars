@@ -308,7 +308,7 @@ namespace MonoGameEngineCore.Procedural
             return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.Transform.WorldMatrix);
         }
 
-        public void UpdatePosition()
+        public void Update()
         {
 
 
@@ -318,6 +318,8 @@ namespace MonoGameEngineCore.Procedural
             boundingSphere.Center = Vector3.Transform(Vector3.Normalize(mid1) * sphereSize,
                 Planet.Transform.WorldMatrix);
 
+
+            
 
 
         }

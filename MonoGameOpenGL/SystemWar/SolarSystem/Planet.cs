@@ -130,11 +130,17 @@ namespace MonoGameEngineCore.Procedural
         private float orbitSpeed;
         private double orbitRadius;
         private bool orbitEnabled;
-        public  float orbitAngle;
+        public float orbitAngle;
         private Vector3d positionLastFrame;
+        public bool HasAtmosphere { get; private set; }
+        public Color AtmosphereColor { get; private set; }
+       
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
+            //default, but should be tinted to match terrain.
+
+
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
             siblingId = 1;
             this.Name = name;
@@ -168,6 +174,11 @@ namespace MonoGameEngineCore.Procedural
             AddComponent(new RotatorComponent(Vector3.Up, rotation));
         }
 
+        public void AddAtmosphere(Color color)
+        {
+            AtmosphereColor = color;
+            HasAtmosphere = true;
+        }
 
         private void GenerateCustomProjectionMatrix(float far)
         {
@@ -337,6 +348,28 @@ namespace MonoGameEngineCore.Procedural
             if (orbitEnabled)
                 CalculateOrbit(gameTime);
 
+
+            if (HasAtmosphere)
+            {
+                //set fog color
+                SetFogValues(AtmosphereColor);
+
+
+            }
+            else
+            {
+                Ship playerShip = SystemCore.GameObjectManager.GetObject("ship") as Ship;
+                if (playerShip.InAtmosphere && playerShip.CurrentPlanet.HasAtmosphere)
+                {
+                    SetFogValues(playerShip.CurrentPlanet.AtmosphereColor);
+                }
+                else
+                {
+                    testEffect.Parameters["FogEnabled"].SetValue(false);
+                }
+            }
+
+
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
 
             foreach (GameObject.GameObject child in Children)
@@ -344,7 +377,7 @@ namespace MonoGameEngineCore.Procedural
                 var highPrecisionComponent = child.GetComponent<HighPrecisionPosition>();
                 Vector3d movementLastFrame = planetCenter - positionLastFrame;
                 highPrecisionComponent.Position += movementLastFrame;
-               
+
                 //we want to rotate the high precision component around the up vector, around the planet center.
 
                 if (GetComponent<RotatorComponent>() != null)
@@ -367,10 +400,10 @@ namespace MonoGameEngineCore.Procedural
                     highPrecisionComponent.Position = shipPos;
 
                     child.Transform.Rotate(Vector3.Up, (float)angleRotatedLastFrame);
-                   
+
                 }
-              
-           
+
+
             }
 
             ICamera activeCamera = SystemCore.ActiveCamera;
@@ -385,14 +418,14 @@ namespace MonoGameEngineCore.Procedural
 
             foreach (PlanetNode node in activePatches.Values)
             {
-                node.UpdatePosition();
+                node.Update();
 
                 node.remove = true;
 
                 if (node.depth == 1)
                     continue;
 
-                
+
 
             }
 
@@ -421,6 +454,36 @@ namespace MonoGameEngineCore.Procedural
 
             positionLastFrame = GetComponent<HighPrecisionPosition>().Position;
 
+        }
+
+        private void SetFogValues(Color atmosphereColor)
+        {
+            testEffect.Parameters["FogEnabled"].SetValue(true);
+            testEffect.Parameters["FogColor"].SetValue(atmosphereColor.ToVector4());
+
+
+
+            //far should be set to mid-point of planet. Near can be 
+            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
+            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
+            float surfaceDistance = distanceToCenterOfPlanet - radius;
+
+
+
+            testEffect.Parameters["FogStart"].SetValue(surfaceDistance);
+            testEffect.Parameters["FogEnd"].SetValue(distanceToCenterOfPlanet + radius);
+            if (surfaceDistance < radius / 8)
+            {
+                testEffect.Parameters["FogStart"].SetValue(0f);
+
+                var far = radius / 3;
+                testEffect.Parameters["FogEnd"].SetValue(far + surfaceDistance);
+            }
+        }
+
+        private void SetFogValues()
+        {
+           
         }
 
         private void CalculateOrbit(GameTime gameTime)
@@ -503,7 +566,7 @@ namespace MonoGameEngineCore.Procedural
         {
             if (!Children.Contains(gameObject))
             {
-               
+
                 Children.Add(gameObject);
                 if (gameObject is Ship)
                 {

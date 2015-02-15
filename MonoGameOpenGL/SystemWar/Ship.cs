@@ -19,7 +19,7 @@ namespace SystemWar
         private float currentSuperThrust;
         private float currentMainThrust;
         public bool InAtmosphere { get; private set; }
-        private Planet currentPlanet;
+        public Planet CurrentPlanet { get; private set; }
         private float yawThrust, desiredYawThrust;
         private float pitchThrust, desiredPitchThrust;
         private float rollThrust, desiredRollThrust;
@@ -172,7 +172,7 @@ namespace SystemWar
         {
             //we want to un-roll the ship to up.
             Vector3 shipUp = Transform.WorldMatrix.Left;
-            Vector3 planetUp = Vector3.Normalize((currentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
+            Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
 
             if (!float.IsNaN(planetUp.X))
             {
@@ -189,14 +189,14 @@ namespace SystemWar
 
         internal void SetInAtmosphere(Planet planet)
         {
-            currentPlanet = planet;
+            CurrentPlanet = planet;
             InAtmosphere = true;
         }
 
         internal void ExitedAtmosphere()
         {
             InAtmosphere = false;
-            currentPlanet = null;
+            CurrentPlanet = null;
         }
 
         internal void ToggleCameraCoupling()
