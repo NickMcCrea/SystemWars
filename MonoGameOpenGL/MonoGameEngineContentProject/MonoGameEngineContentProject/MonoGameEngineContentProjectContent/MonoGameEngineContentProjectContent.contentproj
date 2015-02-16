@@ -141,10 +141,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Effects\SM5.0\SkyShader.fx">
-      <Name>SkyShader</Name>
+    <Compile Include="Effects\SM5.0\Atmosphere.fx">
+      <Name>Atmosphere</Name>
       <Importer>EffectImporter</Importer>
       <Processor>MGEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Textures\AtmosphereGradient3.jpg">
+      <Name>AtmosphereGradient3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

@@ -13,12 +13,11 @@ namespace MonoGameDirectX11
         {
 
             string screenOne = "Render Test";
-            string screenTwo = "Particle Test";
+            string screenTwo = "Atmosphere Test";
             string screenThree = "Physics Test";
-            string screenFour = "Procedural Test";
+        
 
-
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree, screenFour);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
@@ -30,20 +29,13 @@ namespace MonoGameDirectX11
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new ParticleTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new AtmosphereTest());
             };
 
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
             c.OnClick += (sender, args) =>
             {
                 SystemCore.ScreenManager.AddAndSetActive(new PhysicsTestScreen());
-            };
-
-
-            Button particle = SystemCore.GetSubsystem<GUIManager>().GetControl(screenFour) as Button;
-            particle.OnClick += (sender, args) =>
-            {
-                SystemCore.ScreenManager.AddAndSetActive(new ProceduralTerrainTest());
             };
 
 

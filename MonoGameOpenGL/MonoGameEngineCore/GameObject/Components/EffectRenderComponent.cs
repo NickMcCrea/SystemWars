@@ -10,7 +10,7 @@ namespace MonoGameEngineCore.GameObject.Components
     public class EffectRenderComponent : IComponent, IDrawable
     {
 
-        protected readonly Effect effect;
+        public readonly Effect effect;
         private ICamera camera;
         public GameObject ParentObject { get; set; }
         public int DrawOrder { get; set; }

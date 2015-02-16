@@ -13,7 +13,6 @@ C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\Pong.xnb
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\blip.xnb
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\IgnoreMe.dll
-D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\PongContent.csprojResolveAssemblyReference.cache
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\Microsoft.Xna.Framework.RuntimeProfile.txt
 D:\GitHub\SystemWars\MonoGameOpenGL\PongContent\PongContent\obj\Windows8\IgnoreMe.dll
 E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\PongContent\PongContent\bin\Windows8\Content\Pong.xnb
