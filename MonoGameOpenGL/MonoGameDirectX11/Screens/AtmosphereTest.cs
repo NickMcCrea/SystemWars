@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
@@ -25,15 +26,14 @@ namespace MonoGameDirectX11.Screens
             : base()
         {
         
-            ProceduralSphere planet = new ProceduralSphere(20,20);
+            ProceduralSphere planet = new ProceduralSphere(50,50);
             ProceduralSphere atmosphere = new ProceduralSphere(50,50);
             atmosphere.Indices = atmosphere.Indices.Reverse().ToArray();
             atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
 
             planet.Scale(100f);
             atmosphere.Scale(120f);
-            atmosphere.SetColor(Color.CornflowerBlue);
-
+         
             var planetObject = GameObjectFactory.CreateRenderableGameObjectFromShape(planet,
                 EffectLoader.LoadEffect("flatshaded"));
 
@@ -62,7 +62,9 @@ namespace MonoGameDirectX11.Screens
 
         public override void Render(GameTime gameTime)
         {
-            atmosphereRenderComponent.effect.Parameters["ViewInverse"].SetValue(Matrix.Invert(SystemCore.ActiveCamera.View));
+            atmosphereRenderComponent.effect.Parameters["CameraPositionInObjectSpace"].SetValue(SystemCore.ActiveCamera.Position);
+
+        
 
             base.Render(gameTime);
         }

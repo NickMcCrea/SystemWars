@@ -1,3 +1,4 @@
+
 // outer atmosphere radius
 float AtmosphereRadius = 120.0f;
 
@@ -12,9 +13,9 @@ Texture2D gTex;
 
 SamplerState gTexSampler
 {
-    Filter = Linear;
-    AddressU = Clamp;
-    AddressV = Clamp;
+    Filter = LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
 };
 
 // this is for setting where the horizon should fall on the sphere
@@ -24,8 +25,10 @@ float StretchAmt= 0.25f;
 float Atmosphere_G =-0.95f;
 
 float4x4 WorldViewProjection;
-float4x4 ViewInverse; //view inverse
+
 float4x4 World; //
+
+float4 CameraPositionInObjectSpace;
 
 
 void main2VS(
@@ -41,7 +44,7 @@ void main2VS(
     float4 Po = pos;
     float4 Pw = mul(Po,World);
     float3 position = Pw.xyz;
-    float4 camPos = float4(ViewInverse[3].xyz,1);
+    float4 camPos = CameraPositionInObjectSpace;
  
     oPosition = mul(Po, WorldViewProjection); 
  
@@ -147,8 +150,12 @@ float4 mainBPS(
   
     // use exponential falloff because mie color is in high dynamic range
     // boost diffuse color near horizon because it gets desaturated by falloff
-	//return float4(1,0,0,1);
-    return 1.0 - exp((diffuseColor * (1.0 + uv.y) + mieColor) * -fExposure);
+	
+	//return diffuse;
+	//return diffuse2
+    float4 final =  1.0 - exp((diffuseColor * (1.0 + uv.y) + mieColor) * -fExposure);
+	return final;
+	//return float4(1,0,0,0);
 }
 
 technique technique1 {

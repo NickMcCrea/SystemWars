@@ -35,6 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Windows8' ">
     <MonoGamePlatform>Windows8</MonoGamePlatform>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Android' ">
     <MonoGamePlatform>Android</MonoGamePlatform>
@@ -145,6 +146,7 @@
       <Name>Atmosphere</Name>
       <Importer>EffectImporter</Importer>
       <Processor>MGEffectProcessor</Processor>
+      <ProcessorParameters_DebugMode>Debug</ProcessorParameters_DebugMode>
     </Compile>
   </ItemGroup>
   <ItemGroup />
