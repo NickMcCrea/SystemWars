@@ -14,8 +14,8 @@ Texture2D gTex;
 SamplerState gTexSampler
 {
     Filter = LINEAR;
-    AddressU = Wrap;
-    AddressV = Wrap;
+    AddressU = Clamp;
+    AddressV = Clamp;
 };
 
 // this is for setting where the horizon should fall on the sphere
