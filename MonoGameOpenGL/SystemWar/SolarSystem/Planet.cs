@@ -193,7 +193,10 @@ namespace MonoGameEngineCore.Procedural
 
             atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
             atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["gTex"].SetValue(atmosphereTexture);
-
+            atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["AtmosphereRadius"]
+                .SetValue(radius * 1.05f);
+            atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["SurfaceRadius"]
+             .SetValue(radius);
         }
 
         private void GenerateCustomProjectionMatrix(float far)
@@ -369,25 +372,23 @@ namespace MonoGameEngineCore.Procedural
 
             testEffect.Parameters["FogEnabled"].SetValue(false);
                 
-            
-
-
+  
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
+            
 
             if (HasAtmosphere)
             {
                 atmosphereObject.GetComponent<HighPrecisionPosition>().Position = planetCenter;
+
                 atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["gLamp0DirPos"].SetValue(
-                    new Vector3(1, 1, 1));
+                    Vector3.Normalize(- planetCenter.ToVector3()));
+                    
 
 
                 atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["CameraPositionInObjectSpace"]
                     .SetValue(-Transform.WorldMatrix.Translation);
 
-                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["AtmosphereRadius"]
-                 .SetValue(radius * 1.05f);
-                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["SurfaceRadius"]
-                 .SetValue(radius);
+               
 
             }
 
