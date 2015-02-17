@@ -81,10 +81,14 @@ namespace MonoGameDirectX11.Screens
             base.Update(gameTime);
         }
 
+        private float angle;
+        Vector3 lightPos = new Vector3(1,0,0);
         public override void Render(GameTime gameTime)
         {
             //gLamp0DirPos
-            atmosphereRenderComponent.effect.Parameters["gLamp0DirPos"].SetValue(new Vector3(1,0,0));
+            Vector3 lightAngle = Vector3.Transform(lightPos, Matrix.CreateRotationY(angle));
+            atmosphereRenderComponent.effect.Parameters["gLamp0DirPos"].SetValue(lightAngle);
+            angle += 0.01f;
             atmosphereRenderComponent.effect.Parameters["CameraPositionInObjectSpace"].SetValue(mouseCamera.Position - atmosphereObject.Transform.WorldMatrix.Translation);
             atmosphereRenderComponent.effect.Parameters["AtmosphereRadius"].SetValue(6300f);
             atmosphereRenderComponent.effect.Parameters["SurfaceRadius"].SetValue(6000f);

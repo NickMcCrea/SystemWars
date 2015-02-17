@@ -183,8 +183,8 @@ namespace MonoGameEngineCore.Procedural
 
             atmosphereObject = new GameObject.GameObject();
             atmosphereObject.AddComponent(new HighPrecisionPosition());
-            var atmosphereSphere = new ProceduralSphere(50,50);
-            atmosphereSphere.Scale(radius * 1.05f);
+            var atmosphereSphere = new ProceduralSphere(200,200);
+            atmosphereSphere.Scale(radius * 1.1f);
             atmosphereSphere.InsideOut();
 
             atmosphereObject.AddComponent(new RenderGeometryComponent(atmosphereSphere));
@@ -194,7 +194,7 @@ namespace MonoGameEngineCore.Procedural
             atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
             atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["gTex"].SetValue(atmosphereTexture);
             atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["AtmosphereRadius"]
-                .SetValue(radius * 1.05f);
+                .SetValue(radius * 1.1f);
             atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["SurfaceRadius"]
              .SetValue(radius);
         }

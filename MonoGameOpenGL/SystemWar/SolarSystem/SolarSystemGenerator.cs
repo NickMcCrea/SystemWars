@@ -24,7 +24,7 @@ namespace SystemWar.Screens
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
                EffectLoader.LoadEffect("flatshadedwithfog").Clone(),
-                6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10),0.0005f);
+                6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10),0.0001f);
             earth.Orbit(Vector3d.Zero, ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
             earth.AddAtmosphere(Color.SaddleBrown.ChangeTone(50));
 
