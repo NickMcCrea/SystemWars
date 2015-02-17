@@ -12,6 +12,7 @@ using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
 using Particle3DSample;
 using MonoGameEngineCore;
+using MonoGameEngineCore.Helper;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -27,7 +28,7 @@ namespace MonoGameDirectX11.Screens
         {
         
             ProceduralSphere planet = new ProceduralSphere(50,50);
-            ProceduralSphere atmosphere = new ProceduralSphere(50,50);
+            ProceduralSphere atmosphere = new ProceduralSphere(100,100);
             atmosphere.Indices = atmosphere.Indices.Reverse().ToArray();
             atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
 
@@ -62,9 +63,12 @@ namespace MonoGameDirectX11.Screens
 
         public override void Render(GameTime gameTime)
         {
+            //gLamp0DirPos
+            atmosphereRenderComponent.effect.Parameters["gLamp0DirPos"].SetValue(new Vector3(1,0,0));
             atmosphereRenderComponent.effect.Parameters["CameraPositionInObjectSpace"].SetValue(SystemCore.ActiveCamera.Position);
 
-        
+
+            DebugText.Write(SystemCore.ActiveCamera.Position.ToString());
 
             base.Render(gameTime);
         }

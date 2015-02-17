@@ -1,12 +1,12 @@
 
 // outer atmosphere radius
-float AtmosphereRadius = 1200.0f;
+float AtmosphereRadius = 120;
 
 // planet surface radius
-float SurfaceRadius = 1000.0f;
+float SurfaceRadius = 100;
 
 // this is the sun position/direction
-float4 gLamp0DirPos = {10.0f,10.0f,10.0f,1.0};
+float4 gLamp0DirPos;
 
 // this is the atmosphere 2d gradient
 Texture2D gTex;
