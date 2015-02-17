@@ -43,11 +43,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
             float thrustChange = 0.1f;
             float rollPitchYawChange = 0.01f;
-            if (inputManager.KeyPress(Keys.W))
+            if (inputManager.IsKeyDown(Keys.W))
                 ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds);
 
                 //ship.SetThrust(1000f);
-            if (inputManager.KeyPress(Keys.S))
+            if (inputManager.IsKeyDown(Keys.S))
                 ship.Transform.Translate(-ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds);
 
             if (inputManager.IsKeyDown(Keys.A))
@@ -66,12 +66,6 @@ namespace MonoGameEngineCore.GameObject.Components
                 ship.Yaw(-rollPitchYawChange);
 
 
-
-
-            
-        
-
-            
 
         }
 
