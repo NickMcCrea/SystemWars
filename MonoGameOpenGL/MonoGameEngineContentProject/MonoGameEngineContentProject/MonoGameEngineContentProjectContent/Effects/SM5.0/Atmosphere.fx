@@ -1,6 +1,6 @@
 
 // outer atmosphere radius
-float AtmosphereRadius = 120;
+float AtmosphereRadius = 105;
 
 // planet surface radius
 float SurfaceRadius = 100;

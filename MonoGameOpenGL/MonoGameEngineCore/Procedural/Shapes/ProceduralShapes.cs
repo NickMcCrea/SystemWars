@@ -288,6 +288,13 @@ namespace MonoGameEngineCore.Procedural
             Indices = Indices.Reverse().ToArray();
         }
 
+
+        public void InsideOut()
+        {
+            Indices = Indices.Reverse().ToArray();
+            FlipNormals();
+        }
+
         public List<Edge> GetEdges()
         {
             List<Edge> edges = new List<Edge>();
@@ -724,6 +731,7 @@ namespace MonoGameEngineCore.Procedural
             PrimitiveCount = Indices.Length / 3;
 
         }
+
 
     }
 

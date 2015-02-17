@@ -29,11 +29,12 @@ namespace MonoGameDirectX11.Screens
         
             ProceduralSphere planet = new ProceduralSphere(50,50);
             ProceduralSphere atmosphere = new ProceduralSphere(100,100);
-            atmosphere.Indices = atmosphere.Indices.Reverse().ToArray();
+            atmosphere.InsideOut();
+           
             atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
 
             planet.Scale(100f);
-            atmosphere.Scale(120f);
+            atmosphere.Scale(105f);
          
             var planetObject = GameObjectFactory.CreateRenderableGameObjectFromShape(planet,
                 EffectLoader.LoadEffect("flatshaded"));
