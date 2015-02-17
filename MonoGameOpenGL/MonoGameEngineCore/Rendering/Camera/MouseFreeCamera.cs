@@ -27,7 +27,7 @@ namespace MonoGameEngineCore.Rendering.Camera
 
         public MouseFreeCamera(Vector3 startPosition)
         {
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.01f, 10000f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.01f, 50000f);
             World.Translation = startPosition;
 
             UpdateViewMatrix();

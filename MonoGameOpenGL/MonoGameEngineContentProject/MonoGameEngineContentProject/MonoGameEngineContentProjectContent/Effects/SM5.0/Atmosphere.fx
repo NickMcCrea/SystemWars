@@ -1,14 +1,6 @@
-
-// outer atmosphere radius
-float AtmosphereRadius = 105;
-
-// planet surface radius
-float SurfaceRadius = 100;
-
-// this is the sun position/direction
+float AtmosphereRadius;
+float SurfaceRadius;
 float4 gLamp0DirPos;
-
-// this is the atmosphere 2d gradient
 Texture2D gTex;
 
 SamplerState gTexSampler
@@ -25,13 +17,8 @@ float StretchAmt= 0.25f;
 float Atmosphere_G =-0.95f;
 
 float4x4 WorldViewProjection;
-
 float4x4 World; //
-
 float4 CameraPositionInObjectSpace;
-
-
-
 
 struct PS_INPUT
 {
@@ -42,12 +29,7 @@ struct PS_INPUT
 	float3 oLightDir : TEXCOORD3;
 };
 
-PS_INPUT main2VS(
-
-    float4 pos : SV_POSITION
-  
-    
-    ) 
+PS_INPUT main2VS(float4 pos : SV_POSITION) 
 {
 
 	PS_INPUT input;
@@ -59,7 +41,7 @@ PS_INPUT main2VS(
  
 	input.oPosition = mul(Po, WorldViewProjection);
 
-    float radius = length(position);
+    float radius = AtmosphereRadius;
     float radius2 = radius * radius; 
     float camHeight = length(camPos.xyz);
     float3 camToPos = position - camPos.xyz;
@@ -133,9 +115,8 @@ PS_INPUT main2VS(
 	return input;
 }
 
-float4 mainBPS( 
-    PS_INPUT input  
-) : COLOR {
+float4 mainBPS( PS_INPUT input  ) : COLOR 
+{
  
     const float fExposure = 1.5;
     float g = Atmosphere_G;
@@ -160,23 +141,22 @@ float4 mainBPS(
   
     // use exponential falloff because mie color is in high dynamic range
     // boost diffuse color near horizon because it gets desaturated by falloff
-	
-	//return diffuse;
-	//return diffuse2
 	float4 final = 1.0 - exp((diffuseColor * (1.0 + input.oUV.y) + mieColor) * -fExposure);
 	return final;
-	//return float4(1,0,0,0);
+
 }
 
-technique technique1 {
- pass p0 {
-     ZEnable = false;
-     ZWriteEnable = false;
-     CullMode = CCW;
-     AlphaBlendEnable = true;
-     SrcBlend = One ;
-     DestBlend = InvSrcAlpha;
-     VertexShader = compile vs_5_0 main2VS();
-     PixelShader = compile ps_5_0 mainBPS();  
- }
+technique technique1 
+{
+	 pass p0 
+	 {
+		 ZEnable = false;
+		 ZWriteEnable = false;
+		 CullMode = CCW;
+		 AlphaBlendEnable = true;
+		 SrcBlend = One ;
+		 DestBlend = InvSrcAlpha;
+		 VertexShader = compile vs_5_0 main2VS();
+		 PixelShader = compile ps_5_0 mainBPS();  
+	 }
 }

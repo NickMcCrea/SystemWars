@@ -76,7 +76,9 @@ technique Technique1
 {
     pass Pass1
     {
-		
+		ZEnable = true;
+		ZWriteEnable = true;
+		AlphaBlendEnable = false;
         VertexShader = compile vs_5_0 VertexShaderFunction();
         PixelShader = compile ps_5_0 PixelShaderFunction();
     }

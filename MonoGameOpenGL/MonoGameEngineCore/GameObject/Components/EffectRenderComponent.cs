@@ -97,6 +97,9 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (ParameterExists("CameraPosition"))
                 effect.Parameters["CameraPosition"].SetValue(SystemCore.GetCamera(Camera).Position);
+
+            if (ParameterExists("ViewInvert"))
+                effect.Parameters["ViewInvert"].SetValue(Matrix.Invert(SystemCore.GetCamera(Camera).View));
         }
 
         public virtual void AssignLightingParameters()
