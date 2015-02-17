@@ -11,6 +11,7 @@ using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
+using MonoGameEngineCore.Rendering;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Ray = Microsoft.Xna.Framework.Ray;
@@ -134,7 +135,8 @@ namespace MonoGameEngineCore.Procedural
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
         public Color AtmosphereColor { get; private set; }
-       
+        private GameObject.GameObject atmosphereObject;
+        private Texture2D atmosphereTexture;
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
@@ -178,6 +180,20 @@ namespace MonoGameEngineCore.Procedural
         {
             AtmosphereColor = color;
             HasAtmosphere = true;
+
+            atmosphereObject = new GameObject.GameObject();
+            atmosphereObject.AddComponent(new HighPrecisionPosition());
+            var atmosphereSphere = new ProceduralSphere(50,50);
+            atmosphereSphere.Scale(radius * 1.05f);
+            atmosphereSphere.InsideOut();
+
+            atmosphereObject.AddComponent(new RenderGeometryComponent(atmosphereSphere));
+            atmosphereObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("atmosphere")));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphereObject);
+
+            atmosphereTexture = SystemCore.ContentManager.Load<Texture2D>("Textures/AtmosphereGradient3");
+            atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["gTex"].SetValue(atmosphereTexture);
+
         }
 
         private void GenerateCustomProjectionMatrix(float far)
@@ -357,6 +373,23 @@ namespace MonoGameEngineCore.Procedural
 
 
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
+
+            if (HasAtmosphere)
+            {
+                atmosphereObject.GetComponent<HighPrecisionPosition>().Position = planetCenter;
+                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["gLamp0DirPos"].SetValue(
+                    new Vector3(1, 1, 1));
+
+
+                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["CameraPositionInObjectSpace"]
+                    .SetValue(-Transform.WorldMatrix.Translation);
+
+                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["AtmosphereRadius"]
+                 .SetValue(radius * 1.05f);
+                atmosphereObject.GetComponent<EffectRenderComponent>().effect.Parameters["SurfaceRadius"]
+                 .SetValue(radius);
+
+            }
 
             foreach (GameObject.GameObject child in Children)
             {

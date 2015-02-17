@@ -44,7 +44,7 @@ PS_INPUT main2VS(float4 pos : SV_POSITION)
     float radius = AtmosphereRadius;
     float radius2 = radius * radius; 
     float camHeight = length(camPos.xyz);
-    float3 camToPos = position - camPos.xyz;
+    float3 camToPos = pos - camPos.xyz;
     float farDist = length(camToPos);
  
     float3 lightDir = normalize(gLamp0DirPos.xyz);

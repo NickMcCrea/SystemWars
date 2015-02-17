@@ -56,7 +56,7 @@ namespace MonoGameDirectX11.Screens
 
             atmosphereRenderComponent.effect.Parameters["gTex"].SetValue(atmosphereTexture);
 
-            bool offCenter = false;
+            bool offCenter = true;
 
             if (offCenter)
 

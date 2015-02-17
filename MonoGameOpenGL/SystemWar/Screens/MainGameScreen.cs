@@ -138,7 +138,7 @@ namespace SystemWar.Screens
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(0, 0, 50000);
+                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(0, 0, 20000);
                 firstTimePlacement = true;
             }
 
