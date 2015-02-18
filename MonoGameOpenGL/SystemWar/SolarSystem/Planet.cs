@@ -179,11 +179,8 @@ namespace MonoGameEngineCore.Procedural
         {
             AtmosphereColor = color;
             HasAtmosphere = true;
-
             atmosphere = new Atmosphere(this.radius*1.05f, this.radius);
-
             atmosphere.AddComponent(new HighPrecisionPosition());
-
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
         }
 

@@ -3,26 +3,26 @@ float4x4 View;
 float4x4 Projection;
 
 
-uniform float3 v3CameraPos;		//HOOKED UP
-uniform float3 v3LightPos;		//HOOKED UP
-uniform float3 v3InvWavelength;	//HOOKED UP
-uniform float fCameraHeight;	 //HOOKED UP
-uniform float fCameraHeight2;	//
-uniform float fOuterRadius;		//
-uniform float fOuterRadius2;	//
-uniform float fInnerRadius;		//
-uniform float fInnerRadius2;	//
-uniform float fKrESun;			//
-uniform float fKmESun;			//
-uniform float fKr4PI;			//
-uniform float fKm4PI;			//
-uniform float fScale;			//
-uniform float fScaleDepth;		//
-uniform float fScaleOverScaleDepth;	//
-uniform float g;                 //
-uniform float g2;                //
+uniform float3 v3CameraPos;		
+uniform float3 v3LightPos;		
+uniform float3 v3InvWavelength;	
+uniform float fCameraHeight;	 
+uniform float fCameraHeight2;	
+uniform float fOuterRadius;		
+uniform float fOuterRadius2;	
+uniform float fInnerRadius;		
+uniform float fInnerRadius2;	
+uniform float fKrESun;			
+uniform float fKmESun;			
+uniform float fKr4PI;			
+uniform float fKm4PI;			
+uniform float fScale;			
+uniform float fScaleDepth;		
+uniform float fScaleOverScaleDepth;	
+uniform float g;                 
+uniform float g2;                
 const int nSamples = 2;
-const float fSamples = 2.0;       //
+const float fSamples = 2.0;       
 
 float4 v3Direction;
 

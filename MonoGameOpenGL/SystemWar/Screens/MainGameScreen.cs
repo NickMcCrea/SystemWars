@@ -91,7 +91,7 @@ namespace SystemWar.Screens
             moon = SystemCore.GameObjectManager.GetObject("moon") as Planet;
           
             
-
+            ship.Transform.Rotate(Vector3.Up, MathHelper.PiOver2);
 
         }
 
@@ -138,7 +138,7 @@ namespace SystemWar.Screens
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(0, 0, 6050);
+                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(22000, 0, 0);
                 firstTimePlacement = true;
             }
 
