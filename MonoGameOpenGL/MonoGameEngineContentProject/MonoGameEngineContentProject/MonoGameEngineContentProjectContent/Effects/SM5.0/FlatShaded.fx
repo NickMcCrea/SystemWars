@@ -49,9 +49,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float3 normal = cross(ddy(input.PositionWorld.xyz), ddx(input.PositionWorld.xyz));
 	normal = normalize(normal);
 	float lightIntensity = dot(normal, DiffuseLightDirection);
-	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity;
+	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
-	return saturate((input.Color * ColorSaturation) + diffuse + ambient);
+	return saturate(diffuse + ambient);
 };
 
 technique Technique1

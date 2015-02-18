@@ -358,7 +358,7 @@ namespace MonoGameEngineCore.Procedural
 
 
 
-            testEffect.Parameters["FogEnabled"].SetValue(false);
+           
                 
   
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
