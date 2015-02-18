@@ -62,21 +62,38 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
-	// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(v3CameraPos, v3Ray);
-	float C = fCameraHeight2 - fOuterRadius2;
-	float fDet = max(0.0, B*B - 4.0 * C);
-	float fNear = 0.5 * (-B - sqrt(fDet));
+	bool inAtmosphere = false;
 
-	// Calculate the ray's starting position, then calculate its scattering offset
-    float3 v3Start = v3CameraPos + v3Ray * fNear;
-	fFar -= fNear;
-	float fStartAngle = dot(v3Ray, v3Start) / fOuterRadius;
-	float fStartDepth = exp(-1.0 / fScaleDepth);
-	float fStartOffset = fStartDepth*scale(fStartAngle);
+	if(fCameraHeight < fOuterRadius)
+		inAtmosphere = true;
+
+	float3 v3Start;
+	float fStartOffset;
+	if(!inAtmosphere)
+	{
+		// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
+		float B = 2.0 * dot(v3CameraPos, v3Ray);
+		float C = fCameraHeight2 - fOuterRadius2;
+		float fDet = max(0.0, B*B - 4.0 * C);
+		float fNear = 0.5 * (-B - sqrt(fDet));
+
+		// Calculate the ray's starting position, then calculate its scattering offset
+		v3Start = v3CameraPos + v3Ray * fNear;
+		fFar -= fNear;
+		float fStartAngle = dot(v3Ray, v3Start) / fOuterRadius;
+		float fStartDepth = exp(-1.0 / fScaleDepth);
+		fStartOffset = fStartDepth*scale(fStartAngle);
+	}
+	else
+	{
+		v3Start = v3CameraPos;
+		float fHeight = length(v3Start);
+		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
+		float fStartAngle = dot(v3Ray, v3Start) / fHeight;
+		fStartOffset = fDepth*scale(fStartAngle);
+	}
 
     // Initialize the scattering loop variables
-	//gl_FrontColor = vec4(0.0, 0.0, 0.0, 0.0);
 	float fSampleLength = fFar / fSamples;
 	float fScaledLength = fSampleLength * fScale;
 	float3 v3SampleRay = v3Ray * fSampleLength;

@@ -137,6 +137,11 @@ namespace SystemWar.SolarSystem
             return toPlanet.Length;
         }
 
+        public static DiffuseLight GetSun()
+        {
+            return SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
+        }
+
     }
 
 

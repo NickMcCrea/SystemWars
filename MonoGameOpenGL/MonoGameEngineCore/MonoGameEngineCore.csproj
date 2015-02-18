@@ -107,6 +107,7 @@
     <Compile Include="Procedural\BufferBuilder.cs" />
     <Compile Include="Procedural\NoiseGenerator.cs" />
     <Compile Include="Procedural\Shapes\ProceduralShapes.cs" />
+    <Compile Include="Rendering\Atmosphere.cs" />
     <Compile Include="Rendering\Camera\ComponentCamera.cs" />
     <Compile Include="Rendering\Camera\DummyCamera.cs" />
     <Compile Include="FPSCounter.cs" />
