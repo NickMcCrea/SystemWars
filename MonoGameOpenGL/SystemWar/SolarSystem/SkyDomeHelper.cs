@@ -97,6 +97,9 @@ namespace SystemWar.SolarSystem
 
     public static class SolarSystemHelper
     {
+
+        
+
         public static void AdjustObjectsForRendering(Vector3d cameraPosition)
         {
             var gameObjects = SystemCore.GameObjectManager.GetAllObjects();

@@ -123,6 +123,7 @@ namespace SystemWar.Screens
             List<GameObject> planets = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Planet);
             foreach (Planet p in planets)
             {
+
                 double distanceToPlanet = SolarSystemHelper.CalculateDistanceToPlanet(p,
                 ship.GetComponent<HighPrecisionPosition>().Position);
                 if (distanceToPlanet < p.radius * 2)
@@ -133,12 +134,14 @@ namespace SystemWar.Screens
                 else
                 {
                     p.RemoveFromInfluence(ship);
+
+                 
                 }
             }
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(6050, 0, 0);
+                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0);
                 firstTimePlacement = true;
             }
 

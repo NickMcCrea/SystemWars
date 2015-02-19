@@ -138,7 +138,7 @@ technique Technique1
 		ZWriteEnable = false;
 		CullMode = CCW;
 		AlphaBlendEnable = true;
-		SrcBlend = One ;
+		SrcBlend = One;
 		DestBlend = InvSrcAlpha;
         VertexShader = compile vs_5_0 VertexShaderFunction();
         PixelShader = compile ps_5_0 PixelShaderFunction();

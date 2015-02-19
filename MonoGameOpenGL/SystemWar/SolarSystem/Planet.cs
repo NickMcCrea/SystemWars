@@ -52,7 +52,7 @@ namespace MonoGameEngineCore.Procedural
         private TimeSpan lastClearTime;
         public bool visualisePatches = false;
         private decimal maxDepth = 8;
-       
+
         private Planet orbitBody;
         private Vector3d positionToOrbit;
         private float orbitSpeed;
@@ -63,8 +63,11 @@ namespace MonoGameEngineCore.Procedural
         public bool HasAtmosphere { get; private set; }
         public Color AtmosphereColor { get; private set; }
         private Atmosphere atmosphere;
-        private AtmosphericScatteringHelper atmosphericScatteringHelper;
-    
+        private GroundScatteringHelper atmosphericScatteringHelper;
+        private SpaceScatteringHelper spaceScatteringHelper;
+
+
+
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
@@ -88,7 +91,9 @@ namespace MonoGameEngineCore.Procedural
             LandColor = land;
             MountainColor = mountains;
 
-       
+            //spaceScatteringHelper = new SpaceScatteringHelper(testEffect);
+
+
             Initialise();
         }
 
@@ -104,12 +109,13 @@ namespace MonoGameEngineCore.Procedural
         {
             AtmosphereColor = color;
             HasAtmosphere = true;
-            atmosphere = new Atmosphere(this.radius*1.05f, this.radius);
+            atmosphere = new Atmosphere(this.radius * 1.05f, this.radius);
             atmosphere.AddComponent(new HighPrecisionPosition());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
+            atmosphericScatteringHelper = new GroundScatteringHelper(this.testEffect, radius * 1.05f, radius);
 
-            atmosphericScatteringHelper = new AtmosphericScatteringHelper(this.testEffect, radius*1.05f, radius);
+
 
         }
 
@@ -289,9 +295,12 @@ namespace MonoGameEngineCore.Procedural
                 atmosphere.Update(SolarSystemHelper.GetSun().LightDirection, Vector3.Zero);
 
                 atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
-                    SolarSystemHelper.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
+                SolarSystemHelper.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
 
             }
+
+
+           
 
             foreach (GameObject.GameObject child in Children)
             {
@@ -354,7 +363,7 @@ namespace MonoGameEngineCore.Procedural
             //we want to rotate the high precision component around the up vector, around the planet center.
             if (GetComponent<RotatorComponent>() != null)
             {
-                double angleRotatedLastFrame = GetComponent<RotatorComponent>().RotationSpeed*
+                double angleRotatedLastFrame = GetComponent<RotatorComponent>().RotationSpeed *
                                                gameTime.ElapsedGameTime.TotalMilliseconds;
 
 
@@ -364,15 +373,15 @@ namespace MonoGameEngineCore.Procedural
                 shipPos.X -= planetCenter.X;
                 shipPos.Z -= planetCenter.Z;
 
-                double xNew = shipPos.X*c + shipPos.Z*s;
-                double zNew = -shipPos.X*s + shipPos.Z*c;
+                double xNew = shipPos.X * c + shipPos.Z * s;
+                double zNew = -shipPos.X * s + shipPos.Z * c;
 
                 shipPos.X = xNew + planetCenter.X;
                 shipPos.Z = zNew + planetCenter.Z;
 
                 highPrecisionComponent.Position = shipPos;
 
-                child.Transform.Rotate(Vector3.Up, (float) angleRotatedLastFrame);
+                child.Transform.Rotate(Vector3.Up, (float)angleRotatedLastFrame);
             }
         }
 
