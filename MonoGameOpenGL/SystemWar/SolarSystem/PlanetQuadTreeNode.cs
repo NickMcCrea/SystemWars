@@ -124,7 +124,9 @@ namespace MonoGameEngineCore.Procedural
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
             else
             {
-                this.AddComponent(new EffectRenderComponent(effect));
+                var effectComp = new EffectRenderComponent(effect);
+                effectComp.DrawOrder = Planet.DrawOrder;
+                this.AddComponent(effectComp);
             }
 
 

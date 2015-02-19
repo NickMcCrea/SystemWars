@@ -62,13 +62,13 @@ namespace MonoGameEngineCore.Procedural
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
         public Color AtmosphereColor { get; private set; }
-        private Atmosphere atmosphere;
+        public Atmosphere atmosphere;
         private GroundScatteringHelper atmosphericScatteringHelper;
         private SpaceScatteringHelper spaceScatteringHelper;
 
+        public int DrawOrder { get; set; }
 
-
-        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
+        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains, int drawOrder)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
             this.Name = name;
@@ -93,14 +93,14 @@ namespace MonoGameEngineCore.Procedural
 
             //spaceScatteringHelper = new SpaceScatteringHelper(testEffect);
 
-
+            DrawOrder = drawOrder;
             Initialise();
         }
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea,
-            Color land, Color mountains, float rotation)
+            Color land, Color mountains, int drawOrder, float rotation)
             : this(name, position, module, testEffect, radius, sea,
-                land, mountains)
+                land, mountains,drawOrder)
         {
             AddComponent(new RotatorComponent(Vector3.Up, rotation));
         }

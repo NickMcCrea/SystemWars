@@ -77,7 +77,9 @@ namespace SystemWar.Screens
             //var finalShape = ProceduralShape.Combine(cockpit, panel, panel2);
 
             ship.AddComponent(new RenderGeometryComponent(cockpit));
-            ship.AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("flatshaded")));
+            var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("flatshaded"));
+            cockpitEffectComponent.DrawOrder = 5;
+            ship.AddComponent(cockpitEffectComponent);
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
