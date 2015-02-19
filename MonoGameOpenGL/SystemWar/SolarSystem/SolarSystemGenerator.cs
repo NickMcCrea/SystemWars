@@ -20,7 +20,7 @@ namespace SystemWar.Screens
 
             StarHelper.CreateAndInitialiseSystemStar(ScaleHelper.Millions(1), StarHelper.BasicSunColor());
 
-            string planetShader = "flatshaded";
+            string planetShader = "flatshadedwithalpha";
 
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
