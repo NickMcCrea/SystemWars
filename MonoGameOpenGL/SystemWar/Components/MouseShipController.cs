@@ -44,11 +44,11 @@ namespace MonoGameEngineCore.GameObject.Components
             float thrustChange = 0.1f;
             float rollPitchYawChange = 0.01f;
             if (inputManager.IsKeyDown(Keys.W))
-                ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10);
+                ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.1f);
 
                 //ship.SetThrust(1000f);
             if (inputManager.IsKeyDown(Keys.S))
-                ship.Transform.Translate(-ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10);
+                ship.Transform.Translate(-ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.1f);
 
             if (inputManager.IsKeyDown(Keys.A))
                 ship.Roll(-rollPitchYawChange);

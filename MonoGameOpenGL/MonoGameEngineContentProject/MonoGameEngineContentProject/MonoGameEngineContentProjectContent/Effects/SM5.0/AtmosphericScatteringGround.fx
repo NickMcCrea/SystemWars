@@ -76,24 +76,34 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
-	bool inAtmosphere = false;
+	
 
 
 
 	float3 v3Start;
 	float fStartOffset;
+	float fDepth;
 
+	if(fCameraHeight > fOuterRadius)
+	{
 	// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
-	float B = 2.0 * dot(v3CameraPos, v3Ray);
-	float C = fCameraHeight2 - fOuterRadius2;
-	float fDet = max(0.0, B*B - 4.0 * C);
-	float fNear = 0.5 * (-B - sqrt(fDet));
+		float B = 2.0 * dot(v3CameraPos, v3Ray);
+		float C = fCameraHeight2 - fOuterRadius2;
+		float fDet = max(0.0, B*B - 4.0 * C);
+		float fNear = 0.5 * (-B - sqrt(fDet));
 
-	// Calculate the ray's starting position, then calculate its scattering offset
-	v3Start = v3CameraPos + v3Ray * fNear;
-	fFar -= fNear;
+		// Calculate the ray's starting position, then calculate its scattering offset
+		v3Start = v3CameraPos + v3Ray * fNear;
+		fFar -= fNear;
 
-	float fDepth = exp((fInnerRadius - fOuterRadius) / fScaleDepth);
+		fDepth = exp((fInnerRadius - fOuterRadius) / fScaleDepth);
+	}
+	else
+	{
+		v3Start = v3CameraPos;
+	    fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
+	}
+
 	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
 	float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
 	float fCameraScale = scale(fCameraAngle);
