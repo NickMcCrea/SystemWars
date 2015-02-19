@@ -108,7 +108,8 @@ namespace MonoGameEngineCore.Procedural
             atmosphere.AddComponent(new HighPrecisionPosition());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
-            atmosphericScatteringHelper = new AtmosphericScatteringHelper(this.testEffect, radius * 1.05f, radius);
+
+            atmosphericScatteringHelper = new AtmosphericScatteringHelper(this.testEffect, radius*1.05f, radius);
 
         }
 
@@ -297,8 +298,7 @@ namespace MonoGameEngineCore.Procedural
                 CalculateChildMovement(gameTime, child, planetCenter);
             }
 
-            ICamera activeCamera = SystemCore.ActiveCamera;
-
+           
             //Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
             //float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
             //float surfaceDistance = distanceToCenterOfPlanet - radius;
@@ -332,7 +332,6 @@ namespace MonoGameEngineCore.Procedural
             RemoveStaleNodes();
 
             int patchCountPerFrame = 10;
-
             for (int i = 0; i < patchCountPerFrame; i++)
             {
                 PlanetNode finishedNode;

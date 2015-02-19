@@ -1,6 +1,7 @@
 float4x4 World;
 float4x4 View;
 float4x4 Projection;
+float4x4 WorldViewProjection;
 
 cbuffer cbAmbient
 {
@@ -68,7 +69,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.PositionWorld = mul(input.Position, World);
 	output.Color = input.Color;
 
-	float3 v3Pos = input.Position.xyz;
+
+
+	float3 v3Pos = mul(input.Position.xyz, World);
 	float3 v3Ray = v3Pos - v3CameraPos;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
