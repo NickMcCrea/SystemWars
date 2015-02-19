@@ -46,10 +46,10 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
 	float4 Position : SV_POSITION;
-	float4 gl_FrontSecondaryColor : TEXCOORD0;
-	float4 gl_FrontColor : TEXCOORD1;
 	float4 Color : COLOR0;
 	float4 PositionWorld : NORMAL0;
+	float4 gl_FrontSecondaryColor : TEXCOORD0;
+	float4 gl_FrontColor : TEXCOORD1;
 };
 
 float scale(float fCos)

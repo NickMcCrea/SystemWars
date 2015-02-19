@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using SystemWar.SolarSystem;
 using BEPUutilities;
 using LibNoise;
@@ -33,77 +31,6 @@ namespace MonoGameEngineCore.Procedural
         }
     }
 
-    public static class PlanetBuilder
-    {
-        private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
-        private static Dictionary<string, ConcurrentQueue<PlanetNode>> finishedNodes;
-
-        public static int GetQueueSize()
-        {
-            return nodesAwaitingBuilding.Count;
-        }
-        public static int GetBuiltNodesQueueSize(string name)
-        {
-            if (finishedNodes.ContainsKey(name))
-                return finishedNodes[name].Count;
-            return 0;
-        }
-
-        private static volatile bool quit = false;
-        private static int numThreads = 3;
-
-        static PlanetBuilder()
-        {
-            nodesAwaitingBuilding = new ConcurrentQueue<PlanetNode>();
-            finishedNodes = new Dictionary<string, ConcurrentQueue<PlanetNode>>();
-
-            for (int i = 0; i < numThreads; i++)
-            {
-                Thread buildThread = new Thread(Update);
-                buildThread.Start();
-            }
-            SystemCore.Game.Exiting += (x, y) => { quit = true; };
-
-        }
-
-        public static void Enqueue(PlanetNode nodeToBuild)
-        {
-            if (!finishedNodes.ContainsKey(nodeToBuild.Planet.Name))
-                finishedNodes.Add(nodeToBuild.Planet.Name, new ConcurrentQueue<PlanetNode>());
-
-            nodesAwaitingBuilding.Enqueue(nodeToBuild);
-        }
-
-        public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
-        {
-            var node = new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize);
-            Enqueue(node);
-        }
-
-        public static void Update()
-        {
-            while (!quit)
-            {
-                PlanetNode node;
-                if (nodesAwaitingBuilding.TryDequeue(out node))
-                {
-                    node.BuildGeometry();
-                    finishedNodes[node.Planet.Name].Enqueue(node);
-                }
-                Thread.Sleep(10);
-            }
-        }
-
-        public static bool GetBuiltNodes(string planetName, out PlanetNode finishedNode)
-        {
-            if (finishedNodes.ContainsKey(planetName))
-                return finishedNodes[planetName].TryDequeue(out finishedNode);
-
-            finishedNode = null;
-            return false;
-        }
-    }
-
     public class Planet : GameObject.GameObject, IUpdateable
     {
         private readonly IModule module;
@@ -125,7 +52,7 @@ namespace MonoGameEngineCore.Procedural
         private TimeSpan lastClearTime;
         public bool visualisePatches = false;
         private decimal maxDepth = 8;
-        private int siblingId;
+       
         private Planet orbitBody;
         private Vector3d positionToOrbit;
         private float orbitSpeed;
@@ -136,14 +63,11 @@ namespace MonoGameEngineCore.Procedural
         public bool HasAtmosphere { get; private set; }
         public Color AtmosphereColor { get; private set; }
         private Atmosphere atmosphere;
+        private AtmosphericScatteringHelper atmosphericScatteringHelper;
     
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
-            //default, but should be tinted to match terrain.
-
-
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
-            siblingId = 1;
             this.Name = name;
             planetId = ++planetIdList;
             this.module = module;
@@ -160,10 +84,11 @@ namespace MonoGameEngineCore.Procedural
             customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, this.radius * 10);
 
-            this.SeaColor = sea;
-            this.LandColor = land;
-            this.MountainColor = mountains;
+            SeaColor = sea;
+            LandColor = land;
+            MountainColor = mountains;
 
+       
             Initialise();
         }
 
@@ -182,6 +107,9 @@ namespace MonoGameEngineCore.Procedural
             atmosphere = new Atmosphere(this.radius*1.05f, this.radius);
             atmosphere.AddComponent(new HighPrecisionPosition());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+
+            atmosphericScatteringHelper = new AtmosphericScatteringHelper(this.testEffect, radius * 1.05f, radius);
+
         }
 
         private void GenerateCustomProjectionMatrix(float far)
@@ -352,55 +280,21 @@ namespace MonoGameEngineCore.Procedural
             if (orbitEnabled)
                 CalculateOrbit(gameTime);
 
-
-
-
-           
-                
-  
             Vector3d planetCenter = GetComponent<HighPrecisionPosition>().Position;
-            
 
             if (HasAtmosphere)
             {
-
                 atmosphere.GetComponent<HighPrecisionPosition>().Position = planetCenter;
                 atmosphere.Update(SolarSystemHelper.GetSun().LightDirection, Vector3.Zero);
+
+                atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
+                    SolarSystemHelper.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
 
             }
 
             foreach (GameObject.GameObject child in Children)
             {
-                var highPrecisionComponent = child.GetComponent<HighPrecisionPosition>();
-                Vector3d movementLastFrame = planetCenter - positionLastFrame;
-                highPrecisionComponent.Position += movementLastFrame;
-
-                //we want to rotate the high precision component around the up vector, around the planet center.
-
-                if (GetComponent<RotatorComponent>() != null)
-                {
-                    double angleRotatedLastFrame = GetComponent<RotatorComponent>().RotationSpeed * gameTime.ElapsedGameTime.TotalMilliseconds;
-
-
-                    double s = System.Math.Sin(angleRotatedLastFrame);
-                    double c = System.Math.Cos(angleRotatedLastFrame);
-                    Vector3d shipPos = highPrecisionComponent.Position;
-                    shipPos.X -= planetCenter.X;
-                    shipPos.Z -= planetCenter.Z;
-
-                    double xNew = shipPos.X * c + shipPos.Z * s;
-                    double zNew = -shipPos.X * s + shipPos.Z * c;
-
-                    shipPos.X = xNew + planetCenter.X;
-                    shipPos.Z = zNew + planetCenter.Z;
-
-                    highPrecisionComponent.Position = shipPos;
-
-                    child.Transform.Rotate(Vector3.Up, (float)angleRotatedLastFrame);
-
-                }
-
-
+                CalculateChildMovement(gameTime, child, planetCenter);
             }
 
             ICamera activeCamera = SystemCore.ActiveCamera;
@@ -417,13 +311,12 @@ namespace MonoGameEngineCore.Procedural
             {
                 node.Update();
 
+                //all nodes are flagged for removal every frame. 
+                //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
 
                 if (node.depth == 1)
                     continue;
-
-
-
             }
 
 
@@ -453,34 +346,35 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private void SetFogValues(Color atmosphereColor)
+        private void CalculateChildMovement(GameTime gameTime, GameObject.GameObject child, Vector3d planetCenter)
         {
-            testEffect.Parameters["FogEnabled"].SetValue(true);
-            testEffect.Parameters["FogColor"].SetValue(atmosphereColor.ToVector4());
+            var highPrecisionComponent = child.GetComponent<HighPrecisionPosition>();
+            Vector3d movementLastFrame = planetCenter - positionLastFrame;
+            highPrecisionComponent.Position += movementLastFrame;
 
-
-
-            //far should be set to mid-point of planet. Near can be 
-            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
-            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
-            float surfaceDistance = distanceToCenterOfPlanet - radius;
-
-
-
-            testEffect.Parameters["FogStart"].SetValue(surfaceDistance);
-            testEffect.Parameters["FogEnd"].SetValue(distanceToCenterOfPlanet + radius);
-            if (surfaceDistance < radius / 8)
+            //we want to rotate the high precision component around the up vector, around the planet center.
+            if (GetComponent<RotatorComponent>() != null)
             {
-                testEffect.Parameters["FogStart"].SetValue(0f);
+                double angleRotatedLastFrame = GetComponent<RotatorComponent>().RotationSpeed*
+                                               gameTime.ElapsedGameTime.TotalMilliseconds;
 
-                var far = radius / 3;
-                testEffect.Parameters["FogEnd"].SetValue(far + surfaceDistance);
+
+                double s = System.Math.Sin(angleRotatedLastFrame);
+                double c = System.Math.Cos(angleRotatedLastFrame);
+                Vector3d shipPos = highPrecisionComponent.Position;
+                shipPos.X -= planetCenter.X;
+                shipPos.Z -= planetCenter.Z;
+
+                double xNew = shipPos.X*c + shipPos.Z*s;
+                double zNew = -shipPos.X*s + shipPos.Z*c;
+
+                shipPos.X = xNew + planetCenter.X;
+                shipPos.Z = zNew + planetCenter.Z;
+
+                highPrecisionComponent.Position = shipPos;
+
+                child.Transform.Rotate(Vector3.Up, (float) angleRotatedLastFrame);
             }
-        }
-
-        private void SetFogValues()
-        {
-           
         }
 
         private void CalculateOrbit(GameTime gameTime)

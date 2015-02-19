@@ -63,8 +63,8 @@ namespace MonoGameEngineCore.Rendering
                 atmosphereEffect.Parameters["fKr4PI"].SetValue(m_Kr4PI);
                 atmosphereEffect.Parameters["fKm4PI"].SetValue(m_Km4PI);
 
-                atmosphereEffect.Parameters["g"].SetValue(m_g);
-                atmosphereEffect.Parameters["g2"].SetValue(m_g * m_g);
+                //atmosphereEffect.Parameters["g"].SetValue(m_g);
+                //atmosphereEffect.Parameters["g2"].SetValue(m_g * m_g);
 
                 atmosphereEffect.Parameters["fScale"].SetValue(1.0f / (m_fOuterRadius - m_fInnerRadius));
                 atmosphereEffect.Parameters["fScaleDepth"].SetValue(m_fRayleighScaleDepth);
@@ -77,7 +77,6 @@ namespace MonoGameEngineCore.Rendering
 
             public void Update(float cameraHeight, Vector3 lightDir, Vector3 cameraPos)
             {
-                
                 atmosphereEffect.Parameters["fCameraHeight"].SetValue(cameraHeight);
                 atmosphereEffect.Parameters["fCameraHeight2"].SetValue(cameraHeight * cameraHeight);
                 atmosphereEffect.Parameters["v3LightPos"].SetValue(lightDir);

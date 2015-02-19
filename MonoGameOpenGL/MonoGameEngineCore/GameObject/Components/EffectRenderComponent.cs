@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Xna.Framework;
@@ -7,6 +9,22 @@ using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
+    public enum EffectParamType
+    {
+        floatParam,
+        boolParam,
+        matrixParam,
+        vector3Param,
+        vector4Param,
+    }
+
+    public struct EffectParameterHelper
+    {
+        public EffectParamType TypeOfParam{ get; set; }
+        public string Name { get; set; }
+        public object Value { get; set; }
+    }
+
     public class EffectRenderComponent : IComponent, IDrawable
     {
 
@@ -17,12 +35,13 @@ namespace MonoGameEngineCore.GameObject.Components
         public bool Visible { get; set; }
         public float ColorSaturation { get; set; }
         public string Camera { get; set; }
+        private List<EffectParameterHelper> paramsToSetBeforeNextRender; 
 
         public EffectRenderComponent(Effect effect)
         {
             this.effect = effect;
             Visible = true;
-
+            paramsToSetBeforeNextRender = new List<EffectParameterHelper>();
             //default to main active camera in scene. But overridable via property.
             Camera = "main";
         }
@@ -37,6 +56,7 @@ namespace MonoGameEngineCore.GameObject.Components
             AssignMatrixParameters();
             AssignLightingParameters();
             AssignTextureParameters();
+            SetVariableParams();
         }
 
         private void AssignTextureParameters()
@@ -64,6 +84,7 @@ namespace MonoGameEngineCore.GameObject.Components
             GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
             GameObjectManager.primitives += renderGeometry.PrimitiveCount;
 
+        
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -74,6 +95,19 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
 
+        }
+
+        private void SetVariableParams()
+        {
+            foreach (EffectParameterHelper effectParameter in paramsToSetBeforeNextRender)
+            {
+                if (effectParameter.TypeOfParam == EffectParamType.vector3Param)
+                {
+                    Vector3 value = (Vector3) effectParameter.Value;
+                    effect.Parameters[effectParameter.Name].SetValue(value);
+                }
+            }
+            paramsToSetBeforeNextRender.Clear();
         }
 
         public virtual void AssignMatrixParameters()
@@ -141,6 +175,23 @@ namespace MonoGameEngineCore.GameObject.Components
                     return true;
             }
             return false;
+        }
+
+        public void SetParameterForNextFrame(string name, Vector3 vec)
+        {
+            EffectParameterHelper helper = new EffectParameterHelper();
+            helper.Name = name;
+            helper.TypeOfParam = EffectParamType.vector3Param;
+            helper.Value = vec;
+            paramsToSetBeforeNextRender.Add(helper);
+        }
+        public void SetParameterForNextFrame(string name, float floatParam)
+        {
+            EffectParameterHelper helper = new EffectParameterHelper();
+            helper.Name = name;
+            helper.TypeOfParam = EffectParamType.floatParam;
+            helper.Value = floatParam;
+            paramsToSetBeforeNextRender.Add(helper);
         }
 
         public event System.EventHandler<System.EventArgs> VisibleChanged;
