@@ -26,6 +26,11 @@ namespace MonoGameEngineCore
         void Render(GameTime gameTime);
     }
 
+    public interface IGameComponent
+    {
+        
+    }
+
 
     public class SystemCore
     {
@@ -50,6 +55,7 @@ namespace MonoGameEngineCore
         private static  Dictionary<string, ICamera> cameras;  
 
         private static List<IGameSubSystem> gameSubSystems;
+        private static List<IGameComponent> gameComponents; 
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat)
         {
@@ -91,14 +97,20 @@ namespace MonoGameEngineCore
             DebugText.InjectGraphicsDevice(SystemCore.GraphicsDevice);
         }
 
-        public static void AddNewSubSystem(IGameSubSystem newSystem)
+        public static void AddNewUpdateRenderSubsystem(IGameSubSystem newSystem)
         {
             newSystem.Initalise();
             gameSubSystems.Add(newSystem);
         }
 
+        public static void AddNewGameComponent(IGameComponent newComponent)
+        {
+            gameComponents.Add(newComponent);
+        }
+
         private static void InstantiateSystems()
         {
+            gameComponents = new List<IGameComponent>();
             gameSubSystems = new List<IGameSubSystem>();
             gameSubSystems.Add(new InputManager());
             gameSubSystems.Add(new ScreenManager());
@@ -202,6 +214,15 @@ namespace MonoGameEngineCore
             if (gameSubSystem != null)
                 return (T)gameSubSystem;
             return default(T);
+        }
+
+        public static T GetGameComponent<T>()
+        {
+            var gameSubSystem = gameComponents.Find(x => (x.GetType() == typeof(T)));
+            if (gameSubSystem != null)
+                return (T)gameSubSystem;
+            return default(T);
+            
         }
 
         public static Vector3 Unproject(Vector3 inWorldPoint)

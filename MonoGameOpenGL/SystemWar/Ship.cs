@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GameObject;
+using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore;
@@ -13,11 +14,13 @@ namespace SystemWar
 {
     public class Ship : GameObject, IUpdateable
     {
+        public HighPrecisionPosition HighPrecisionPositionComponent { get; private set; }
         public GameObject shipCameraObject;
         private float desiredMainThrust;
         private float desiredSuperThrust;
         private float currentSuperThrust;
         private float currentMainThrust;
+        public bool InOrbit { get; private set; }
         public bool InAtmosphere { get; private set; }
         public Planet CurrentPlanet { get; private set; }
         private float yawThrust, desiredYawThrust;
@@ -47,7 +50,11 @@ namespace SystemWar
             Enabled = true;
             shipCameraObject = new GameObject("shipCam");
             shipCameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
+            AddComponent(new HighPrecisionPosition());
+            AddComponent(new ShipController());
+            AddComponent(new MouseKeyboardShipController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);
+            HighPrecisionPositionComponent = GetComponent<HighPrecisionPosition>();
         }
 
         public void AlterThrust(float amount)
@@ -187,16 +194,28 @@ namespace SystemWar
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
 
-        internal void SetInAtmosphere(Planet planet)
+        internal void SetInOrbit(Planet planet)
         {
             CurrentPlanet = planet;
+            InOrbit = true;
+        }
+
+        internal void ExitedOrbit()
+        {
+            InOrbit = false;
+            CurrentPlanet = null;
+        }
+
+        internal void SetInAtmosphere()
+        {
+          
             InAtmosphere = true;
         }
 
         internal void ExitedAtmosphere()
         {
+          
             InAtmosphere = false;
-            CurrentPlanet = null;
         }
 
         internal void ToggleCameraCoupling()

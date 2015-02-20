@@ -157,6 +157,9 @@ namespace MonoGameEngineCore.GameObject
             SystemCore.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             SystemCore.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 
+
+            drawableGameObjectComponents = drawableGameObjectComponents.OrderBy(x => x.DrawOrder).ToList();
+
             foreach (IDrawable drawable in drawableGameObjectComponents)
             {
                 if (drawable.Visible)

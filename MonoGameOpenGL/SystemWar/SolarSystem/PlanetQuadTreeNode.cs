@@ -321,7 +321,7 @@ namespace MonoGameEngineCore.Procedural
                 Planet.Transform.WorldMatrix);
 
 
-            
+            this.GetComponent<EffectRenderComponent>().DrawOrder = Planet.DrawOrder;
 
 
         }

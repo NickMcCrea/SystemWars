@@ -1,23 +1,15 @@
 ﻿using BEPUphysics;
-using ConversionHelper;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
-using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
-using MonoGameEngineCore.ScreenManagement;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using SystemWar.Shapes;
-using SystemWar.SolarSystem;
 
 namespace SystemWar.Screens
 {
@@ -25,12 +17,7 @@ namespace SystemWar.Screens
     {
         Ship ship;
         Vector3d oldPos;
-        DiffuseLight sunLight;
-        GameObject sun;
-        Planet earthPlanet;
-        Planet moon;
-        Vector3 collisionPoint;
-        RayCastResult result;
+        private SolarSystem solarSystem;
         bool firstTimePlacement = false;
 
         public MainGameScreen()
@@ -39,22 +26,12 @@ namespace SystemWar.Screens
 
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            SystemCore.AddNewSubSystem(new SkyDome());
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome());
 
-            collisionPoint = new Vector3(1000, 1000, 1000);
-
-            var solarSystemSettings = new SolarSystemSettings();
-            SolarSystemGenerator.Generate(solarSystemSettings);
-
-
+          
             ship = new Ship("ship");
-            
             SystemCore.SetActiveCamera(ship.shipCameraObject.GetComponent<ComponentCamera>());
-            ship.AddComponent(new HighPrecisionPosition());
-            ship.AddComponent(new ShipController());
-            ship.AddComponent(new MouseKeyboardShipController());
-
-
+            
             var cockpit = SystemWarShapes.CockpitBar();
             cockpit.Translate(Vector3.Forward * 2);
             cockpit.Translate(Vector3.Down * 0.6f);
@@ -78,21 +55,16 @@ namespace SystemWar.Screens
 
             ship.AddComponent(new RenderGeometryComponent(cockpit));
             var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("flatshaded"));
-            cockpitEffectComponent.DrawOrder = 5;
+            cockpitEffectComponent.DrawOrder = 100;
             ship.AddComponent(cockpitEffectComponent);
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
 
 
-            sunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;
-            sun = SystemCore.GameObjectManager.GetObject("sun");
-
-         
-            earthPlanet = SystemCore.GameObjectManager.GetObject("earth") as Planet;
-            moon = SystemCore.GameObjectManager.GetObject("moon") as Planet;
-          
-            
+            solarSystem = new SolarSystem();
+            solarSystem.PlayerShip = ship;
+            SystemCore.AddNewGameComponent(solarSystem);
             ship.Transform.Rotate(Vector3.Up, MathHelper.PiOver2);
 
         }
@@ -106,44 +78,16 @@ namespace SystemWar.Screens
 
         public override void Update(GameTime gameTime)
         {
-            SolarSystemHelper.AdjustObjectsForRendering(ship.GetComponent<HighPrecisionPosition>().Position);
-            SkyDome.SetSunDir(ship.GetComponent<HighPrecisionPosition>().Position);
-
-            ((DiffuseLight)sunLight).LightDirection = Vector3.Normalize(sun.Transform.WorldMatrix.Translation);
-
+           
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-            if (input.KeyPress(Keys.Enter))
-                ship.Transform.SetPosition(earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(6500, 0, 0));
-
-            if (input.KeyPress(Keys.M))
-                ship.Transform.SetPosition(moon.GetComponent<HighPrecisionPosition>().Position);
-
-
-
-            List<GameObject> planets = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Planet);
-            foreach (Planet p in planets)
-            {
-
-                double distanceToPlanet = SolarSystemHelper.CalculateDistanceToPlanet(p,
-                ship.GetComponent<HighPrecisionPosition>().Position);
-                if (distanceToPlanet < p.radius * 2)
-                {
-                    p.AddToInfluence(ship);
-
-                }
-                else
-                {
-                    p.RemoveFromInfluence(ship);
-
-                 
-                }
-            }
+            solarSystem.Update(gameTime);
+            
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = earthPlanet.GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0);
+                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0);
                 firstTimePlacement = true;
             }
 
@@ -185,10 +129,6 @@ namespace SystemWar.Screens
 
             oldPos = currentPos;
 
-
-
-
-            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(collisionPoint, 5f), Color.Red);
         }
     }
 }

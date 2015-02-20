@@ -86,7 +86,7 @@ namespace MonoGameEngineCore.GameObject.Components
                     ship.Roll(-0.01f);
                 else
                 {
-                    if (ship.InAtmosphere)
+                    if (ship.InOrbit)
                         ship.RealignShip();
                 }
             }

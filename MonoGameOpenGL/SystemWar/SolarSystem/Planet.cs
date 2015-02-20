@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using SystemWar.SolarSystem;
-using BEPUutilities;
 using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGameEngineCore.Camera;
-using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Rendering;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
-using Ray = Microsoft.Xna.Framework.Ray;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using SystemWar;
 
@@ -68,7 +63,7 @@ namespace MonoGameEngineCore.Procedural
 
         public int DrawOrder { get; set; }
 
-        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains, int drawOrder)
+        public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
             this.Name = name;
@@ -93,14 +88,13 @@ namespace MonoGameEngineCore.Procedural
 
             //spaceScatteringHelper = new SpaceScatteringHelper(testEffect);
 
-            DrawOrder = drawOrder;
             Initialise();
         }
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea,
-            Color land, Color mountains, int drawOrder, float rotation)
+            Color land, Color mountains, float rotation)
             : this(name, position, module, testEffect, radius, sea,
-                land, mountains,drawOrder)
+                land, mountains)
         {
             AddComponent(new RotatorComponent(Vector3.Up, rotation));
         }
@@ -292,10 +286,10 @@ namespace MonoGameEngineCore.Procedural
             if (HasAtmosphere)
             {
                 atmosphere.GetComponent<HighPrecisionPosition>().Position = planetCenter;
-                atmosphere.Update(SolarSystemHelper.GetSun().LightDirection, Vector3.Zero);
+                atmosphere.Update(SolarSystem.GetSun().LightDirection, Vector3.Zero);
 
                 atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
-                SolarSystemHelper.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
+                SolarSystem.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
 
             }
 
@@ -469,7 +463,7 @@ namespace MonoGameEngineCore.Procedural
                 Children.Add(gameObject);
                 if (gameObject is Ship)
                 {
-                    ((Ship)gameObject).SetInAtmosphere(this);
+                    ((Ship)gameObject).SetInOrbit(this);
                 }
             }
         }
@@ -481,7 +475,7 @@ namespace MonoGameEngineCore.Procedural
                 Children.Remove(gameObject);
                 if (gameObject is Ship)
                 {
-                    ((Ship)gameObject).ExitedAtmosphere();
+                    ((Ship)gameObject).ExitedOrbit();
                 }
             }
         }
