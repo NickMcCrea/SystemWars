@@ -22,7 +22,7 @@ namespace SystemWar
 
         public SolarSystem()
         {
-            SolarSystemGenerator.Generate(new SolarSystemSettings());
+            SolarSystemGenerator.GenerateTestSystem(new SolarSystemSettings());
             Sun = SystemCore.GameObjectManager.GetObject("sun");
             PlayerShip = SystemCore.GameObjectManager.GetObject("ship") as Ship;
             SunLight = SystemCore.ActiveScene.LightsInScene.First() as DiffuseLight;

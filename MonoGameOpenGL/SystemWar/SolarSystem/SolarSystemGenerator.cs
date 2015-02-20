@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Security.Cryptography.X509Certificates;
+using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -10,7 +11,16 @@ namespace SystemWar.Screens
     public class SolarSystemGenerator
     {
 
-        internal static void Generate(SolarSystemSettings solarSystemSettings)
+        internal static void GenerateRandomSystem(SolarSystemSettings settings)
+        {
+            int planetsMin = 5;
+            int planetsMax = 10;
+
+
+
+        }
+
+        internal static void GenerateTestSystem(SolarSystemSettings solarSystemSettings)
         {
 
 
