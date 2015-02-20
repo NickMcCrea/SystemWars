@@ -29,7 +29,7 @@ namespace SystemWar.Screens
              NoiseGenerator.RidgedMultiFractal(0.02f),
              EffectLoader.LoadEffect(planetShader).Clone(),
              2000, Color.DarkGray.ChangeTone(10), Color.DarkGray, Color.DarkGray.ChangeTone(-10));
-            moon.Orbit(earth, 20000, ScaleHelper.Millionths(1000f));
+            moon.Orbit(earth, 20000, ScaleHelper.Millionths(5000f));
             moon.orbitAngle = RandomHelper.GetRandomeAngle();
 
             Planet moon2 = new Planet("moon2", new Vector3d(ScaleHelper.Millions(20) + 40000, 0, 0),

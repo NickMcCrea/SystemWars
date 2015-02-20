@@ -15,7 +15,7 @@ namespace SystemWar
     public class SolarSystem : MonoGameEngineCore.IGameComponent
     {
 
-      
+
         public Ship PlayerShip { get; set; }
         public DiffuseLight SunLight { get; set; }
         public GameObject Sun { get; set; }
@@ -118,13 +118,20 @@ namespace SystemWar
             Vector3d distanceFromPlanetCenter = p.GetComponent<HighPrecisionPosition>().Position -
                                                 PlayerShip.HighPrecisionPositionComponent.Position;
 
-            if ((float) distanceFromPlanetCenter.Length < atmosphereRadius)
+            if ((float)distanceFromPlanetCenter.Length < atmosphereRadius)
                 return true;
             return false;
         }
 
         private void SortForRendering(List<GameObject> planets)
         {
+            //if the player is inside an atmosphere, draw order should be
+            //1. things outside the atmosphere.
+            //2. The atmosphere
+            //3. The current planet.
+
+            Vector3 toSun = -SunLight.LightDirection;
+            toSun.Normalize();
             if (PlayerShip.InAtmosphere)
             {
 
@@ -137,10 +144,30 @@ namespace SystemWar
                         continue;
 
                     planet.DrawOrder = 1;
+
+
+                    Vector3d toPlanet = PlayerShip.HighPrecisionPositionComponent.Position -
+                                       planet.GetComponent<HighPrecisionPosition>().Position;
+
+                    Vector3 toPlanet2 = toPlanet.ToVector3();
+                    toPlanet2.Normalize();
+
+                    float dot = Vector3.Dot(toSun, toPlanet2);
+                    if (dot > 0.99f)
+                        planet.DrawOrder = 5;
+
                 }
+
+                //if the planet is in front of the sun, then render it after the atmosphere.
+
             }
             else
             {
+                //if the player is outside an atmosphere, draw order should be
+                //1. The atmosphere of any planets with an atmosphere
+                //2. The ground of those planets.
+                //3. Everything else opaque.
+
                 foreach (Planet planet in planets)
                 {
                     if (planet.HasAtmosphere)
