@@ -23,7 +23,7 @@ uniform float3 v3LightPos;
 uniform float3 v3InvWavelength;	
 uniform float fCameraHeight;	 
 uniform float fCameraHeight2;	
-uniform float fOuterRadius;		
+uniform float fOuterRadius;		 
 uniform float fOuterRadius2;	
 uniform float fInnerRadius;		
 uniform float fInnerRadius2;	
@@ -98,7 +98,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 		fDepth = exp((fInnerRadius - fOuterRadius) / fScaleDepth);
 	}
-	else
+	if (fCameraHeight < fOuterRadius)
 	{
 		v3Start = v3CameraPos;
 	    fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
@@ -138,7 +138,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.gl_FrontColor.rgb = v3FrontColor * (v3InvWavelength * fKrESun + fKmESun);
 
 	// Calculate the attenuation factor for the ground
-	output.gl_FrontSecondaryColor.rgb = v3Attenuate;
+	output.gl_FrontSecondaryColor.rgb = clamp(v3Attenuate, 0.95f,1);
 
 	return output;
 }

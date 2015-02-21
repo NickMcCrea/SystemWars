@@ -86,7 +86,6 @@ namespace MonoGameEngineCore.Procedural
             LandColor = land;
             MountainColor = mountains;
 
-            //spaceScatteringHelper = new SpaceScatteringHelper(testEffect);
 
             Initialise();
         }

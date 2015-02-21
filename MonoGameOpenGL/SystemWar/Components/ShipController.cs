@@ -81,12 +81,12 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
                 if (inputManager.GamePadButtonDown(Buttons.RightShoulder))
-                    ship.Roll(0.01f);
+                    ship.Roll(1f);
                 if (inputManager.GamePadButtonDown(Buttons.LeftShoulder))
-                    ship.Roll(-0.01f);
+                    ship.Roll(-1f);
                 else
                 {
-                    if (ship.InOrbit)
+                    if (ship.InAtmosphere)
                         ship.RealignShip();
                 }
             }

@@ -39,21 +39,21 @@ namespace SystemWar.Screens
              NoiseGenerator.RidgedMultiFractal(0.02f),
              EffectLoader.LoadEffect(planetShader).Clone(),
              2000, Color.DarkGray.ChangeTone(10), Color.DarkGray, Color.DarkGray.ChangeTone(-10));
-            moon.Orbit(earth, 20000, ScaleHelper.Millionths(5000f));
+            moon.Orbit(earth, 20000, ScaleHelper.Millionths(50f));
             moon.orbitAngle = RandomHelper.GetRandomeAngle();
 
             Planet moon2 = new Planet("moon2", new Vector3d(ScaleHelper.Millions(20) + 40000, 0, 0),
             NoiseGenerator.RidgedMultiFractal(0.02f),
             EffectLoader.LoadEffect(planetShader).Clone(),
             1000, Color.SandyBrown.ChangeTone(-80), Color.SandyBrown.ChangeTone(-90), Color.SandyBrown.ChangeTone(-100));
-            moon2.Orbit(earth, 40000, ScaleHelper.Millionths(500f));
+            moon2.Orbit(earth, 40000, ScaleHelper.Millionths(50f));
             moon2.orbitAngle = RandomHelper.GetRandomeAngle();
 
             Planet moon3 = new Planet("moon3", new Vector3d(ScaleHelper.Millions(20) + 45000, 0, 0),
            NoiseGenerator.RidgedMultiFractal(0.02f),
            EffectLoader.LoadEffect(planetShader).Clone(),
            500, Color.DarkSlateGray.ChangeTone(10), Color.DarkSlateGray, Color.DarkSlateGray.ChangeTone(-10));
-            moon3.Orbit(moon2, 5000, ScaleHelper.Millionths(5000f));
+            moon3.Orbit(moon2, 5000, ScaleHelper.Millionths(50f));
             moon3.orbitAngle = RandomHelper.GetRandomeAngle();
 
 
