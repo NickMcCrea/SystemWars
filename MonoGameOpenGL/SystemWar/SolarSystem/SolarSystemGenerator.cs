@@ -33,7 +33,7 @@ namespace SystemWar.Screens
                EffectLoader.LoadEffect("AtmosphericScatteringGround").Clone(),
                 6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0.00001f);
             earth.Orbit(Vector3d.Zero, ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
-            earth.AddAtmosphere(Color.SaddleBrown.ChangeTone(50));
+            earth.AddAtmosphere();
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
              NoiseGenerator.RidgedMultiFractal(0.02f),

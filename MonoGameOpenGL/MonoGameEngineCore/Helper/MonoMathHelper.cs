@@ -12,6 +12,15 @@ namespace MonoGameEngineCore.Helper
     /// </summary>
     public static class MonoMathHelper
     {
+        /// <summary>
+        /// Remaps an input range into a desired output. Doesn't like negative numbers...
+        /// </summary>
+        /// <param name="lowIn"></param>
+        /// <param name="highIn"></param>
+        /// <param name="lowOut"></param>
+        /// <param name="highOut"></param>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static float MapFloatRange(float lowIn, float highIn, float lowOut, float highOut, float input)
         {
             float inputRange = highIn - lowIn;

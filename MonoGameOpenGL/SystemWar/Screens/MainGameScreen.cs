@@ -64,6 +64,7 @@ namespace SystemWar.Screens
 
             solarSystem = new SolarSystem();
             solarSystem.PlayerShip = ship;
+            ship.SolarSystem = solarSystem;
             SystemCore.AddNewGameComponent(solarSystem);
             ship.Transform.Rotate(Vector3.Up, MathHelper.PiOver2);
 

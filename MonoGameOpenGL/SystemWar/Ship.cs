@@ -15,7 +15,10 @@ namespace SystemWar
     public class Ship : GameObject, IUpdateable
     {
         public HighPrecisionPosition HighPrecisionPositionComponent { get; private set; }
+        public SolarSystem SolarSystem { get; set; }
         public GameObject shipCameraObject;
+
+
         private float desiredMainThrust;
         private float desiredSuperThrust;
         private float currentSuperThrust;
@@ -41,9 +44,11 @@ namespace SystemWar
         private float orientationThrustBleed = 0.8f;
         private float lateralThrustBleed = 0.9f;
         private Vector3 lateralThrust;
-        float maxVelocityAtmoshpere = 40f;
+        float maxVelocityAtmoshpere = 50f;
         float maxVelocitySpace = 1000f;
         float maxVelocityOrbit = 500f;
+        float superThrustVelocity = 5000f;
+
         public Ship(string name)
             : base(name)
         {
@@ -55,19 +60,20 @@ namespace SystemWar
             AddComponent(new MouseKeyboardShipController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);
             HighPrecisionPositionComponent = GetComponent<HighPrecisionPosition>();
+
+
         }
 
         public void AlterThrust(float amount)
         {
 
             desiredMainThrust += amount;
-          
+
         }
 
         public void SetThrust(float amount)
         {
             desiredMainThrust = amount;
-            DebugText.Write("desiredThrust: " + desiredMainThrust);
         }
 
         public void SetSuperThrust(float amount)
@@ -95,7 +101,9 @@ namespace SystemWar
 
         public void Yaw(float amount)
         {
-            Roll(-amount);
+            if (InAtmosphere)
+                Roll(-amount);
+
             desiredYawThrust += amount;
             if (desiredYawThrust > maxYaw)
                 desiredYawThrust = maxYaw;
@@ -110,7 +118,7 @@ namespace SystemWar
             vec += vec3;
             lateralThrust += vec * lateralFactor;
 
-            Roll(-leftRight/1000f);
+            Roll(-leftRight / 1000f);
 
         }
 
@@ -121,24 +129,36 @@ namespace SystemWar
             if (InOrbit)
                 maxVelToUse = maxVelocityOrbit;
             if (InAtmosphere)
+            {
                 maxVelToUse = maxVelocityAtmoshpere;
-          
 
-            
+                Vector3 realWorldPos = SolarSystem.GetRenderPosition(HighPrecisionPositionComponent.Position, CurrentPlanet.Position.Position);
+                realWorldPos.Normalize();
+
+                float downAngle = Vector3.Dot(Transform.WorldMatrix.Forward, realWorldPos);
+
+                //increase max velocity as the nose points down, and vice versa.
+                float velAdjustForGravity = MonoMathHelper.MapFloatRange(0, 2, 0.5f, 2f, downAngle + 1);
+                maxVelToUse *= velAdjustForGravity;
+            }
+
+
+
+
+
             if (desiredMainThrust > currentMainThrust)
                 currentMainThrust = MathHelper.Lerp(currentMainThrust, desiredMainThrust, mainThrustUpSpeed);
             else
                 currentMainThrust = MathHelper.Lerp(currentMainThrust, desiredMainThrust, mainThrustDownSpeed);
 
-            DebugText.Write("currentMainThrust: " + currentMainThrust.ToString());
-
+       
             if (desiredSuperThrust > currentSuperThrust)
                 currentSuperThrust = MathHelper.Lerp(currentSuperThrust, desiredSuperThrust, mainThrustUpSpeed);
             else
                 currentSuperThrust = MathHelper.Lerp(currentSuperThrust, desiredSuperThrust, mainThrustDownSpeed);
 
 
-            rollThrust = MathHelper.Lerp(rollThrust, desiredRollThrust, otherThrustAlterationSpeed * 2);
+            rollThrust = MathHelper.Lerp(rollThrust, desiredRollThrust, otherThrustAlterationSpeed*2);
             pitchThrust = MathHelper.Lerp(pitchThrust, desiredPitchThrust, otherThrustAlterationSpeed);
             yawThrust = MathHelper.Lerp(yawThrust, desiredYawThrust, otherThrustAlterationSpeed);
 
@@ -159,10 +179,11 @@ namespace SystemWar
             }
 
             if (currentSuperThrust > 0)
-                velocity += (currentSuperThrust) * Transform.WorldMatrix.Forward;
+                velocity += (currentSuperThrust) * superThrustVelocity * Transform.WorldMatrix.Forward;
+
+            
 
 
-            DebugText.Write("velocity length: " + velocity.Length().ToString()); 
             Transform.Translate(velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
 
@@ -175,8 +196,7 @@ namespace SystemWar
 
 
             velocity *= mainThrustBleed;
-            DebugText.Write("velocity after bleed: " + velocity.Length().ToString()); 
-        
+         
 
             lateralThrust *= lateralThrustBleed;
             desiredRollThrust *= orientationThrustBleed;
@@ -225,13 +245,13 @@ namespace SystemWar
 
         internal void SetInAtmosphere()
         {
-          
+
             InAtmosphere = true;
         }
 
         internal void ExitedAtmosphere()
         {
-          
+
             InAtmosphere = false;
         }
 

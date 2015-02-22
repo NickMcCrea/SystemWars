@@ -56,11 +56,11 @@ namespace MonoGameEngineCore.Procedural
         public float orbitAngle;
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
-        public Color AtmosphereColor { get; private set; }
+       
         public Atmosphere atmosphere;
         private GroundScatteringHelper atmosphericScatteringHelper;
         private SpaceScatteringHelper spaceScatteringHelper;
-
+        public HighPrecisionPosition Position { get; private set; }
         public int DrawOrder { get; set; }
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
@@ -72,7 +72,8 @@ namespace MonoGameEngineCore.Procedural
             this.testEffect = testEffect;
             this.radius = radius;
 
-            AddComponent(new HighPrecisionPosition());
+            Position = new HighPrecisionPosition();
+            AddComponent(Position);
 
             Transform.SetPosition(position);
 
@@ -98,9 +99,9 @@ namespace MonoGameEngineCore.Procedural
             AddComponent(new RotatorComponent(Vector3.Up, rotation));
         }
 
-        public void AddAtmosphere(Color color)
+        public void AddAtmosphere()
         {
-            AtmosphereColor = color;
+            
             HasAtmosphere = true;
             atmosphere = new Atmosphere(this.radius * 1.05f, this.radius);
             atmosphere.AddComponent(new HighPrecisionPosition());
