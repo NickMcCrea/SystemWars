@@ -73,6 +73,8 @@ namespace SystemWar
 
         public void SetThrust(float amount)
         {
+            if (amount > 1)
+                amount = 1;
             desiredMainThrust = amount;
         }
 

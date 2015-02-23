@@ -8,8 +8,8 @@ namespace MonoGameEngineCore.GameObject.Components
     public class MouseKeyboardShipController : IComponent, IUpdateable
     {
         private Vector2 mouseSteer;
+        private float thrustInput = 0;
 
-      
         private Ship ship;
         public GameObject ParentObject
         {
@@ -43,18 +43,36 @@ namespace MonoGameEngineCore.GameObject.Components
 
             float thrustChange = 0.1f;
             float rollPitchYawChange = 0.01f;
-            if (inputManager.IsKeyDown(Keys.W))
-                ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10f);
 
-                //ship.SetThrust(1000f);
-            if (inputManager.IsKeyDown(Keys.S))
-                ship.Transform.Translate(-ship.Transform.WorldMatrix.Forward * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10f);
+
+
+            if (inputManager.IsKeyDown(Keys.RightShift))
+                thrustInput += thrustChange;
+
+            if (inputManager.IsKeyDown(Keys.RightControl))
+                thrustInput -= thrustChange;
+
+            if (thrustInput > 1)
+                thrustInput = 1;
+
+                ship.SetThrust(thrustInput);
+
+            float horizontal = 0;
+            float vertical = 0;
 
             if (inputManager.IsKeyDown(Keys.A))
-                ship.Transform.Translate(ship.Transform.WorldMatrix.Left * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10f);
+                horizontal = 1;
             if (inputManager.IsKeyDown(Keys.D))
-                ship.Transform.Translate(ship.Transform.WorldMatrix.Right * (float)gameTime.ElapsedGameTime.TotalMilliseconds * 10f);
-          
+                horizontal = -1;
+
+            if (inputManager.IsKeyDown(Keys.W))
+                vertical = 1;
+            if (inputManager.IsKeyDown(Keys.S))
+                vertical = -1;
+
+            ship.LateralThrust(horizontal,vertical);
+
+         
 
             if (inputManager.IsKeyDown(Keys.Up))
                 ship.Pitch(rollPitchYawChange);

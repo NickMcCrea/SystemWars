@@ -88,7 +88,7 @@ namespace SystemWar.Screens
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(20000, 0, 0);
+                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(6050, 0, 0);
                 firstTimePlacement = true;
             }
 
