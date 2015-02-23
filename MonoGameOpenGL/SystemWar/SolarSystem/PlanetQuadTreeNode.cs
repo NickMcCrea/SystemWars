@@ -94,13 +94,10 @@ namespace MonoGameEngineCore.Procedural
 
             var indices = GenerateIndices();
 
-            if (normal == Vector3.Down || normal == Vector3.Backward || normal == Vector3.Right)
+            if (normal == Vector3.Up || normal == Vector3.Forward || normal == Vector3.Left)
                 indices = indices.Reverse().ToArray();
-
-
-
-            indices = indices.Reverse().ToArray();
-
+            
+   
 
             Sphereify(sphereSize, ref vertices);
 
@@ -185,9 +182,7 @@ namespace MonoGameEngineCore.Procedural
         private void GenerateNormals(ref VertexPositionColorTextureNormal[] vertArray, ref short[] indices)
         {
 
-            for (int i = 0; i < vertArray.Length; i++)
-                vertArray[i].Normal = new Vector3(0, 0, 0);
-
+       
             for (int i = 0; i < indices.Length / 3; i++)
             {
                 Vector3 firstvec = vertArray[indices[i * 3 + 1]].Position - vertArray[indices[i * 3]].Position;

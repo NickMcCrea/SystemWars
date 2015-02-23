@@ -20,7 +20,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
     public struct EffectParameterHelper
     {
-        public EffectParamType TypeOfParam{ get; set; }
+        public EffectParamType TypeOfParam { get; set; }
         public string Name { get; set; }
         public object Value { get; set; }
     }
@@ -35,7 +35,7 @@ namespace MonoGameEngineCore.GameObject.Components
         public bool Visible { get; set; }
         public float ColorSaturation { get; set; }
         public string Camera { get; set; }
-        private List<EffectParameterHelper> paramsToSetBeforeNextRender; 
+        private List<EffectParameterHelper> paramsToSetBeforeNextRender;
 
         public EffectRenderComponent(Effect effect)
         {
@@ -80,14 +80,14 @@ namespace MonoGameEngineCore.GameObject.Components
 
             SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
             SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
-        
+
             GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
             GameObjectManager.primitives += renderGeometry.PrimitiveCount;
 
-        
-            foreach (EffectPass pass in effect.CurrentTechnique.Passes)
+
+            for (int i = 0; i < effect.CurrentTechnique.Passes.Count; i++)
             {
-                pass.Apply();
+                effect.CurrentTechnique.Passes[i].Apply();
                 SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, renderGeometry.VertexBuffer.VertexCount, 0, renderGeometry.PrimitiveCount);
             }
 
@@ -99,11 +99,12 @@ namespace MonoGameEngineCore.GameObject.Components
 
         private void SetVariableParams()
         {
-            foreach (EffectParameterHelper effectParameter in paramsToSetBeforeNextRender)
+            for (int i = 0; i < paramsToSetBeforeNextRender.Count; i++)
             {
+                var effectParameter = paramsToSetBeforeNextRender[i];
                 if (effectParameter.TypeOfParam == EffectParamType.vector3Param)
                 {
-                    Vector3 value = (Vector3) effectParameter.Value;
+                    Vector3 value = (Vector3)effectParameter.Value;
                     effect.Parameters[effectParameter.Name].SetValue(value);
                 }
             }
@@ -169,9 +170,9 @@ namespace MonoGameEngineCore.GameObject.Components
 
         protected bool ParameterExists(string parameter)
         {
-            foreach (EffectParameter effectParameter in effect.Parameters)
+            for (int i = 0; i < effect.Parameters.Count; i++)
             {
-                if (effectParameter.Name == parameter)
+                if (effect.Parameters[i].Name == parameter)
                     return true;
             }
             return false;

@@ -51,7 +51,7 @@ namespace MonoGameEngineCore.GameObject
 
             var componentList = obj.GetAllComponents();
 
-            for(int i = 0;i<componentList.Count;i++)
+            for (int i = 0; i < componentList.Count; i++)
             {
                 IComponent comp = componentList[i];
                 if (comp is IDrawable)
@@ -108,7 +108,7 @@ namespace MonoGameEngineCore.GameObject
 
             if (component is IDrawable)
                 drawableGameObjectComponents.Add(component as IDrawable);
-            
+
         }
 
         public void Update(GameTime gameTime)
@@ -118,13 +118,13 @@ namespace MonoGameEngineCore.GameObject
                 updateableObjects[i].Update(gameTime);
             }
 
-            for(int i = 0;i<updateableGameOjectComponents.Count;i++)
+            for (int i = 0; i < updateableGameOjectComponents.Count; i++)
             {
                 if (updateableGameOjectComponents[i].Enabled)
                     updateableGameOjectComponents[i].Update(gameTime);
             }
 
-           
+
         }
 
         public void RemoveComponent(IComponent component)
@@ -160,8 +160,9 @@ namespace MonoGameEngineCore.GameObject
 
             drawableGameObjectComponents = drawableGameObjectComponents.OrderBy(x => x.DrawOrder).ToList();
 
-            foreach (IDrawable drawable in drawableGameObjectComponents)
+            for (int i = 0; i < drawableGameObjectComponents.Count; i++)
             {
+                var drawable = drawableGameObjectComponents[i];
                 if (drawable.Visible)
                 {
                     drawable.Draw(gameTime);
@@ -198,6 +199,6 @@ namespace MonoGameEngineCore.GameObject
             return gameObjects.ContainsKey(id);
         }
 
-      
+
     }
 }

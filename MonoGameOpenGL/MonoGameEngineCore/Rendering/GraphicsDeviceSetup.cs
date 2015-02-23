@@ -26,14 +26,20 @@ namespace MonoGameEngineCore.Rendering
     public class GraphicsDeviceSetup
     {
 
-        public static GraphicsDeviceManager SetupDisplay(Game game, ScreenResolutionName resolutionName, bool fullScreen, DepthFormat preferreDepthFormat)
+        public static GraphicsDeviceManager SetupDisplay(Game game, ScreenResolutionName resolutionName, bool fullScreen, DepthFormat preferreDepthFormat, bool fixedTimeStep)
         {
             GraphicsDeviceManager gd = new GraphicsDeviceManager(game);
-            //gd.PreferredDepthStencilFormat = preferreDepthFormat;
             var resolution = CreateResolution(resolutionName);
             gd.PreferredBackBufferHeight = resolution.height;
             gd.PreferredBackBufferWidth = resolution.width;
             gd.PreferMultiSampling = true;
+
+            if (!fixedTimeStep)
+            {
+                gd.SynchronizeWithVerticalRetrace = false;
+                game.IsFixedTimeStep = false;
+            }
+          
             gd.IsFullScreen = fullScreen;
             gd.ToggleFullScreen();
             gd.ApplyChanges();

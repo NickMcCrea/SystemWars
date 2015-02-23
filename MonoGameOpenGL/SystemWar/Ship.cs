@@ -57,7 +57,7 @@ namespace SystemWar
             shipCameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             AddComponent(new HighPrecisionPosition());
             AddComponent(new ShipController());
-            AddComponent(new MouseKeyboardShipController());
+            //AddComponent(new MouseKeyboardShipController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);
             HighPrecisionPositionComponent = GetComponent<HighPrecisionPosition>();
 
@@ -130,6 +130,7 @@ namespace SystemWar
             float maxVelToUse = maxVelocitySpace;
             if (InOrbit)
                 maxVelToUse = maxVelocityOrbit;
+
             if (InAtmosphere)
             {
                 maxVelToUse = maxVelocityAtmoshpere;
@@ -171,6 +172,7 @@ namespace SystemWar
                 velChange *= (100 - (mainThrustBleed * 100));
                 velocity += velChange;
             }
+
             velocity += lateralThrust;
 
             if (velocity.Length() > maxVelToUse)

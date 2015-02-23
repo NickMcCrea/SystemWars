@@ -252,7 +252,6 @@ namespace MonoGameEngineCore.Procedural
             if (activePatches.ContainsKey(mid))
             {
                 PlanetNode node = activePatches[mid];
-                //node.GetComponent<BasicEffectRenderComponent>().Visible = true;
                 node.remove = false;
                 return;
             }
@@ -318,8 +317,7 @@ namespace MonoGameEngineCore.Procedural
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
 
-                if (node.depth == 1)
-                    continue;
+              
             }
 
 

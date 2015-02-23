@@ -95,8 +95,6 @@ namespace MonoGameDirectX11.Screens
           
             atmosphereObject.Update(lightPos,mouseCamera.Position);
 
-            DebugText.Write(SystemCore.ActiveCamera.Position.ToString());
-
             base.Render(gameTime);
         }
     }

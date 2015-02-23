@@ -17,13 +17,13 @@ namespace MonoGameEngineCore
 
        
 
-        public MonoEngineGame(Type startScreenType, ScreenResolutionName resolution, DepthFormat preferreDepthFormat)
+        public MonoEngineGame(Type startScreenType, ScreenResolutionName resolution, DepthFormat preferreDepthFormat, bool isFixedTimeStep)
             : base()
         {
 
             this.startScreenType = startScreenType;
             Content.RootDirectory = "Content";
-            SystemCore.Startup(this, Content, resolution, preferreDepthFormat);
+            SystemCore.Startup(this, Content, resolution, preferreDepthFormat,isFixedTimeStep);
             SystemCore.CursorVisible = true;
           
         }

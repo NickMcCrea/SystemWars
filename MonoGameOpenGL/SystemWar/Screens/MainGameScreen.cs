@@ -70,6 +70,7 @@ namespace SystemWar.Screens
             SystemCore.AddNewGameComponent(solarSystem);
             ship.Transform.Rotate(Vector3.Up, MathHelper.PiOver2);
 
+            
         }
 
         public override void OnRemove()
@@ -84,11 +85,12 @@ namespace SystemWar.Screens
         public override void Update(GameTime gameTime)
         {
 
+          
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-            solarSystem.Update(gameTime);
 
+            solarSystem.Update(gameTime);
 
             RayCastResult result;
             Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
@@ -137,15 +139,13 @@ namespace SystemWar.Screens
 
             if (hitNode != null)
             {
-                DebugText.Write(hitPos.ToString());
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(hitPos, 1f), Color.Blue);
-
+                DebugShapeRenderer.AddLine(hitPos, hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
             }
             else
             {
                 hitNode = null;
                 hitPos = Vector3.Zero;
-                DebugText.Write("No hit");
+                
             }
 
             if (!firstTimePlacement)
@@ -154,15 +154,17 @@ namespace SystemWar.Screens
                 firstTimePlacement = true;
             }
 
+        
             base.Update(gameTime);
+
         }
 
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            
             //PrintDebugInfo(gameTime);
-
+            DebugText.Write(SystemCore.GetSubsystem<FPSCounter>().FPS.ToString());
             base.Render(gameTime);
         }
 

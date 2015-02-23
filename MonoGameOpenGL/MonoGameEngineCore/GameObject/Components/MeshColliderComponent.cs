@@ -49,7 +49,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Update(GameTime gameTime)
         {
-            mobileMesh.Position = MathConverter.Convert(offset + ParentObject.Transform.WorldMatrix.Translation);
+
+            mobileMesh.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
         }
 
         public int UpdateOrder { get; set; }

@@ -57,9 +57,9 @@ namespace MonoGameEngineCore
         private static List<IGameSubSystem> gameSubSystems;
         private static List<IGameComponent> gameComponents; 
 
-        public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat)
+        public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep)
         {
-            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat); ;
+            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;
            
             SystemCore.ContentManager = content;
             SystemCore.Game = game;
