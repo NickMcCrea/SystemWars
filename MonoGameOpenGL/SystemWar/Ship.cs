@@ -192,11 +192,11 @@ namespace SystemWar
 
 
             if (rollThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Forward, rollThrust);
+                Transform.Rotate(Transform.WorldMatrix.Forward, rollThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (pitchThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Left, pitchThrust);
+                Transform.Rotate(Transform.WorldMatrix.Left, pitchThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (yawThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Up, yawThrust);
+                Transform.Rotate(Transform.WorldMatrix.Up, yawThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
 
 
             velocity *= mainThrustBleed;

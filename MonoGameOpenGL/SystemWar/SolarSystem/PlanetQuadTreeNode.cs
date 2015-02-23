@@ -36,6 +36,8 @@ namespace MonoGameEngineCore.Procedural
         public Color NodeColor { get; set; }
         public int quadTreeNodeID;
         private readonly int rootNodeId;
+        public EffectRenderComponent renderComponent;
+        public MeshColliderComponent meshCollider;
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -112,16 +114,16 @@ namespace MonoGameEngineCore.Procedural
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            var meshCollider = new MeshColliderComponent(this);
+            meshCollider = new MeshColliderComponent(this);
             AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
             else
             {
-                var effectComp = new EffectRenderComponent(effect);
-                effectComp.DrawOrder = Planet.DrawOrder;
-                this.AddComponent(effectComp);
+                renderComponent = new EffectRenderComponent(effect);
+                renderComponent.DrawOrder = Planet.DrawOrder;
+                this.AddComponent(renderComponent);
             }
 
 
@@ -319,11 +321,21 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-
-
         internal void DetermineIntersection(Ray ray, Vector3 hitPos)
         {
             //hitPos is the position on the planet surface 
+        }
+
+        public void Disable()
+        {
+            renderComponent.Visible = false;
+            meshCollider.Enabled = false;
+        }
+
+        public void Enable()
+        {
+            renderComponent.Visible = true;
+            meshCollider.Enabled = true;
         }
     }
 }

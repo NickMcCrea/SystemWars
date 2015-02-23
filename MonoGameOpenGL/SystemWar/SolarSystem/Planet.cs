@@ -301,14 +301,14 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-            //Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
-            //float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
-            //float surfaceDistance = distanceToCenterOfPlanet - radius;
-            //float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
-            //GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
-            //var frustrum = new BoundingFrustum(activeCamera.View * customProjection);
+            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
+            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
+            float surfaceDistance = distanceToCenterOfPlanet - radius;
+            float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
+            GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
+            var frustrum = new BoundingFrustum(SystemCore.ActiveCamera.View * customProjection);
 
-
+            int activeCount = 0;
             foreach (PlanetNode node in activePatches.Values)
             {
                 node.Update();
@@ -317,10 +317,23 @@ namespace MonoGameEngineCore.Procedural
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
 
+                if (!frustrum.Intersects(node.boundingSphere))
+                {
+                    node.Disable();
+                }
+                else
+                {
+                    node.Enable();
+                    activeCount++;
+                }
               
             }
 
 
+            DebugText.Write("Built patches: " + activePatches.Count);
+
+            
+            DebugText.Write("Rendered + collidable patches " + activeCount.ToString());
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
