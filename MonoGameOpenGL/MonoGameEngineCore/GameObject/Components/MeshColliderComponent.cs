@@ -20,24 +20,27 @@ namespace MonoGameEngineCore.GameObject.Components
         public MobileMesh mobileMesh;
         Microsoft.Xna.Framework.Vector3 offset;
         public object Tag { get; set; }
-
+    
         public MeshColliderComponent(object tag)
         {
             if (tag != null)
                 Tag = tag;
+
         }
 
         public void Initialise()
         {
+      ;
+
             Enabled = true;
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
 
             var vertices = renderGeometry.GetVertices();
             List<BEPUutilities.Vector3> bepuVerts = MathConverter.Convert(vertices.ToArray()).ToList();
-            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);         
-            SystemCore.PhysicsSimulation.Add(mobileMesh);
+            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
             offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
             mobileMesh.CollisionInformation.Tag = this.Tag;
+            SystemCore.PhysicsSimulation.Add(mobileMesh);
         }
 
         public bool Enabled { get; set; }

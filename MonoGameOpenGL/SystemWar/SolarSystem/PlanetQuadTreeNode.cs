@@ -115,8 +115,8 @@ namespace MonoGameEngineCore.Procedural
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            AddAndInitialise(new MeshColliderComponent(this));
-         
+            var meshCollider = new MeshColliderComponent(this);
+            AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
