@@ -55,7 +55,10 @@ namespace MonoGameEngineCore.GameObject.Components
             if (thrustInput > 1)
                 thrustInput = 1;
 
-                ship.SetThrust(thrustInput);
+            ship.SetThrust(thrustInput);
+
+            if(inputManager.IsKeyDown(Keys.LeftShift))
+                ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * 100f);
 
             float horizontal = 0;
             float vertical = 0;

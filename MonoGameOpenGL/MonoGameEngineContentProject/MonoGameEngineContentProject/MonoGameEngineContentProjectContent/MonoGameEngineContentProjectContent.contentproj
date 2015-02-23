@@ -93,20 +93,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="blank.png">
-      <Name>blank</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="smoke.png">
-      <Name>smoke</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Effects\SM5.0\Simple.fx">
       <Name>Simple</Name>
       <Importer>EffectImporter</Importer>
@@ -135,24 +121,27 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Effects\SM5.0\FlatShadedWithFog.fx">
-      <Name>FlatShadedWithFog</Name>
+    <Compile Include="Effects\SM5.0\AtmosphericScatteringGround.fx">
+      <Name>AtmosphericScatteringGround</Name>
+      <Importer>EffectImporter</Importer>
+      <Processor>MGEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="Effects\SM5.0\AtmosphericScatteringSky.fx">
+      <Name>AtmosphericScatteringSky</Name>
       <Importer>EffectImporter</Importer>
       <Processor>MGEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Effects\SM5.0\Atmosphere.fx">
-      <Name>Atmosphere</Name>
-      <Importer>EffectImporter</Importer>
-      <Processor>MGEffectProcessor</Processor>
-      <ProcessorParameters_DebugMode>Debug</ProcessorParameters_DebugMode>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="Textures\AtmosphereGradient3.jpg">
       <Name>AtmosphereGradient3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="blank.png">
+      <Name>blank</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

@@ -34,16 +34,9 @@ namespace MonoGameEngineCore.GameObject.Components
 
             var vertices = renderGeometry.GetVertices();
             List<BEPUutilities.Vector3> bepuVerts = MathConverter.Convert(vertices.ToArray()).ToList();
-     
-          
-           
-            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
-          
+            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);         
             SystemCore.PhysicsSimulation.Add(mobileMesh);
-
             offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
-
-
             mobileMesh.CollisionInformation.Tag = this.Tag;
         }
 

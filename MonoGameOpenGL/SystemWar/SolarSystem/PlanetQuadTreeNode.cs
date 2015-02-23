@@ -46,7 +46,7 @@ namespace MonoGameEngineCore.Procedural
             this.effect = effect;
             this.module = module;
             this.Planet = rootObject;
-           
+
             this.sphereSize = sphereSize;
             this.min = min;
             this.max = max;
@@ -112,13 +112,11 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
-          
-            //remove if already present. will be disposed.
-            if(ContainsComponent<RenderGeometryComponent>())
-                RemoveComponent(GetComponent<RenderGeometryComponent>());
-
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
+
+            AddAndInitialise(new MeshColliderComponent(this));
+         
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
@@ -268,7 +266,7 @@ namespace MonoGameEngineCore.Procedural
             }
 
             throw new Exception();
-           
+
         }
 
         private void Sphereify(float radius, ref VertexPositionColorTextureNormal[] vertices)
@@ -326,5 +324,11 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+
+
+        internal void DetermineIntersection(Ray ray, Vector3 hitPos)
+        {
+            //hitPos is the position on the planet surface 
+        }
     }
 }

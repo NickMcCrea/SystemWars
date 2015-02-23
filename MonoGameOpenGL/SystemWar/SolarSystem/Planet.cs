@@ -56,7 +56,7 @@ namespace MonoGameEngineCore.Procedural
         public float orbitAngle;
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
-       
+
         public Atmosphere atmosphere;
         private GroundScatteringHelper atmosphericScatteringHelper;
         private SpaceScatteringHelper spaceScatteringHelper;
@@ -101,7 +101,7 @@ namespace MonoGameEngineCore.Procedural
 
         public void AddAtmosphere()
         {
-            
+
             HasAtmosphere = true;
             atmosphere = new Atmosphere(this.radius * 1.05f, this.radius);
             atmosphere.AddComponent(new HighPrecisionPosition());
@@ -294,14 +294,14 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-           
+
 
             foreach (GameObject.GameObject child in Children)
             {
                 CalculateChildMovement(gameTime, child, planetCenter);
             }
 
-           
+
             //Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
             //float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
             //float surfaceDistance = distanceToCenterOfPlanet - radius;
@@ -478,6 +478,34 @@ namespace MonoGameEngineCore.Procedural
                     ((Ship)gameObject).ExitedOrbit();
                 }
             }
+        }
+
+        internal PlanetNode DetermineHitNode(Ray ray)
+        {
+            List<PlanetNode> hitNodes = new List<PlanetNode>();
+            foreach (var activePatch in activePatches.Values)
+            {
+                BoundingSphere sphere = activePatch.boundingSphere;
+                if (ray.Intersects(sphere).HasValue)
+                    hitNodes.Add(activePatch);
+            }
+
+            PlanetNode closest = null;
+            float closestDistance = float.MaxValue;
+            foreach (PlanetNode n in hitNodes)
+            {
+
+                float distanceToNode = (n.boundingSphere.Center - ray.Position).Length();
+                if (distanceToNode < closestDistance)
+                {
+                    closest = n;
+                    closestDistance = distanceToNode;
+                }
+            }
+
+
+            return closest;
+
         }
     }
 
