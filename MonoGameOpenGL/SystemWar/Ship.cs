@@ -17,7 +17,7 @@ namespace SystemWar
         public SolarSystem SolarSystem { get; set; }
         public GameObject shipCameraObject;
 
-        
+
         private float desiredMainThrust;
         private float desiredSuperThrust;
         private float currentSuperThrust;
@@ -67,7 +67,7 @@ namespace SystemWar
 
         public void AlterThrust(float amount)
         {
-            if(Landed)
+            if (Landed)
                 return;
 
             desiredMainThrust += amount;
@@ -130,9 +130,9 @@ namespace SystemWar
         {
             if (Landed && upDown > 0)
                 Landed = false;
-        
 
-            if(Landed)
+
+            if (Landed)
                 return;
 
             Vector3 vec = Transform.WorldMatrix.Left * leftRight;
@@ -148,10 +148,10 @@ namespace SystemWar
 
         public void Update(GameTime gameTime)
         {
-            
-            
-          
-            
+
+
+
+
             //determine max vel according to environment.
             float maxVelToUse = maxVelocitySpace;
             if (InOrbit)
@@ -184,8 +184,9 @@ namespace SystemWar
                     {
                         foreach (ContactInformation contactInformation in collidablePairHandler.Contacts)
                         {
-                            //BEPUutilities.Vector3 repulseVector = -contactInformation.Contact.Normal *
-                            //                                      contactInformation.Contact.PenetrationDepth;
+                            BEPUutilities.Vector3 repulseVector = -contactInformation.Contact.Normal *
+                                                                  contactInformation.Contact.PenetrationDepth;
+                            Vector3 slopeNormal = contactInformation.Contact.Normal.ToXNAVector();
 
                             if (Landed)
                             {
@@ -197,10 +198,26 @@ namespace SystemWar
                                 float angle = MonoMathHelper.GetAngleBetweenVectors(velNormal,
                                     Transform.WorldMatrix.Down);
                                 float speed = velocity.Length();
-                                if (angle < MathHelper.ToRadians(5) && speed < maxVelocityAtmoshpere/3)
+
+
+                                //we're going slow
+                                if (speed < maxVelocityAtmoshpere / 3)
                                 {
-                                    //touchdown
-                                    LandShip();
+                                    //we're heading down
+                                    if (angle < MathHelper.ToRadians(5))
+                                    {
+                                        //the angle of the slope we've hit is sufficiently shallow
+                                        Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
+
+                                        if (MonoMathHelper.GetAngleBetweenVectors(slopeNormal, planetUp) <
+                                            MathHelper.ToDegrees(20))
+                                            LandShip();
+                                        else
+                                        {
+                                            Transform.Translate(repulseVector.ToXNAVector());
+                                        }
+
+                                    }
 
                                 }
                                 else
@@ -302,14 +319,14 @@ namespace SystemWar
         }
 
         public void AlignToAbitraryAxis(Vector3 up)
-        {      
+        {
             //pitch and roll until the ship up vector matches the input vector.
             if (!float.IsNaN(up.X))
             {
                 float angle = Vector3.Dot(Transform.WorldMatrix.Left, up);
-                desiredRollThrust += angle/50f;
+                desiredRollThrust += angle / 50f;
                 angle = Vector3.Dot(Transform.WorldMatrix.Forward, up);
-                desiredPitchThrust -= angle/50;
+                desiredPitchThrust -= angle / 50;
 
                 if (desiredPitchThrust > maxPitch)
                     desiredPitchThrust = maxPitch;
@@ -320,7 +337,7 @@ namespace SystemWar
                     desiredRollThrust = maxRoll;
                 if (desiredRollThrust < -maxRoll)
                     desiredRollThrust = -maxRoll;
-                
+
             }
         }
 
