@@ -8,6 +8,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore;
 using MonoGameEngineCore.Rendering.Camera;
+using System.Diagnostics;
 
 namespace SystemWar
 {
@@ -39,6 +40,7 @@ namespace SystemWar
         private float lateralFactor = 0.02f;
         private float mass = 100;
         private Vector3 velocity;
+        private Vector3 movementAppliedLastFrame;
         private float mainThrustBleed = 0.98f;
         private float orientationThrustBleed = 0.8f;
         private float lateralThrustBleed = 0.9f;
@@ -153,7 +155,7 @@ namespace SystemWar
         {
 
 
-
+           
 
             //determine max vel according to environment.
             float maxVelToUse = maxVelocitySpace;
@@ -174,74 +176,6 @@ namespace SystemWar
                 maxVelToUse *= velAdjustForGravity;
             }
 
-
-            PhysicsComponent comp = GetComponent<PhysicsComponent>();
-            if (comp.InCollision())
-            {
-
-                var pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
-
-                foreach (CollidablePairHandler collidablePairHandler in pairs)
-                {
-                    if (collidablePairHandler.Colliding)
-                    {
-                        foreach (ContactInformation contactInformation in collidablePairHandler.Contacts)
-                        {
-                            BEPUutilities.Vector3 repulseVector = -contactInformation.Contact.Normal *
-                                                                  contactInformation.Contact.PenetrationDepth;
-                            Vector3 slopeNormal = contactInformation.Contact.Normal.ToXNAVector();
-
-                            if (Landed)
-                            {
-                                AlignToAbitraryAxis(contactInformation.Contact.Normal.ToXNAVector());
-                            }
-                            else
-                            {
-                                Vector3 velNormal = Vector3.Normalize(velocity);
-                                float angle = MonoMathHelper.GetAngleBetweenVectors(velNormal,
-                                    Transform.WorldMatrix.Down);
-                                float speed = velocity.Length();
-
-
-                                //we're going slow
-                                if (speed < maxVelocityAtmoshpere)
-                                {
-                                    //we're heading down
-                                    if (angle < MathHelper.ToRadians(20))
-                                    {
-                                        //the angle of the slope we've hit is sufficiently shallow
-                                        Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
-
-                                        if (MonoMathHelper.GetAngleBetweenVectors(slopeNormal, planetUp) <
-                                            MathHelper.ToDegrees(20))
-                                            LandShip();
-                                        else
-                                        {
-                                            Transform.Translate(repulseVector.ToXNAVector());
-                                            currentMainThrust = 0;
-                                        }
-
-                                    }
-                                    else
-                                    {
-                                        Transform.Translate(repulseVector.ToXNAVector());
-                                        currentMainThrust = 0;
-                                    }
-
-                                }
-                                else
-                                {
-                                    //explode!
-                                    Transform.Translate(repulseVector.ToXNAVector());
-                                    currentMainThrust = 0;
-                                }
-                            }
-
-                        }
-                    }
-                }
-
-            }
 
 
 
@@ -283,8 +217,8 @@ namespace SystemWar
 
 
 
-
-            Transform.Translate(velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
+            movementAppliedLastFrame = velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Transform.Translate(movementAppliedLastFrame);
 
 
             if (rollThrust != 0)
@@ -298,7 +232,9 @@ namespace SystemWar
                     yawThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
 
 
+            HandleCollision();
 
+            SolarSystem.AdjustObjectsForRendering(HighPrecisionPositionComponent.Position);
 
             velocity *= mainThrustBleed;
             lateralThrust *= lateralThrustBleed;
@@ -313,6 +249,91 @@ namespace SystemWar
                 shipCameraObject.Transform.WorldMatrix = Transform.WorldMatrix;
 
 
+        }
+
+        private void HandleCollision()
+        {
+            
+            PhysicsComponent comp = GetComponent<PhysicsComponent>();
+            if (comp.InCollision())
+            {
+
+                var pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
+                foreach (CollidablePairHandler collidablePairHandler in pairs)
+                {
+
+
+                    if (collidablePairHandler.Colliding)
+                    {
+
+                        foreach (ContactInformation contactInformation in collidablePairHandler.Contacts)
+                        {
+                            BEPUutilities.Vector3 removeVector = -contactInformation.Contact.Normal *
+                                                                  contactInformation.Contact.PenetrationDepth;
+                            Vector3 slopeNormal = contactInformation.Contact.Normal.ToXNAVector();
+
+                            if (Landed)
+                            {
+                                AlignToAbitraryAxis(contactInformation.Contact.Normal.ToXNAVector());
+                            }
+                            else
+                            {
+                                Vector3 velNormal = Vector3.Normalize(velocity);
+                                float angle = MonoMathHelper.GetAngleBetweenVectors(velNormal,
+                                    Transform.WorldMatrix.Down);
+                                float speed = velocity.Length();
+
+
+                                //we're going slow
+                                if (speed < maxVelocityAtmoshpere)
+                                {
+                                    //we're heading down
+                                    if (angle < MathHelper.ToRadians(20))
+                                    {
+                                        //the angle of the slope we've hit is sufficiently shallow
+                                        Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
+
+                                        if (MonoMathHelper.GetAngleBetweenVectors(slopeNormal, planetUp) <
+                                            MathHelper.ToDegrees(20))
+                                            LandShip();
+                                        else 
+                                        {
+                                            //too steep to land on
+                                            Transform.Translate(removeVector.ToXNAVector());
+                                            //Stop();
+                                        }
+
+                                    }
+                                    else //not moving down
+                                    {
+                                        Transform.Translate(removeVector.ToXNAVector());
+                                        //Stop();
+                                    }
+
+                                }
+                                else //too fast
+                                {
+                                    //explode!
+                                    Transform.Translate(removeVector.ToXNAVector());
+                                    //Stop();
+                                }
+                            }
+
+                    
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        private void Stop()
+        {
+            velocity = Vector3.Zero;
+            desiredMainThrust = 0;
+            currentMainThrust = 0;
+            lateralThrust = Vector3.Zero;
         }
 
         private void LandShip()

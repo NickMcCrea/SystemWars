@@ -58,9 +58,7 @@ namespace MonoGameEngineCore.GameObject.Components
                     PhysicsEntity.BecomeKinematic();
             }
 
-            PhysicsEntity.Tag = ParentObject.ID;
-            PhysicsEntity.CollisionInformation.Tag = ParentObject.ID;
-
+            PhysicsEntity.Tag = ParentObject;
             PhysicsEntity.WorldTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
             SystemCore.PhysicsSimulation.Add(PhysicsEntity);
         }
@@ -73,6 +71,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
             PhysicsEntity = new Sphere(MonoMathHelper.Translate(ParentObject.Transform.WorldMatrix.Translation),
                 sphere.Radius * 2, 1);
+            PhysicsEntity.Tag = ParentObject;
         }
 
         private void GenerateBoxCollider()

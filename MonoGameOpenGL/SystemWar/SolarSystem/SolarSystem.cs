@@ -76,7 +76,7 @@ namespace SystemWar
 
         internal void Update(GameTime gameTime)
         {
-            AdjustObjectsForRendering(PlayerShip.GetComponent<HighPrecisionPosition>().Position);
+            //AdjustObjectsForRendering(PlayerShip.GetComponent<HighPrecisionPosition>().Position);
 
             ((DiffuseLight)SystemCore.ActiveScene.LightsInScene[0]).LightDirection = Vector3.Normalize(Sun.Transform.WorldMatrix.Translation);
 

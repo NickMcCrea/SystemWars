@@ -89,9 +89,8 @@ namespace SystemWar.Screens
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
-
             solarSystem.Update(gameTime);
-
+          
             RayCastResult result;
             Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
             BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 2f, camWorld.Forward.ToBepuVector());
@@ -156,6 +155,8 @@ namespace SystemWar.Screens
 
         
             base.Update(gameTime);
+
+           
 
         }
 
