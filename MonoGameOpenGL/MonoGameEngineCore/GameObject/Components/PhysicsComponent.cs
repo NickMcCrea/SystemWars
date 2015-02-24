@@ -72,7 +72,7 @@ namespace MonoGameEngineCore.GameObject.Components
             BoundingSphere sphere = BoundingSphere.CreateFromPoints(verts);
 
             PhysicsEntity = new Sphere(MonoMathHelper.Translate(ParentObject.Transform.WorldMatrix.Translation),
-                sphere.Radius, 1);
+                sphere.Radius * 2, 1);
         }
 
         private void GenerateBoxCollider()

@@ -92,5 +92,10 @@ namespace MonoGameEngineCore.GameObject
             components.Remove(component);
             SystemCore.GameObjectManager.RemoveComponent(component);
         }
+
+        internal void RemoveAllComponents()
+        {
+            components.Clear();
+        }
     }
 }

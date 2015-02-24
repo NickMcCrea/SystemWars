@@ -94,7 +94,7 @@ namespace SystemWar.Screens
 
             RayCastResult result;
             Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
-            BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector(), camWorld.Forward.ToBepuVector());
+            BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 2f, camWorld.Forward.ToBepuVector());
             if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
             {
                 hitNode = result.HitObject.Tag as PlanetNode;
@@ -150,7 +150,7 @@ namespace SystemWar.Screens
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(6050, 0, 0);
+                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(6020, 0, 0);
                 firstTimePlacement = true;
             }
 

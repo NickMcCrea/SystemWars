@@ -90,12 +90,12 @@ namespace MonoGameEngineCore.GameObject.Components
                         if (ship.CurrentPlanet.HasAtmosphere)
                         {
                             if (ship.InAtmosphere)
-                                ship.RealignShip();
+                                ship.RealignShipToPlanetUp();
                         }
                         else
                         {
                             if (ship.InOrbit)
-                                ship.RealignShip();
+                                ship.RealignShipToPlanetUp();
                         }
                           
 

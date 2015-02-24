@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.CollisionShapes;
 using BEPUphysics.Entities.Prefabs;
 using BEPUutilities;
@@ -26,21 +24,26 @@ namespace MonoGameEngineCore.GameObject.Components
             if (tag != null)
                 Tag = tag;
 
+            ParentObject = tag as GameObject;
+
+            List<BEPUutilities.Vector3> bepuVerts =
+                MathConverter.Convert(ParentObject.GetComponent<RenderGeometryComponent>().GetVertices().ToArray())
+                    .ToList();
+
+            mobileMesh = new MobileMesh(bepuVerts.ToArray(),
+                MonoMathHelper.ConvertShortToInt(ParentObject.GetComponent<RenderGeometryComponent>().GetIndices()),
+                AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
+            offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
+            mobileMesh.CollisionInformation.Tag = this.Tag;
+
         }
 
         public void Initialise()
         {
-      ;
-
             Enabled = true;
-            var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
-
-            var vertices = renderGeometry.GetVertices();
-            List<BEPUutilities.Vector3> bepuVerts = MathConverter.Convert(vertices.ToArray()).ToList();
-            mobileMesh = new MobileMesh(bepuVerts.ToArray(), MonoMathHelper.ConvertShortToInt(renderGeometry.GetIndices()), AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
-            offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
-            mobileMesh.CollisionInformation.Tag = this.Tag;
             SystemCore.PhysicsSimulation.Add(mobileMesh);
+
+            
         }
 
         public bool Enabled { get; set; }

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Security.Cryptography;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -18,7 +17,7 @@ namespace SystemWar
         public SolarSystem SolarSystem { get; set; }
         public GameObject shipCameraObject;
 
-
+        
         private float desiredMainThrust;
         private float desiredSuperThrust;
         private float currentSuperThrust;
@@ -48,6 +47,7 @@ namespace SystemWar
         float maxVelocitySpace = 1000f;
         float maxVelocityOrbit = 500f;
         float superThrustVelocity = 5000f;
+        public bool Landed { get; private set; }
 
         public Ship(string name)
             : base(name)
@@ -57,7 +57,8 @@ namespace SystemWar
             shipCameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             AddComponent(new HighPrecisionPosition());
             AddComponent(new ShipController());
-            //AddComponent(new MouseKeyboardShipController());
+            AddComponent(new MouseKeyboardShipController());
+            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);
             HighPrecisionPositionComponent = GetComponent<HighPrecisionPosition>();
 
@@ -66,6 +67,8 @@ namespace SystemWar
 
         public void AlterThrust(float amount)
         {
+            if(Landed)
+                return;
 
             desiredMainThrust += amount;
 
@@ -73,6 +76,8 @@ namespace SystemWar
 
         public void SetThrust(float amount)
         {
+            if (Landed)
+                return;
             if (amount > 1)
                 amount = 1;
             desiredMainThrust = amount;
@@ -80,11 +85,15 @@ namespace SystemWar
 
         public void SetSuperThrust(float amount)
         {
+            if (Landed)
+                return;
             desiredSuperThrust = amount;
         }
 
         public void Roll(float amount)
         {
+            if (Landed)
+                return;
             desiredRollThrust += amount;
             if (desiredRollThrust > maxRoll)
                 desiredRollThrust = maxRoll;
@@ -94,6 +103,8 @@ namespace SystemWar
 
         public void Pitch(float amount)
         {
+            if (Landed)
+                return;
             desiredPitchThrust += amount;
             if (desiredPitchThrust > maxPitch)
                 desiredPitchThrust = maxPitch;
@@ -103,6 +114,8 @@ namespace SystemWar
 
         public void Yaw(float amount)
         {
+            if (Landed)
+                return;
             if (InAtmosphere)
                 Roll(-amount);
 
@@ -115,6 +128,13 @@ namespace SystemWar
 
         public void LateralThrust(float leftRight, float upDown)
         {
+            if (Landed && upDown > 0)
+                Landed = false;
+        
+
+            if(Landed)
+                return;
+
             Vector3 vec = Transform.WorldMatrix.Left * leftRight;
             Vector3 vec3 = Transform.WorldMatrix.Up * upDown;
             vec += vec3;
@@ -122,10 +142,16 @@ namespace SystemWar
 
             Roll(-leftRight / 1000f);
 
+
+
         }
 
         public void Update(GameTime gameTime)
         {
+            
+            
+          
+            
             //determine max vel according to environment.
             float maxVelToUse = maxVelocitySpace;
             if (InOrbit)
@@ -146,6 +172,48 @@ namespace SystemWar
             }
 
 
+            PhysicsComponent comp = GetComponent<PhysicsComponent>();
+            if (comp.InCollision())
+            {
+
+                var pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
+
+                foreach (CollidablePairHandler collidablePairHandler in pairs)
+                {
+                    if (collidablePairHandler.Colliding)
+                    {
+                        foreach (ContactInformation contactInformation in collidablePairHandler.Contacts)
+                        {
+                            //BEPUutilities.Vector3 repulseVector = -contactInformation.Contact.Normal *
+                            //                                      contactInformation.Contact.PenetrationDepth;
+
+                            if (Landed)
+                            {
+                                AlignToAbitraryAxis(contactInformation.Contact.Normal.ToXNAVector());
+                            }
+                            else
+                            {
+                                Vector3 velNormal = Vector3.Normalize(velocity);
+                                float angle = MonoMathHelper.GetAngleBetweenVectors(velNormal,
+                                    Transform.WorldMatrix.Down);
+                                float speed = velocity.Length();
+                                if (angle < MathHelper.ToRadians(5) && speed < maxVelocityAtmoshpere/3)
+                                {
+                                    //touchdown
+                                    LandShip();
+
+                                }
+                                else
+                                {
+                                    //explode!
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+            }
 
 
 
@@ -154,14 +222,14 @@ namespace SystemWar
             else
                 currentMainThrust = MathHelper.Lerp(currentMainThrust, desiredMainThrust, mainThrustDownSpeed);
 
-       
+
             if (desiredSuperThrust > currentSuperThrust)
                 currentSuperThrust = MathHelper.Lerp(currentSuperThrust, desiredSuperThrust, mainThrustUpSpeed);
             else
                 currentSuperThrust = MathHelper.Lerp(currentSuperThrust, desiredSuperThrust, mainThrustDownSpeed);
 
 
-            rollThrust = MathHelper.Lerp(rollThrust, desiredRollThrust, otherThrustAlterationSpeed*2);
+            rollThrust = MathHelper.Lerp(rollThrust, desiredRollThrust, otherThrustAlterationSpeed * 2);
             pitchThrust = MathHelper.Lerp(pitchThrust, desiredPitchThrust, otherThrustAlterationSpeed);
             yawThrust = MathHelper.Lerp(yawThrust, desiredYawThrust, otherThrustAlterationSpeed);
 
@@ -185,23 +253,26 @@ namespace SystemWar
             if (currentSuperThrust > 0)
                 velocity += (currentSuperThrust) * superThrustVelocity * Transform.WorldMatrix.Forward;
 
-            
+
 
 
             Transform.Translate(velocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
 
             if (rollThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Forward, rollThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
+                Transform.Rotate(Transform.WorldMatrix.Forward,
+                    rollThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (pitchThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Left, pitchThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
+                Transform.Rotate(Transform.WorldMatrix.Left,
+                    pitchThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (yawThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Up, yawThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
+                Transform.Rotate(Transform.WorldMatrix.Up,
+                    yawThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
+
+
 
 
             velocity *= mainThrustBleed;
-         
-
             lateralThrust *= lateralThrustBleed;
             desiredRollThrust *= orientationThrustBleed;
             desiredPitchThrust *= orientationThrustBleed;
@@ -216,7 +287,44 @@ namespace SystemWar
 
         }
 
-        public void RealignShip()
+        private void LandShip()
+        {
+            Landed = true;
+            velocity = Vector3.Zero;
+            velocity *= 0;
+            lateralThrust *= 0;
+            desiredRollThrust *= 0;
+            desiredPitchThrust *= 0;
+            desiredYawThrust *= 0;
+            pitchThrust *= 0;
+            yawThrust *= 0;
+            rollThrust *= 0;
+        }
+
+        public void AlignToAbitraryAxis(Vector3 up)
+        {      
+            //pitch and roll until the ship up vector matches the input vector.
+            if (!float.IsNaN(up.X))
+            {
+                float angle = Vector3.Dot(Transform.WorldMatrix.Left, up);
+                desiredRollThrust += angle/50f;
+                angle = Vector3.Dot(Transform.WorldMatrix.Forward, up);
+                desiredPitchThrust -= angle/50;
+
+                if (desiredPitchThrust > maxPitch)
+                    desiredPitchThrust = maxPitch;
+                if (desiredPitchThrust < -maxPitch)
+                    desiredPitchThrust = -maxPitch;
+
+                if (desiredRollThrust > maxRoll)
+                    desiredRollThrust = maxRoll;
+                if (desiredRollThrust < -maxRoll)
+                    desiredRollThrust = -maxRoll;
+                
+            }
+        }
+
+        public void RealignShipToPlanetUp()
         {
             //we want to un-roll the ship to up.
             Vector3 shipUp = Transform.WorldMatrix.Left;

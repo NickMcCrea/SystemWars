@@ -146,7 +146,8 @@ namespace MonoGameEngineCore
                 if(SystemCore.Input.KeyPress(Keys.Escape))
                     SystemCore.Game.Exit();
 
-            PhysicsSimulation.Update();
+            PhysicsSimulation.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
             DebugText.Update(gameTime);
 
         }
