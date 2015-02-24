@@ -57,7 +57,10 @@ namespace SystemWar
             shipCameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.1f, ScaleHelper.Billions(3), true));
             AddComponent(new HighPrecisionPosition());
             AddComponent(new ShipController());
-            AddComponent(new MouseKeyboardShipController());
+
+            if (System.Environment.MachineName != "NICKMCCREA-PC")
+                AddComponent(new MouseKeyboardShipController());
+
             AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);
             HighPrecisionPositionComponent = GetComponent<HighPrecisionPosition>();
@@ -201,10 +204,10 @@ namespace SystemWar
 
 
                                 //we're going slow
-                                if (speed < maxVelocityAtmoshpere / 3)
+                                if (speed < maxVelocityAtmoshpere)
                                 {
                                     //we're heading down
-                                    if (angle < MathHelper.ToRadians(5))
+                                    if (angle < MathHelper.ToRadians(20))
                                     {
                                         //the angle of the slope we've hit is sufficiently shallow
                                         Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
@@ -215,14 +218,22 @@ namespace SystemWar
                                         else
                                         {
                                             Transform.Translate(repulseVector.ToXNAVector());
+                                            currentMainThrust = 0;
                                         }
 
+                                    }
+                                    else
+                                    {
+                                        Transform.Translate(repulseVector.ToXNAVector());
+                                        currentMainThrust = 0;
                                     }
 
                                 }
                                 else
                                 {
                                     //explode!
+                                    Transform.Translate(repulseVector.ToXNAVector());
+                                    currentMainThrust = 0;
                                 }
                             }
 
