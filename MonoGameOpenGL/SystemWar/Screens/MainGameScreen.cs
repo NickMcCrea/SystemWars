@@ -93,17 +93,15 @@ namespace SystemWar.Screens
           
             RayCastResult result;
             Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
-            BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 2f, camWorld.Forward.ToBepuVector());
+            BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 3f, camWorld.Forward.ToBepuVector());
+
+            //SystemCore.PhysicsSimulation.
             if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
             {
-                hitNode = result.HitObject.Tag as PlanetNode;
                 hitPos = result.HitData.Location.ToXNAVector();
+                DebugShapeRenderer.AddLine(hitPos, hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
             }
-            else
-            {
-                hitNode = null;
-                hitPos = Vector3.Zero;
-            }
+           
 
 
             ////first of all, figure out if we've clicked on a planet
@@ -134,18 +132,6 @@ namespace SystemWar.Screens
             //}
 
 
-
-
-            if (hitNode != null)
-            {
-                DebugShapeRenderer.AddLine(hitPos, hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
-            }
-            else
-            {
-                hitNode = null;
-                hitPos = Vector3.Zero;
-                
-            }
 
             if (!firstTimePlacement)
             {

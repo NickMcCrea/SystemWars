@@ -94,11 +94,27 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Update(GameTime gameTime)
         {
-            if (Simulated)
-                ParentObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
+            if (!SystemCore.PhysicsOnBackgroundThread)
+            {
+                if (Simulated)
+                    ParentObject.Transform.WorldMatrix =
+                        MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.BufferedStates.States.WorldTransform);
+                else
+                {
+                    PhysicsEntity.BufferedStates.States.WorldTransform =
+                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                }
+            }
             else
             {
-                PhysicsEntity.WorldTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                if (Simulated)
+                    ParentObject.Transform.WorldMatrix =
+                        MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.BufferedStates.States.WorldTransform);
+                else
+                {
+                    PhysicsEntity.BufferedStates.States.WorldTransform =
+                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                }
             }
         }
 

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using BEPUphysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -51,22 +53,24 @@ namespace MonoGameEngineCore
         public static bool Wireframe { get; set; }
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
-       
+        public static bool PhysicsOnBackgroundThread = true;
         private static  Dictionary<string, ICamera> cameras;  
-
         private static List<IGameSubSystem> gameSubSystems;
-        private static List<IGameComponent> gameComponents; 
-
+        private static List<IGameComponent> gameComponents;
+        private static DateTime physicsLastUpdate = DateTime.Now;
+        public static bool GameExiting;
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep)
         {
-            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;
-           
+            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;     
             SystemCore.ContentManager = content;
             SystemCore.Game = game;
 
             cameras = new Dictionary<string, ICamera>();
+
+            
         }
 
+      
         public static void InitialiseGameSystems()
         {
             SystemCore.GraphicsDevice = SystemCore.GraphicsDeviceManager.GraphicsDevice;
@@ -82,8 +86,15 @@ namespace MonoGameEngineCore
             SystemCore.GameObjectManager = GetSubsystem<GameObjectManager>();
             SystemCore.AudioManager = GetSubsystem<AudioManager>();
             SystemCore.Input = GetSubsystem<InputManager>();
+            SystemCore.Game.Exiting += (x, y) => { GameExiting = true; };
 
             PhysicsSimulation = new Space();
+
+            if (PhysicsOnBackgroundThread)
+            {
+                Thread t = new Thread(PhysicsUpdate);
+                t.Start();
+            }
 
             foreach (var gameSubSystem in gameSubSystems)
             {
@@ -146,10 +157,23 @@ namespace MonoGameEngineCore
                 if(SystemCore.Input.KeyPress(Keys.Escape))
                     SystemCore.Game.Exit();
 
-            PhysicsSimulation.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            if (!PhysicsOnBackgroundThread)
+                PhysicsSimulation.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
 
             DebugText.Update(gameTime);
 
+        }
+
+        public static void PhysicsUpdate()
+        {
+            while (!GameExiting)
+            {
+                DateTime now = DateTime.Now;
+                double elapsed = (now - physicsLastUpdate).TotalMilliseconds;
+                PhysicsSimulation.Update((float) elapsed/1000);
+                physicsLastUpdate = now;
+                Thread.Sleep(5);
+            }
         }
 
         public static void Render(GameTime gameTime)

@@ -17,8 +17,9 @@ namespace MonoGameEngineCore.GameObject.Components
         public GameObject ParentObject { get; set; }
         public MobileMesh mobileMesh;
         Microsoft.Xna.Framework.Vector3 offset;
+
         public object Tag { get; set; }
-    
+
         public MeshColliderComponent(object tag)
         {
             if (tag != null)
@@ -34,16 +35,16 @@ namespace MonoGameEngineCore.GameObject.Components
                 MonoMathHelper.ConvertShortToInt(ParentObject.GetComponent<RenderGeometryComponent>().GetIndices()),
                 AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
             offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
+            
             mobileMesh.CollisionInformation.Tag = this.Tag;
+
+            SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(mobileMesh);
 
         }
 
         public void Initialise()
         {
             Enabled = true;
-            SystemCore.PhysicsSimulation.Add(mobileMesh);
-
-            
         }
 
         public bool Enabled { get; set; }
@@ -52,18 +53,26 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void Update(GameTime gameTime)
         {
-
-            mobileMesh.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
+            if (!SystemCore.PhysicsOnBackgroundThread)
+                mobileMesh.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
+            else
+            {
+                mobileMesh.BufferedStates.States.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
+            }
         }
 
         public int UpdateOrder { get; set; }
 
         public event EventHandler<EventArgs> UpdateOrderChanged;
 
-
         public void Dispose()
         {
-            SystemCore.PhysicsSimulation.Remove(mobileMesh);
+            if (!SystemCore.PhysicsOnBackgroundThread)
+                SystemCore.PhysicsSimulation.Remove(mobileMesh);
+            else
+            {
+                SystemCore.PhysicsSimulation.SpaceObjectBuffer.Remove(mobileMesh);
+            }
         }
     }
 }
