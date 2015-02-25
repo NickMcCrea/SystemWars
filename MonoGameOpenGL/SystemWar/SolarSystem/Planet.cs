@@ -330,11 +330,6 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-            DebugText.Write("Built patches: " + activePatches.Count);
-
-            
-            DebugText.Write("Rendered + collidable patches " + activeCount.ToString());
-
             for (int i = 0; i < rootNodes.Count; i++)
             {
                 PlanetNode root = rootNodes[i];

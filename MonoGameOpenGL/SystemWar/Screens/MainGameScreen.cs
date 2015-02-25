@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using BEPUphysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +22,9 @@ namespace SystemWar.Screens
         Vector3d oldPos;
         private SolarSystem solarSystem;
         bool firstTimePlacement = false;
+        private Vector3 hitPos = Vector3.Zero;
+        private PlanetNode hitNode = null;
+        private float shipDistanceOnFirstPlacement = 50000f;
 
         public MainGameScreen()
             : base()
@@ -70,7 +74,7 @@ namespace SystemWar.Screens
             SystemCore.AddNewGameComponent(solarSystem);
             ship.Transform.Rotate(Vector3.Up, MathHelper.PiOver2);
 
-            
+
         }
 
         public override void OnRemove()
@@ -80,76 +84,55 @@ namespace SystemWar.Screens
             base.OnRemove();
         }
 
-        private Vector3 hitPos = Vector3.Zero;
-        private PlanetNode hitNode = null;
+      
+
         public override void Update(GameTime gameTime)
         {
 
-          
+
             if (input.KeyPress(Keys.Space))
                 SystemCore.Wireframe = !SystemCore.Wireframe;
 
             solarSystem.Update(gameTime);
-          
-            RayCastResult result;
-            Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
-            BEPUutilities.Ray ray = new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 3f, camWorld.Forward.ToBepuVector());
 
-            //SystemCore.PhysicsSimulation.
-            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
-            {
-                hitPos = result.HitData.Location.ToXNAVector();
-                DebugShapeRenderer.AddLine(hitPos, hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
-            }
-           
-
-
-            ////first of all, figure out if we've clicked on a planet
-            //Ray ray = MonoMathHelper.GetProjectedMouseRay(SystemCore.ActiveCamera.View,
-            //    SystemCore.ActiveCamera.Projection, SystemCore.GraphicsDevice, input.MousePosition.X,
-            //    input.MousePosition.Y);
-
-            //List<GameObject> planets = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Planet);
-            //foreach (Planet planet in planets)
-            //{
-            //    BoundingSphere planetSphere =
-            //        new BoundingSphere(
-            //            SolarSystem.GetRenderPosition(
-            //                solarSystem.PlayerShip.HighPrecisionPositionComponent.Position, planet.Position.Position),
-            //            planet.radius);
-
-            //    float? result = ray.Intersects(planetSphere);
-            //    if (result.HasValue)
-            //    {
-            //        hitPos = ray.Position + ray.Direction * result.Value;
-            //    }
-
-            //    hitNode = planet.DetermineHitNode(ray);
-            //    if (hitNode != null)
-            //    {
-            //        hitNode.DetermineIntersection(ray, hitPos);
-            //    }
-            //}
-
+            //RaycastTest();
 
 
             if (!firstTimePlacement)
             {
-                ship.GetComponent<HighPrecisionPosition>().Position = SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position + new Vector3d(6050, 0, 0);
+                ship.GetComponent<HighPrecisionPosition>().Position =
+                    SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position +
+                    new Vector3d(shipDistanceOnFirstPlacement, 0, 0);
                 firstTimePlacement = true;
             }
 
-        
+
             base.Update(gameTime);
 
-           
 
+
+        }
+
+        private void RaycastTest()
+        {
+            RayCastResult result;
+            Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
+            BEPUutilities.Ray ray =
+                new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector()*3f,
+                    camWorld.Forward.ToBepuVector());
+
+            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
+            {
+                hitPos = result.HitData.Location.ToXNAVector();
+                DebugShapeRenderer.AddLine(hitPos,
+                    hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector()*5f), Color.Blue);
+            }
         }
 
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.CornflowerBlue);
-            
+
             //PrintDebugInfo(gameTime);
             DebugText.Write(SystemCore.GetSubsystem<FPSCounter>().FPS.ToString());
             base.Render(gameTime);

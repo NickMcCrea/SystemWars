@@ -92,7 +92,9 @@ namespace MonoGameEngineCore
 
             if (PhysicsOnBackgroundThread)
             {
+                PhysicsSimulation.SpaceObjectBuffer.Enabled = true;
                 Thread t = new Thread(PhysicsUpdate);
+                t.IsBackground = true;
                 t.Start();
             }
 

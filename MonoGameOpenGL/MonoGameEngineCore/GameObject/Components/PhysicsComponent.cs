@@ -59,8 +59,20 @@ namespace MonoGameEngineCore.GameObject.Components
             }
 
             PhysicsEntity.Tag = ParentObject;
-            PhysicsEntity.WorldTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
-            SystemCore.PhysicsSimulation.Add(PhysicsEntity);
+
+            if (!SystemCore.PhysicsOnBackgroundThread)
+            {
+                PhysicsEntity.WorldTransform =
+                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                SystemCore.PhysicsSimulation.Add(PhysicsEntity);
+            }
+            else
+            {
+                PhysicsEntity.BufferedStates.States.WorldTransform =
+                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(PhysicsEntity);
+            }
+
         }
 
         private void GenerateSphereCollider()
