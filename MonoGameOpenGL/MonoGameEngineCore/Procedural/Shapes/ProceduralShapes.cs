@@ -288,6 +288,17 @@ namespace MonoGameEngineCore.Procedural
             Indices = Indices.Reverse().ToArray();
         }
 
+        public List<Vector3> GetVertices()
+        {
+         
+            var vertices = new List<Vector3>();
+            for (int i = 0; i < Vertices.Length; i++)
+            {
+                vertices.Add(Vertices[i].Position);
+            }
+
+            return vertices;
+        } 
 
         public void InsideOut()
         {
