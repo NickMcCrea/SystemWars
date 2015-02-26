@@ -98,8 +98,8 @@ namespace MonoGameEngineCore.Procedural
 
             if (normal == Vector3.Up || normal == Vector3.Forward || normal == Vector3.Left)
                 indices = indices.Reverse().ToArray();
-            
-   
+
+
 
             Sphereify(sphereSize, ref vertices);
 
@@ -114,8 +114,8 @@ namespace MonoGameEngineCore.Procedural
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            meshCollider = new MeshColliderComponent(this);
-            AddComponent(meshCollider);
+            //meshCollider = new MeshColliderComponent(this);
+            //AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
@@ -184,7 +184,7 @@ namespace MonoGameEngineCore.Procedural
         private void GenerateNormals(ref VertexPositionColorTextureNormal[] vertArray, ref short[] indices)
         {
 
-       
+
             for (int i = 0; i < indices.Length / 3; i++)
             {
                 Vector3 firstvec = vertArray[indices[i * 3 + 1]].Position - vertArray[indices[i * 3]].Position;
@@ -329,13 +329,15 @@ namespace MonoGameEngineCore.Procedural
         public void Disable()
         {
             renderComponent.Visible = false;
-            meshCollider.Enabled = false;
+            if (meshCollider != null)
+                meshCollider.Enabled = false;
         }
 
         public void Enable()
         {
             renderComponent.Visible = true;
-            meshCollider.Enabled = true;
+            if (meshCollider != null)
+                meshCollider.Enabled = true;
         }
     }
 }

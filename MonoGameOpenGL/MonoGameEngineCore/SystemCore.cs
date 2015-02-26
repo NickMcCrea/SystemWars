@@ -53,7 +53,7 @@ namespace MonoGameEngineCore
         public static bool Wireframe { get; set; }
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
-        public static bool PhysicsOnBackgroundThread = true;
+        public static bool PhysicsOnBackgroundThread = false;
         private static  Dictionary<string, ICamera> cameras;  
         private static List<IGameSubSystem> gameSubSystems;
         private static List<IGameComponent> gameComponents;

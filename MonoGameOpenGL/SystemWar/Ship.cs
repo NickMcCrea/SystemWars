@@ -256,14 +256,23 @@ namespace SystemWar
         {
 
             PhysicsComponent comp = GetComponent<PhysicsComponent>();
-
+            if(comp == null)
+                return;
+            
             ReadOnlyList<CollidablePairHandler> pairs;
 
-            lock (SystemCore.PhysicsSimulation.BufferedStates.InterpolatedStates.FlipLocker)
+            if (SystemCore.PhysicsOnBackgroundThread)
             {
-                 pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
+                lock (SystemCore.PhysicsSimulation.BufferedStates.InterpolatedStates.FlipLocker)
+                {
+                    pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
+                }
             }
-           
+            else
+            {
+                pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
+            }
+
             foreach (CollidablePairHandler collidablePairHandler in pairs)
             {
 

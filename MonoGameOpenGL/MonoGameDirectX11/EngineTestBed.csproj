@@ -47,14 +47,13 @@
     <Compile Include="Screens\UITestScreen.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="BEPUik">
-      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUik.dll</HintPath>
+    <Reference Include="BEPUphysics, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\BepuLatest\BEPUphysics.dll</HintPath>
     </Reference>
-    <Reference Include="BEPUphysics">
-      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUphysics.dll</HintPath>
-    </Reference>
-    <Reference Include="BEPUutilities">
-      <HintPath>..\..\Dependencies\BEPUphysics v1.3.0\BEPUutilities.dll</HintPath>
+    <Reference Include="BEPUutilities, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\BepuLatest\BEPUutilities.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
