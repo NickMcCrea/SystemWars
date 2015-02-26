@@ -20,7 +20,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public object Tag { get; set; }
 
-        public MeshColliderComponent(object tag)
+        public MeshColliderComponent(object tag, List<Microsoft.Xna.Framework.Vector3> verts, int[] indices)
         {
             if (tag != null)
                 Tag = tag;
@@ -28,12 +28,10 @@ namespace MonoGameEngineCore.GameObject.Components
             ParentObject = tag as GameObject;
 
             List<BEPUutilities.Vector3> bepuVerts =
-                MathConverter.Convert(ParentObject.GetComponent<RenderGeometryComponent>().GetVertices().ToArray())
+                MathConverter.Convert(verts.ToArray())
                     .ToList();
 
-            mobileMesh = new MobileMesh(bepuVerts.ToArray(),
-                MonoMathHelper.ConvertShortToInt(ParentObject.GetComponent<RenderGeometryComponent>().GetIndices()),
-                AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
+            mobileMesh = new MobileMesh(bepuVerts.ToArray(), indices, AffineTransform.Identity, MobileMeshSolidity.Counterclockwise);
             offset = mobileMesh.WorldTransform.Translation.ToXNAVector();
             
             mobileMesh.CollisionInformation.Tag = this.Tag;

@@ -298,7 +298,17 @@ namespace MonoGameEngineCore.Procedural
             }
 
             return vertices;
-        } 
+        }
+
+        public List<int> GetIndicesAsInt()
+        {
+            List<int> ind = new List<int>();
+            for(int i = 0;i<Indices.Length;i++)
+            {
+                ind.Add((int)Indices[i]);
+            }
+            return ind;
+        }
 
         public void InsideOut()
         {
