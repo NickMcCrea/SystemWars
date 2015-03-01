@@ -48,9 +48,9 @@ namespace MonoGameEngineCore.Procedural
             nodesAwaitingBuilding.Enqueue(nodeToBuild);
         }
 
-        public static void Enqueue(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public static void Enqueue(Effect effect, IModule module, Planet rootObject,int depth, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
-            var node = new PlanetNode(effect, module, rootObject, parent, min, max, step, normal, sphereSize);
+            var node = new PlanetNode(effect, module, rootObject, depth, min, max, step, normal, sphereSize);
             Enqueue(node);
         }
 

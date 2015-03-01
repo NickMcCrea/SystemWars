@@ -41,7 +41,7 @@ namespace MonoGameEngineCore.Procedural
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
-        public PlanetNode(Effect effect, IModule module, Planet rootObject, PlanetNode parent, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public PlanetNode(Effect effect, IModule module, Planet rootObject, int depth, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
 
 
@@ -59,12 +59,7 @@ namespace MonoGameEngineCore.Procedural
             heightMapSize = System.Math.Max((int)((max.X - min.X) / step), (int)((max.Z - min.Z) / step)); ;
             NodeColor = SystemCore.ActiveColorScheme.Color1;
 
-            if (parent == null)
-                depth = 1;
-            else
-            {
-                depth = parent.depth + 1;
-            }
+            this.depth = depth;
 
             CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
@@ -79,6 +74,12 @@ namespace MonoGameEngineCore.Procedural
             int vertIndex = 0;
 
 
+
+            List<int> topEdges = new List<int>();
+            List<int> bottomEdges = new List<int>();
+            List<int> leftEdges = new List<int>();
+            List<int> rightEdges = new List<int>();
+
             for (float i = 0; i < heightMapSize; i++)
             {
                 for (float j = 0; j < heightMapSize; j++)
@@ -90,7 +91,22 @@ namespace MonoGameEngineCore.Procedural
                     vert.Normal = normal;
                     vert.Color = NodeColor;
                     vertices[vertIndex] = vert;
+
+
+                    if (i == 0)
+                        topEdges.Add(vertIndex);
+                    if (i == heightMapSize - 1)
+                        bottomEdges.Add(vertIndex);
+                    if (j == 0)
+                        leftEdges.Add(vertIndex);
+                    if (j == heightMapSize - 1)
+                        rightEdges.Add(vertIndex);
+
+
+
                     vertIndex++;
+
+
                 }
             }
 
@@ -103,6 +119,14 @@ namespace MonoGameEngineCore.Procedural
 
             Sphereify(sphereSize, ref vertices);
 
+            //if (depth == Planet.maxDepth)
+            //{
+            //    AdjustEdges(ref vertices, ref topEdges);
+            //    AdjustEdges(ref vertices, ref bottomEdges);
+            //    AdjustEdges(ref vertices, ref leftEdges);
+            //    AdjustEdges(ref vertices, ref rightEdges);
+            //}
+
             GenerateNormals(ref vertices, ref indices);
 
 
@@ -112,10 +136,28 @@ namespace MonoGameEngineCore.Procedural
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
 
+            //if (depth < Planet.maxDepth - 1)
+            //{
+            //    spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
+            //    spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
+            //    spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
+            //    spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
+
+
+            //    spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
+            //    spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
+            //    spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
+            //    spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
+            //}
+
+
+
+
+
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            meshCollider = new MeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
-            AddComponent(meshCollider);
+            //meshCollider = new MeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
+            //AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
@@ -132,6 +174,79 @@ namespace MonoGameEngineCore.Procedural
             built = true;
 
 
+        }
+
+        private static ProceduralShape AddSkirt(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch, bool insideOut)
+        {
+            ProceduralShapeBuilder builder = new ProceduralShapeBuilder();
+            float skirtSize = 10f;
+            float offset = 0f;
+            for (int i = 0; i < topEdges.Count - 1; i++)
+            {
+
+                Vector3 point = vertices[topEdges[i]].Position;
+                Vector3 toCenter = Vector3.Normalize(-point);
+                Vector3 lowPoint = point + toCenter * skirtSize;
+                point += toCenter * offset;
+                lowPoint += toCenter * offset;
+
+                Vector3 point2 = vertices[topEdges[i + 1]].Position;
+                Vector3 toCenter2 = Vector3.Normalize(-point2);
+                Vector3 lowPoint2 = point2 + toCenter2 * skirtSize;
+                point2 += toCenter2 * offset;
+                lowPoint2 += toCenter2 * offset;
+
+                builder.AddFace(point, point2, lowPoint2, lowPoint);
+            }
+
+            var skirt = builder.BakeShape();
+            if (insideOut)
+                skirt.InsideOut();
+            skirt.SetColor(vertices[topEdges[0]].Color);
+            spherePatch = ProceduralShape.Combine(spherePatch, skirt);
+            return spherePatch;
+        }
+
+        private static void AddSkirts(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch)
+        {
+            ProceduralShapeBuilder builder = new ProceduralShapeBuilder();
+            float skirtSize = 200f;
+            float offset = 0f;
+            for (int i = 0; i < topEdges.Count - 1; i++)
+            {
+
+                Vector3 point = vertices[i].Position;
+                Vector3 toCenter = Vector3.Normalize(-point);
+                Vector3 lowPoint = point + toCenter * -skirtSize;
+                //point += toCenter * offset;
+
+                Vector3 point2 = vertices[i + 1].Position;
+                Vector3 toCenter2 = Vector3.Normalize(-point2);
+                Vector3 lowPoint2 = point2 + toCenter2 * -skirtSize;
+                //point2 += toCenter2 * offset;
+
+                builder.AddFace(point, point2, lowPoint2, lowPoint);
+            }
+
+            var skirt = builder.BakeShape();
+            skirt.InsideOut();
+            spherePatch = ProceduralShape.Combine(spherePatch, skirt);
+
+        }
+
+        private void AdjustEdges(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
+        {
+
+            for (int i = 1; i < edgeIndexes.Count - 1; i += 2)
+            {
+                Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
+                Vector3 neighbourB = vertices[edgeIndexes[i + 1]].Position;
+                float aLength = neighbourA.Length();
+                float bLength = neighbourB.Length();
+                float avgHeight = (aLength + bLength) / 2;
+                vertices[edgeIndexes[i]].Position = Vector3.Normalize(vertices[edgeIndexes[i]].Position) * avgHeight;
+
+            }
         }
 
         private void SetHighPrecisionPosition(GameObject.GameObject obj)
@@ -292,6 +407,7 @@ namespace MonoGameEngineCore.Procedural
                 }
 
             }
+
         }
 
         private float CalculateDistanceToPatch()
