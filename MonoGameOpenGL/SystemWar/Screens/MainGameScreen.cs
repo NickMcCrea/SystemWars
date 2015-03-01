@@ -24,7 +24,7 @@ namespace SystemWar.Screens
         bool firstTimePlacement = false;
         private Vector3 hitPos = Vector3.Zero;
         private PlanetNode hitNode = null;
-        private float shipDistanceOnFirstPlacement = 6220f;
+        private float shipDistanceOnFirstPlacement = 6200;
 
         public MainGameScreen()
             : base()

@@ -119,13 +119,13 @@ namespace MonoGameEngineCore.Procedural
 
             Sphereify(sphereSize, ref vertices);
 
-            //if (depth == Planet.maxDepth)
-            //{
-            //    AdjustEdges(ref vertices, ref topEdges);
-            //    AdjustEdges(ref vertices, ref bottomEdges);
-            //    AdjustEdges(ref vertices, ref leftEdges);
-            //    AdjustEdges(ref vertices, ref rightEdges);
-            //}
+            if (depth == Planet.maxDepth)
+            {
+                AdjustEdges(ref vertices, ref topEdges);
+                AdjustEdges(ref vertices, ref bottomEdges);
+                AdjustEdges(ref vertices, ref leftEdges);
+                AdjustEdges(ref vertices, ref rightEdges);
+            }
 
             GenerateNormals(ref vertices, ref indices);
 
@@ -135,20 +135,17 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
-
-            //if (depth < Planet.maxDepth - 1)
-            //{
-            //    spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
-            //    spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
-            //    spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
-            //    spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
 
 
-            //    spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
-            //    spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
-            //    spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
-            //    spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
-            //}
+            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
+
 
 
 
@@ -196,43 +193,17 @@ namespace MonoGameEngineCore.Procedural
                 point2 += toCenter2 * offset;
                 lowPoint2 += toCenter2 * offset;
 
-                builder.AddFace(point, point2, lowPoint2, lowPoint);
+                builder.AddFaceWithColor(vertices[topEdges[i]].Color, point, point2, lowPoint2, lowPoint);
             }
 
             var skirt = builder.BakeShape();
             if (insideOut)
                 skirt.InsideOut();
-            skirt.SetColor(vertices[topEdges[0]].Color);
+
             spherePatch = ProceduralShape.Combine(spherePatch, skirt);
             return spherePatch;
         }
 
-        private static void AddSkirts(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch)
-        {
-            ProceduralShapeBuilder builder = new ProceduralShapeBuilder();
-            float skirtSize = 200f;
-            float offset = 0f;
-            for (int i = 0; i < topEdges.Count - 1; i++)
-            {
-
-                Vector3 point = vertices[i].Position;
-                Vector3 toCenter = Vector3.Normalize(-point);
-                Vector3 lowPoint = point + toCenter * -skirtSize;
-                //point += toCenter * offset;
-
-                Vector3 point2 = vertices[i + 1].Position;
-                Vector3 toCenter2 = Vector3.Normalize(-point2);
-                Vector3 lowPoint2 = point2 + toCenter2 * -skirtSize;
-                //point2 += toCenter2 * offset;
-
-                builder.AddFace(point, point2, lowPoint2, lowPoint);
-            }
-
-            var skirt = builder.BakeShape();
-            skirt.InsideOut();
-            spherePatch = ProceduralShape.Combine(spherePatch, skirt);
-
-        }
 
         private void AdjustEdges(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
         {

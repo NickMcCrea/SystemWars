@@ -10,6 +10,7 @@ using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using SystemWar;
+using System.Diagnostics;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -45,7 +46,7 @@ namespace MonoGameEngineCore.Procedural
         public int BuildCountPerSecond;
         public int BuildTally;
         private TimeSpan lastClearTime;
-        public bool visualisePatches = true;
+        public bool visualisePatches = false;
         public int maxDepth = 8;
 
         private Planet orbitBody;
@@ -313,6 +314,7 @@ namespace MonoGameEngineCore.Procedural
             {
                 node.Update();
 
+               
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
