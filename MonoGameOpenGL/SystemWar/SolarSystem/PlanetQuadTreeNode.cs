@@ -135,16 +135,19 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
-            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
+            if (depth < Planet.maxDepth)
+            {
+                spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
+                spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
+                spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
+                spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
 
 
-            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
+                spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
+                spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
+                spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
+                spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
+            }
 
 
 
@@ -173,11 +176,11 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private static ProceduralShape AddSkirt(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch, bool insideOut)
+        private ProceduralShape AddSkirt(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch, bool insideOut)
         {
             ProceduralShapeBuilder builder = new ProceduralShapeBuilder();
             float skirtSize = 10f;
-            float offset = 0f;
+            float offset = 0;
             for (int i = 0; i < topEdges.Count - 1; i++)
             {
 
@@ -193,7 +196,8 @@ namespace MonoGameEngineCore.Procedural
                 point2 += toCenter2 * offset;
                 lowPoint2 += toCenter2 * offset;
 
-                builder.AddFaceWithColor(vertices[topEdges[i]].Color, point, point2, lowPoint2, lowPoint);
+                builder.AddFaceWithColor(Vector3.Normalize(-point), vertices[topEdges[i]].Color, point, point2,
+                    lowPoint2, lowPoint);
             }
 
             var skirt = builder.BakeShape();
