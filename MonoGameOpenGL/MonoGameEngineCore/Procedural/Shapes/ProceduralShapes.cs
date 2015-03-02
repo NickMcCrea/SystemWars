@@ -41,26 +41,26 @@ namespace MonoGameEngineCore.Procedural
             indices = new List<short>();
         }
 
-        public void AddTriangleWithColor(Vector3 normal, Color col,Vector3 a, Vector3 b, Vector3 c)
+        public void AddTriangleWithColor(Color col,Vector3 a, Vector3 b, Vector3 c)
         {
             Plane p = new Plane(a, b, c);
 
             VertexPositionColorTextureNormal v1 = new VertexPositionColorTextureNormal();
             v1.Position = a;
-            v1.Normal = normal;
+            v1.Normal = p.Normal;
             v1.Color = col;
             v1.Texture = new Vector2(0, 0);
 
             VertexPositionColorTextureNormal v2 = new VertexPositionColorTextureNormal();
             v2.Position = b;
-            v2.Normal = normal;
+            v2.Normal = p.Normal;
             v2.Color = col;
             v2.Texture = new Vector2(0, 0);
 
 
             VertexPositionColorTextureNormal v3 = new VertexPositionColorTextureNormal();
             v3.Position = c;
-            v3.Normal = normal;
+            v3.Normal = p.Normal;
             v3.Color = col;
             v3.Texture = new Vector2(0, 0);
 
@@ -166,16 +166,16 @@ namespace MonoGameEngineCore.Procedural
         /// Adds convex polygon. Expects clockwise entry.
         /// </summary>
         /// <param name="points"></param>
-        public void AddFaceWithColor(Vector3 normal, Color color, params Vector3[] points)
+        public void AddFaceWithColor(Color color, params Vector3[] points)
         {
             Vector3 midPoint = GetMidPoint(points);
 
 
             for (int i = 0; i < points.Length - 1; i++)
             {
-                AddTriangleWithColor(normal, color,midPoint, points[i], points[i + 1]);
+                AddTriangleWithColor( color,midPoint, points[i], points[i + 1]);
             }
-            AddTriangleWithColor(normal, color,midPoint, points[points.Length - 1], points[0]);
+            AddTriangleWithColor( color,midPoint, points[points.Length - 1], points[0]);
         }
 
         private Vector3 GetMidPoint(Vector3[] points)

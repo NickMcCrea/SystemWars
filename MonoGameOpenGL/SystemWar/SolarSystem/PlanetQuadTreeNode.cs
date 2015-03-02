@@ -95,11 +95,11 @@ namespace MonoGameEngineCore.Procedural
 
                     if (i == 0)
                         topEdges.Add(vertIndex);
-                    if (i == heightMapSize - 1)
+                    else if (i == heightMapSize - 1)
                         bottomEdges.Add(vertIndex);
-                    if (j == 0)
+                    else if (j == 0)
                         leftEdges.Add(vertIndex);
-                    if (j == heightMapSize - 1)
+                    else if (j == heightMapSize - 1)
                         rightEdges.Add(vertIndex);
 
 
@@ -127,6 +127,7 @@ namespace MonoGameEngineCore.Procedural
                 AdjustEdges(ref vertices, ref rightEdges);
             }
 
+
             GenerateNormals(ref vertices, ref indices);
 
 
@@ -135,19 +136,16 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
-            if (depth < Planet.maxDepth)
-            {
-                spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
-                spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
-                spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
-                spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
+            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
+            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
 
 
-                spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
-                spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
-                spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
-                spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
-            }
 
 
 
@@ -196,7 +194,7 @@ namespace MonoGameEngineCore.Procedural
                 point2 += toCenter2 * offset;
                 lowPoint2 += toCenter2 * offset;
 
-                builder.AddFaceWithColor(Vector3.Normalize(-point), vertices[topEdges[i]].Color, point, point2,
+                builder.AddFaceWithColor( vertices[topEdges[i]].Color, point, point2,
                     lowPoint2, lowPoint);
             }
 
@@ -208,10 +206,8 @@ namespace MonoGameEngineCore.Procedural
             return spherePatch;
         }
 
-
         private void AdjustEdges(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
         {
-
             for (int i = 1; i < edgeIndexes.Count - 1; i += 2)
             {
                 Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
