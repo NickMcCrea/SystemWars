@@ -14,6 +14,7 @@ using System.Diagnostics;
 
 namespace MonoGameEngineCore.Procedural
 {
+    //seamfix
 
     struct PatchMinMax
     {
@@ -26,6 +27,7 @@ namespace MonoGameEngineCore.Procedural
             Min = min;
         }
     }
+
 
     public class Planet : GameObject.GameObject, IUpdateable
     {
