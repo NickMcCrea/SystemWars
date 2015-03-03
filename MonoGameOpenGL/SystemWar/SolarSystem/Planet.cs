@@ -29,6 +29,25 @@ namespace MonoGameEngineCore.Procedural
     }
 
 
+    public class NeighbourTrackerNode
+    {
+        public int depth;
+        public Vector3 keyPoint;
+        public Vector3 mid1;
+
+        public NeighbourTrackerNode()
+        {
+
+        }
+
+        public NeighbourTrackerNode(int depth, Vector3 keyPoint, Vector3 mid1)
+        {
+            this.depth = depth;
+            this.keyPoint = keyPoint;
+            this.mid1 = mid1;
+        }
+    }
+
     public class NeighbourTracker
     {
 
@@ -43,20 +62,22 @@ namespace MonoGameEngineCore.Procedural
         public struct Connection
         {
             public ConnectionDirection direction;
-            public PlanetNode node;
+            public NeighbourTrackerNode node;
 
-            public Connection(ConnectionDirection dir, PlanetNode n)
+            public Connection(ConnectionDirection dir, NeighbourTrackerNode n)
             {
                 node = n;
                 direction = dir;
             }
         }
 
-        public Dictionary<PlanetNode, List<Connection>> connections;
+        public Dictionary<NeighbourTrackerNode, List<Connection>> connections;
+        private Dictionary<Vector3, NeighbourTrackerNode> nodeDictionary;
 
         public NeighbourTracker()
         {
-            connections = new Dictionary<PlanetNode, List<Connection>>();
+            connections = new Dictionary<NeighbourTrackerNode, List<Connection>>();
+            nodeDictionary = new Dictionary<Vector3, NeighbourTrackerNode>();
         }
 
         private ConnectionDirection GetOpposite(ConnectionDirection dir)
@@ -76,19 +97,53 @@ namespace MonoGameEngineCore.Procedural
 
         public void ClearAllConnections()
         {
-            List<PlanetNode> toRemove = new List<PlanetNode>();
-            foreach (PlanetNode n in connections.Keys)
-                if (n.depth > 1)
-                    toRemove.Add(n);
+            connections.Clear();
+            nodeDictionary.Clear();
+            //List<NeighbourTrackerNode> toRemove = new List<NeighbourTrackerNode>();
+            //foreach (NeighbourTrackerNode n in connections.Keys)
+            //    if (n.depth > 1)
+            //        toRemove.Add(n);
 
-            foreach (PlanetNode r in toRemove)
-                connections.Remove(r);
+            //foreach (NeighbourTrackerNode r in toRemove)
+            //{
+            //    connections.Remove(r);
+            //    nodeDictionary.Remove(r.keyPoint);
+            //}
 
 
 
         }
 
         public void MakeConnection(PlanetNode a, PlanetNode b, ConnectionDirection dir)
+        {
+            NeighbourTrackerNode aNode, bNode;
+            if (nodeDictionary.ContainsKey(a.GetKeyPoint()))
+            {
+                aNode = nodeDictionary[a.GetKeyPoint()];
+            }
+            else
+            {
+                aNode = new NeighbourTrackerNode();
+                aNode.keyPoint = a.GetKeyPoint();
+                aNode.depth = a.depth;
+                aNode.mid1 = a.mid1;
+            }
+            if (nodeDictionary.ContainsKey(b.GetKeyPoint()))
+            {
+                bNode = nodeDictionary[b.GetKeyPoint()];
+            }
+            else
+            {
+                bNode = new NeighbourTrackerNode();
+                bNode.keyPoint = b.GetKeyPoint();
+                bNode.depth = b.depth;
+                bNode.mid1 = b.mid1;
+            }
+
+            MakeConnection(aNode, bNode, dir);
+        }
+
+        public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir)
         {
             if (!connections.ContainsKey(a))
                 connections.Add(a, new List<Connection>());
@@ -99,9 +154,15 @@ namespace MonoGameEngineCore.Procedural
                 connections.Add(b, new List<Connection>());
 
             connections[b].Add(new Connection(GetOpposite(dir), a));
+
+            if (!nodeDictionary.ContainsKey(a.keyPoint))
+                nodeDictionary.Add(a.keyPoint, a);
+            if (!nodeDictionary.ContainsKey(b.keyPoint))
+                nodeDictionary.Add(b.keyPoint, b);
+
         }
 
-        public void ReplaceNodeWithChildren(PlanetNode nodeToReplace, PlanetNode nw, PlanetNode sw, PlanetNode se, PlanetNode ne)
+        public void ReplaceNodeWithChildren(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, NeighbourTrackerNode se, NeighbourTrackerNode ne)
         {
             //children are connected to each other on two edges, and inherit the parent connections on the others
             MakeConnection(nw, sw, ConnectionDirection.south);
@@ -109,10 +170,10 @@ namespace MonoGameEngineCore.Procedural
             MakeConnection(sw, se, ConnectionDirection.east);
             MakeConnection(se, ne, ConnectionDirection.north);
 
-            PlanetNode parentNorth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.north).node;
-            PlanetNode parentSouth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.south).node;
-            PlanetNode parentEast = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.east).node;
-            PlanetNode parentWest = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.west).node;
+            NeighbourTrackerNode parentNorth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.north).node;
+            NeighbourTrackerNode parentSouth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.south).node;
+            NeighbourTrackerNode parentEast = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.east).node;
+            NeighbourTrackerNode parentWest = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.west).node;
 
             MakeConnection(nw, parentNorth, ConnectionDirection.north);
             MakeConnection(nw, parentWest, ConnectionDirection.west);
@@ -129,7 +190,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private void RemoveAllConnections(PlanetNode nodeToReplace)
+        private void RemoveAllConnections(NeighbourTrackerNode nodeToReplace)
         {
             List<Connection> nodeConnections = GetConnections(nodeToReplace);
             foreach (Connection conn in nodeConnections)
@@ -139,11 +200,16 @@ namespace MonoGameEngineCore.Procedural
             connections.Remove(nodeToReplace);
         }
 
-        public List<Connection> GetConnections(PlanetNode node)
+        public List<Connection> GetConnections(NeighbourTrackerNode node)
         {
             if (connections.ContainsKey(node))
                 return connections[node];
             return new List<Connection>();
+        }
+
+        public List<Connection> GetConnections(PlanetNode node)
+        {
+            return GetConnections(nodeDictionary[node.GetKeyPoint()]);
         }
 
     }
@@ -185,6 +251,8 @@ namespace MonoGameEngineCore.Procedural
         private SpaceScatteringHelper spaceScatteringHelper;
         public HighPrecisionPosition Position { get; private set; }
         public int DrawOrder { get; set; }
+
+        private NeighbourTrackerNode topNode, bottomNode, leftNode, rightNode, forwardNode, backwardNode;
 
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
@@ -315,19 +383,31 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(right);
             rootNodes.Add(left);
 
-            neighbourTracker.MakeConnection(top, left, NeighbourTracker.ConnectionDirection.west);
-            neighbourTracker.MakeConnection(top, right, NeighbourTracker.ConnectionDirection.east);
-            neighbourTracker.MakeConnection(top, forward, NeighbourTracker.ConnectionDirection.south);
-            neighbourTracker.MakeConnection(top, backward, NeighbourTracker.ConnectionDirection.north);
-            neighbourTracker.MakeConnection(bottom, left, NeighbourTracker.ConnectionDirection.west);
-            neighbourTracker.MakeConnection(bottom, right, NeighbourTracker.ConnectionDirection.east);
-            neighbourTracker.MakeConnection(bottom, forward, NeighbourTracker.ConnectionDirection.north);
-            neighbourTracker.MakeConnection(bottom, backward, NeighbourTracker.ConnectionDirection.south);
-            neighbourTracker.MakeConnection(left, forward, NeighbourTracker.ConnectionDirection.east);
-            neighbourTracker.MakeConnection(left, backward, NeighbourTracker.ConnectionDirection.west);
-            neighbourTracker.MakeConnection(right, forward, NeighbourTracker.ConnectionDirection.west);
-            neighbourTracker.MakeConnection(right, backward, NeighbourTracker.ConnectionDirection.east);
+            topNode = new NeighbourTrackerNode(1, top.GetKeyPoint(), top.mid1);
+            bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint(), bottom.mid1);
+            forwardNode = new NeighbourTrackerNode(1, forward.GetKeyPoint(), forward.mid1);
+            leftNode = new NeighbourTrackerNode(1, left.GetKeyPoint(), left.mid1);
+            rightNode = new NeighbourTrackerNode(1, right.GetKeyPoint(), right.mid1);
+            backwardNode = new NeighbourTrackerNode(1, backward.GetKeyPoint(), backward.mid1);
 
+            ReinitialiseTracker();
+
+        }
+
+        private void ReinitialiseTracker()
+        {
+            neighbourTracker.MakeConnection(topNode, leftNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(topNode, rightNode, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(topNode, forwardNode, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(topNode, backwardNode, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(bottomNode, leftNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(bottomNode, rightNode, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(bottomNode, forwardNode, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(bottomNode, backwardNode, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(leftNode, forwardNode, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(leftNode, backwardNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(rightNode, forwardNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(rightNode, backwardNode, NeighbourTracker.ConnectionDirection.east);
         }
 
         private bool ShouldSplit(Vector3 min, Vector3 max, float radius, int depth)
@@ -448,16 +528,15 @@ namespace MonoGameEngineCore.Procedural
 
             int activeCount = 0;
 
-           
+
             foreach (PlanetNode node in activePatches.Values)
             {
                 node.Update();
 
                 List<NeighbourTracker.Connection> connections = neighbourTracker.GetConnections(node);
-
                 foreach (NeighbourTracker.Connection conn in connections)
                 {
-                    DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(), conn.node.GetSurfaceMidPoint(), Color.Blue);
+                    DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(), Vector3.Transform(Vector3.Normalize(conn.node.mid1) * radius, Transform.WorldMatrix), Color.Blue);
                 }
 
                 //all nodes are flagged for removal every frame. 
@@ -478,6 +557,8 @@ namespace MonoGameEngineCore.Procedural
 
 
 
+            neighbourTracker.ClearAllConnections();
+            ReinitialiseTracker();
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
@@ -503,7 +584,7 @@ namespace MonoGameEngineCore.Procedural
 
             positionLastFrame = GetComponent<HighPrecisionPosition>().Position;
 
-            neighbourTracker.ClearAllConnections();
+
         }
 
         private void CalculateChildMovement(GameTime gameTime, GameObject.GameObject child, Vector3d planetCenter)
