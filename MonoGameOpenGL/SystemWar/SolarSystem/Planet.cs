@@ -29,6 +29,78 @@ namespace MonoGameEngineCore.Procedural
     }
 
 
+    public class NeighbourTracker
+    {
+
+        public enum ConnectionDirection
+        {
+            north,
+            south,
+            east,
+            west,
+        }
+
+        public struct Connection
+        {
+            public ConnectionDirection direction;
+            public PlanetNode node;
+
+            public Connection(ConnectionDirection dir, PlanetNode n)
+            {
+                node = n;
+                direction = dir;
+            }
+        }
+
+        private Dictionary<PlanetNode, List<Connection>> connections;
+       
+      
+
+        public NeighbourTracker()
+        {
+            connections = new Dictionary<PlanetNode, List<Connection>>();
+        }
+
+        private ConnectionDirection GetOpposite(ConnectionDirection dir)
+        {
+            if (dir == ConnectionDirection.east)
+                return ConnectionDirection.west;
+            if (dir == ConnectionDirection.north)
+                return ConnectionDirection.south;
+            if (dir == ConnectionDirection.west)
+                return ConnectionDirection.east;
+            if (dir == ConnectionDirection.south)
+                return ConnectionDirection.north;
+
+
+            return ConnectionDirection.north;
+        }
+
+        public void ClearAllConnections()
+        {
+            connections.Clear();
+        }
+
+        public void MakeConnection(PlanetNode a, PlanetNode b, ConnectionDirection dir)
+        {
+            if (!connections.ContainsKey(a))
+                connections.Add(a, new List<Connection>());
+
+            connections[a].Add(new Connection(dir, b));
+
+            if (!connections.ContainsKey(b))
+                connections.Add(b, new List<Connection>());
+
+            connections[b].Add(new Connection(GetOpposite(dir), a));
+        }
+
+        public List<Connection> GetConnections(PlanetNode node)
+        {
+            return connections[node];
+        }
+
+    }
+
     public class Planet : GameObject.GameObject, IUpdateable
     {
         private readonly IModule module;

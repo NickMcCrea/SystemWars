@@ -66,6 +66,11 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+        public Vector3 GetKeyPoint()
+        {
+            return (min + max) / 2;
+        }
+
         public void BuildGeometry()
         {
 
