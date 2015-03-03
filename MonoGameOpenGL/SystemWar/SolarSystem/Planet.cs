@@ -101,6 +101,44 @@ namespace MonoGameEngineCore.Procedural
             connections[b].Add(new Connection(GetOpposite(dir), a));
         }
 
+        public void ReplaceNodeWithChildren(PlanetNode nodeToReplace, PlanetNode nw, PlanetNode sw, PlanetNode se, PlanetNode ne)
+        {
+            //children are connected to each other on two edges, and inherit the parent connections on the others
+            MakeConnection(nw, sw, ConnectionDirection.south);
+            MakeConnection(nw, ne, ConnectionDirection.east);
+            MakeConnection(sw, se, ConnectionDirection.east);
+            MakeConnection(se, ne, ConnectionDirection.north);
+
+            PlanetNode parentNorth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.north).node;
+            PlanetNode parentSouth = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.south).node;
+            PlanetNode parentEast = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.east).node;
+            PlanetNode parentWest = connections[nodeToReplace].Find(x => x.direction == ConnectionDirection.west).node;
+
+            MakeConnection(nw, parentNorth, ConnectionDirection.north);
+            MakeConnection(nw, parentWest, ConnectionDirection.west);
+            MakeConnection(sw, parentWest, ConnectionDirection.west);
+            MakeConnection(sw, parentSouth, ConnectionDirection.south);
+
+            MakeConnection(ne, parentNorth, ConnectionDirection.north);
+            MakeConnection(ne, parentEast, ConnectionDirection.east);
+            MakeConnection(se, parentEast, ConnectionDirection.east);
+            MakeConnection(se, parentSouth, ConnectionDirection.south);
+
+            RemoveAllConnections(nodeToReplace);
+
+
+        }
+
+        private void RemoveAllConnections(PlanetNode nodeToReplace)
+        {
+            List<Connection> nodeConnections = GetConnections(nodeToReplace);
+            foreach (Connection conn in nodeConnections)
+            {
+                connections[conn.node].RemoveAll(x => x.node == nodeToReplace);
+            }
+            connections.Remove(nodeToReplace);
+        }
+
         public List<Connection> GetConnections(PlanetNode node)
         {
             if (connections.ContainsKey(node))
@@ -410,7 +448,7 @@ namespace MonoGameEngineCore.Procedural
 
             int activeCount = 0;
 
-            neighbourTracker.ClearAllConnections();
+           
             foreach (PlanetNode node in activePatches.Values)
             {
                 node.Update();
@@ -465,6 +503,7 @@ namespace MonoGameEngineCore.Procedural
 
             positionLastFrame = GetComponent<HighPrecisionPosition>().Position;
 
+            neighbourTracker.ClearAllConnections();
         }
 
         private void CalculateChildMovement(GameTime gameTime, GameObject.GameObject child, Vector3d planetCenter)
