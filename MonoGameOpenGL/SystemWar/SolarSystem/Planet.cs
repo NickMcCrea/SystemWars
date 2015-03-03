@@ -33,6 +33,7 @@ namespace MonoGameEngineCore.Procedural
     {
         public enum Quadrant
         {
+            none,
             se,
             nw,
             ne,
@@ -67,11 +68,10 @@ namespace MonoGameEngineCore.Procedural
             west,
         }
 
-        public struct Connection
+        public class Connection
         {
             public ConnectionDirection direction;
             public NeighbourTrackerNode node;
-
             public Connection(ConnectionDirection dir, NeighbourTrackerNode n)
             {
                 node = n;
@@ -107,19 +107,6 @@ namespace MonoGameEngineCore.Procedural
         {
             connections.Clear();
             nodeDictionary.Clear();
-            //List<NeighbourTrackerNode> toRemove = new List<NeighbourTrackerNode>();
-            //foreach (NeighbourTrackerNode n in connections.Keys)
-            //    if (n.depth > 1)
-            //        toRemove.Add(n);
-
-            //foreach (NeighbourTrackerNode r in toRemove)
-            //{
-            //    connections.Remove(r);
-            //    nodeDictionary.Remove(r.keyPoint);
-            //}
-
-
-
         }
 
         public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir)
@@ -169,12 +156,13 @@ namespace MonoGameEngineCore.Procedural
             MakeConnection(se, ne, ConnectionDirection.north);
 
             List<Connection> parentConnections = GetConnections(nodeToReplace);
-          
+
 
             var northConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.north);
             var southConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.south);
             var westConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.west);
             var eastConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.east);
+
 
             if (northConnections.Count == 1)
             {
@@ -187,22 +175,85 @@ namespace MonoGameEngineCore.Procedural
                 MakeConnection(ne, northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.north);
             }
 
+            if (southConnections.Count == 1)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
+            }
+            if (southConnections.Count == 2)
+            {
+                MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
+                MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
+            }
 
 
-            RemoveAllConnections(nodeToReplace);
+            if (westConnections.Count == 1)
+            {
+                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west);
+                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west);
+            }
+            if (westConnections.Count == 2)
+            {
+                MakeConnection(sw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.west);
+                MakeConnection(nw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.west);
+            }
+
+            if (eastConnections.Count == 1)
+            {
+                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east);
+                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east);
+            }
+            if (eastConnections.Count == 2)
+            {
+                MakeConnection(se, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node, ConnectionDirection.east);
+                MakeConnection(ne, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.east);
+            }
 
             GC.KeepAlive(parentConnections);
+            RemoveAllConnections(nodeToReplace);
 
         }
 
-        private void RemoveAllConnections(NeighbourTrackerNode nodeToReplace)
+        public void RemoveAllConnections(NeighbourTrackerNode nodeToReplace)
         {
             List<Connection> nodeConnections = GetConnections(nodeToReplace);
+
             foreach (Connection conn in nodeConnections)
             {
                 connections[conn.node].RemoveAll(x => x.node == nodeToReplace);
             }
+
+            //List<Connection> consToRemove = new List<Connection>();
+            ////want to go through all connections featuring the node, and remove them.
+            //foreach (NeighbourTrackerNode n in connections.Keys)
+            //{
+            //    if (n == nodeToReplace)
+            //        continue;
+
+
+            //    foreach (Connection c in connections[n])
+            //    {
+            //        if (c.node == nodeToReplace)
+            //            consToRemove.Add(c);
+            //    }
+
+            //}
+
+            //foreach (NeighbourTrackerNode n in connections.Keys)
+            //{
+            //    foreach(Connection c in consToRemove)
+            //    {
+            //        if (connections[n].Contains(c))
+            //        {
+            //            connections[n].Remove(c);
+            //        }
+
+            //    }
+            //}
+
+            //consToRemove.Clear();
             connections.Remove(nodeToReplace);
+            nodeDictionary.Remove(nodeToReplace.keyPoint);
         }
 
         public List<Connection> GetConnections(NeighbourTrackerNode node)
@@ -389,12 +440,12 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(left);
 
             leftNode = new NeighbourTrackerNode(1, left.GetKeyPoint());
-         
 
 
 
 
-            
+
+
 
 
 
@@ -426,7 +477,7 @@ namespace MonoGameEngineCore.Procedural
             //neighbourTracker.MakeConnection(rightNode, forwardNode, NeighbourTracker.ConnectionDirection.west);
             //neighbourTracker.MakeConnection(rightNode, backwardNode, NeighbourTracker.ConnectionDirection.east);
 
-           
+
             neighbourTracker.connections.Add(leftNode, new List<NeighbourTracker.Connection>());
             neighbourTracker.nodeDictionary.Add(leftNode.keyPoint, leftNode);
         }
@@ -468,6 +519,11 @@ namespace MonoGameEngineCore.Procedural
                 NeighbourTrackerNode northEast = new NeighbourTrackerNode(depth + 1, (midRight + midTop) / 2);
                 northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
 
+                if (depth == 2 && parent.quadrant == NeighbourTrackerNode.Quadrant.sw)
+                {
+                    GC.KeepAlive(northEast);
+                }
+
                 neighbourTracker.ReplaceNodeWithChildren(parent, northWest, southWest, southEast, northEast);
 
                 CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1, southEast);
@@ -475,7 +531,7 @@ namespace MonoGameEngineCore.Procedural
                 CalculatePatchLOD(normal, step / 2, depth + 1, midBottom, midLeft, southWest);
                 CalculatePatchLOD(normal, step / 2, depth + 1, midRight, midTop, northEast);
 
-              
+
 
             }
             else
@@ -564,21 +620,24 @@ namespace MonoGameEngineCore.Procedural
                 List<NeighbourTracker.Connection> connections = neighbourTracker.GetConnections(node);
                 Color nodeQuadrantColor = Color.Red;
 
-                NeighbourTrackerNode trackerNode = neighbourTracker.nodeDictionary[node.GetKeyPoint()];
+                if (neighbourTracker.nodeDictionary.ContainsKey(node.GetKeyPoint()))
+                {
+                    NeighbourTrackerNode trackerNode = neighbourTracker.nodeDictionary[node.GetKeyPoint()];
 
-                if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.ne)
-                    nodeQuadrantColor = Color.White;
-                if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.nw)
-                    nodeQuadrantColor = Color.Green;
-                if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.se)
-                    nodeQuadrantColor = Color.Pink;
-                if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.sw)
-                    nodeQuadrantColor = Color.Yellow;
+                    if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.ne)
+                        nodeQuadrantColor = Color.White;
+                    if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.nw)
+                        nodeQuadrantColor = Color.Green;
+                    if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.se)
+                        nodeQuadrantColor = Color.Pink;
+                    if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.sw)
+                        nodeQuadrantColor = Color.Yellow;
 
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(node.GetSurfaceMidPoint(), 200f), nodeQuadrantColor);
+                    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(node.GetSurfaceMidPoint(), 200f), nodeQuadrantColor);
+                }
 
 
-                
+
                 foreach (NeighbourTracker.Connection conn in connections)
                 {
                     DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(), Vector3.Transform(Vector3.Normalize(conn.node.keyPoint) * radius, Transform.WorldMatrix), Color.Blue);
@@ -610,7 +669,7 @@ namespace MonoGameEngineCore.Procedural
                 PlanetNode root = rootNodes[i];
 
                 NeighbourTrackerNode nodeTracker = null;
-                if(neighbourTracker.nodeDictionary.ContainsKey(root.GetKeyPoint()))
+                if (neighbourTracker.nodeDictionary.ContainsKey(root.GetKeyPoint()))
                     nodeTracker = neighbourTracker.nodeDictionary[root.GetKeyPoint()];
 
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max, nodeTracker);
