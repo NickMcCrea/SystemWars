@@ -100,6 +100,8 @@ namespace MonoGameEngineCore.Procedural
             AddComponent(new RotatorComponent(Vector3.Up, rotation));
         }
 
+        //this is a test
+
         public void AddAtmosphere()
         {
 
