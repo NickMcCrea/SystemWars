@@ -52,9 +52,7 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
-        private Dictionary<PlanetNode, List<Connection>> connections;
-       
-      
+        public Dictionary<PlanetNode, List<Connection>> connections;
 
         public NeighbourTracker()
         {
@@ -78,7 +76,16 @@ namespace MonoGameEngineCore.Procedural
 
         public void ClearAllConnections()
         {
-            connections.Clear();
+            List<PlanetNode> toRemove = new List<PlanetNode>();
+            foreach (PlanetNode n in connections.Keys)
+                if (n.depth > 1)
+                    toRemove.Add(n);
+
+            foreach (PlanetNode r in toRemove)
+                connections.Remove(r);
+
+
+
         }
 
         public void MakeConnection(PlanetNode a, PlanetNode b, ConnectionDirection dir)
@@ -96,13 +103,16 @@ namespace MonoGameEngineCore.Procedural
 
         public List<Connection> GetConnections(PlanetNode node)
         {
-            return connections[node];
+            if (connections.ContainsKey(node))
+                return connections[node];
+            return new List<Connection>();
         }
 
     }
 
     public class Planet : GameObject.GameObject, IUpdateable
     {
+        private NeighbourTracker neighbourTracker;
         private readonly IModule module;
         private readonly Effect testEffect;
         public readonly float radius;
@@ -141,6 +151,7 @@ namespace MonoGameEngineCore.Procedural
         public Planet(string name, Vector3d position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
+            neighbourTracker = new NeighbourTracker();
             this.Name = name;
             planetId = ++planetIdList;
             this.module = module;
@@ -227,45 +238,57 @@ namespace MonoGameEngineCore.Procedural
 
 
             //top
-            PlanetNode n1 = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            n1.BuildGeometry();
+            PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            top.BuildGeometry();
 
             ////bottom
-            PlanetNode n2 = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            n2.BuildGeometry();
+            PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            bottom.BuildGeometry();
 
 
             //forward
-            PlanetNode n3 = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            n3.BuildGeometry();
+            PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            forward.BuildGeometry();
 
 
             //backward
-            PlanetNode n4 = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            n4.BuildGeometry();
+            PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            backward.BuildGeometry();
 
-            PlanetNode n5 = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            n5.BuildGeometry();
+            PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            right.BuildGeometry();
 
             //left
-            PlanetNode n6 = new PlanetNode(testEffect, module, this, 1, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
-            n6.BuildGeometry();
+            PlanetNode left = new PlanetNode(testEffect, module, this, 1, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
+            left.BuildGeometry();
 
 
-            AddPatch(n1);
-            AddPatch(n2);
-            AddPatch(n3);
-            AddPatch(n4);
-            AddPatch(n5);
-            AddPatch(n6);
+            AddPatch(top);
+            AddPatch(bottom);
+            AddPatch(forward);
+            AddPatch(backward);
+            AddPatch(right);
+            AddPatch(left);
 
-            rootNodes.Add(n1);
-            rootNodes.Add(n2);
-            rootNodes.Add(n3);
-            rootNodes.Add(n4);
-            rootNodes.Add(n5);
-            rootNodes.Add(n6);
+            rootNodes.Add(top);
+            rootNodes.Add(bottom);
+            rootNodes.Add(forward);
+            rootNodes.Add(backward);
+            rootNodes.Add(right);
+            rootNodes.Add(left);
 
+            neighbourTracker.MakeConnection(top, left, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(top, right, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(top, forward, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(top, backward, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(bottom, left, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(bottom, right, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(bottom, forward, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(bottom, backward, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(left, forward, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(left, backward, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(right, forward, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(right, backward, NeighbourTracker.ConnectionDirection.east);
 
         }
 
@@ -386,11 +409,19 @@ namespace MonoGameEngineCore.Procedural
             var frustrum = new BoundingFrustum(SystemCore.ActiveCamera.View * customProjection);
 
             int activeCount = 0;
+
+            neighbourTracker.ClearAllConnections();
             foreach (PlanetNode node in activePatches.Values)
             {
                 node.Update();
 
-               
+                List<NeighbourTracker.Connection> connections = neighbourTracker.GetConnections(node);
+
+                foreach (NeighbourTracker.Connection conn in connections)
+                {
+                    DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(), conn.node.GetSurfaceMidPoint(), Color.Blue);
+                }
+
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
@@ -404,8 +435,10 @@ namespace MonoGameEngineCore.Procedural
                     node.Enable();
                     activeCount++;
                 }
-              
+
             }
+
+
 
 
             for (int i = 0; i < rootNodes.Count; i++)
@@ -413,6 +446,8 @@ namespace MonoGameEngineCore.Procedural
                 PlanetNode root = rootNodes[i];
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
+
+
 
 
             //removes nodes that have not had their flags refreshed by the LOD pass
