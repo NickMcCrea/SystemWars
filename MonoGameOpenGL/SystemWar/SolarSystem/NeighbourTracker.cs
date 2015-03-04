@@ -114,8 +114,18 @@ namespace MonoGameEngineCore.Procedural
 
             if (northConnections.Count == 1)
             {
-                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north);
-                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north);
+                if (northConnections[0].node.side == nw.side)
+                {
+
+                    MakeConnection(nw, northConnections[0].node, ConnectionDirection.north);
+                    MakeConnection(ne, northConnections[0].node, ConnectionDirection.north);
+                }
+                else
+                {
+                    //we're crossing over to another quad tree.
+                    MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
+                    MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
+                }
             }
             if (northConnections.Count == 2)
             {
@@ -136,10 +146,10 @@ namespace MonoGameEngineCore.Procedural
                     {
                         MakeConnection(nw,
                         northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
-                        ConnectionDirection.north);
+                        ConnectionDirection.north, ConnectionDirection.west);
                         MakeConnection(ne,
                             northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
-                            ConnectionDirection.north);
+                            ConnectionDirection.north, ConnectionDirection.west);
                     }
 
                 }
@@ -160,9 +170,16 @@ namespace MonoGameEngineCore.Procedural
             if (westConnections.Count == 1)
             {
 
-
-                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west);
-                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west);
+                if (westConnections[0].node.side == nw.side)
+                {
+                    MakeConnection(sw, westConnections[0].node, ConnectionDirection.west);
+                    MakeConnection(nw, westConnections[0].node, ConnectionDirection.west);
+                }
+                else
+                {
+                    MakeConnection(sw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
+                    MakeConnection(nw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
+                }
 
             }
             if (westConnections.Count == 2)
@@ -185,10 +202,10 @@ namespace MonoGameEngineCore.Procedural
                     {
                         MakeConnection(sw,
                         westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
-                        ConnectionDirection.west);
+                        ConnectionDirection.west, ConnectionDirection.north);
                         MakeConnection(nw,
                             westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
-                            ConnectionDirection.west);
+                            ConnectionDirection.west, ConnectionDirection.north);
                     }
                 }
             }
@@ -266,7 +283,6 @@ namespace MonoGameEngineCore.Procedural
             return new List<Connection>();
         }
 
-
         public List<Connection> GetConnectionsTo(NeighbourTrackerNode nodeOfInterest)
         {
             var nodeConnections = GetConnections(nodeOfInterest);
@@ -280,9 +296,5 @@ namespace MonoGameEngineCore.Procedural
             return connectionsTo;
         }
 
-        internal void AddUnconnectedNode(NeighbourTrackerNode node)
-        {
-            connections.Add(node, new List<Connection>());
-        }
     }
 }

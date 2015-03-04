@@ -34,7 +34,7 @@ namespace MonoGameEngineCore.Procedural
             normal = Vector3.Zero;
             step = 1;
             side = NeighbourTrackerNode.CubeSide.none;
-           
+
         }
         public PatchMinMax(Vector3 min, Vector3 max, int depth, Vector3 normal, float step, NeighbourTrackerNode.CubeSide side)
         {
@@ -216,23 +216,23 @@ namespace MonoGameEngineCore.Procedural
 
             leftNode = new NeighbourTrackerNode(1, left.GetKeyPoint());
             leftNode.side = NeighbourTrackerNode.CubeSide.left;
-            
+
             topNode = new NeighbourTrackerNode(1, top.GetKeyPoint());
             topNode.side = NeighbourTrackerNode.CubeSide.top;
-            
+
             //bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint());
             //bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
-            
+
             //forwardNode = new NeighbourTrackerNode(1, forward.GetKeyPoint());
             //forwardNode.side = NeighbourTrackerNode.CubeSide.front;
-            
-          
+
+
             //rightNode = new NeighbourTrackerNode(1, right.GetKeyPoint());
             //rightNode.side = NeighbourTrackerNode.CubeSide.right;
-            
+
             //backwardNode = new NeighbourTrackerNode(1, backward.GetKeyPoint());
             //backwardNode.side = NeighbourTrackerNode.CubeSide.back;
-            
+
 
             ReinitialiseTracker();
 
@@ -284,16 +284,20 @@ namespace MonoGameEngineCore.Procedural
             foreach (PlanetNode rootNode in rootNodes)
             {
                 nodesToCheck.Enqueue(new PatchMinMax(rootNode.min, rootNode.max, rootNode.depth, rootNode.normal,
-                    rootNode.step, neighbourTracker.nodeDictionary[(rootNode.min + rootNode.max)/2].side));
+                    rootNode.step, neighbourTracker.nodeDictionary[(rootNode.min + rootNode.max) / 2].side));
 
             }
-          
+
 
             while (nodesToCheck.Count > 0)
             {
                 PatchMinMax next = nodesToCheck.Dequeue();
                 if (ShouldSplit(next.Min, next.Max, radius, next.depth))
                 {
+                    if (next.depth == 2)
+                    {
+                        GC.KeepAlive(next);
+                    }
 
                     Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
                     PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
@@ -302,7 +306,7 @@ namespace MonoGameEngineCore.Procedural
                     NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, (se + mid1) / 2);
                     southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
                     southEast.side = next.side;
-                    PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step/2, next.side);
+                    PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(sePatchMinMax);
 
                     NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, (mid2 + nw) / 2);
@@ -323,7 +327,7 @@ namespace MonoGameEngineCore.Procedural
                     PatchMinMax nePatchMinMax = new PatchMinMax(midRight, midTop, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(nePatchMinMax);
 
-                    neighbourTracker.ReplaceNodeWithChildren(neighbourTracker.nodeDictionary[(next.Min + next.Max)/2],
+                    neighbourTracker.ReplaceNodeWithChildren(neighbourTracker.nodeDictionary[(next.Min + next.Max) / 2],
                         northWest, southWest, southEast, northEast);
 
 
@@ -436,8 +440,8 @@ namespace MonoGameEngineCore.Procedural
             {
                 node.Update();
 
-                if (node.depth <= 3)
-                    RenderConnections(node);
+                //if (maxDepth == node.depth)
+                RenderConnections(node);
 
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
@@ -457,8 +461,8 @@ namespace MonoGameEngineCore.Procedural
 
 
 
-            
-           
+
+
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
@@ -504,14 +508,14 @@ namespace MonoGameEngineCore.Procedural
                 if (trackerNode.quadrant == NeighbourTrackerNode.Quadrant.sw)
                     nodeQuadrantColor = Color.Yellow;
 
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(node.GetSurfaceMidPoint(), 200f), nodeQuadrantColor);
+                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(node.GetSurfaceMidPoint(), 100f / trackerNode.depth), nodeQuadrantColor);
             }
 
 
             foreach (NeighbourTracker.Connection conn in connections)
             {
                 DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(),
-                    Vector3.Transform(Vector3.Normalize(conn.node.keyPoint)*radius, Transform.WorldMatrix), Color.Blue);
+                    Vector3.Transform(Vector3.Normalize(conn.node.keyPoint) * radius, Transform.WorldMatrix), Color.Blue);
             }
         }
 
