@@ -462,11 +462,11 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
-                PlanetNode root = rootNodes[0];
+                PlanetNode root = rootNodes[i];
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
 
-            //CalculateConnectivity();
+            CalculateConnectivity();
 
             //removes nodes that have not had their flags refreshed by the LOD pass
             RemoveStaleNodes();
