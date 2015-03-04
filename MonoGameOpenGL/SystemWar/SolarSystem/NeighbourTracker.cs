@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace MonoGameEngineCore.Procedural
@@ -118,8 +119,30 @@ namespace MonoGameEngineCore.Procedural
             }
             if (northConnections.Count == 2)
             {
-                MakeConnection(nw, northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node, ConnectionDirection.north);
-                MakeConnection(ne, northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.north);
+                //connections on same side of cube
+                if (northConnections[0].node.side == nw.side)
+                {
+                    MakeConnection(nw,
+                        northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                        ConnectionDirection.north);
+                    MakeConnection(ne,
+                        northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                        ConnectionDirection.north);
+                }
+                else
+                {
+                    //left side connects to top's west edge.
+                    if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
+                    {
+                        MakeConnection(nw,
+                        northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                        ConnectionDirection.north);
+                        MakeConnection(ne,
+                            northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                            ConnectionDirection.north);
+                    }
+
+                }
             }
 
             if (southConnections.Count == 1)
@@ -136,13 +159,38 @@ namespace MonoGameEngineCore.Procedural
 
             if (westConnections.Count == 1)
             {
+
+
                 MakeConnection(sw, westConnections[0].node, ConnectionDirection.west);
                 MakeConnection(nw, westConnections[0].node, ConnectionDirection.west);
+
             }
             if (westConnections.Count == 2)
             {
-                MakeConnection(sw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.west);
-                MakeConnection(nw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.west);
+
+                if (westConnections[0].node.side == nw.side)
+                {
+
+                    MakeConnection(sw,
+                        westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                        ConnectionDirection.west);
+                    MakeConnection(nw,
+                        westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                        ConnectionDirection.west);
+                }
+                else
+                {
+                    //top connects on west to left's north
+                    if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+                    {
+                        MakeConnection(sw,
+                        westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                        ConnectionDirection.west);
+                        MakeConnection(nw,
+                            westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                            ConnectionDirection.west);
+                    }
+                }
             }
 
             if (eastConnections.Count == 1)
@@ -158,20 +206,6 @@ namespace MonoGameEngineCore.Procedural
 
             GC.KeepAlive(parentConnections);
             RemoveAllConnections(nodeToReplace);
-
-            //assert that nothing connects to this node anymore.
-            if(connections.ContainsKey(nodeToReplace))
-                throw new Exception("Node still in connections.");
-
-            foreach (KeyValuePair<NeighbourTrackerNode, List<Connection>> keyValuePair in connections)
-            {
-                foreach (Connection connection in keyValuePair.Value)
-                {
-                    if(connection.node == nodeToReplace)
-                        throw new Exception("Node still referenced in a connection");
-                }
-            }
-
 
         }
 

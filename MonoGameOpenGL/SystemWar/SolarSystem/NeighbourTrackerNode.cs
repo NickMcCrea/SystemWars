@@ -13,9 +13,21 @@ namespace MonoGameEngineCore.Procedural
             sw
         }
 
+        public enum CubeSide
+        {
+            none,
+            top,
+            bottom,
+            front,
+            back,
+            left,
+            right
+        }
+
         public int depth;
         public Vector3 keyPoint;
         public Quadrant quadrant;
+        public CubeSide side; 
 
 
         public NeighbourTrackerNode()
@@ -31,7 +43,7 @@ namespace MonoGameEngineCore.Procedural
 
         public override string ToString()
         {
-            return depth + " , " + keyPoint.ToString() + " , " + quadrant.ToString();
+            return depth + " , " + keyPoint.ToString() + " , " + quadrant.ToString() + " , " + side.ToString();
         }
     }
 }
