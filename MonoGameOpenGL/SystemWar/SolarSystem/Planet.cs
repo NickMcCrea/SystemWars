@@ -175,34 +175,34 @@ namespace MonoGameEngineCore.Procedural
 
 
             //top
-            //PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            //top.BuildGeometry();
-            //AddPatch(top);
-            //rootNodes.Add(top);
+            PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            top.BuildGeometry();
+            AddPatch(top);
+            rootNodes.Add(top);
 
-            //////bottom
-            //PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            //bottom.BuildGeometry();
-            //AddPatch(bottom);
-            //rootNodes.Add(bottom);
+            ////bottom
+            PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            bottom.BuildGeometry();
+            AddPatch(bottom);
+            rootNodes.Add(bottom);
 
             //forward
-            //PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            //forward.BuildGeometry();
-            //AddPatch(forward);
-            //rootNodes.Add(forward);
+            PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            forward.BuildGeometry();
+            AddPatch(forward);
+            rootNodes.Add(forward);
 
-            ////backward
-            //PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            //backward.BuildGeometry();
-            //AddPatch(backward);
-            //rootNodes.Add(backward);
+            //backward
+            PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            backward.BuildGeometry();
+            AddPatch(backward);
+            rootNodes.Add(backward);
 
             //right
-            //PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            //right.BuildGeometry();
-            //AddPatch(right);
-            //rootNodes.Add(right);
+            PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            right.BuildGeometry();
+            AddPatch(right);
+            rootNodes.Add(right);
 
             ////left
             PlanetNode left = new PlanetNode(testEffect, module, this, 1, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
@@ -211,15 +211,6 @@ namespace MonoGameEngineCore.Procedural
             rootNodes.Add(left);
 
             leftNode = new NeighbourTrackerNode(1, left.GetKeyPoint());
-
-
-
-
-
-
-
-
-
             //topNode = new NeighbourTrackerNode(1, top.GetKeyPoint());
             //bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint());
             //forwardNode = new NeighbourTrackerNode(1, forward.GetKeyPoint());
@@ -271,10 +262,8 @@ namespace MonoGameEngineCore.Procedural
         private void CalculateConnectivity()
         {
             // have to go through the tree in a breadth first fashion, building connectivity.
-
-
             Queue<PatchMinMax> nodesToCheck = new Queue<PatchMinMax>();
-            PlanetNode root = rootNodes[0];
+            PlanetNode root = rootNodes[5];
             nodesToCheck.Enqueue(new PatchMinMax(root.min,root.max, root.depth,root.normal,root.step));
 
 
@@ -383,7 +372,7 @@ namespace MonoGameEngineCore.Procedural
             return surfaceMidPoint.Length();
         }
 
-        private int depthToProcess = 1;
+
         public void Update(GameTime gameTime)
         {
             if (orbitEnabled)
@@ -477,28 +466,7 @@ namespace MonoGameEngineCore.Procedural
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
 
-            CalculateConnectivity();
-
-
-
-            if (neighbourTracker.nodeDictionary.ContainsKey(new Vector3(9.5f, -2.875f, -2.875f)))
-            {
-                NeighbourTrackerNode nodeOfInterest =
-                    neighbourTracker.nodeDictionary[new Vector3(9.5f, -2.875f, -2.875f)];
-
-                var connections = neighbourTracker.GetConnections(nodeOfInterest);
-                var connectionsTo = neighbourTracker.GetConnectionsTo(nodeOfInterest);
-
-                NeighbourTracker.Connection westConnection =
-                    connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.west);
-
-                DebugText.Write(nodeOfInterest.depth + " : " + nodeOfInterest.quadrant + " : " + nodeOfInterest.keyPoint);
-                DebugText.Write("Outgoing connections: " + connections.Count);
-                DebugText.Write("Incoming connections: " + connectionsTo.Count);
-                DebugText.Write("West connection: " + westConnection.node.ToString());
-
-
-            }
+            //CalculateConnectivity();
 
             //removes nodes that have not had their flags refreshed by the LOD pass
             RemoveStaleNodes();
