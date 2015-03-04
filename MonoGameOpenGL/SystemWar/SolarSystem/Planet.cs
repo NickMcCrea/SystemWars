@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Rendering;
@@ -28,250 +29,6 @@ namespace MonoGameEngineCore.Procedural
         }
     }
 
-
-    public class NeighbourTrackerNode
-    {
-        public enum Quadrant
-        {
-            none,
-            se,
-            nw,
-            ne,
-            sw
-        }
-
-        public int depth;
-        public Vector3 keyPoint;
-        public Quadrant quadrant;
-
-
-        public NeighbourTrackerNode()
-        {
-
-        }
-
-        public NeighbourTrackerNode(int depth, Vector3 keyPoint)
-        {
-            this.depth = depth;
-            this.keyPoint = keyPoint;
-        }
-    }
-
-    public class NeighbourTracker
-    {
-
-        public enum ConnectionDirection
-        {
-            north,
-            south,
-            east,
-            west,
-        }
-
-        public class Connection
-        {
-            public ConnectionDirection direction;
-            public NeighbourTrackerNode node;
-            public Connection(ConnectionDirection dir, NeighbourTrackerNode n)
-            {
-                node = n;
-                direction = dir;
-            }
-        }
-
-        public Dictionary<NeighbourTrackerNode, List<Connection>> connections;
-        public Dictionary<Vector3, NeighbourTrackerNode> nodeDictionary;
-
-        public NeighbourTracker()
-        {
-            connections = new Dictionary<NeighbourTrackerNode, List<Connection>>();
-            nodeDictionary = new Dictionary<Vector3, NeighbourTrackerNode>();
-        }
-
-        private ConnectionDirection GetOpposite(ConnectionDirection dir)
-        {
-            if (dir == ConnectionDirection.east)
-                return ConnectionDirection.west;
-            if (dir == ConnectionDirection.north)
-                return ConnectionDirection.south;
-            if (dir == ConnectionDirection.west)
-                return ConnectionDirection.east;
-            if (dir == ConnectionDirection.south)
-                return ConnectionDirection.north;
-
-
-            return ConnectionDirection.north;
-        }
-
-        public void ClearAllConnections()
-        {
-            connections.Clear();
-            nodeDictionary.Clear();
-        }
-
-        public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir)
-        {
-            if (!connections.ContainsKey(a))
-                connections.Add(a, new List<Connection>());
-
-            connections[a].Add(new Connection(dir, b));
-
-            if (!connections.ContainsKey(b))
-                connections.Add(b, new List<Connection>());
-
-            connections[b].Add(new Connection(GetOpposite(dir), a));
-
-            if (!nodeDictionary.ContainsKey(a.keyPoint))
-                nodeDictionary.Add(a.keyPoint, a);
-            if (!nodeDictionary.ContainsKey(b.keyPoint))
-                nodeDictionary.Add(b.keyPoint, b);
-
-        }
-
-        public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir, ConnectionDirection dir2)
-        {
-            if (!connections.ContainsKey(a))
-                connections.Add(a, new List<Connection>());
-
-            connections[a].Add(new Connection(dir, b));
-
-            if (!connections.ContainsKey(b))
-                connections.Add(b, new List<Connection>());
-
-            connections[b].Add(new Connection(dir2, a));
-
-            if (!nodeDictionary.ContainsKey(a.keyPoint))
-                nodeDictionary.Add(a.keyPoint, a);
-            if (!nodeDictionary.ContainsKey(b.keyPoint))
-                nodeDictionary.Add(b.keyPoint, b);
-
-        }
-
-        public void ReplaceNodeWithChildren(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, NeighbourTrackerNode se, NeighbourTrackerNode ne)
-        {
-            //children are connected to each other on two edges, and inherit the parent connections on the others
-            MakeConnection(nw, sw, ConnectionDirection.south);
-            MakeConnection(nw, ne, ConnectionDirection.east);
-            MakeConnection(sw, se, ConnectionDirection.east);
-            MakeConnection(se, ne, ConnectionDirection.north);
-
-            List<Connection> parentConnections = GetConnections(nodeToReplace);
-
-
-            var northConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.north);
-            var southConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.south);
-            var westConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.west);
-            var eastConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.east);
-
-
-            if (northConnections.Count == 1)
-            {
-                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north);
-                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north);
-            }
-            if (northConnections.Count == 2)
-            {
-                MakeConnection(nw, northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node, ConnectionDirection.north);
-                MakeConnection(ne, northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.north);
-            }
-
-            if (southConnections.Count == 1)
-            {
-                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
-                MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
-            }
-            if (southConnections.Count == 2)
-            {
-                MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
-                MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
-            }
-
-
-            if (westConnections.Count == 1)
-            {
-                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west);
-                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west);
-            }
-            if (westConnections.Count == 2)
-            {
-                MakeConnection(sw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node, ConnectionDirection.west);
-                MakeConnection(nw, westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.west);
-            }
-
-            if (eastConnections.Count == 1)
-            {
-                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east);
-                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east);
-            }
-            if (eastConnections.Count == 2)
-            {
-                MakeConnection(se, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node, ConnectionDirection.east);
-                MakeConnection(ne, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.east);
-            }
-
-            GC.KeepAlive(parentConnections);
-            RemoveAllConnections(nodeToReplace);
-
-        }
-
-        public void RemoveAllConnections(NeighbourTrackerNode nodeToReplace)
-        {
-            List<Connection> nodeConnections = GetConnections(nodeToReplace);
-
-            foreach (Connection conn in nodeConnections)
-            {
-                connections[conn.node].RemoveAll(x => x.node == nodeToReplace);
-            }
-
-            //List<Connection> consToRemove = new List<Connection>();
-            ////want to go through all connections featuring the node, and remove them.
-            //foreach (NeighbourTrackerNode n in connections.Keys)
-            //{
-            //    if (n == nodeToReplace)
-            //        continue;
-
-
-            //    foreach (Connection c in connections[n])
-            //    {
-            //        if (c.node == nodeToReplace)
-            //            consToRemove.Add(c);
-            //    }
-
-            //}
-
-            //foreach (NeighbourTrackerNode n in connections.Keys)
-            //{
-            //    foreach(Connection c in consToRemove)
-            //    {
-            //        if (connections[n].Contains(c))
-            //        {
-            //            connections[n].Remove(c);
-            //        }
-
-            //    }
-            //}
-
-            //consToRemove.Clear();
-            connections.Remove(nodeToReplace);
-            nodeDictionary.Remove(nodeToReplace.keyPoint);
-        }
-
-        public List<Connection> GetConnections(NeighbourTrackerNode node)
-        {
-            if (connections.ContainsKey(node))
-                return connections[node];
-            return new List<Connection>();
-        }
-
-        public List<Connection> GetConnections(PlanetNode node)
-        {
-            if (nodeDictionary.ContainsKey(node.GetKeyPoint()))
-                return GetConnections(nodeDictionary[node.GetKeyPoint()]);
-
-            return new List<Connection>();
-        }
-
-    }
 
     public class Planet : GameObject.GameObject, IUpdateable
     {
@@ -499,8 +256,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void CalculatePatchLOD(Vector3 normal, float step, int depth, Vector3 min, Vector3 max, NeighbourTrackerNode parent)
         {
-
-            //NeighbourTrackerNode node = neighbourTracker.connections
+            
 
             //recurse down through the tree. For each node on the way down, we decide if it should split or not.
             //if it should, calculate the split and move down. Remove the node if it's currently visible.
@@ -519,19 +275,13 @@ namespace MonoGameEngineCore.Procedural
                 NeighbourTrackerNode northEast = new NeighbourTrackerNode(depth + 1, (midRight + midTop) / 2);
                 northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
 
-                if (depth == 2 && parent.quadrant == NeighbourTrackerNode.Quadrant.sw)
-                {
-                    GC.KeepAlive(northEast);
-                }
-
                 neighbourTracker.ReplaceNodeWithChildren(parent, northWest, southWest, southEast, northEast);
 
+          
                 CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1, southEast);
                 CalculatePatchLOD(normal, step / 2, depth + 1, mid2, nw, northWest);
                 CalculatePatchLOD(normal, step / 2, depth + 1, midBottom, midLeft, southWest);
                 CalculatePatchLOD(normal, step / 2, depth + 1, midRight, midTop, northEast);
-
-
 
             }
             else
@@ -543,6 +293,7 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
+     
         private void AddNodeIfNotPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
         {
             //don't build if already under way.
@@ -577,6 +328,7 @@ namespace MonoGameEngineCore.Procedural
             return surfaceMidPoint.Length();
         }
 
+        private int depthToProcess = 1;
         public void Update(GameTime gameTime)
         {
             if (orbitEnabled)
@@ -666,17 +418,39 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
-                PlanetNode root = rootNodes[i];
-
+              
+                PlanetNode root = rootNodes[0];
                 NeighbourTrackerNode nodeTracker = null;
                 if (neighbourTracker.nodeDictionary.ContainsKey(root.GetKeyPoint()))
                     nodeTracker = neighbourTracker.nodeDictionary[root.GetKeyPoint()];
 
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max, nodeTracker);
+
+             
             }
 
+         
+
+         
+
+            if (neighbourTracker.nodeDictionary.ContainsKey(new Vector3(9.5f, -2.875f, -2.875f)))
+            {
+                NeighbourTrackerNode nodeOfInterest =
+                    neighbourTracker.nodeDictionary[new Vector3(9.5f, -2.875f, -2.875f)];
+
+                var connections = neighbourTracker.GetConnections(nodeOfInterest);
+                var connectionsTo = neighbourTracker.GetConnectionsTo(nodeOfInterest);
+
+                NeighbourTracker.Connection westConnection =
+                    connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.west);
+
+                DebugText.Write(nodeOfInterest.depth + " : " + nodeOfInterest.quadrant + " : " + nodeOfInterest.keyPoint);
+                DebugText.Write("Outgoing connections: " + connections.Count);
+                DebugText.Write("Incoming connections: " + connectionsTo.Count);
+                DebugText.Write("West connection: " + westConnection.node.ToString());
 
 
+            }
 
             //removes nodes that have not had their flags refreshed by the LOD pass
             RemoveStaleNodes();

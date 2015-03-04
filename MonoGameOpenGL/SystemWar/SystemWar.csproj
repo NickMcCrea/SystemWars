@@ -44,6 +44,8 @@
     <Compile Include="Screens\MainMenu.cs" />
     <Compile Include="Shapes\SystemWarShapes.cs" />
     <Compile Include="Ship.cs" />
+    <Compile Include="SolarSystem\NeighbourTracker.cs" />
+    <Compile Include="SolarSystem\NeighbourTrackerNode.cs" />
     <Compile Include="SolarSystem\Planet.cs" />
     <Compile Include="SolarSystem\PlanetBuilder.cs" />
     <Compile Include="SolarSystem\PlanetQuadTreeNode.cs" />
