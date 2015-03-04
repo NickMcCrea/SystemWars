@@ -21,11 +21,25 @@ namespace MonoGameEngineCore.Procedural
     {
         public Vector3 Min;
         public Vector3 Max;
+        public int depth;
+        public Vector3 normal;
+        public float step;
 
         public PatchMinMax(Vector3 min, Vector3 max)
         {
             Max = max;
             Min = min;
+            depth = 1;
+            normal = Vector3.Zero;
+            step = 1;
+        }
+        public PatchMinMax(Vector3 min, Vector3 max, int depth, Vector3 normal, float step)
+        {
+            Max = max;
+            Min = min;
+            this.depth = depth;
+            this.normal = normal;
+            this.step = step;
         }
     }
 
@@ -254,9 +268,62 @@ namespace MonoGameEngineCore.Procedural
             return false;
         }
 
-        private void CalculatePatchLOD(Vector3 normal, float step, int depth, Vector3 min, Vector3 max, NeighbourTrackerNode parent)
+        private void CalculateConnectivity()
         {
-            
+            // have to go through the tree in a breadth first fashion, building connectivity.
+
+
+            Queue<PatchMinMax> nodesToCheck = new Queue<PatchMinMax>();
+            PlanetNode root = rootNodes[0];
+            nodesToCheck.Enqueue(new PatchMinMax(root.min,root.max, root.depth,root.normal,root.step));
+
+
+            while (nodesToCheck.Count > 0)
+            {
+                PatchMinMax next = nodesToCheck.Dequeue();
+                if (ShouldSplit(next.Min, next.Max, radius, next.depth))
+                {
+
+                    Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
+                    PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
+
+                    //remove this node in the neighbour tracker, generate and connect children
+                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, (se + mid1) / 2);
+                    southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
+                    PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step/2);
+                    nodesToCheck.Enqueue(sePatchMinMax);
+
+                    NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, (mid2 + nw) / 2);
+                    northWest.quadrant = NeighbourTrackerNode.Quadrant.nw;
+                    PatchMinMax nwPatchMinMax = new PatchMinMax(mid2, nw, next.depth + 1, next.normal, next.step / 2);
+                    nodesToCheck.Enqueue(nwPatchMinMax);
+
+                    NeighbourTrackerNode southWest = new NeighbourTrackerNode(next.depth + 1, (midBottom + midLeft) / 2);
+                    southWest.quadrant = NeighbourTrackerNode.Quadrant.sw;
+                    PatchMinMax swPatchMinMax = new PatchMinMax(midBottom, midLeft, next.depth + 1, next.normal, next.step / 2);
+                    nodesToCheck.Enqueue(swPatchMinMax);
+
+                    NeighbourTrackerNode northEast = new NeighbourTrackerNode(next.depth + 1, (midRight + midTop) / 2);
+                    northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
+                    PatchMinMax nePatchMinMax = new PatchMinMax(midRight, midTop, next.depth + 1, next.normal, next.step / 2);
+                    nodesToCheck.Enqueue(nePatchMinMax);
+
+                    neighbourTracker.ReplaceNodeWithChildren(neighbourTracker.nodeDictionary[(next.Min + next.Max)/2],
+                        northWest, southWest, southEast, northEast);
+
+
+                }
+            }
+
+
+
+
+        }
+
+
+        private void CalculatePatchLOD(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
+        {
+
 
             //recurse down through the tree. For each node on the way down, we decide if it should split or not.
             //if it should, calculate the split and move down. Remove the node if it's currently visible.
@@ -265,23 +332,11 @@ namespace MonoGameEngineCore.Procedural
                 Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
                 PlanetNode.CalculatePatchBoundaries(normal, step, min, max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
-                //remove this node in the neighbour tracker, generate and connect children
-                NeighbourTrackerNode southEast = new NeighbourTrackerNode(depth + 1, (se + mid1) / 2);
-                southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
-                NeighbourTrackerNode northWest = new NeighbourTrackerNode(depth + 1, (mid2 + nw) / 2);
-                northWest.quadrant = NeighbourTrackerNode.Quadrant.nw;
-                NeighbourTrackerNode southWest = new NeighbourTrackerNode(depth + 1, (midBottom + midLeft) / 2);
-                southWest.quadrant = NeighbourTrackerNode.Quadrant.sw;
-                NeighbourTrackerNode northEast = new NeighbourTrackerNode(depth + 1, (midRight + midTop) / 2);
-                northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
 
-                neighbourTracker.ReplaceNodeWithChildren(parent, northWest, southWest, southEast, northEast);
-
-          
-                CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1, southEast);
-                CalculatePatchLOD(normal, step / 2, depth + 1, mid2, nw, northWest);
-                CalculatePatchLOD(normal, step / 2, depth + 1, midBottom, midLeft, southWest);
-                CalculatePatchLOD(normal, step / 2, depth + 1, midRight, midTop, northEast);
+                CalculatePatchLOD(normal, step / 2, depth + 1, se, mid1);
+                CalculatePatchLOD(normal, step / 2, depth + 1, mid2, nw);
+                CalculatePatchLOD(normal, step / 2, depth + 1, midBottom, midLeft);
+                CalculatePatchLOD(normal, step / 2, depth + 1, midRight, midTop);
 
             }
             else
@@ -293,7 +348,7 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
-     
+
         private void AddNodeIfNotPresent(Vector3 normal, float step, int depth, Vector3 min, Vector3 max)
         {
             //don't build if already under way.
@@ -418,20 +473,13 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < rootNodes.Count; i++)
             {
-              
                 PlanetNode root = rootNodes[0];
-                NeighbourTrackerNode nodeTracker = null;
-                if (neighbourTracker.nodeDictionary.ContainsKey(root.GetKeyPoint()))
-                    nodeTracker = neighbourTracker.nodeDictionary[root.GetKeyPoint()];
-
-                CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max, nodeTracker);
-
-             
+                CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
 
-         
+            CalculateConnectivity();
 
-         
+
 
             if (neighbourTracker.nodeDictionary.ContainsKey(new Vector3(9.5f, -2.875f, -2.875f)))
             {
@@ -469,6 +517,7 @@ namespace MonoGameEngineCore.Procedural
 
 
         }
+
 
         private void CalculateChildMovement(GameTime gameTime, GameObject.GameObject child, Vector3d planetCenter)
         {
