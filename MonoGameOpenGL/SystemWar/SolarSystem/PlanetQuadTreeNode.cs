@@ -141,26 +141,12 @@ namespace MonoGameEngineCore.Procedural
 
             ProceduralShape spherePatch = new ProceduralShape(vertices, indices);
 
-            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, false);
-            //spherePatch = AddSkirt(ref vertices, ref topEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref bottomEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref leftEdges, spherePatch, true);
-            //spherePatch = AddSkirt(ref vertices, ref rightEdges, spherePatch, true);
-
-
-
-
-
-
 
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            //meshCollider = new MeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
-            //AddComponent(meshCollider);
+            meshCollider = new MeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
+            AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)
                 this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
