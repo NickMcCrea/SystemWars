@@ -66,7 +66,7 @@ namespace MonoGameEngineCore.Procedural
         private static int planetIdList;
         public int BuildCountPerSecond;
         public int BuildTally;
-        public bool visualisePatches = false;
+        public bool visualisePatches = true;
         public int maxDepth = 8;
         private Planet orbitBody;
         private Vector3d positionToOrbit;
@@ -287,11 +287,6 @@ namespace MonoGameEngineCore.Procedural
                 PatchMinMax next = nodesToCheck.Dequeue();
                 if (ShouldSplit(next.Min, next.Max, radius, next.depth))
                 {
-                    if (next.depth == 2)
-                    {
-                        GC.KeepAlive(next);
-                    }
-
                     Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
                     PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
@@ -437,6 +432,7 @@ namespace MonoGameEngineCore.Procedural
                 //if (maxDepth == node.depth)
                 //RenderConnections(node);
 
+           
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
@@ -456,6 +452,7 @@ namespace MonoGameEngineCore.Procedural
 
 
 
+            CalculateConnectivity();
 
 
             for (int i = 0; i < rootNodes.Count; i++)
@@ -464,8 +461,7 @@ namespace MonoGameEngineCore.Procedural
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
 
-            CalculateConnectivity();
-
+          
             //removes nodes that have not had their flags refreshed by the LOD pass
             RemoveStaleNodes();
 
@@ -484,6 +480,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+      
         private void RenderConnections(PlanetNode node)
         {
             List<NeighbourTracker.Connection> connections = neighbourTracker.GetConnections(node);

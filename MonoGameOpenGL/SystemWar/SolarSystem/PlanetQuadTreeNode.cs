@@ -98,14 +98,14 @@ namespace MonoGameEngineCore.Procedural
                     vertices[vertIndex] = vert;
 
 
-                    if (i == 0)
-                        topEdges.Add(vertIndex);
+                    //if (i == 0)
+                    //    leftEdges.Add(vertIndex);
                     if (i == heightMapSize - 1)
-                        bottomEdges.Add(vertIndex);
-                    if (j == 0)
-                        leftEdges.Add(vertIndex);
-                    if (j == heightMapSize - 1)
-                        rightEdges.Add(vertIndex);
+                        topEdges.Add(vertIndex);
+                    //if (j == 0)
+                    //    topEdges.Add(vertIndex);
+                    //if (j == heightMapSize - 1)
+                    //    bottomEdges.Add(vertIndex);
 
 
 
@@ -128,17 +128,25 @@ namespace MonoGameEngineCore.Procedural
             List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
             if (connections != null)
             {
-                if (NeighbourIsLowerLod(connections, ref vertices, ref topEdges))
+                var northConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.north);
+                var southConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.south);
+                var westConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.west);
+                var eastConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.east);
+
+
+                if (northConn != null && northConn.node.depth <= depth)
                     adjustTop = true;
+                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref topEdges))
+                //    adjustTop = true;
 
-                if (NeighbourIsLowerLod(connections, ref vertices, ref bottomEdges))
-                    adjustBottom = true;
+                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref bottomEdges))
+                //    adjustBottom = true;
 
-                if (NeighbourIsLowerLod(connections, ref vertices, ref leftEdges))
-                    adjustLeft = true;
+                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref leftEdges))
+                //    adjustLeft = true;
 
-                if (NeighbourIsLowerLod(connections, ref vertices, ref rightEdges))
-                    adjustRight = true;
+                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref rightEdges))
+                //    adjustRight = true;
             }
 
             Sphereify(sphereSize, ref vertices);
@@ -153,7 +161,7 @@ namespace MonoGameEngineCore.Procedural
                 AdjustEdges(ref vertices, ref rightEdges);
 
 
-
+            ////should see no seams between LOD 8 + 7, but remain elsewhere.
             //if (depth == Planet.maxDepth)
             //{
             //    AdjustEdges(ref vertices, ref topEdges);
@@ -195,9 +203,10 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        private bool NeighbourIsLowerLod(List<NeighbourTracker.Connection> connections, ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges)
+        private bool NeighbourIsLowerOrSameLod(List<NeighbourTracker.Connection> connections, ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges)
         {
 
+           
             Vector3 cornerA = vertices[topEdges[0]].Position;
             Vector3 cornerB = vertices[topEdges[20]].Position;
 
@@ -208,7 +217,7 @@ namespace MonoGameEngineCore.Procedural
                 if (SharesTwoCorners(cornerA, cornerB, connection.node.min, connection.node.max, connection.node.normal,
                     connection.node.step))
                 {
-                    return connection.node.depth < depth;
+                    return connection.node.depth <= depth;
                 }
 
 
@@ -219,11 +228,11 @@ namespace MonoGameEngineCore.Procedural
         }
 
         //Determines whether an edge is shared by a neighbouring patch.
-        private bool SharesTwoCorners(Vector3 cornerA, Vector3 cornerB, Vector3 min, Vector3 max, Vector3 normal, float step)
+        private bool SharesTwoCorners(Vector3 cornerA, Vector3 cornerB, Vector3 thisMin, Vector3 thisMax, Vector3 thisNormal, float thisStep)
         {
             //calculate info about this neighbour patch.
             Vector3 se1, sw1, mid11, mid21, nw1, ne1, midBottom1, midRight1, midLeft1, midTop1;
-            CalculatePatchBoundaries(normal, step, min, max, out se1, out sw1, out mid11, out mid21, out nw1, out ne1, out midBottom1, out midRight1, out midLeft1, out midTop1);
+            CalculatePatchBoundaries(thisNormal, thisStep, thisMin, thisMax, out se1, out sw1, out mid11, out mid21, out nw1, out ne1, out midBottom1, out midRight1, out midLeft1, out midTop1);
 
             List<Vector3> first = new List<Vector3>();
             first.Add(cornerA);
@@ -459,7 +468,27 @@ namespace MonoGameEngineCore.Procedural
 
                 if (Planet.visualisePatches)
                 {
-                    vertices[i].Color = randomColor;
+                    Color col = Color.White;
+
+                    if (depth == 1)
+                        col = Color.White;
+                    if (depth == 2)
+                        col = Color.Blue;
+                    if (depth == 3)
+                        col = Color.Green;
+                    if (depth == 4)
+                        col = Color.Red;
+                    if (depth == 5)
+                        col = Color.Pink;
+                    if (depth == 6)
+                        col = Color.Yellow;
+                    if (depth == 7)
+                        col = Color.Orange;
+                    if (depth == 8)
+                        col = Color.Purple;
+
+
+                    vertices[i].Color = col;
                 }
 
             }

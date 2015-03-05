@@ -311,9 +311,9 @@ namespace MonoGameEngineCore.Procedural
             lock (connectionBuffer)
             {
                 connectionBuffer.Clear();
-                foreach (KeyValuePair<NeighbourTrackerNode, List<Connection>> keyValuePair in connectionBuffer)
+                foreach (KeyValuePair<NeighbourTrackerNode, List<Connection>> keyValuePair in connections)
                 {
-                    connections.Add(keyValuePair.Key, new List<Connection>(keyValuePair.Value));
+                    connectionBuffer.Add(keyValuePair.Key, new List<Connection>(keyValuePair.Value));
                 }
             }
 
@@ -332,18 +332,21 @@ namespace MonoGameEngineCore.Procedural
 
         public List<Connection> GetConnectionsFromOtherThread(PlanetNode node)
         {
-            lock (connections)
+            lock (connectionBuffer)
             {
+                lock (nodeDictionaryBuffer)
+                {
+                    if (!nodeDictionaryBuffer.ContainsKey(node.GetKeyPoint()))
+                        return null;
 
-                if (!nodeDictionaryBuffer.ContainsKey(node.GetKeyPoint()))
-                    return null;
+                    var key = nodeDictionaryBuffer[node.GetKeyPoint()];
 
-                var key = nodeDictionaryBuffer[node.GetKeyPoint()];
 
-                if (!connections.ContainsKey(key))
-                    return null;
+                    if (!connectionBuffer.ContainsKey(key))
+                        return null;
 
-                return connections[key];
+                    return connectionBuffer[key];
+                }
             }
         }
     }
