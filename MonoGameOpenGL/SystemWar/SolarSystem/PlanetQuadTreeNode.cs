@@ -99,7 +99,7 @@ namespace MonoGameEngineCore.Procedural
 
 
                     //if (i == 0)
-                    //    leftEdges.Add(vertIndex);
+                    //    bottomEdges.Add(vertIndex);
                     if (i == heightMapSize - 1)
                         topEdges.Add(vertIndex);
                     //if (j == 0)
@@ -134,8 +134,15 @@ namespace MonoGameEngineCore.Procedural
                 var eastConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.east);
 
 
-                if (northConn != null && northConn.node.depth <= depth)
-                    adjustTop = true;
+                if (northConn != null)
+                    if (northConn.node.depth < depth)
+                        adjustTop = true;
+                //if (southConn != null && southConn.node.depth <= depth)
+                //    adjustBottom = true;
+                //if (westConn != null && westConn.node.depth <= depth)
+                //    adjustLeft = true;
+                //if (eastConn != null && southConn.node.depth <= depth)
+                //    adjustRight = true;
                 //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref topEdges))
                 //    adjustTop = true;
 
@@ -155,10 +162,10 @@ namespace MonoGameEngineCore.Procedural
                 AdjustEdges(ref vertices, ref topEdges);
             if (adjustBottom)
                 AdjustEdges(ref vertices, ref bottomEdges);
-            if (adjustLeft)
-                AdjustEdges(ref vertices, ref leftEdges);
-            if (adjustRight)
-                AdjustEdges(ref vertices, ref rightEdges);
+            //if (adjustLeft)
+            //    AdjustEdges(ref vertices, ref leftEdges);
+            //if (adjustRight)
+            //    AdjustEdges(ref vertices, ref rightEdges);
 
 
             ////should see no seams between LOD 8 + 7, but remain elsewhere.
