@@ -98,10 +98,10 @@ namespace MonoGameEngineCore.Procedural
                     vertices[vertIndex] = vert;
 
 
-                    //if (i == 0)
-                    //    bottomEdges.Add(vertIndex);
-                    //if (i == heightMapSize - 1)
-                    //    topEdges.Add(vertIndex);
+                    if (i == 0)
+                        rightEdges.Add(vertIndex);
+                    if (i == heightMapSize - 1)
+                        leftEdges.Add(vertIndex);
                     if (j == 0)
                         bottomEdges.Add(vertIndex);
                     if (j == heightMapSize - 1)
@@ -124,8 +124,10 @@ namespace MonoGameEngineCore.Procedural
             bool adjustBottom = false;
             bool adjustLeft = false;
             bool adjustRight = false;
+            
 
             List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
+       
             if (connections != null)
             {
                 var northConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.north);
@@ -133,39 +135,44 @@ namespace MonoGameEngineCore.Procedural
                 var westConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.west);
                 var eastConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.east);
 
+                Sphereify(sphereSize, ref vertices);
 
                 if (northConn != null)
-                    if (northConn.node.depth < depth)
-                        adjustTop = true;
-                //if (southConn != null && southConn.node.depth <= depth)
-                //    adjustBottom = true;
-                //if (westConn != null && westConn.node.depth <= depth)
-                //    adjustLeft = true;
-                //if (eastConn != null && southConn.node.depth <= depth)
-                //    adjustRight = true;
-                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref topEdges))
-                //    adjustTop = true;
-
-                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref bottomEdges))
-                //    adjustBottom = true;
-
-                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref leftEdges))
-                //    adjustLeft = true;
-
-                //if (NeighbourIsLowerOrSameLod(connections, ref vertices, ref rightEdges))
-                //    adjustRight = true;
+                {
+                    if (northConn.node.depth <= depth)
+                    {
+                        AdjustEdges(ref vertices, ref topEdges);
+                    }
+                }
+                if (southConn != null)
+                {
+                    if (southConn.node.depth <= depth)
+                    {
+                        AdjustEdges(ref vertices, ref bottomEdges);
+                    }
+                }
+                if (westConn != null)
+                {
+                    if (westConn.node.depth <= depth)
+                    {
+                        AdjustEdges(ref vertices, ref leftEdges);
+                    }
+                }
+                if (eastConn != null)
+                {
+                    if (eastConn.node.depth <= depth)
+                    {
+                        AdjustEdges(ref vertices, ref rightEdges);
+                    }
+                }
+               
             }
+            else
+                Sphereify(sphereSize, ref vertices);
 
-            Sphereify(sphereSize, ref vertices);
 
-            if (adjustTop)
-                AdjustEdges(ref vertices, ref topEdges);
-            //if (adjustBottom)
-            //    AdjustEdges(ref vertices, ref bottomEdges);
-            //if (adjustLeft)
-            //    AdjustEdges(ref vertices, ref leftEdges);
-            //if (adjustRight)
-            //    AdjustEdges(ref vertices, ref rightEdges);
+           
+            
 
 
             ////should see no seams between LOD 8 + 7, but remain elsewhere.
