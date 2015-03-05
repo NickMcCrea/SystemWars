@@ -29,11 +29,15 @@ namespace MonoGameEngineCore.Procedural
 
         public Dictionary<NeighbourTrackerNode, List<Connection>> connections;
         public Dictionary<Vector3, NeighbourTrackerNode> nodeDictionary;
+        private Dictionary<Vector3, NeighbourTrackerNode> nodeDictionaryBuffer;
+        private Dictionary<NeighbourTrackerNode, List<Connection>> connectionBuffer;
 
         public NeighbourTracker()
         {
             connections = new Dictionary<NeighbourTrackerNode, List<Connection>>();
             nodeDictionary = new Dictionary<Vector3, NeighbourTrackerNode>();
+            nodeDictionaryBuffer = new Dictionary<Vector3, NeighbourTrackerNode>();
+            connectionBuffer = new Dictionary<NeighbourTrackerNode, List<Connection>>();
         }
 
         private ConnectionDirection GetOpposite(ConnectionDirection dir)
@@ -296,5 +300,51 @@ namespace MonoGameEngineCore.Procedural
             return connectionsTo;
         }
 
+        internal void CopyConnectionDataToThreadSafeBuffer()
+        {
+            if(connections == null)
+                return;
+            
+
+            //we've finished generating connectivity of the quadtrees, now copy data to a buffer that can 
+            //be accessed safely from other threads.
+            lock (connectionBuffer)
+            {
+                connectionBuffer.Clear();
+                foreach (KeyValuePair<NeighbourTrackerNode, List<Connection>> keyValuePair in connectionBuffer)
+                {
+                    connections.Add(keyValuePair.Key, new List<Connection>(keyValuePair.Value));
+                }
+            }
+
+            lock (nodeDictionaryBuffer)
+            {
+                nodeDictionaryBuffer.Clear();
+                foreach (KeyValuePair<Vector3, NeighbourTrackerNode> keyValuePair in nodeDictionary)
+                {
+                    nodeDictionaryBuffer.Add(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+
+
+
+        }
+
+        public List<Connection> GetConnectionsFromOtherThread(PlanetNode node)
+        {
+            lock (connections)
+            {
+
+                if (!nodeDictionaryBuffer.ContainsKey(node.GetKeyPoint()))
+                    return null;
+
+                var key = nodeDictionaryBuffer[node.GetKeyPoint()];
+
+                if (!connections.ContainsKey(key))
+                    return null;
+
+                return connections[key];
+            }
+        }
     }
 }

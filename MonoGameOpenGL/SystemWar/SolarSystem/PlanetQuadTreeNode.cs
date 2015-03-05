@@ -100,11 +100,11 @@ namespace MonoGameEngineCore.Procedural
 
                     if (i == 0)
                         topEdges.Add(vertIndex);
-                    else if (i == heightMapSize - 1)
+                    if (i == heightMapSize - 1)
                         bottomEdges.Add(vertIndex);
-                    else if (j == 0)
+                    if (j == 0)
                         leftEdges.Add(vertIndex);
-                    else if (j == heightMapSize - 1)
+                    if (j == heightMapSize - 1)
                         rightEdges.Add(vertIndex);
 
 
@@ -120,17 +120,47 @@ namespace MonoGameEngineCore.Procedural
             if (normal == Vector3.Up || normal == Vector3.Forward || normal == Vector3.Left)
                 indices = indices.Reverse().ToArray();
 
+            bool adjustTop = false;
+            bool adjustBottom = false;
+            bool adjustLeft = false;
+            bool adjustRight = false;
 
+            List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
+            if (connections != null)
+            {
+                if (NeighbourIsLowerLod(connections, ref vertices, ref topEdges))
+                    adjustTop = true;
+
+                if (NeighbourIsLowerLod(connections, ref vertices, ref bottomEdges))
+                    adjustBottom = true;
+
+                if (NeighbourIsLowerLod(connections, ref vertices, ref leftEdges))
+                    adjustLeft = true;
+
+                if (NeighbourIsLowerLod(connections, ref vertices, ref rightEdges))
+                    adjustRight = true;
+            }
 
             Sphereify(sphereSize, ref vertices);
 
-            if (depth == Planet.maxDepth)
-            {
+            if (adjustTop)
                 AdjustEdges(ref vertices, ref topEdges);
+            if (adjustBottom)
                 AdjustEdges(ref vertices, ref bottomEdges);
+            if (adjustLeft)
                 AdjustEdges(ref vertices, ref leftEdges);
+            if (adjustRight)
                 AdjustEdges(ref vertices, ref rightEdges);
-            }
+
+
+
+            //if (depth == Planet.maxDepth)
+            //{
+            //    AdjustEdges(ref vertices, ref topEdges);
+            //    AdjustEdges(ref vertices, ref bottomEdges);
+            //    AdjustEdges(ref vertices, ref leftEdges);
+            //    AdjustEdges(ref vertices, ref rightEdges);
+            //}
 
 
             GenerateNormals(ref vertices, ref indices);
@@ -165,6 +195,71 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+        private bool NeighbourIsLowerLod(List<NeighbourTracker.Connection> connections, ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges)
+        {
+
+            Vector3 cornerA = vertices[topEdges[0]].Position;
+            Vector3 cornerB = vertices[topEdges[20]].Position;
+
+            foreach (NeighbourTracker.Connection connection in connections)
+            {
+
+                //if we share two corners, this is our adjoining patch.
+                if (SharesTwoCorners(cornerA, cornerB, connection.node.min, connection.node.max, connection.node.normal,
+                    connection.node.step))
+                {
+                    return connection.node.depth < depth;
+                }
+
+
+            }
+
+            return false;
+
+        }
+
+        //Determines whether an edge is shared by a neighbouring patch.
+        private bool SharesTwoCorners(Vector3 cornerA, Vector3 cornerB, Vector3 min, Vector3 max, Vector3 normal, float step)
+        {
+            //calculate info about this neighbour patch.
+            Vector3 se1, sw1, mid11, mid21, nw1, ne1, midBottom1, midRight1, midLeft1, midTop1;
+            CalculatePatchBoundaries(normal, step, min, max, out se1, out sw1, out mid11, out mid21, out nw1, out ne1, out midBottom1, out midRight1, out midLeft1, out midTop1);
+
+            List<Vector3> first = new List<Vector3>();
+            first.Add(cornerA);
+            first.Add(cornerB);
+
+            List<Vector3> second = new List<Vector3>();
+            second.Add(se1);
+            second.Add(sw1);
+            second.Add(nw1);
+            second.Add(ne1);
+            second.Add(midBottom1);
+            second.Add(midRight1);
+            second.Add(midLeft1);
+            second.Add(midTop1);
+           
+
+            int match = 0;
+            foreach (Vector3 corner in first)
+            {
+                foreach (Vector3 neighbourVec in second)
+                {
+                    if (MonoMathHelper.Vector3ComponentAlmostEquals(corner,neighbourVec,step/2))
+                        match++;
+                }
+            }
+            if (match == 2)
+                return true;
+            return false;
+
+        }
+
+        private Vector3 VecTransform(Vector3 min)
+        {
+            return Vector3.Normalize(min) * sphereSize;
+        }
+
         private ProceduralShape AddSkirt(ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges, ProceduralShape spherePatch, bool insideOut)
         {
             ProceduralShapeBuilder builder = new ProceduralShapeBuilder();
@@ -185,7 +280,7 @@ namespace MonoGameEngineCore.Procedural
                 point2 += toCenter2 * offset;
                 lowPoint2 += toCenter2 * offset;
 
-                builder.AddFaceWithColor( vertices[topEdges[i]].Color, point, point2,
+                builder.AddFaceWithColor(vertices[topEdges[i]].Color, point, point2,
                     lowPoint2, lowPoint);
             }
 
@@ -349,9 +444,8 @@ namespace MonoGameEngineCore.Procedural
             for (int i = 0; i < vertices.Length; i++)
             {
                 vertices[i].Position = (Vector3.Normalize(vertices[i].Position)) * radius;
+
                 double height = module.GetValue(vertices[i].Position.X, vertices[i].Position.Y, vertices[i].Position.Z);
-
-
                 vertices[i].Position += (Vector3.Normalize(vertices[i].Position) * ((float)height));
 
 

@@ -24,7 +24,7 @@ namespace MonoGameEngineCore.Procedural
         }
 
         private static volatile bool quit = false;
-        private static int numThreads = 3;
+        private static int numThreads = 1;
 
         static PlanetBuilder()
         {

@@ -51,12 +51,10 @@ namespace MonoGameEngineCore.Procedural
     public class Planet : GameObject.GameObject, IUpdateable
     {
         private NeighbourTracker neighbourTracker;
-
         private readonly IModule module;
         private readonly Effect testEffect;
         public readonly float radius;
         private float splitDistance;
-        private float mergeDistance;
         public Matrix customProjection;
         public Dictionary<Vector3, PlanetNode> activePatches;
         private List<PlanetNode> rootNodes;
@@ -68,10 +66,8 @@ namespace MonoGameEngineCore.Procedural
         private static int planetIdList;
         public int BuildCountPerSecond;
         public int BuildTally;
-        private TimeSpan lastClearTime;
-        public bool visualisePatches = true;
+        public bool visualisePatches = false;
         public int maxDepth = 8;
-
         private Planet orbitBody;
         private Vector3d positionToOrbit;
         private float orbitSpeed;
@@ -80,10 +76,8 @@ namespace MonoGameEngineCore.Procedural
         public float orbitAngle;
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
-
         public Atmosphere atmosphere;
         private GroundScatteringHelper atmosphericScatteringHelper;
-        private SpaceScatteringHelper spaceScatteringHelper;
         public HighPrecisionPosition Position { get; private set; }
         public int DrawOrder { get; set; }
 
@@ -105,8 +99,7 @@ namespace MonoGameEngineCore.Procedural
             Transform.SetPosition(position);
 
             splitDistance = radius * 4;
-            mergeDistance = radius * 4.5f;
-
+         
             customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, this.radius * 10);
 
@@ -214,10 +207,10 @@ namespace MonoGameEngineCore.Procedural
             AddPatch(left);
             rootNodes.Add(left);
 
-            leftNode = new NeighbourTrackerNode(1, left.min, left.max, vectorSpacing);
+            leftNode = new NeighbourTrackerNode(1, left.min, left.max, vectorSpacing, Vector3.Left);
             leftNode.side = NeighbourTrackerNode.CubeSide.left;
 
-            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing);
+            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
             topNode.side = NeighbourTrackerNode.CubeSide.top;
 
             //bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint());
@@ -303,26 +296,26 @@ namespace MonoGameEngineCore.Procedural
                     PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
                     //remove this node in the neighbour tracker, generate and connect children
-                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, se, mid1, next.step/2);
+                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, se, mid1, next.step/2, next.normal);
                     southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
                     southEast.side = next.side;
                     PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(sePatchMinMax);
 
-                    NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, mid2, nw, next.step/2);
+                    NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, mid2, nw, next.step / 2, next.normal);
                     northWest.quadrant = NeighbourTrackerNode.Quadrant.nw;
                     northWest.side = next.side;
                     PatchMinMax nwPatchMinMax = new PatchMinMax(mid2, nw, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(nwPatchMinMax);
 
                     NeighbourTrackerNode southWest = new NeighbourTrackerNode(next.depth + 1, midBottom, midLeft,
-                        next.step/2);
+                        next.step / 2, next.normal);
                     southWest.quadrant = NeighbourTrackerNode.Quadrant.sw;
                     southWest.side = next.side;
                     PatchMinMax swPatchMinMax = new PatchMinMax(midBottom, midLeft, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(swPatchMinMax);
 
-                    NeighbourTrackerNode northEast = new NeighbourTrackerNode(next.depth + 1, midRight,midTop,next.step/2);
+                    NeighbourTrackerNode northEast = new NeighbourTrackerNode(next.depth + 1, midRight, midTop, next.step / 2, next.normal);
                     northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
                     northEast.side = next.side;
                     PatchMinMax nePatchMinMax = new PatchMinMax(midRight, midTop, next.depth + 1, next.normal, next.step / 2, next.side);
@@ -336,7 +329,7 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-
+            neighbourTracker.CopyConnectionDataToThreadSafeBuffer();
 
         }
 
@@ -442,7 +435,7 @@ namespace MonoGameEngineCore.Procedural
                 node.Update();
 
                 //if (maxDepth == node.depth)
-                RenderConnections(node);
+                //RenderConnections(node);
 
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
@@ -677,6 +670,11 @@ namespace MonoGameEngineCore.Procedural
             return closest;
 
         }
+
+        public List<NeighbourTracker.Connection> GetNeighbours(PlanetNode node)
+        {
+            return neighbourTracker.GetConnectionsFromOtherThread(node);
+        } 
     }
 
 

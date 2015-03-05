@@ -238,6 +238,17 @@ namespace MonoGameEngineCore.Helper
             return (vec1 - vec2).Length() <= permissableDistance;
         }
 
+        public static bool Vector3ComponentAlmostEquals(Vector3 vec1, Vector3 vec2, float permissableDifference)
+        {
+            if(AlmostEquals(vec1.X,vec2.X,permissableDifference))
+                 if(AlmostEquals(vec1.Y,vec2.Y,permissableDifference))
+                     if (AlmostEquals(vec1.Z, vec2.Z, permissableDifference))
+                         return true;
+
+
+            return false;
+        }
+
         public static Vector3 DistanceFromPointToLineSegment(Vector3 a, Vector3 b, Vector3 point)
         {
             Vector3 c = point - a;

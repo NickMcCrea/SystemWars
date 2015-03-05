@@ -27,23 +27,20 @@ namespace MonoGameEngineCore.Procedural
         public Vector3 keyPoint;
         public Quadrant quadrant;
         public CubeSide side;
-        private float step;
-        private Vector3 max;
-        private Vector3 min;
+        public float step;
+        public Vector3 max;
+        public Vector3 min;
+        public Vector3 normal;
 
 
-        public NeighbourTrackerNode()
-        {
-
-        }
-
-        public NeighbourTrackerNode(int depth, Vector3 min, Vector3 max, float step)
+        public NeighbourTrackerNode(int depth, Vector3 min, Vector3 max, float step, Vector3 normal)
         {
             this.depth = depth;
             this.keyPoint = (min + max)/2;
             this.min = min;
             this.max = max;
             this.step = step;
+            this.normal = normal;
         }
 
         public override string ToString()
