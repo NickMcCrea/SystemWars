@@ -100,12 +100,12 @@ namespace MonoGameEngineCore.Procedural
 
                     //if (i == 0)
                     //    bottomEdges.Add(vertIndex);
-                    if (i == heightMapSize - 1)
-                        topEdges.Add(vertIndex);
-                    //if (j == 0)
+                    //if (i == heightMapSize - 1)
                     //    topEdges.Add(vertIndex);
-                    //if (j == heightMapSize - 1)
-                    //    bottomEdges.Add(vertIndex);
+                    if (j == 0)
+                        bottomEdges.Add(vertIndex);
+                    if (j == heightMapSize - 1)
+                        topEdges.Add(vertIndex);
 
 
 
@@ -160,8 +160,8 @@ namespace MonoGameEngineCore.Procedural
 
             if (adjustTop)
                 AdjustEdges(ref vertices, ref topEdges);
-            if (adjustBottom)
-                AdjustEdges(ref vertices, ref bottomEdges);
+            //if (adjustBottom)
+            //    AdjustEdges(ref vertices, ref bottomEdges);
             //if (adjustLeft)
             //    AdjustEdges(ref vertices, ref leftEdges);
             //if (adjustRight)
@@ -213,7 +213,7 @@ namespace MonoGameEngineCore.Procedural
         private bool NeighbourIsLowerOrSameLod(List<NeighbourTracker.Connection> connections, ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges)
         {
 
-           
+
             Vector3 cornerA = vertices[topEdges[0]].Position;
             Vector3 cornerB = vertices[topEdges[20]].Position;
 
@@ -254,14 +254,14 @@ namespace MonoGameEngineCore.Procedural
             second.Add(midRight1);
             second.Add(midLeft1);
             second.Add(midTop1);
-           
+
 
             int match = 0;
             foreach (Vector3 corner in first)
             {
                 foreach (Vector3 neighbourVec in second)
                 {
-                    if (MonoMathHelper.Vector3ComponentAlmostEquals(corner,neighbourVec,step/2))
+                    if (MonoMathHelper.Vector3ComponentAlmostEquals(corner, neighbourVec, step / 2))
                         match++;
                 }
             }
