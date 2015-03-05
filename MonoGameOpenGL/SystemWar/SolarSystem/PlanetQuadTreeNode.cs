@@ -124,11 +124,11 @@ namespace MonoGameEngineCore.Procedural
             bool adjustBottom = false;
             bool adjustLeft = false;
             bool adjustRight = false;
-            
+
 
             List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
-       
-            if (connections != null)
+
+            if (connections != null && depth != Planet.maxDepth)
             {
                 var northConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.north);
                 var southConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.south);
@@ -139,40 +139,52 @@ namespace MonoGameEngineCore.Procedural
 
                 if (northConn != null)
                 {
-                    if (northConn.node.depth <= depth)
+                    if (northConn.node.depth < depth)
                     {
                         AdjustEdges(ref vertices, ref topEdges);
                     }
                 }
                 if (southConn != null)
                 {
-                    if (southConn.node.depth <= depth)
+                    if (southConn.node.depth < depth)
                     {
                         AdjustEdges(ref vertices, ref bottomEdges);
                     }
                 }
                 if (westConn != null)
                 {
-                    if (westConn.node.depth <= depth)
+                    if (westConn.node.depth < depth)
                     {
                         AdjustEdges(ref vertices, ref leftEdges);
                     }
                 }
                 if (eastConn != null)
                 {
-                    if (eastConn.node.depth <= depth)
+                    if (eastConn.node.depth < depth)
                     {
                         AdjustEdges(ref vertices, ref rightEdges);
                     }
                 }
-               
+
+            }
+            else if (depth == Planet.maxDepth)
+            {
+                Sphereify(sphereSize, ref vertices);
+                AdjustEdges(ref vertices, ref topEdges);
+                AdjustEdges(ref vertices, ref rightEdges);
+                AdjustEdges(ref vertices, ref bottomEdges);
+                AdjustEdges(ref vertices, ref leftEdges);
             }
             else
+            {
                 Sphereify(sphereSize, ref vertices);
+            }
 
-
-           
             
+
+
+
+
 
 
             ////should see no seams between LOD 8 + 7, but remain elsewhere.
