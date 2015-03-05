@@ -12,7 +12,6 @@ namespace MonoGameEngineCore.Procedural
             ne,
             sw
         }
-
         public enum CubeSide
         {
             none,
@@ -27,7 +26,10 @@ namespace MonoGameEngineCore.Procedural
         public int depth;
         public Vector3 keyPoint;
         public Quadrant quadrant;
-        public CubeSide side; 
+        public CubeSide side;
+        private float step;
+        private Vector3 max;
+        private Vector3 min;
 
 
         public NeighbourTrackerNode()
@@ -35,10 +37,13 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        public NeighbourTrackerNode(int depth, Vector3 keyPoint)
+        public NeighbourTrackerNode(int depth, Vector3 min, Vector3 max, float step)
         {
             this.depth = depth;
-            this.keyPoint = keyPoint;
+            this.keyPoint = (min + max)/2;
+            this.min = min;
+            this.max = max;
+            this.step = step;
         }
 
         public override string ToString()

@@ -214,10 +214,10 @@ namespace MonoGameEngineCore.Procedural
             AddPatch(left);
             rootNodes.Add(left);
 
-            leftNode = new NeighbourTrackerNode(1, left.GetKeyPoint());
+            leftNode = new NeighbourTrackerNode(1, left.min, left.max, vectorSpacing);
             leftNode.side = NeighbourTrackerNode.CubeSide.left;
 
-            topNode = new NeighbourTrackerNode(1, top.GetKeyPoint());
+            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing);
             topNode.side = NeighbourTrackerNode.CubeSide.top;
 
             //bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint());
@@ -303,25 +303,26 @@ namespace MonoGameEngineCore.Procedural
                     PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
                     //remove this node in the neighbour tracker, generate and connect children
-                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, (se + mid1) / 2);
+                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, se, mid1, next.step/2);
                     southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
                     southEast.side = next.side;
                     PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(sePatchMinMax);
 
-                    NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, (mid2 + nw) / 2);
+                    NeighbourTrackerNode northWest = new NeighbourTrackerNode(next.depth + 1, mid2, nw, next.step/2);
                     northWest.quadrant = NeighbourTrackerNode.Quadrant.nw;
                     northWest.side = next.side;
                     PatchMinMax nwPatchMinMax = new PatchMinMax(mid2, nw, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(nwPatchMinMax);
 
-                    NeighbourTrackerNode southWest = new NeighbourTrackerNode(next.depth + 1, (midBottom + midLeft) / 2);
+                    NeighbourTrackerNode southWest = new NeighbourTrackerNode(next.depth + 1, midBottom, midLeft,
+                        next.step/2);
                     southWest.quadrant = NeighbourTrackerNode.Quadrant.sw;
                     southWest.side = next.side;
                     PatchMinMax swPatchMinMax = new PatchMinMax(midBottom, midLeft, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(swPatchMinMax);
 
-                    NeighbourTrackerNode northEast = new NeighbourTrackerNode(next.depth + 1, (midRight + midTop) / 2);
+                    NeighbourTrackerNode northEast = new NeighbourTrackerNode(next.depth + 1, midRight,midTop,next.step/2);
                     northEast.quadrant = NeighbourTrackerNode.Quadrant.ne;
                     northEast.side = next.side;
                     PatchMinMax nePatchMinMax = new PatchMinMax(midRight, midTop, next.depth + 1, next.normal, next.step / 2, next.side);
