@@ -40,6 +40,7 @@ namespace MonoGameEngineCore.Procedural
         public EffectRenderComponent renderComponent;
         public MeshColliderComponent meshCollider;
         private bool visualiseEdgeAdjustments = true;
+        private bool visualisePatches = true;
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -214,7 +215,7 @@ namespace MonoGameEngineCore.Procedural
                 }
                 if (connectType.lodJump == 2)
                 {
-                    AdjustEdgesUpTwoLODs(ref vertices, ref edges, Color.DeepSkyBlue);
+                    AdjustEdgesUpTwoLODs(ref vertices, ref edges, Color.White);
                     Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
                     return;
                 }
@@ -540,7 +541,7 @@ namespace MonoGameEngineCore.Procedural
                 if (length > radius + 5)
                     vertices[i].Color = Planet.MountainColor;
 
-                if (Planet.visualisePatches)
+                if (visualisePatches)
                 {
                     Color col = Color.White;
 
