@@ -11,7 +11,7 @@ namespace MonoGameEngineCore.Procedural
     {
         private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
         private static Dictionary<string, ConcurrentQueue<PlanetNode>> finishedNodes;
-
+        public static bool ThreadEnabled = false;
         public static int GetQueueSize()
         {
             return nodesAwaitingBuilding.Count;
@@ -31,12 +31,15 @@ namespace MonoGameEngineCore.Procedural
             nodesAwaitingBuilding = new ConcurrentQueue<PlanetNode>();
             finishedNodes = new Dictionary<string, ConcurrentQueue<PlanetNode>>();
 
-            for (int i = 0; i < numThreads; i++)
+            if (ThreadEnabled)
             {
-                Thread buildThread = new Thread(Update);
-                buildThread.Start();
+                for (int i = 0; i < numThreads; i++)
+                {
+                    Thread buildThread = new Thread(Update);
+                    buildThread.Start();
+                }
+                SystemCore.Game.Exiting += (x, y) => { quit = true; };
             }
-            SystemCore.Game.Exiting += (x, y) => { quit = true; };
 
         }
 
@@ -48,7 +51,7 @@ namespace MonoGameEngineCore.Procedural
             nodesAwaitingBuilding.Enqueue(nodeToBuild);
         }
 
-        public static void Enqueue(Effect effect, IModule module, Planet rootObject,int depth, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
+        public static void Enqueue(Effect effect, IModule module, Planet rootObject, int depth, Vector3 min, Vector3 max, float step, Vector3 normal, float sphereSize)
         {
             var node = new PlanetNode(effect, module, rootObject, depth, min, max, step, normal, sphereSize);
             Enqueue(node);
@@ -56,15 +59,29 @@ namespace MonoGameEngineCore.Procedural
 
         public static void Update()
         {
-            while (!quit)
+            if (ThreadEnabled)
             {
-                PlanetNode node;
-                if (nodesAwaitingBuilding.TryDequeue(out node))
+                while (!quit)
                 {
-                    node.BuildGeometry();
-                    finishedNodes[node.Planet.Name].Enqueue(node);
+                    UpdateGeometryBuild();
+
+
+                    Thread.Sleep(10);
                 }
-                Thread.Sleep(10);
+            }
+            else
+            {
+                UpdateGeometryBuild();
+            }
+        }
+
+        private static void UpdateGeometryBuild()
+        {
+            PlanetNode node;
+            if (nodesAwaitingBuilding.TryDequeue(out node))
+            {
+                node.BuildGeometry();
+                finishedNodes[node.Planet.Name].Enqueue(node);
             }
         }
 

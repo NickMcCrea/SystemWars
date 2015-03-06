@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using LibNoise;
@@ -187,28 +188,38 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+
+
         private void CalculateEdgeAdjustment(NeighbourTracker.Connection conn, ref VertexPositionColorTextureNormal[] vertices,
             List<int> edges, NeighbourTracker.ConnectionDirection dir)
         {
-            if (conn.node.depth <= depth)
+
+            var connectType = Planet.neighbourTracker.ThreadSafeGetConnectingEdgeOfNeighbourPatch(GetKeyPoint(),
+                 conn.node.keyPoint);
+
+            if (conn.node.depth < depth)
             {
-                //var connectType = Planet.neighbourTracker.ThreadSafeHasBeenAdjustedOnEdge(GetKeyPoint(),
-                //    conn.node.keyPoint);
+              
+                AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Red);
+                Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+                return;
 
-
-                //if (connectType.lodJump == 2)
-                //{
-                //    AdjustEdgesUpTwoLODs(ref vertices, ref edges);
-                //    this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
-                //}
-                //else
-                //{
-
-                //    AdjustEdgesUpOneLOD(ref vertices, ref edges);
-                //    this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
-
-                //}
             }
+            if (conn.node.depth == depth)
+            {
+                if (connectType.lodJump == 1)
+                {
+                    AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Yellow);
+                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+                    return;
+                }
+            }
+
+
+
+
+
+
         }
 
         private bool NeighbourIsLowerOrSameLod(List<NeighbourTracker.Connection> connections, ref VertexPositionColorTextureNormal[] vertices, ref List<int> topEdges)
@@ -309,7 +320,7 @@ namespace MonoGameEngineCore.Procedural
             return spherePatch;
         }
 
-        private void AdjustEdgesUpOneLOD(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
+        private void AdjustEdgesUpOneLOD(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes, Color color)
         {
             for (int i = 1; i < edgeIndexes.Count - 1; i += 2)
             {
@@ -319,13 +330,13 @@ namespace MonoGameEngineCore.Procedural
                 float bLength = neighbourB.Length();
                 float avgHeight = (aLength + bLength) / 2;
                 vertices[edgeIndexes[i]].Position = Vector3.Normalize(vertices[edgeIndexes[i]].Position) * avgHeight;
-
+                vertices[edgeIndexes[i]].Color = color;
             }
         }
 
         private void AdjustEdgesUpTwoLODs(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
         {
-            for (int i = 1; i < edgeIndexes.Count - 3; i += 4)
+            for (int i = 1; i < edgeIndexes.Count - 2; i += 4)
             {
                 Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
                 Vector3 neighbourB = vertices[edgeIndexes[i + 3]].Position;

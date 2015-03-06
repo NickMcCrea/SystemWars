@@ -355,7 +355,7 @@ namespace MonoGameEngineCore.Procedural
         /// </summary>
         /// <param name="source"></param>
         /// <param name="target"></param>
-        public ConnectionType ThreadSafeHasBeenAdjustedOnEdge(Vector3 source, Vector3 target)
+        public ConnectionType ThreadSafeGetConnectingEdgeOfNeighbourPatch(Vector3 source, Vector3 target)
         {
             Connection connectionToUs = null;
             lock (connectionBuffer)
