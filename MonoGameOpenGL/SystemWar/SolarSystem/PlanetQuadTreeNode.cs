@@ -201,7 +201,7 @@ namespace MonoGameEngineCore.Procedural
             {
               
                 AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Red);
-                Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+                Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
                 return;
 
             }
@@ -209,13 +209,14 @@ namespace MonoGameEngineCore.Procedural
             {
                 if (connectType.lodJump == 1)
                 {
-                    AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Yellow);
-                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+                    AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Black);
+                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
                     return;
                 }
             }
 
 
+            GC.KeepAlive(connectType);
 
 
 

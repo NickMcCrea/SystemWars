@@ -357,24 +357,13 @@ namespace MonoGameEngineCore.Procedural
         /// <param name="target"></param>
         public ConnectionType ThreadSafeGetConnectingEdgeOfNeighbourPatch(Vector3 source, Vector3 target)
         {
-            Connection connectionToUs = null;
-            lock (connectionBuffer)
-            {
-                lock (nodeDictionaryBuffer)
-                {
-                    connectionToUs =
-                        connectionBuffer[nodeDictionaryBuffer[target]].Find(x => x.node.keyPoint == source);
-                }
-            }
+            //find the connection to me in the buffer.
+            var connectionToMe = connectionBuffer[nodeDictionaryBuffer[target]].Find(x => x.node.keyPoint == source);
 
-            lock (adjustedEdges)
-            {
-                if (adjustedEdges.ContainsKey(connectionToUs.node.keyPoint))
-                {
-                    return adjustedEdges[connectionToUs.node.keyPoint].Find(x => x.dir == connectionToUs.direction);
-                }
-            }
-     
+            //return the edge connection info
+            if (adjustedEdges.ContainsKey(target))
+                return adjustedEdges[target].Find(x => x.dir == connectionToMe.direction);
+
             return new ConnectionType();
         }
     }
