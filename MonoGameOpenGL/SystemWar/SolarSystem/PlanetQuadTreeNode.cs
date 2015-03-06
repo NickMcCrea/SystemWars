@@ -199,24 +199,62 @@ namespace MonoGameEngineCore.Procedural
             var connectType = Planet.neighbourTracker.ThreadSafeGetConnectingEdgeOfNeighbourPatch(GetKeyPoint(),
                  conn.node.keyPoint);
 
+            //if (conn.node.depth < depth)
+            //{
+            //    if (connectType.lodJump == 0)
+            //    {
+            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Red, 1);
+            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
+            //        return;
+            //    }
+            //    if (connectType.lodJump == 1)
+            //    {
+            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue, 2);
+            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+            //        return;
+            //    }
+            //    if (connectType.lodJump == 2)
+            //    {
+            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.White, 3);
+            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 3);
+            //        return;
+            //    }
+
+            //}
+            //if (conn.node.depth == depth)
+            //{
+            //    if (connectType.lodJump == 1)
+            //    {
+            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Black, 1);
+            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
+            //        return;
+            //    }
+            //    if (connectType.lodJump == 2)
+            //    {
+            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue, 2);
+            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+            //        return;
+            //    }
+            //}
+       
             if (conn.node.depth < depth)
             {
                 if (connectType.lodJump == 0)
                 {
-                    AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Red);
+                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Red,1);
                     Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
                     return;
                 }
                 if (connectType.lodJump == 1)
                 {
-                    AdjustEdgesUpTwoLODs(ref vertices, ref edges, Color.DeepSkyBlue);
+                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue,2);
                     Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
                     return;
                 }
                 if (connectType.lodJump == 2)
                 {
-                    AdjustEdgesUpTwoLODs(ref vertices, ref edges, Color.White);
-                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
+                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.White,3);
+                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 3);
                     return;
                 }
 
@@ -361,7 +399,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void AdjustEdgesUpTwoLODs(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes, Color color)
         {
-            for (int i = 1; i < edgeIndexes.Count - 2; i += 4)
+            for (int i = 1; i < edgeIndexes.Count - 1; i += 4)
             {
                 Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
                 Vector3 neighbourB = vertices[edgeIndexes[i + 3]].Position;
@@ -386,6 +424,31 @@ namespace MonoGameEngineCore.Procedural
                 }
 
 
+
+            }
+        }
+
+        private void AdjustEdgesToFitLodDifference(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes, Color color, int adjustLods)
+        {
+            int adjustment = (int)System.Math.Pow(2, adjustLods);
+
+            for (int i = 1; i < edgeIndexes.Count - adjustment; i += adjustment)
+            {
+                Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
+                Vector3 neighbourB = vertices[edgeIndexes[i + adjustment-1]].Position;
+
+                float aLength = neighbourA.Length();
+                float bLength = neighbourB.Length();
+                float diff = bLength - aLength;
+                float heightAdjust = diff / adjustment;
+
+                for (int j = 0; j < adjustment-1; j++)
+                {
+                    float thisHeightAdjust = heightAdjust * (j + 1);
+                    vertices[edgeIndexes[j + i]].Position = Vector3.Normalize(vertices[edgeIndexes[j + i]].Position) * (aLength + thisHeightAdjust);
+                    if (visualiseEdgeAdjustments)
+                        vertices[edgeIndexes[j + i]].Color = color;
+                }
 
             }
         }
