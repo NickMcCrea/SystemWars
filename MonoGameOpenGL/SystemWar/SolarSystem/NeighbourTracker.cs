@@ -16,6 +16,18 @@ namespace MonoGameEngineCore.Procedural
             west,
         }
 
+        public struct ConnectionType
+        {
+            public ConnectionDirection dir;
+            public int lodJump;
+
+            public ConnectionType(ConnectionDirection direction, int lodJump)
+            {
+                dir = direction;
+                this.lodJump = lodJump;
+            }
+        }
+
         public class Connection
         {
             public ConnectionDirection direction;
@@ -31,6 +43,7 @@ namespace MonoGameEngineCore.Procedural
         public Dictionary<Vector3, NeighbourTrackerNode> nodeDictionary;
         private Dictionary<Vector3, NeighbourTrackerNode> nodeDictionaryBuffer;
         private Dictionary<NeighbourTrackerNode, List<Connection>> connectionBuffer;
+        private Dictionary<Vector3, List<ConnectionType>> adjustedEdges;
 
         public NeighbourTracker()
         {
@@ -38,6 +51,7 @@ namespace MonoGameEngineCore.Procedural
             nodeDictionary = new Dictionary<Vector3, NeighbourTrackerNode>();
             nodeDictionaryBuffer = new Dictionary<Vector3, NeighbourTrackerNode>();
             connectionBuffer = new Dictionary<NeighbourTrackerNode, List<Connection>>();
+            adjustedEdges = new Dictionary<Vector3, List<ConnectionType>>();
         }
 
         private ConnectionDirection GetOpposite(ConnectionDirection dir)
@@ -59,6 +73,8 @@ namespace MonoGameEngineCore.Procedural
         {
             connections.Clear();
             nodeDictionary.Clear();
+
+          
         }
 
         public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir)
@@ -238,36 +254,6 @@ namespace MonoGameEngineCore.Procedural
             {
                 connections[conn.node].RemoveAll(x => x.node == nodeToReplace);
             }
-
-            //List<Connection> consToRemove = new List<Connection>();
-            ////want to go through all connections featuring the node, and remove them.
-            //foreach (NeighbourTrackerNode n in connections.Keys)
-            //{
-            //    if (n == nodeToReplace)
-            //        continue;
-
-
-            //    foreach (Connection c in connections[n])
-            //    {
-            //        if (c.node == nodeToReplace)
-            //            consToRemove.Add(c);
-            //    }
-
-            //}
-
-            //foreach (NeighbourTrackerNode n in connections.Keys)
-            //{
-            //    foreach(Connection c in consToRemove)
-            //    {
-            //        if (connections[n].Contains(c))
-            //        {
-            //            connections[n].Remove(c);
-            //        }
-
-            //    }
-            //}
-
-            //consToRemove.Clear();
             connections.Remove(nodeToReplace);
             nodeDictionary.Remove(nodeToReplace.keyPoint);
         }
@@ -330,7 +316,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-        public List<Connection> GetConnectionsFromOtherThread(PlanetNode node)
+        public List<Connection> ThreadSafeGetConnections(PlanetNode node)
         {
             lock (connectionBuffer)
             {
@@ -348,6 +334,48 @@ namespace MonoGameEngineCore.Procedural
                     return connectionBuffer[key];
                 }
             }
+        }
+
+        public void ThreadSafeNotifyOfAdjustedEdge(Vector3 keypoint, ConnectionDirection dir, int lodJump)
+        {
+            lock (adjustedEdges)
+            {
+                if (adjustedEdges.ContainsKey(keypoint))
+                    adjustedEdges[keypoint].Add(new ConnectionType(dir,lodJump));
+                else
+                {
+                    adjustedEdges.Add(keypoint, new List<ConnectionType>());
+                    adjustedEdges[keypoint].Add(new ConnectionType(dir,lodJump));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Tells us whether the adjacent edge to our patch has been adjusted to a higher LOD, so we can compensate
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        public ConnectionType ThreadSafeHasBeenAdjustedOnEdge(Vector3 source, Vector3 target)
+        {
+            Connection connectionToUs = null;
+            lock (connectionBuffer)
+            {
+                lock (nodeDictionaryBuffer)
+                {
+                    connectionToUs =
+                        connectionBuffer[nodeDictionaryBuffer[target]].Find(x => x.node.keyPoint == source);
+                }
+            }
+
+            lock (adjustedEdges)
+            {
+                if (adjustedEdges.ContainsKey(connectionToUs.node.keyPoint))
+                {
+                    return adjustedEdges[connectionToUs.node.keyPoint].Find(x => x.dir == connectionToUs.direction);
+                }
+            }
+     
+            return new ConnectionType();
         }
     }
 }

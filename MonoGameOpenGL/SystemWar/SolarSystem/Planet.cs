@@ -50,7 +50,7 @@ namespace MonoGameEngineCore.Procedural
 
     public class Planet : GameObject.GameObject, IUpdateable
     {
-        private NeighbourTracker neighbourTracker;
+        public NeighbourTracker neighbourTracker;
         private readonly IModule module;
         private readonly Effect testEffect;
         public readonly float radius;
@@ -670,7 +670,7 @@ namespace MonoGameEngineCore.Procedural
 
         public List<NeighbourTracker.Connection> GetNeighbours(PlanetNode node)
         {
-            return neighbourTracker.GetConnectionsFromOtherThread(node);
+            return neighbourTracker.ThreadSafeGetConnections(node);
         } 
     }
 

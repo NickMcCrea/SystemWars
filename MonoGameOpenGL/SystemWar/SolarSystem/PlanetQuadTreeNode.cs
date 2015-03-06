@@ -120,14 +120,10 @@ namespace MonoGameEngineCore.Procedural
             if (normal == Vector3.Up || normal == Vector3.Forward || normal == Vector3.Left)
                 indices = indices.Reverse().ToArray();
 
-            bool adjustTop = false;
-            bool adjustBottom = false;
-            bool adjustLeft = false;
-            bool adjustRight = false;
-
+   
 
             List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
-
+            
             if (connections != null && depth != Planet.maxDepth)
             {
                 var northConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.north);
@@ -139,30 +135,88 @@ namespace MonoGameEngineCore.Procedural
 
                 if (northConn != null)
                 {
-                    if (northConn.node.depth < depth)
+                    if (northConn.node.depth <= depth)
                     {
-                        AdjustEdges(ref vertices, ref topEdges);
+                        var connectType = Planet.neighbourTracker.ThreadSafeHasBeenAdjustedOnEdge(GetKeyPoint(),
+                            northConn.node.keyPoint);
+                        if (connectType.lodJump == 2)
+                        {
+                            AdjustEdgesUpTwoLODs(ref vertices, ref topEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.north, 2);
+
+                        }
+                        else if(connectType.lodJump ==1)
+                        {
+                            AdjustEdgesUpOneLOD(ref vertices, ref topEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.north,1);
+                        }
+
                     }
                 }
                 if (southConn != null)
                 {
-                    if (southConn.node.depth < depth)
+                    if (southConn.node.depth <= depth)
                     {
-                        AdjustEdges(ref vertices, ref bottomEdges);
+                        var connectType = Planet.neighbourTracker.ThreadSafeHasBeenAdjustedOnEdge(GetKeyPoint(),
+                             southConn.node.keyPoint);
+                        if (connectType.lodJump == 2)
+                        {
+                            AdjustEdgesUpTwoLODs(ref vertices, ref bottomEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.south, 2);
+
+                        }
+                        else if (connectType.lodJump == 1)
+                        {
+                            AdjustEdgesUpOneLOD(ref vertices, ref bottomEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.south, 1);
+                        }
                     }
                 }
                 if (westConn != null)
                 {
-                    if (westConn.node.depth < depth)
+                    if (westConn.node.depth <= depth)
                     {
-                        AdjustEdges(ref vertices, ref leftEdges);
+                        var connectType = Planet.neighbourTracker.ThreadSafeHasBeenAdjustedOnEdge(GetKeyPoint(),
+                            westConn.node.keyPoint);
+                        if (connectType.lodJump == 2)
+                        {
+                            AdjustEdgesUpTwoLODs(ref vertices, ref leftEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.west, 2);
+
+                        }
+                        else if (connectType.lodJump == 1)
+                        {
+                            AdjustEdgesUpOneLOD(ref vertices, ref leftEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.west, 1);
+                        }
                     }
                 }
                 if (eastConn != null)
                 {
-                    if (eastConn.node.depth < depth)
+                    if (eastConn.node.depth <= depth)
                     {
-                        AdjustEdges(ref vertices, ref rightEdges);
+                        var connectType = Planet.neighbourTracker.ThreadSafeHasBeenAdjustedOnEdge(GetKeyPoint(),
+                            eastConn.node.keyPoint);
+
+                        if (connectType.lodJump == 2)
+                        {
+                            AdjustEdgesUpTwoLODs(ref vertices, ref rightEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.east, 2);
+
+                        }
+                        else if (connectType.lodJump == 1)
+                        {
+                            AdjustEdgesUpOneLOD(ref vertices, ref rightEdges);
+                            this.Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(),
+                                NeighbourTracker.ConnectionDirection.east, 1);
+                        }
                     }
                 }
 
@@ -170,10 +224,10 @@ namespace MonoGameEngineCore.Procedural
             else if (depth == Planet.maxDepth)
             {
                 Sphereify(sphereSize, ref vertices);
-                AdjustEdges(ref vertices, ref topEdges);
-                AdjustEdges(ref vertices, ref rightEdges);
-                AdjustEdges(ref vertices, ref bottomEdges);
-                AdjustEdges(ref vertices, ref leftEdges);
+                AdjustEdgesUpOneLOD(ref vertices, ref topEdges);
+                AdjustEdgesUpOneLOD(ref vertices, ref rightEdges);
+                AdjustEdgesUpOneLOD(ref vertices, ref bottomEdges);
+                AdjustEdgesUpOneLOD(ref vertices, ref leftEdges);
             }
             else
             {
@@ -327,7 +381,7 @@ namespace MonoGameEngineCore.Procedural
             return spherePatch;
         }
 
-        private void AdjustEdges(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
+        private void AdjustEdgesUpOneLOD(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
         {
             for (int i = 1; i < edgeIndexes.Count - 1; i += 2)
             {
@@ -337,6 +391,28 @@ namespace MonoGameEngineCore.Procedural
                 float bLength = neighbourB.Length();
                 float avgHeight = (aLength + bLength) / 2;
                 vertices[edgeIndexes[i]].Position = Vector3.Normalize(vertices[edgeIndexes[i]].Position) * avgHeight;
+
+            }
+        }
+
+        private void AdjustEdgesUpTwoLODs(ref VertexPositionColorTextureNormal[] vertices, ref List<int> edgeIndexes)
+        {
+            for (int i = 1; i < edgeIndexes.Count - 3; i += 4)
+            {
+                Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
+                Vector3 neighbourB = vertices[edgeIndexes[i + 3]].Position;
+
+                float aLength = neighbourA.Length();
+                float bLength = neighbourB.Length();
+                float diff = bLength - aLength;
+
+                float firstHeight = diff*0.25f;
+                float secondHeight = diff * 0.50f;
+                float thirdHeight = diff * 0.75f;
+
+                vertices[edgeIndexes[i]].Position = Vector3.Normalize(vertices[edgeIndexes[i]].Position) * (aLength + firstHeight);
+                vertices[edgeIndexes[i+1]].Position = Vector3.Normalize(vertices[edgeIndexes[i+1]].Position) * (aLength + secondHeight);
+                vertices[edgeIndexes[i+2]].Position = Vector3.Normalize(vertices[edgeIndexes[i+2]].Position) * (aLength + thirdHeight);
 
             }
         }
