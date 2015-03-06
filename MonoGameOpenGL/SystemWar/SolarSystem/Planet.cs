@@ -66,7 +66,7 @@ namespace MonoGameEngineCore.Procedural
         private static int planetIdList;
         public int BuildCountPerSecond;
         public int BuildTally;
-        public bool visualisePatches = true;
+        public bool visualisePatches = false;
         public int maxDepth = 8;
         private Planet orbitBody;
         private Vector3d positionToOrbit;
