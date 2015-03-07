@@ -254,26 +254,16 @@ namespace SystemWar
 
         private void HandleCollision()
         {
+            if (!SystemWarGlobalSettings.TerrainCollisionsEnabled)
+                return;
+
 
             PhysicsComponent comp = GetComponent<PhysicsComponent>();
             if(comp == null)
                 return;
-            
-            ReadOnlyList<CollidablePairHandler> pairs;
 
-            if (SystemCore.PhysicsOnBackgroundThread)
-            {
-                lock (SystemCore.PhysicsSimulation.BufferedStates.InterpolatedStates.FlipLocker)
-                {
-                    pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
-                }
-            }
-            else
-            {
-                pairs = comp.PhysicsEntity.CollisionInformation.Pairs;
-            }
 
-            foreach (CollidablePairHandler collidablePairHandler in pairs)
+            foreach (CollidablePairHandler collidablePairHandler in comp.PhysicsEntity.CollisionInformation.Pairs)
             {
 
                 if (collidablePairHandler.Colliding)

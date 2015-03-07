@@ -53,18 +53,18 @@ namespace MonoGameEngineCore
         public static bool Wireframe { get; set; }
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
-        public static bool PhysicsOnBackgroundThread = true;
+        public static bool PhysicsOnBackgroundThread = false;
         private static  Dictionary<string, ICamera> cameras;  
         private static List<IGameSubSystem> gameSubSystems;
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
-        public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep)
+        public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
         {
             SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;     
             SystemCore.ContentManager = content;
             SystemCore.Game = game;
-
+            SystemCore.PhysicsOnBackgroundThread = physicsOnBackgroundThread;
             cameras = new Dictionary<string, ICamera>();
 
             

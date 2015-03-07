@@ -4,6 +4,7 @@ using System.Threading;
 using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SystemWar;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -11,7 +12,7 @@ namespace MonoGameEngineCore.Procedural
     {
         private static ConcurrentQueue<PlanetNode> nodesAwaitingBuilding;
         private static Dictionary<string, ConcurrentQueue<PlanetNode>> finishedNodes;
-        public static bool ThreadEnabled = false;
+        
         public static int GetQueueSize()
         {
             return nodesAwaitingBuilding.Count;
@@ -22,16 +23,15 @@ namespace MonoGameEngineCore.Procedural
                 return finishedNodes[name].Count;
             return 0;
         }
-
         private static volatile bool quit = false;
-        private static int numThreads = 1;
+        private static int numThreads = 3;
 
         static PlanetBuilder()
         {
             nodesAwaitingBuilding = new ConcurrentQueue<PlanetNode>();
             finishedNodes = new Dictionary<string, ConcurrentQueue<PlanetNode>>();
 
-            if (ThreadEnabled)
+            if (SystemWarGlobalSettings.BuildPatchesOnBackgroundThread)
             {
                 for (int i = 0; i < numThreads; i++)
                 {
@@ -59,7 +59,7 @@ namespace MonoGameEngineCore.Procedural
 
         public static void Update()
         {
-            if (ThreadEnabled)
+            if (SystemWarGlobalSettings.BuildPatchesOnBackgroundThread)
             {
                 while (!quit)
                 {

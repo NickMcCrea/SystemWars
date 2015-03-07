@@ -66,7 +66,6 @@ namespace MonoGameEngineCore.Procedural
         private static int planetIdList;
         public int BuildCountPerSecond;
         public int BuildTally;
-      
         public int maxDepth = 8;
         private Planet orbitBody;
         private Vector3d positionToOrbit;
@@ -77,6 +76,7 @@ namespace MonoGameEngineCore.Procedural
         private Vector3d positionLastFrame;
         public bool HasAtmosphere { get; private set; }
         public Atmosphere atmosphere;
+
         private GroundScatteringHelper atmosphericScatteringHelper;
         public HighPrecisionPosition Position { get; private set; }
         public int DrawOrder { get; set; }
@@ -99,7 +99,7 @@ namespace MonoGameEngineCore.Procedural
             Transform.SetPosition(position);
 
             splitDistance = radius * 4;
-         
+
             customProjection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4,
                 SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, this.radius * 10);
 
@@ -120,7 +120,6 @@ namespace MonoGameEngineCore.Procedural
         }
 
         //this is a test
-
         public void AddAtmosphere()
         {
 
@@ -176,55 +175,51 @@ namespace MonoGameEngineCore.Procedural
             top.BuildGeometry();
             AddPatch(top);
             rootNodes.Add(top);
+            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
+            topNode.side = NeighbourTrackerNode.CubeSide.top;
 
-            //////bottom
-            //PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            //bottom.BuildGeometry();
-            //AddPatch(bottom);
-            //rootNodes.Add(bottom);
+            ////bottom
+            PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            bottom.BuildGeometry();
+            AddPatch(bottom);
+            rootNodes.Add(bottom);
+            bottomNode = new NeighbourTrackerNode(1, bottom.min, bottom.max, vectorSpacing, Vector3.Down);
+            bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
 
-            ////forward
-            //PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            //forward.BuildGeometry();
-            //AddPatch(forward);
-            //rootNodes.Add(forward);
+            //forward
+            PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            forward.BuildGeometry();
+            AddPatch(forward);
+            rootNodes.Add(forward);
+            forwardNode = new NeighbourTrackerNode(1, forward.min, forward.max, vectorSpacing, Vector3.Forward);
+            forwardNode.side = NeighbourTrackerNode.CubeSide.front;
 
-            ////backward
-            //PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            //backward.BuildGeometry();
-            //AddPatch(backward);
-            //rootNodes.Add(backward);
+            //backward
+            PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            backward.BuildGeometry();
+            AddPatch(backward);
+            rootNodes.Add(backward);
+            backwardNode = new NeighbourTrackerNode(1, backward.min, backward.max, vectorSpacing, Vector3.Backward);
+            backwardNode.side = NeighbourTrackerNode.CubeSide.back;
 
-            ////right
-            //PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            //right.BuildGeometry();
-            //AddPatch(right);
-            //rootNodes.Add(right);
+            //right
+            PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            right.BuildGeometry();
+            AddPatch(right);
+            rootNodes.Add(right);
+            rightNode = new NeighbourTrackerNode(1, right.min, right.max, vectorSpacing, Vector3.Right);
+            rightNode.side = NeighbourTrackerNode.CubeSide.right;
+
 
             ////left
             PlanetNode left = new PlanetNode(testEffect, module, this, 1, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
             left.BuildGeometry();
             AddPatch(left);
             rootNodes.Add(left);
-
             leftNode = new NeighbourTrackerNode(1, left.min, left.max, vectorSpacing, Vector3.Left);
             leftNode.side = NeighbourTrackerNode.CubeSide.left;
 
-            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
-            topNode.side = NeighbourTrackerNode.CubeSide.top;
 
-            //bottomNode = new NeighbourTrackerNode(1, bottom.GetKeyPoint());
-            //bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
-
-            //forwardNode = new NeighbourTrackerNode(1, forward.GetKeyPoint());
-            //forwardNode.side = NeighbourTrackerNode.CubeSide.front;
-
-
-            //rightNode = new NeighbourTrackerNode(1, right.GetKeyPoint());
-            //rightNode.side = NeighbourTrackerNode.CubeSide.right;
-
-            //backwardNode = new NeighbourTrackerNode(1, backward.GetKeyPoint());
-            //backwardNode.side = NeighbourTrackerNode.CubeSide.back;
 
 
             ReinitialiseTracker();
@@ -233,22 +228,25 @@ namespace MonoGameEngineCore.Procedural
 
         private void ReinitialiseTracker()
         {
+            if (!SystemWarGlobalSettings.RepairSeams)
+                return;
+
             neighbourTracker.ClearAllConnections();
 
             neighbourTracker.MakeConnection(topNode, leftNode, NeighbourTracker.ConnectionDirection.west, NeighbourTracker.ConnectionDirection.north);
-            //neighbourTracker.MakeConnection(topNode, rightNode, NeighbourTracker.ConnectionDirection.east, NeighbourTracker.ConnectionDirection.north);
-            //neighbourTracker.MakeConnection(topNode, forwardNode, NeighbourTracker.ConnectionDirection.south, NeighbourTracker.ConnectionDirection.north);
-            //neighbourTracker.MakeConnection(topNode, backwardNode, NeighbourTracker.ConnectionDirection.north, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(topNode, rightNode, NeighbourTracker.ConnectionDirection.east, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(topNode, forwardNode, NeighbourTracker.ConnectionDirection.south, NeighbourTracker.ConnectionDirection.north);
+            neighbourTracker.MakeConnection(topNode, backwardNode, NeighbourTracker.ConnectionDirection.north, NeighbourTracker.ConnectionDirection.north);
 
-            //neighbourTracker.MakeConnection(bottomNode, leftNode, NeighbourTracker.ConnectionDirection.west, NeighbourTracker.ConnectionDirection.south);
-            //neighbourTracker.MakeConnection(bottomNode, rightNode, NeighbourTracker.ConnectionDirection.east, NeighbourTracker.ConnectionDirection.south);
-            //neighbourTracker.MakeConnection(bottomNode, forwardNode, NeighbourTracker.ConnectionDirection.north, NeighbourTracker.ConnectionDirection.south);
-            //neighbourTracker.MakeConnection(bottomNode, backwardNode, NeighbourTracker.ConnectionDirection.south, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(bottomNode, leftNode, NeighbourTracker.ConnectionDirection.west, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(bottomNode, rightNode, NeighbourTracker.ConnectionDirection.east, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(bottomNode, forwardNode, NeighbourTracker.ConnectionDirection.north, NeighbourTracker.ConnectionDirection.south);
+            neighbourTracker.MakeConnection(bottomNode, backwardNode, NeighbourTracker.ConnectionDirection.south, NeighbourTracker.ConnectionDirection.south);
 
-            //neighbourTracker.MakeConnection(leftNode, forwardNode, NeighbourTracker.ConnectionDirection.east);
-            //neighbourTracker.MakeConnection(leftNode, backwardNode, NeighbourTracker.ConnectionDirection.west);
-            //neighbourTracker.MakeConnection(rightNode, forwardNode, NeighbourTracker.ConnectionDirection.west);
-            //neighbourTracker.MakeConnection(rightNode, backwardNode, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(leftNode, forwardNode, NeighbourTracker.ConnectionDirection.east);
+            neighbourTracker.MakeConnection(leftNode, backwardNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(rightNode, forwardNode, NeighbourTracker.ConnectionDirection.west);
+            neighbourTracker.MakeConnection(rightNode, backwardNode, NeighbourTracker.ConnectionDirection.east);
 
         }
 
@@ -291,7 +289,7 @@ namespace MonoGameEngineCore.Procedural
                     PlanetNode.CalculatePatchBoundaries(next.normal, next.step, next.Min, next.Max, out se, out sw, out mid1, out mid2, out nw, out ne, out midBottom, out midRight, out midLeft, out midTop);
 
                     //remove this node in the neighbour tracker, generate and connect children
-                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, se, mid1, next.step/2, next.normal);
+                    NeighbourTrackerNode southEast = new NeighbourTrackerNode(next.depth + 1, se, mid1, next.step / 2, next.normal);
                     southEast.quadrant = NeighbourTrackerNode.Quadrant.se;
                     southEast.side = next.side;
                     PatchMinMax sePatchMinMax = new PatchMinMax(se, mid1, next.depth + 1, next.normal, next.step / 2, next.side);
@@ -429,10 +427,10 @@ namespace MonoGameEngineCore.Procedural
             {
                 node.Update();
 
-                //if (maxDepth == node.depth)
-                //RenderConnections(node);
+                if (SystemWarGlobalSettings.RenderQuadtreeConnectivity)
+                    RenderConnections(node);
 
-           
+
                 //all nodes are flagged for removal every frame. 
                 //The LOD calculation will unflag if nodes should be kept.
                 node.remove = true;
@@ -451,8 +449,8 @@ namespace MonoGameEngineCore.Procedural
 
 
 
-
-            CalculateConnectivity();
+            if (SystemWarGlobalSettings.RepairSeams)
+                CalculateConnectivity();
 
 
             for (int i = 0; i < rootNodes.Count; i++)
@@ -461,7 +459,7 @@ namespace MonoGameEngineCore.Procedural
                 CalculatePatchLOD(root.normal, root.step, root.depth, root.min, root.max);
             }
 
-          
+
             //removes nodes that have not had their flags refreshed by the LOD pass
             RemoveStaleNodes();
 
@@ -480,7 +478,6 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-      
         private void RenderConnections(PlanetNode node)
         {
             List<NeighbourTracker.Connection> connections = neighbourTracker.GetConnections(node);
@@ -671,7 +668,7 @@ namespace MonoGameEngineCore.Procedural
         public List<NeighbourTracker.Connection> GetNeighbours(PlanetNode node)
         {
             return neighbourTracker.ThreadSafeGetConnections(node);
-        } 
+        }
     }
 
 

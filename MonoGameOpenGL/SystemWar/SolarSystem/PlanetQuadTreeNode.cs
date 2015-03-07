@@ -11,14 +11,13 @@ using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Helper;
 using ConversionHelper;
+using SystemWar;
 
 namespace MonoGameEngineCore.Procedural
 {
 
     public class PlanetNode : GameObject.GameObject
     {
-
-
         public int depth;
         public Planet Planet { get; set; }
         public Vector3 normal { get; set; }
@@ -29,7 +28,6 @@ namespace MonoGameEngineCore.Procedural
         public bool remove;
         public volatile bool built;
         public int heightMapSize;
-
         private Effect effect;
         private float sphereSize;
         public BoundingSphere boundingSphere;
@@ -39,8 +37,7 @@ namespace MonoGameEngineCore.Procedural
         private readonly int rootNodeId;
         public EffectRenderComponent renderComponent;
         public MeshColliderComponent meshCollider;
-        private bool visualiseEdgeAdjustments = true;
-        private bool visualisePatches = true;
+
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
 
@@ -127,8 +124,9 @@ namespace MonoGameEngineCore.Procedural
 
             List<NeighbourTracker.Connection> connections = this.Planet.GetNeighbours(this);
 
-            if (connections != null)
+            if (connections != null && SystemWarGlobalSettings.RepairSeams)
             {
+
                 var northConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.north);
                 var southConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.south);
                 var westConn = connections.Find(x => x.direction == NeighbourTracker.ConnectionDirection.west);
@@ -152,8 +150,12 @@ namespace MonoGameEngineCore.Procedural
                 {
                     CalculateEdgeAdjustment(eastConn, ref vertices, rightEdges, NeighbourTracker.ConnectionDirection.east);
                 }
-
             }
+            else
+            {
+                Sphereify(sphereSize, ref vertices);
+            }
+
 
 
 
@@ -190,8 +192,6 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-
-
         private void CalculateEdgeAdjustment(NeighbourTracker.Connection conn, ref VertexPositionColorTextureNormal[] vertices,
             List<int> edges, NeighbourTracker.ConnectionDirection dir)
         {
@@ -199,62 +199,19 @@ namespace MonoGameEngineCore.Procedural
             var connectType = Planet.neighbourTracker.ThreadSafeGetConnectingEdgeOfNeighbourPatch(GetKeyPoint(),
                  conn.node.keyPoint);
 
-            //if (conn.node.depth < depth)
-            //{
-            //    if (connectType.lodJump == 0)
-            //    {
-            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Red, 1);
-            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
-            //        return;
-            //    }
-            //    if (connectType.lodJump == 1)
-            //    {
-            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue, 2);
-            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
-            //        return;
-            //    }
-            //    if (connectType.lodJump == 2)
-            //    {
-            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.White, 3);
-            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 3);
-            //        return;
-            //    }
 
-            //}
-            //if (conn.node.depth == depth)
-            //{
-            //    if (connectType.lodJump == 1)
-            //    {
-            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Black, 1);
-            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
-            //        return;
-            //    }
-            //    if (connectType.lodJump == 2)
-            //    {
-            //        AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue, 2);
-            //        Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
-            //        return;
-            //    }
-            //}
-       
             if (conn.node.depth < depth)
             {
                 if (connectType.lodJump == 0)
                 {
-                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.Red,1);
+                    AdjustEdgesUpOneLOD(ref vertices, ref edges, Color.Red);
                     Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 1);
                     return;
                 }
                 if (connectType.lodJump == 1)
                 {
-                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.DeepSkyBlue,2);
+                    AdjustEdgesUpTwoLODs(ref vertices, ref edges, Color.DeepSkyBlue);
                     Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 2);
-                    return;
-                }
-                if (connectType.lodJump == 2)
-                {
-                    AdjustEdgesToFitLodDifference(ref vertices, ref edges, Color.White,3);
-                    Planet.neighbourTracker.ThreadSafeNotifyOfAdjustedEdge(GetKeyPoint(), dir, 3);
                     return;
                 }
 
@@ -392,7 +349,7 @@ namespace MonoGameEngineCore.Procedural
                 float avgHeight = (aLength + bLength) / 2;
                 vertices[edgeIndexes[i]].Position = Vector3.Normalize(vertices[edgeIndexes[i]].Position) * avgHeight;
 
-                if (visualiseEdgeAdjustments)
+                if (SystemWarGlobalSettings.VisualisePatches)
                     vertices[edgeIndexes[i]].Color = color;
             }
         }
@@ -416,7 +373,7 @@ namespace MonoGameEngineCore.Procedural
                 vertices[edgeIndexes[i + 1]].Position = Vector3.Normalize(vertices[edgeIndexes[i + 1]].Position) * (aLength + secondHeight);
                 vertices[edgeIndexes[i + 2]].Position = Vector3.Normalize(vertices[edgeIndexes[i + 2]].Position) * (aLength + thirdHeight);
 
-                if (visualiseEdgeAdjustments)
+                if (SystemWarGlobalSettings.VisualisePatches)
                 {
                     vertices[edgeIndexes[i]].Color = color;
                     vertices[edgeIndexes[i + 1]].Color = color;
@@ -435,18 +392,18 @@ namespace MonoGameEngineCore.Procedural
             for (int i = 1; i < edgeIndexes.Count - adjustment; i += adjustment)
             {
                 Vector3 neighbourA = vertices[edgeIndexes[i - 1]].Position;
-                Vector3 neighbourB = vertices[edgeIndexes[i + adjustment-1]].Position;
+                Vector3 neighbourB = vertices[edgeIndexes[i + adjustment - 1]].Position;
 
                 float aLength = neighbourA.Length();
                 float bLength = neighbourB.Length();
                 float diff = bLength - aLength;
                 float heightAdjust = diff / adjustment;
 
-                for (int j = 0; j < adjustment-1; j++)
+                for (int j = 0; j < adjustment - 1; j++)
                 {
                     float thisHeightAdjust = heightAdjust * (j + 1);
                     vertices[edgeIndexes[j + i]].Position = Vector3.Normalize(vertices[edgeIndexes[j + i]].Position) * (aLength + thisHeightAdjust);
-                    if (visualiseEdgeAdjustments)
+                    if (SystemWarGlobalSettings.VisualisePatches)
                         vertices[edgeIndexes[j + i]].Color = color;
                 }
 
@@ -604,7 +561,7 @@ namespace MonoGameEngineCore.Procedural
                 if (length > radius + 5)
                     vertices[i].Color = Planet.MountainColor;
 
-                if (visualisePatches)
+                if (SystemWarGlobalSettings.VisualisePatches)
                 {
                     Color col = Color.White;
 

@@ -74,11 +74,14 @@ namespace MonoGameEngineCore.Procedural
             connections.Clear();
             nodeDictionary.Clear();
 
-          
+
         }
 
         public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir)
         {
+            if (a == null || b == null)
+                return;
+
             if (!connections.ContainsKey(a))
                 connections.Add(a, new List<Connection>());
 
@@ -98,6 +101,9 @@ namespace MonoGameEngineCore.Procedural
 
         public void MakeConnection(NeighbourTrackerNode a, NeighbourTrackerNode b, ConnectionDirection dir, ConnectionDirection dir2)
         {
+            if (a == null || b == null)
+                return;
+
             if (!connections.ContainsKey(a))
                 connections.Add(a, new List<Connection>());
 
@@ -288,9 +294,9 @@ namespace MonoGameEngineCore.Procedural
 
         internal void CopyConnectionDataToThreadSafeBuffer()
         {
-            if(connections == null)
+            if (connections == null)
                 return;
-            
+
 
             //we've finished generating connectivity of the quadtrees, now copy data to a buffer that can 
             //be accessed safely from other threads.
@@ -336,16 +342,24 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
+        public void ClearAdjustedEdgeRecords(Vector3 keyPoint)
+        {
+            lock (adjustedEdges)
+            {
+                adjustedEdges.Remove(keyPoint);
+            }
+        }
+
         public void ThreadSafeNotifyOfAdjustedEdge(Vector3 keypoint, ConnectionDirection dir, int lodJump)
         {
             lock (adjustedEdges)
             {
                 if (adjustedEdges.ContainsKey(keypoint))
-                    adjustedEdges[keypoint].Add(new ConnectionType(dir,lodJump));
+                    adjustedEdges[keypoint].Add(new ConnectionType(dir, lodJump));
                 else
                 {
                     adjustedEdges.Add(keypoint, new List<ConnectionType>());
-                    adjustedEdges[keypoint].Add(new ConnectionType(dir,lodJump));
+                    adjustedEdges[keypoint].Add(new ConnectionType(dir, lodJump));
                 }
             }
         }
@@ -357,6 +371,7 @@ namespace MonoGameEngineCore.Procedural
         /// <param name="target"></param>
         public ConnectionType ThreadSafeGetConnectingEdgeOfNeighbourPatch(Vector3 source, Vector3 target)
         {
+
             //find the connection to me in the buffer.
             var connectionToMe = connectionBuffer[nodeDictionaryBuffer[target]].Find(x => x.node.keyPoint == source);
 
@@ -365,6 +380,7 @@ namespace MonoGameEngineCore.Procedural
                 return adjustedEdges[target].Find(x => x.dir == connectionToMe.direction);
 
             return new ConnectionType();
+
         }
     }
 }
