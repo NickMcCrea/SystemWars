@@ -55,6 +55,7 @@
     <Compile Include="SolarSystem\SolarSystem.cs" />
     <Compile Include="SolarSystem\SolarSystemPosition.cs" />
     <Compile Include="SolarSystem\StarHelper.cs" />
+    <Compile Include="SolarSystem\SystemWarGlobalSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BEPUphysics, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">

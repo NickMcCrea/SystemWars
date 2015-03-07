@@ -31,7 +31,7 @@ namespace SystemWar
             if (System.Environment.MachineName == "NICKMCCREA-PC")
                 resToUse = ScreenResolutionName.WUXGA;
 
-            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24, true))
+            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24, SystemWarGlobalSettings.FixedTimeStep, SystemWarGlobalSettings.PhysicsOnBackgroundThread))
                 game.Run();
         }
     }

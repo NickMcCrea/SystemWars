@@ -29,7 +29,7 @@ namespace MonoGameDirectX11
             if (System.Environment.MachineName == "NICKMCCREA-PC")
                 resToUse = ScreenResolutionName.WUXGA;
 
-            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24,true))
+            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24,true, true))
                 game.Run();
         }
     }
