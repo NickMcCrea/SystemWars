@@ -97,5 +97,15 @@ namespace MonoGameEngineCore.GameObject
         {
             components.Clear();
         }
+
+        public static void InitialiseAllComponents(GameObject obj)
+        {
+            var componentList = obj.GetAllComponents();
+
+            foreach (IComponent component in componentList)
+            {
+                component.Initialise();
+            }
+        }
     }
 }

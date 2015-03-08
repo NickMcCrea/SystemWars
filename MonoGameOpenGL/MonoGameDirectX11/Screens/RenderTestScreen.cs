@@ -23,10 +23,8 @@ namespace MonoGameDirectX11
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            var effect = EffectLoader.LoadEffect("FlatShadedWithFog");
+            var effect = EffectLoader.LoadEffect("FlatShaded");
 
-            //BasicEffect effect = new BasicEffect(SystemCore.GraphicsDevice);
-            //effect.EnableDefaultLighting();
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);

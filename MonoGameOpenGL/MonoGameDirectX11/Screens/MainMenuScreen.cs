@@ -12,9 +12,9 @@ namespace MonoGameDirectX11
             : base()
         {
 
-            string screenOne = "Render Test";
-            string screenTwo = "Atmosphere Test";
-            string screenThree = "Physics Test";
+            string screenOne = "Render";
+            string screenTwo = "Render Texture";
+            string screenThree = "Physics";
         
 
             SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
@@ -29,7 +29,7 @@ namespace MonoGameDirectX11
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new AtmosphereTest());
+                SystemCore.ScreenManager.AddAndSetActive(new RenderTextureTest());
             };
 
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;

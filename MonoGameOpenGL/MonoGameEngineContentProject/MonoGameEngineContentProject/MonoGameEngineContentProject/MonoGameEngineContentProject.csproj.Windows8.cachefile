@@ -1,10 +1,9 @@
 Content\Fonts\Arial.xnb
 Content\Fonts\neuropolitical.xnb
-Content\blank.xnb
-Content\smoke.xnb
-Content\Textures\AtmosphereGradient3.xnb
 Content\Effects\SM5.0\Simple.xnb
 Content\Effects\SM5.0\FlatShaded.xnb
 Content\Effects\SM5.0\SkyDome.xnb
-Content\Effects\SM5.0\FlatShadedWithFog.xnb
-Content\Effects\SM5.0\Atmosphere.xnb
+Content\Effects\SM5.0\AtmosphericScatteringGround.xnb
+Content\Effects\SM5.0\AtmosphericScatteringSky.xnb
+Content\Textures\AtmosphereGradient3.xnb
+Content\blank.xnb
