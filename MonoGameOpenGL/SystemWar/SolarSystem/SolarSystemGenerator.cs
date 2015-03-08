@@ -31,14 +31,14 @@ namespace SystemWar.Screens
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
                EffectLoader.LoadEffect("AtmosphericScatteringGround").Clone(),
-                6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0.000001f);
+                6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0.00001f);
             earth.Orbit(Vector3d.Zero, ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
             earth.AddAtmosphere();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
 
 
             Planet moon = new Planet("moon", new Vector3d(ScaleHelper.Millions(20) + 20000, 0, 0),
-             NoiseGenerator.RidgedMultiFractal(0.02f),
+             NoiseGenerator.Voronoi(0.02f),
              EffectLoader.LoadEffect(planetShader).Clone(),
              2000, Color.DarkGray.ChangeTone(10), Color.DarkGray, Color.DarkGray.ChangeTone(-10));
             moon.Orbit(earth, 20000, ScaleHelper.Millionths(50f));
