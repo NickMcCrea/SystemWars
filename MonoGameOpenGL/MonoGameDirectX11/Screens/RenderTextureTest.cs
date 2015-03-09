@@ -72,8 +72,7 @@ namespace MonoGameDirectX11.Screens
 
            
             SystemCore.GraphicsDevice.SetRenderTarget(renderTarget);
-
-            //draw some stuff.
+            SystemCore.GraphicsDevice.Clear(Color.DarkGray);
             testObject.GetComponent<EffectRenderComponent>().Camera = "renderTextureCamera";
             testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
 
