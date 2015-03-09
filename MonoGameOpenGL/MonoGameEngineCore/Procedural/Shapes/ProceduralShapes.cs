@@ -826,10 +826,10 @@ namespace MonoGameEngineCore.Procedural
             Vertices[2].Normal = Vector3.Up;
             Vertices[3].Normal = Vector3.Up;
 
-            Vertices[0].Texture = GenerateBoxMap(Vertices[0].Position, Vertices[0].Normal);
-            Vertices[1].Texture = GenerateBoxMap(Vertices[1].Position, Vertices[1].Normal);
-            Vertices[2].Texture = GenerateBoxMap(Vertices[2].Position, Vertices[2].Normal);
-            Vertices[3].Texture = GenerateBoxMap(Vertices[3].Position, Vertices[3].Normal);
+            Vertices[0].Texture = new Vector2(0,0);
+            Vertices[1].Texture = new Vector2(0,1);
+            Vertices[2].Texture = new Vector2(1,1);
+            Vertices[3].Texture = new Vector2(1,0);
 
             Indices[0] = (byte)(0);
             Indices[1] = (byte)(3);

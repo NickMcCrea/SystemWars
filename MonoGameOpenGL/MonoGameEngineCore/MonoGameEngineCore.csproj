@@ -64,6 +64,7 @@
     <Compile Include="GameObject\Components\NormalVisualiser.cs" />
     <Compile Include="GameObject\Components\PhysicsComponent.cs" />
     <Compile Include="GameObject\Components\RenderGeometryComponent.cs" />
+    <Compile Include="GameObject\Components\RenderTextureComponent.cs" />
     <Compile Include="GameObject\Components\RotatorComponent.cs" />
     <Compile Include="GameObject\Components\ShipController.cs" />
     <Compile Include="GameObject\Components\SkyDomeRenderer.cs" />

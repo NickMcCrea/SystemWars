@@ -33,6 +33,15 @@ namespace MonoGameEngineCore.GameObject
             return ob;
         }
 
+        public static GameObject CreateRenderTextureSurface(ProceduralPlane plane, Effect renderTextureEffect)
+        {
+            var ob = new GameObject();
+            ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(plane), BufferBuilder.IndexBufferBuild(plane), plane.PrimitiveCount));
+
+            ob.AddComponent(new RenderTextureComponent(renderTextureEffect));
+            return ob;
+        }
+
         public static GameObject CreateRenderableGameObjectFromShape(int id, ProceduralShape shape, Effect effect)
         {
             var ob = CreateRenderableGameObjectFromShape(shape, effect);
