@@ -13,6 +13,7 @@ using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
 using System;
 using SystemWar.Shapes;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SystemWar.Screens
 {
@@ -39,29 +40,34 @@ namespace SystemWar.Screens
             ship = new Ship("ship");
             SystemCore.SetActiveCamera(ship.shipCameraObject.GetComponent<ComponentCamera>());
 
-            var cockpit = SystemWarShapes.CockpitBar();
-            cockpit.Translate(Vector3.Forward * 2);
-            cockpit.Translate(Vector3.Down * 0.6f);
-            cockpit.SetColor(Color.DarkGray);
-            cockpit.Scale(0.7f);
 
-            //var panel = SystemWarShapes.CockpitPanel();
-            //panel.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(45)));
-            //panel.Translate(Vector3.Forward*2 + Vector3.Left * 1.1f + Vector3.Up * 0.5f);
-            //panel.Scale(0.2f);
-            //panel.SetColor(Color.DarkGray);
+            //var cockpit = SystemWarShapes.CockpitBar();
+            //cockpit.Translate(Vector3.Forward * 2);
+            //cockpit.Translate(Vector3.Down * 0.6f);
+            //cockpit.SetColor(Color.DarkGray);
+            //cockpit.Scale(0.7f);
+
+            ////var panel = SystemWarShapes.CockpitPanel();
+            ////panel.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(45)));
+            ////panel.Translate(Vector3.Forward*2 + Vector3.Left * 1.1f + Vector3.Up * 0.5f);
+            ////panel.Scale(0.2f);
+            ////panel.SetColor(Color.DarkGray);
 
 
-            //var panel2 = SystemWarShapes.CockpitPanel();
-            //panel2.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(-45)));
-            //panel2.Translate(Vector3.Forward * 2 + Vector3.Right * 1.1f + Vector3.Up * 0.5f);
-            //panel2.Scale(0.2f);
-            //panel2.SetColor(Color.DarkGray);
+            ////var panel2 = SystemWarShapes.CockpitPanel();
+            ////panel2.Transform(Matrix.CreateRotationY(MathHelper.ToRadians(-45)));
+            ////panel2.Translate(Vector3.Forward * 2 + Vector3.Right * 1.1f + Vector3.Up * 0.5f);
+            ////panel2.Scale(0.2f);
+            ////panel2.SetColor(Color.DarkGray);
 
-            //var finalShape = ProceduralShape.Combine(cockpit, panel, panel2);
+            ////var finalShape = ProceduralShape.Combine(cockpit, panel, panel2);
+            Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic2");
+            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModel(geoDesicModel);
+            geodesicShape.Scale(1f);
+            geodesicShape.InsideOut();
 
-            ship.AddComponent(new RenderGeometryComponent(cockpit));
-            var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("flatshaded"));
+            ship.AddComponent(new RenderGeometryComponent(geodesicShape));
+            var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("cockpitscreen"));
             cockpitEffectComponent.DrawOrder = 100;
             ship.AddComponent(cockpitEffectComponent);
 
