@@ -7,6 +7,29 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameEngineCore.Rendering
 {
+    public struct VertexPositionNormal : IVertexType
+    {
+        public Vector3 Position;
+        public Vector3 Normal;
+
+        public readonly static VertexDeclaration VertexDeclaration = new VertexDeclaration
+        (
+            new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+            new VertexElement(12, VertexElementFormat.Vector3, VertexElementUsage.Normal, 0)
+        );
+
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get { return VertexDeclaration; }
+        }
+
+        public VertexPositionNormal(Vector3 position,  Vector3 normal)
+        {
+            Position = position;
+            Normal = normal;
+        }
+    }
+
     public struct VertexPositionColorNormal : IVertexType
     {
         public Vector3 Position;

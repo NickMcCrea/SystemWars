@@ -53,7 +53,11 @@ namespace MonoGameDirectX11
 
             AddInputBindings();
 
-
+            Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic");
+            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModel(geoDesicModel);
+            GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadEffect("flatshaded"));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
+            
         }
 
         private void AddInputBindings()

@@ -8,7 +8,7 @@ using MonoGameEngineCore.Procedural;
 
 namespace MonoGameEngineCore.Rendering
 {
-    static class ModelMeshParser
+    public static class ModelMeshParser
     {
         public static ProceduralShape GetShapeFromModel(Model model)
         {
@@ -17,22 +17,23 @@ namespace MonoGameEngineCore.Rendering
                 ProceduralShape shape = null;
                 foreach (ModelMeshPart part in modelMesh.MeshParts)
                 {
-                    VertexPositionNormalTexture[] array = new VertexPositionNormalTexture[part.VertexBuffer.VertexCount];
-                    VertexPositionColorTextureNormal[] newArray =
-                        new VertexPositionColorTextureNormal[part.VertexBuffer.VertexCount];
+                   
+                    VertexPositionNormal[] array =
+                        new VertexPositionNormal[part.VertexBuffer.VertexCount];
+
+                    VertexPositionColorTextureNormal[] newArray = new VertexPositionColorTextureNormal[part.VertexBuffer.VertexCount];
 
                     short[] indices =new short[part.IndexBuffer.IndexCount];
-
                     part.IndexBuffer.GetData<short>(indices);
 
-                    part.VertexBuffer.GetData<VertexPositionNormalTexture>(array);
+                    part.VertexBuffer.GetData<VertexPositionNormal>(array);
+
 
                     for (int i = 0; i < array.Length; i++)
                     {
                         newArray[i] = new VertexPositionColorTextureNormal(array[i].Position, Color.DarkGray,
-                            array[i].TextureCoordinate, array[i].Normal);
+                            Vector2.Zero, array[i].Normal);
                     }
-
 
 
 
@@ -44,6 +45,9 @@ namespace MonoGameEngineCore.Rendering
                     {
                         shape = ProceduralShape.Combine(shape, new ProceduralShape(newArray, indices));
                     }
+
+                    return shape;
+                    
                 }
             }
             return null;
