@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
+    <Compile Include="Screens\CockpitTest.cs" />
     <Compile Include="Screens\ShapeTester.cs" />
     <Compile Include="Screens\RenderTextureTest.cs" />
     <Compile Include="Screens\PhysicsTestScreen.cs" />

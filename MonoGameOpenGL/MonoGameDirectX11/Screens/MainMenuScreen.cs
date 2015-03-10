@@ -13,7 +13,7 @@ namespace MonoGameDirectX11
         {
 
             string screenOne = "Render";
-            string screenTwo = "Render Texture";
+            string screenTwo = "Cockpit Test";
             string screenThree = "Physics";
         
 
@@ -29,7 +29,7 @@ namespace MonoGameDirectX11
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTextureTest());
+                SystemCore.ScreenManager.AddAndSetActive(new CockpitTest());
             };
 
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;

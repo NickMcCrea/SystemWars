@@ -14,7 +14,7 @@ cbuffer cbAmbient
 }
 cbuffer cbDiffuse
 {
-	
+
 	float4 DiffuseLightColor;
 	float4 DiffuseLightDirection;
 	float DiffuseLightIntensity;
@@ -23,24 +23,24 @@ cbuffer cbDiffuse
 
 struct VertexShaderInput
 {
-    float4 Position : SV_POSITION;
+	float4 Position : SV_POSITION;
 	float4 Color : COLOR0;
 };
 
 struct VertexShaderOutput
 {
-    float4 Position : SV_POSITION;
+	float4 Position : SV_POSITION;
 	float4 Color : COLOR0;
 	float4 PositionWorld : NORMAL0;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
-    VertexShaderOutput output;
-    output.Position = mul(input.Position, WorldViewProjection);
+	VertexShaderOutput output;
+	output.Position = mul(input.Position, WorldViewProjection);
 	output.PositionWorld = mul(input.Position, World);
 	output.Color = input.Color;
-    return output;
+	return output;
 };
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
@@ -50,28 +50,25 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	normal = normalize(normal);
 	float lightIntensity = dot(normal, DiffuseLightDirection);
 	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity * (input.Color * ColorSaturation);
-
-
-		float4 ambient = AmbientLightColor * AmbientLightIntensity;
-
-		float4 final = saturate(diffuse + ambient);
-		final /= 10;
-		final.w = 0.01f;
-		return final;
+	float4 ambient = AmbientLightColor * AmbientLightIntensity;
+	float4 final = saturate(diffuse + ambient);
+	final /= 10;
+	final.w = 0.01f;
+	return final;
 };
 
 technique Technique1
 {
-    pass Pass1
-    {
+	pass Pass1
+	{
 		ZEnable = false;
 		ZWriteEnable = false;
 		CullMode = CW;
 		AlphaBlendEnable = true;
 		SrcBlend = One;
 		DestBlend = InvSrcAlpha;
-        VertexShader = compile vs_5_0 VertexShaderFunction();
-        PixelShader = compile ps_5_0 PixelShaderFunction();
-    }
-	
+		VertexShader = compile vs_5_0 VertexShaderFunction();
+		PixelShader = compile ps_5_0 PixelShaderFunction();
+	}
+
 }

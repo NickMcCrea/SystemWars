@@ -61,6 +61,7 @@
     <Compile Include="GameObject\Components\GamePadController.cs" />
     <Compile Include="GameObject\Components\LargeScalePosition.cs" />
     <Compile Include="GameObject\Components\MeshColliderComponent.cs" />
+    <Compile Include="GameObject\Components\MouseController.cs" />
     <Compile Include="GameObject\Components\NormalVisualiser.cs" />
     <Compile Include="GameObject\Components\PhysicsComponent.cs" />
     <Compile Include="GameObject\Components\RenderGeometryComponent.cs" />

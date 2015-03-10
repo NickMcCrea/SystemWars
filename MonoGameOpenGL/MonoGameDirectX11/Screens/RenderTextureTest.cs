@@ -25,6 +25,7 @@ namespace MonoGameDirectX11.Screens
         private DummyCamera renderTextureCamera;
         private GameObject planeToDrawOn;
         SpriteBatch spriteBatch;
+        private SpriteFont font;
 
         public RenderTextureTest()
             : base()
@@ -40,16 +41,17 @@ namespace MonoGameDirectX11.Screens
 
             ProceduralPlane plane = new ProceduralPlane();
             plane.Scale(10f);
-            plane.SetColor(Color.LightBlue);         
+            plane.SetColor(Color.LightBlue);
             planeToDrawOn = GameObjectFactory.CreateRenderTextureSurface(plane,
                 EffectLoader.LoadEffect("rendertexturesurface"));
 
-            planeToDrawOn.Transform.Rotate(Vector3.Left, MathHelper.ToRadians(90));
-            planeToDrawOn.Transform.Rotate(Vector3.Up, MathHelper.ToRadians(-90));
-            planeToDrawOn.Transform.SetPosition(new Vector3(-5,0,0));
+            planeToDrawOn.Transform.Rotate(Vector3.Forward, MathHelper.ToRadians(90));
+            planeToDrawOn.Transform.Rotate(Vector3.Left, MathHelper.ToRadians(-90));
+            //planeToDrawOn.Transform.Rotate(Vector3.Up, MathHelper.ToRadians(-90));
+            planeToDrawOn.Transform.SetPosition(new Vector3(-5, 0, 0));
 
             GameObject.InitialiseAllComponents(planeToDrawOn);
-            
+
             spriteBatch = new SpriteBatch(SystemCore.GraphicsDevice);
             renderTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 500, 500);
 
@@ -60,8 +62,10 @@ namespace MonoGameDirectX11.Screens
             var secondCube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(),
             EffectLoader.LoadEffect("flatshaded"));
 
-            secondCube.Transform.SetPosition(new Vector3(-20,0,0));
+            secondCube.Transform.SetPosition(new Vector3(-20, 0, 0));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(secondCube);
+
+            font = SystemCore.ContentManager.Load<SpriteFont>("Fonts/neuropolitical");
         }
 
         public override void Update(GameTime gameTime)
@@ -76,18 +80,24 @@ namespace MonoGameDirectX11.Screens
         public override void Render(GameTime gameTime)
         {
 
-           
+            //set render target, clear depth buffer (including alpha), draw, then reset render target.
             SystemCore.GraphicsDevice.SetRenderTarget(renderTarget);
             SystemCore.GraphicsDevice.Clear(new Color(0, 0, 0, 0));
-            testObject.GetComponent<EffectRenderComponent>().Camera = "renderTextureCamera";
-            testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
+
+            //testObject.GetComponent<EffectRenderComponent>().Camera = "renderTextureCamera";
+            //testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(font, "Warning", new Vector2(renderTarget.Width/2, renderTarget.Height/2),
+                Color.White);
+            spriteBatch.End();
             SystemCore.GraphicsDevice.SetRenderTarget(null);
 
 
 
 
             testObject.GetComponent<EffectRenderComponent>().Camera = "main";
-            //testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
+
 
 
         }
