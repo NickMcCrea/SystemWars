@@ -20,6 +20,7 @@ cbuffer cbDiffuse
 	float DiffuseLightIntensity;
 }
 
+float time;
 
 struct VertexShaderInput
 {
@@ -54,7 +55,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float4 final = saturate(diffuse + ambient);
 	final /= 10;
 	final.w = 0.01f;
-	return final;
+	return  final;
 };
 
 technique Technique1

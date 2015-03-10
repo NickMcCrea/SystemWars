@@ -34,7 +34,8 @@ namespace MonoGameDirectX11.Screens
 
             cameraObject = new GameObject();
             cameraObject.AddComponent(new RenderGeometryComponent(geodesicShape));
-            cameraObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("cockpitscreen")));        
+            cameraObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadEffect("cockpitscreen")));
+            cameraObject.GetComponent<EffectRenderComponent>().DrawOrder = 100;
             cameraObject.AddComponent(new ComponentCamera());
             cameraObject.AddComponent(new MouseController());
 

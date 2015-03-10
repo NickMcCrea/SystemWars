@@ -73,6 +73,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
             PreDraw(gameTime);
 
+            if (ParameterExists("time"))
+            {
+                effect.Parameters["time"].SetValue((float)gameTime.TotalGameTime.TotalMilliseconds);
+            }
+
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
 
             SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
@@ -132,6 +137,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (ParameterExists("ViewInvert"))
                 effect.Parameters["ViewInvert"].SetValue(Matrix.Invert(SystemCore.GetCamera(Camera).View));
+
+           
         }
 
         public virtual void AssignLightingParameters()
