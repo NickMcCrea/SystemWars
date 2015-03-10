@@ -55,6 +55,8 @@ namespace SystemWar.Screens
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
 
+        
+
 
             solarSystem = new SolarSystem();
             solarSystem.PlayerShip = ship;
@@ -121,37 +123,11 @@ namespace SystemWar.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //PrintDebugInfo(gameTime);
             DebugText.Write(SystemCore.GetSubsystem<FPSCounter>().FPS.ToString());
             base.Render(gameTime);
         }
 
-        private void PrintDebugInfo(GameTime gameTime)
-        {
-            Vector3d currentPos = ship.GetComponent<HighPrecisionPosition>().Position;
-
-            double magnitude = currentPos.Length;
-            string formattedDistance = String.Format("{0:#,###,###.##}", magnitude);
-
-            Vector3d distanceTravelled = currentPos - oldPos;
-            double speedPerFrame = distanceTravelled.Length;
-            double speedPerSecond = speedPerFrame * (1000 / gameTime.ElapsedGameTime.Milliseconds);
-            string formattedSpeed = String.Format("{0:#,###,###.##}", speedPerSecond);
-
-            Vector3d distanceFromEarthCore = currentPos - new Vector3d(150000000, 0, 0);
-            float distanceFromSurface = (float)distanceFromEarthCore.Length - 6000;
-            DebugText.WritePositionedText("Distance From Star in km: " + formattedDistance, new Vector2(500, 20));
-            DebugText.WritePositionedText("Speed km/s: " + formattedSpeed, new Vector2(500, 40));
-            DebugText.WritePositionedText("Distance From Surface: " + distanceFromSurface, new Vector2(500, 60));
-
-
-            DebugText.Write("FPS " + SystemCore.GetSubsystem<FPSCounter>().FPS.ToString());
-            DebugText.Write("Draw calls " + GameObjectManager.drawCalls.ToString());
-            DebugText.Write("Primitives " + GameObjectManager.primitives.ToString());
-            DebugText.Write("Verts " + GameObjectManager.verts.ToString());
-
-            oldPos = currentPos;
-
-        }
+       
+       
     }
 }

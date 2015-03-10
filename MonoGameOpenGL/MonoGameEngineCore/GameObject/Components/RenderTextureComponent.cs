@@ -12,6 +12,7 @@ namespace MonoGameEngineCore.GameObject.Components
         public bool Visible { get; set; }
         public Texture2D Texture2D { get; set; }
         public Color BorderColor { get; set; }
+        public float BorderSize { get; set; }
 
         public string Camera { get; set; }
         private List<EffectParameterHelper> paramsToSetBeforeNextRender;
@@ -22,6 +23,7 @@ namespace MonoGameEngineCore.GameObject.Components
             Visible = true;
             paramsToSetBeforeNextRender = new List<EffectParameterHelper>();
             Camera = "main";
+            BorderSize = 0.01f;
             BorderColor = Color.White;
         }
 
@@ -40,6 +42,10 @@ namespace MonoGameEngineCore.GameObject.Components
             if (ParameterExists("borderColor"))
             {
                 effect.Parameters["borderColor"].SetValue(BorderColor.ToVector4());
+            }
+            if (ParameterExists("borderSize"))
+            {
+                effect.Parameters["borderSize"].SetValue(BorderSize);
             }
         }
 

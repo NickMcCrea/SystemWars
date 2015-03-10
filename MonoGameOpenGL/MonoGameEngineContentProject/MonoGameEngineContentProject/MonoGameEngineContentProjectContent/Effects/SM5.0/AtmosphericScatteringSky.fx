@@ -134,7 +134,7 @@ technique Technique1
 {
     pass Pass1
     {
-	    ZEnable = false;
+	    ZEnable = true;
 		ZWriteEnable = false;
 		CullMode = CCW;
 		AlphaBlendEnable = true;

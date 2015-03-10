@@ -59,8 +59,11 @@ technique Technique1
     pass Pass1
     {
 		ZEnable = true;
-		ZWriteEnable = true;
-		AlphaBlendEnable = false;
+		ZWriteEnable = false;
+		CullMode = CCW;
+		AlphaBlendEnable = true;
+		SrcBlend = One;
+		DestBlend = InvSrcAlpha;
         VertexShader = compile vs_5_0 VertexShaderFunction();
         PixelShader = compile ps_5_0 PixelShaderFunction();
     }

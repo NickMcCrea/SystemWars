@@ -36,7 +36,7 @@ namespace MonoGameDirectX11.Screens
             cube.SetColor(Color.OrangeRed);
             testObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadEffect("flatshaded"));
             testObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
-            GameObject.InitialiseAllComponents(testObject);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(testObject);
 
             ProceduralPlane plane = new ProceduralPlane();
             plane.Scale(10f);
@@ -56,6 +56,12 @@ namespace MonoGameDirectX11.Screens
             renderTextureCamera = new DummyCamera();
             renderTextureCamera.SetPositionAndLookDir(new Vector3(-5, 0, 0), Vector3.Zero, Vector3.Up);
             SystemCore.AddCamera("renderTextureCamera", renderTextureCamera);
+
+            var secondCube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(),
+            EffectLoader.LoadEffect("flatshaded"));
+
+            secondCube.Transform.SetPosition(new Vector3(-20,0,0));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(secondCube);
         }
 
         public override void Update(GameTime gameTime)
@@ -72,29 +78,30 @@ namespace MonoGameDirectX11.Screens
 
            
             SystemCore.GraphicsDevice.SetRenderTarget(renderTarget);
-            SystemCore.GraphicsDevice.Clear(Color.DarkGray);
+            SystemCore.GraphicsDevice.Clear(new Color(0, 0, 0, 0));
             testObject.GetComponent<EffectRenderComponent>().Camera = "renderTextureCamera";
             testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
-
-
             SystemCore.GraphicsDevice.SetRenderTarget(null);
 
 
-            planeToDrawOn.GetComponent<RenderTextureComponent>().Texture2D = renderTarget;
-            planeToDrawOn.GetComponent<RenderTextureComponent>().BorderColor = Color.OrangeRed;
-            planeToDrawOn.GetComponent<RenderTextureComponent>().Draw(gameTime);
 
 
             testObject.GetComponent<EffectRenderComponent>().Camera = "main";
-            testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
+            //testObject.GetComponent<EffectRenderComponent>().Draw(gameTime);
 
 
+        }
+
+        public override void RenderSprites(GameTime gameTime)
+        {
+            planeToDrawOn.GetComponent<RenderTextureComponent>().DrawOrder = 10;
+            planeToDrawOn.GetComponent<RenderTextureComponent>().Texture2D = renderTarget;
+            planeToDrawOn.GetComponent<RenderTextureComponent>().BorderColor = Color.OrangeRed;
+            planeToDrawOn.GetComponent<RenderTextureComponent>().BorderSize = 0;
+            planeToDrawOn.GetComponent<RenderTextureComponent>().Draw(gameTime);
             spriteBatch.Begin();
             spriteBatch.Draw(renderTarget, new Rectangle(0, 0, 100, 100), Color.White);
             spriteBatch.End();
-
-
-
         }
     }
 }
