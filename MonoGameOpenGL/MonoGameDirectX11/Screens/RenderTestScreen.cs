@@ -54,7 +54,7 @@ namespace MonoGameDirectX11
             AddInputBindings();
 
             Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic");
-            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModel(geoDesicModel);
+            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelNoUVs(geoDesicModel);
             geodesicShape.Scale(20f);
             geodesicShape.InsideOut();
             GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadEffect("cockpitscreen"));

@@ -29,7 +29,7 @@ namespace MonoGameDirectX11.Screens
         
           
             Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic2");
-            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModel(geoDesicModel);
+            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelWithUVs(geoDesicModel);
             geodesicShape.InsideOut();
 
             cameraObject = new GameObject();

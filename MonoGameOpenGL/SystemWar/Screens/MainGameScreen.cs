@@ -43,7 +43,7 @@ namespace SystemWar.Screens
 
             
             Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic2");
-            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModel(geoDesicModel);
+            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelWithUVs(geoDesicModel);
             geodesicShape.Scale(1f);
             geodesicShape.InsideOut();
 
