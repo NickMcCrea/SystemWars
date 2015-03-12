@@ -25,6 +25,23 @@ namespace SystemWar
         public float Angle;
         public float Altitude;
 
+        public PlanetSurfacePosition(Planet planet, Vector3d positionToTrack)
+        {
+            
+            Vector3 toPosition = (positionToTrack - planet.Position.Position).ToVector3();
+            Altitude = toPosition.Length();
+
+            Angle = 0;
+
+            Longitude =
+                (float) Math.Atan2(toPosition.Z, Math.Sqrt((toPosition.X*toPosition.X) + (toPosition.Y*toPosition.Y)));
+            Latitude = (float)Math.Atan2(toPosition.Y, toPosition.X);
+
+            //φ = atan2(vz, √vx² + vy²)
+            //λ = atan2(vy, vx)
+
+        }
+
         public Vector3 GetPosition(Planet planet, HighPrecisionPosition cameraPosition)
         {
          
@@ -33,20 +50,16 @@ namespace SystemWar
 
             Vector3 forwardPointOnSurface = planet.Transform.WorldMatrix.Forward;
 
-
             Vector3 rotateLatitude = Vector3.Transform(forwardPointOnSurface,
                 Matrix.CreateFromAxisAngle(planet.Transform.WorldMatrix.Right, MathHelper.ToRadians(Latitude)));
 
             Vector3 rotateLongAndLat = Vector3.Transform(rotateLatitude,
                 Matrix.CreateFromAxisAngle(planet.Transform.WorldMatrix.Up, MathHelper.ToRadians(Longitude)));
 
-
-
-
             return planet.Transform.WorldMatrix.Translation +  rotateLongAndLat*(planet.radius + Altitude);
-
-
         }
+
+        
     }
 
     
