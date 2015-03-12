@@ -27,6 +27,7 @@ namespace SystemWar
 
         public PlanetSurfacePosition(Planet planet, Vector3d positionToTrack)
         {
+            //see http://www.movable-type.co.uk/scripts/latlong-vectors.html
             
             Vector3 toPosition = (positionToTrack - planet.Position.Position).ToVector3();
             Altitude = toPosition.Length();
@@ -45,8 +46,6 @@ namespace SystemWar
         public Vector3 GetPosition(Planet planet, HighPrecisionPosition cameraPosition)
         {
          
-            //let's make Vector3.Forward our Greenwich at 0,0, with 360 degree on longitude, and 180 on latitude.
-
 
             Vector3 forwardPointOnSurface = planet.Transform.WorldMatrix.Forward;
 
