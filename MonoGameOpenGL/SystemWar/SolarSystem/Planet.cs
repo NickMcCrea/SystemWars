@@ -509,6 +509,7 @@ namespace MonoGameEngineCore.Procedural
 
         private void CalculateChildMovement(GameTime gameTime, GameObject.GameObject child, Vector3d planetCenter)
         {
+            //this covers planetary movement through space during orbit.
             var highPrecisionComponent = child.GetComponent<HighPrecisionPosition>();
             Vector3d movementLastFrame = planetCenter - positionLastFrame;
             highPrecisionComponent.Position += movementLastFrame;

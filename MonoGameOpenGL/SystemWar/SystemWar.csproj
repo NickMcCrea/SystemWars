@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Components\MouseShipController.cs" />
     <Compile Include="Components\ShipController.cs" />
+    <Compile Include="PlanetSurfacePosition.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\MainGameScreen.cs" />

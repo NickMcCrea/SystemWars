@@ -27,6 +27,7 @@ namespace SystemWar.Screens
         private PlanetNode hitNode = null;
         private float shipDistanceOnFirstPlacement = 50000;
 
+        private PlanetSurfacePosition testPlanetSurfacePosition;
 
         public MainGameScreen()
             : base()
@@ -41,22 +42,24 @@ namespace SystemWar.Screens
             SystemCore.SetActiveCamera(ship.shipCameraObject.GetComponent<ComponentCamera>());
 
 
-            
+
             Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic2");
             ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelWithUVs(geoDesicModel);
             geodesicShape.Scale(1f);
             geodesicShape.InsideOut();
 
             ship.AddComponent(new RenderGeometryComponent(geodesicShape));
-            var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("cockpitscreen"));
-            cockpitEffectComponent.DrawOrder = 100;
-            ship.AddComponent(cockpitEffectComponent);
+            //var cockpitEffectComponent = new EffectRenderComponent(EffectLoader.LoadEffect("cockpitscreen"));
+            //cockpitEffectComponent.DrawOrder = 100;
+            //ship.AddComponent(cockpitEffectComponent);
 
             oldPos = ship.GetComponent<HighPrecisionPosition>().Position;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(ship);
 
         
-
+            testPlanetSurfacePosition = new PlanetSurfacePosition();
+            testPlanetSurfacePosition.Latitude = 40;
+            testPlanetSurfacePosition.Longitude = -90;
 
             solarSystem = new SolarSystem();
             solarSystem.PlayerShip = ship;
@@ -84,6 +87,21 @@ namespace SystemWar.Screens
             solarSystem.Update(gameTime);
 
             //RaycastTest();
+
+            var earth = SystemCore.GameObjectManager.GetObject("earth");
+
+            DebugShapeRenderer.AddBoundingSphere(
+                new BoundingSphere(
+                    testPlanetSurfacePosition.GetPosition(earth as Planet, ship.HighPrecisionPositionComponent), 1000f),
+                Color.Red);
+
+            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+                earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Forward*7000, Color.Blue);
+            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+            earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Right * 7000, Color.Red);
+            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+            earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Up * 7000, Color.Green);
+
 
 
             if (!firstTimePlacement)
