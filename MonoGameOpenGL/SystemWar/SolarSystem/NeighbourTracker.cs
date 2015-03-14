@@ -185,6 +185,39 @@ namespace MonoGameEngineCore.Procedural
             }
         }
 
+        private void HandleSouthConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode sw, NeighbourTrackerNode se, List<Connection> southConnections)
+        {
+            if (southConnections.Count == 1)
+            {
+                if (southConnections[0].node.side == sw.side)
+                {
+
+                    MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
+                    MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
+                }
+                else
+                {
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectSouthSideEdges(nodeToReplace, sw, se, southConnections);
+                }
+            }
+            if (southConnections.Count == 2)
+            {
+                if (southConnections[0].node.side == sw.side)
+                {
+
+                    MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
+                    MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
+                }
+                else
+                {
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectMultipleSouthEdges(nodeToReplace, sw, se, southConnections);
+                }
+            }
+
+        }
+
         private void HandleWestConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, List<Connection> westConnections)
         {
             if (westConnections.Count == 1)
@@ -221,39 +254,6 @@ namespace MonoGameEngineCore.Procedural
                         ConnectMultipleWestSideEdges(nodeToReplace, nw, sw, westConnections);
                 }
             }
-        }
-
-        private void HandleSouthConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode sw, NeighbourTrackerNode se, List<Connection> southConnections)
-        {
-            if (southConnections.Count == 1)
-            {
-                if (southConnections[0].node.side == sw.side)
-                {
-
-                    MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
-                    MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
-                }
-                else
-                {
-                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
-                        ConnectSouthSideEdges(nodeToReplace, sw, se, southConnections);
-                }
-            }
-            if (southConnections.Count == 2)
-            {
-                if (southConnections[0].node.side == sw.side)
-                {
-
-                    MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
-                    MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
-                }
-                else
-                {
-                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
-                        ConnectMultipleSouthEdges(nodeToReplace, sw, se, southConnections);
-                }
-            }
-
         }
 
         private void HandleEastConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode ne, NeighbourTrackerNode se, List<Connection> eastConnections)
