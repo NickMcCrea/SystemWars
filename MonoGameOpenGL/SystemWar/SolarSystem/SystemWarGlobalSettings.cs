@@ -8,11 +8,11 @@ namespace SystemWar
     public static class SystemWarGlobalSettings
     {
         public static bool FixedTimeStep = true;
-        public static bool PhysicsOnBackgroundThread = true;
-        public static bool BuildPatchesOnBackgroundThread = true;
-        public static bool RepairSeams = false;
-        public static bool VisualisePatches = false;
-        public static bool RenderQuadtreeConnectivity = false;
+        public static bool PhysicsOnBackgroundThread = false;
+        public static bool BuildPatchesOnBackgroundThread = false;
+        public static bool RepairSeams = true;
+        public static bool VisualisePatches = true;
+        public static bool RenderQuadtreeConnectivity = true;
         public static bool TerrainCollisionsEnabled = false;
     }
 }

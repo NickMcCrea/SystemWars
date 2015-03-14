@@ -138,6 +138,18 @@ namespace MonoGameEngineCore.Procedural
             var eastConnections = connections[nodeToReplace].FindAll(x => x.direction == ConnectionDirection.east);
 
 
+            HandleNorthConnections(nodeToReplace, nw, ne, northConnections);
+            HandleSouthConnections(nodeToReplace, sw, se, southConnections);
+            HandleWestConnections(nodeToReplace, nw, sw, westConnections);
+            HandleEastConnections(nodeToReplace, ne, se, eastConnections);
+
+            GC.KeepAlive(parentConnections);
+            RemoveAllConnections(nodeToReplace);
+
+        }
+
+        private void HandleNorthConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode ne, List<Connection> northConnections)
+        {
             if (northConnections.Count == 1)
             {
                 if (northConnections[0].node.side == nw.side)
@@ -148,9 +160,7 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //we're crossing over to another quad tree.
-                    MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
-                    MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
+                    //ConnectNorthSideEdges(nodeToReplace, nw, ne, northConnections);
                 }
             }
             if (northConnections.Count == 2)
@@ -167,32 +177,13 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //left side connects to top's west edge.
-                    if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
-                    {
-                        MakeConnection(nw,
-                        northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
-                        ConnectionDirection.north, ConnectionDirection.west);
-                        MakeConnection(ne,
-                            northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
-                            ConnectionDirection.north, ConnectionDirection.west);
-                    }
-
+                    //ConnectMultipleNorthEdges(nodeToReplace, nw, ne, northConnections);
                 }
             }
+        }
 
-            if (southConnections.Count == 1)
-            {
-                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
-                MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
-            }
-            if (southConnections.Count == 2)
-            {
-                MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
-                MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
-            }
-
-
+        private void HandleWestConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, List<Connection> westConnections)
+        {
             if (westConnections.Count == 1)
             {
 
@@ -203,8 +194,7 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    MakeConnection(sw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
-                    MakeConnection(nw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
+                    //ConnectWestSideEdges(nodeToReplace, nw, sw, westConnections);
                 }
 
             }
@@ -223,33 +213,393 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //top connects on west to left's north
-                    if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
-                    {
-                        MakeConnection(sw,
-                        westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
-                        ConnectionDirection.west, ConnectionDirection.north);
-                        MakeConnection(nw,
-                            westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
-                            ConnectionDirection.west, ConnectionDirection.north);
-                    }
+                    //ConnectMultipleWestSideEdges(nodeToReplace, nw, sw, westConnections);
+                }
+            }
+        }
+
+        private void HandleSouthConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode sw, NeighbourTrackerNode se, List<Connection> southConnections)
+        {
+            if (southConnections.Count == 1)
+            {
+                if (southConnections[0].node.side == sw.side)
+                {
+
+                    MakeConnection(sw, southConnections[0].node, ConnectionDirection.south);
+                    MakeConnection(se, southConnections[0].node, ConnectionDirection.south);
+                }
+                else
+                {
+                    //ConnectSouthSideEdges(nodeToReplace, sw, se, southConnections);
+                }
+            }
+            if (southConnections.Count == 2)
+            {
+                if (southConnections[0].node.side == sw.side)
+                {
+
+                    MakeConnection(sw, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.south);
+                    MakeConnection(se, southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node, ConnectionDirection.south);
+                }
+                else
+                {
+                    //ConnectMultipleSouthEdges(nodeToReplace, sw, se, southConnections);
                 }
             }
 
+        }
+
+        private void HandleEastConnections(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode ne, NeighbourTrackerNode se, List<Connection> eastConnections)
+        {
             if (eastConnections.Count == 1)
             {
-                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east);
-                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east);
+                if (eastConnections[0].node.side == ne.side)
+                {
+                    MakeConnection(se, eastConnections[0].node, ConnectionDirection.east);
+                    MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east);
+                }
+                else
+                {
+                    //ConnectEastSideEdges(nodeToReplace, ne, se, eastConnections);
+                }
+
             }
             if (eastConnections.Count == 2)
             {
-                MakeConnection(se, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node, ConnectionDirection.east);
-                MakeConnection(ne, eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node, ConnectionDirection.east);
+
+                if (eastConnections[0].node.side == ne.side)
+                {
+
+                    MakeConnection(se,
+                        eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                        ConnectionDirection.east);
+                    MakeConnection(ne,
+                        eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                        ConnectionDirection.east);
+                }
+                else
+                {
+                    //ConnectMultipleEastSideEdges(nodeToReplace, ne, se, eastConnections);
+                }
+            }
+        }
+
+        private void ConnectMultipleWestSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, List<Connection> westConnections)
+        {
+            //top connects on west to left's north
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+            {
+                MakeConnection(sw,
+                westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                ConnectionDirection.west, ConnectionDirection.north);
+                MakeConnection(nw,
+                    westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                    ConnectionDirection.west, ConnectionDirection.north);
             }
 
-            GC.KeepAlive(parentConnections);
-            RemoveAllConnections(nodeToReplace);
+            //bottom to right
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(sw,
+                westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                ConnectionDirection.west, ConnectionDirection.south);
+                MakeConnection(nw,
+                    westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                    ConnectionDirection.west, ConnectionDirection.south);
+            }
 
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.left
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.right
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+
+                MakeConnection(sw,
+               westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+               ConnectionDirection.west, ConnectionDirection.east);
+                MakeConnection(nw,
+                    westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                    ConnectionDirection.west, ConnectionDirection.south);
+
+            }
+        }
+
+        private void ConnectWestSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode sw, List<Connection> westConnections)
+        {
+            //top to left
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+            {
+                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
+                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.north);
+            }
+
+            //bottom to right
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.south);
+                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.south);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.left
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.right
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(sw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.east);
+                MakeConnection(nw, westConnections[0].node, ConnectionDirection.west, ConnectionDirection.east);
+            }
+        }
+
+        private void ConnectMultipleEastSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode ne, NeighbourTrackerNode se, List<Connection> eastConnections)
+        {
+            //top connects on east to right's north
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+            {
+                MakeConnection(se,
+                eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                ConnectionDirection.east, ConnectionDirection.north);
+                MakeConnection(ne,
+                    eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                    ConnectionDirection.east, ConnectionDirection.north);
+            }
+
+            //bottom to left
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(se,
+                eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                ConnectionDirection.east, ConnectionDirection.south);
+                MakeConnection(ne,
+                    eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                    ConnectionDirection.east, ConnectionDirection.south);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.left
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.right
+              || nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+
+                MakeConnection(se,
+               eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+               ConnectionDirection.east, ConnectionDirection.west);
+                MakeConnection(ne,
+                    eastConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                    ConnectionDirection.east, ConnectionDirection.west);
+
+            }
+        }
+
+        private void ConnectEastSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode ne, NeighbourTrackerNode se, List<Connection> eastConnections)
+        {
+            //top to right
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+            {
+                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.north);
+                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.north);
+            }
+
+            //bottom to left
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.south);
+                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.south);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.left
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.right
+                || nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(se, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.west);
+                MakeConnection(ne, eastConnections[0].node, ConnectionDirection.east, ConnectionDirection.west);
+            }
+        }
+
+        private void ConnectMultipleSouthEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode sw, NeighbourTrackerNode se, List<Connection> southConnections)
+        {
+            ////left side connects to bottom's east edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
+            {
+                MakeConnection(sw,
+                southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                ConnectionDirection.south, ConnectionDirection.east);
+
+                MakeConnection(se,
+                    southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                    ConnectionDirection.south, ConnectionDirection.east);
+            }
+
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.right)
+            {
+                MakeConnection(sw,
+                southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                ConnectionDirection.south, ConnectionDirection.west);
+
+                MakeConnection(se,
+                    southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                    ConnectionDirection.south, ConnectionDirection.west);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front)
+            {
+                MakeConnection(sw,
+                southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                ConnectionDirection.south, ConnectionDirection.south);
+
+                MakeConnection(se,
+                    southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                    ConnectionDirection.south, ConnectionDirection.south);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(sw,
+                southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                ConnectionDirection.south, ConnectionDirection.north);
+
+                MakeConnection(se,
+                    southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                    ConnectionDirection.south, ConnectionDirection.north);
+            }
+
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.top)
+            {
+                MakeConnection(sw,
+                southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                ConnectionDirection.south, ConnectionDirection.north);
+
+                MakeConnection(se,
+                    southConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                    ConnectionDirection.south, ConnectionDirection.north);
+            }
+
+
+        }
+
+        private void ConnectSouthSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode sw, NeighbourTrackerNode se, List<Connection> southConnections)
+        {
+            //left to bottom
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.east);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.east);
+            }
+            //right to bottom
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.right)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.west);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.west);
+            }
+            //forward to bottom
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.south);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.south);
+            }
+            //backward to bottom
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.north);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.north);
+            }
+            //top to front
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(sw, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.north);
+                MakeConnection(se, southConnections[0].node, ConnectionDirection.south, ConnectionDirection.north);
+            }
+        }
+
+        private void ConnectMultipleNorthEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode ne, List<Connection> northConnections)
+        {
+            //left side connects to top's west edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
+            {
+                MakeConnection(nw,
+                northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                ConnectionDirection.north, ConnectionDirection.west);
+                MakeConnection(ne,
+                    northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                    ConnectionDirection.north, ConnectionDirection.west);
+            }
+            //right side connects to top's east edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.right)
+            {
+                MakeConnection(nw,
+                northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                ConnectionDirection.north, ConnectionDirection.east);
+                MakeConnection(ne,
+                    northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                    ConnectionDirection.north, ConnectionDirection.east);
+            }
+            //front side connects to top's south edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front)
+            {
+                MakeConnection(nw,
+                northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                ConnectionDirection.north, ConnectionDirection.south);
+                MakeConnection(ne,
+                    northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                    ConnectionDirection.north, ConnectionDirection.south);
+            }
+
+            //back side connects to top's north edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(nw,
+                northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
+                ConnectionDirection.north, ConnectionDirection.north);
+                MakeConnection(ne,
+                    northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.nw).node,
+                    ConnectionDirection.north, ConnectionDirection.north);
+            }
+
+            //bottom side connects to backs south edge.
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(nw,
+                northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.sw).node,
+                ConnectionDirection.north, ConnectionDirection.south);
+                MakeConnection(ne,
+                    northConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.se).node,
+                    ConnectionDirection.north, ConnectionDirection.south);
+            }
+        }
+
+        private void ConnectNorthSideEdges(NeighbourTrackerNode nodeToReplace, NeighbourTrackerNode nw, NeighbourTrackerNode ne, List<Connection> northConnections)
+        {
+            //left to top
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.left)
+            {
+                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
+                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.west);
+            }
+            //right to top
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.right)
+            {
+                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.east);
+                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.east);
+            }
+            //forward to top
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.front)
+            {
+                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.south);
+                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.south);
+            }
+            //backward to top
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.back)
+            {
+                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.north);
+                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.north);
+            }
+            //bottom to back
+            if (nodeToReplace.side == NeighbourTrackerNode.CubeSide.bottom)
+            {
+                MakeConnection(nw, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.south);
+                MakeConnection(ne, northConnections[0].node, ConnectionDirection.north, ConnectionDirection.south);
+            }
         }
 
         public void RemoveAllConnections(NeighbourTrackerNode nodeToReplace)
