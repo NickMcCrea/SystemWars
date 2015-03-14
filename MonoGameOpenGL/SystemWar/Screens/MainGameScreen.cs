@@ -90,17 +90,17 @@ namespace SystemWar.Screens
 
             var earth = SystemCore.GameObjectManager.GetObject("earth");
 
-            DebugShapeRenderer.AddBoundingSphere(
-                new BoundingSphere(
-                    testPlanetSurfacePosition.GetPosition(earth as Planet, ship.HighPrecisionPositionComponent), 1000f),
-                Color.Red);
+            //DebugShapeRenderer.AddBoundingSphere(
+            //    new BoundingSphere(
+            //        testPlanetSurfacePosition.GetPosition(earth as Planet, ship.HighPrecisionPositionComponent), 1000f),
+            //    Color.Red);
 
-            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
-                earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Forward*7000, Color.Blue);
-            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
-            earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Right * 7000, Color.Red);
-            DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
-            earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Up * 7000, Color.Green);
+            //DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+            //    earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Forward*7000, Color.Blue);
+            //DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+            //earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Right * 7000, Color.Red);
+            //DebugShapeRenderer.AddLine(earth.Transform.WorldMatrix.Translation,
+            //earth.Transform.WorldMatrix.Translation + earth.Transform.WorldMatrix.Up * 7000, Color.Green);
 
 
 

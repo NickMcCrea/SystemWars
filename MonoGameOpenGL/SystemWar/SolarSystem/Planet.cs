@@ -171,12 +171,12 @@ namespace MonoGameEngineCore.Procedural
 
 
             //top
-            PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            top.BuildGeometry();
-            AddPatch(top);
-            rootNodes.Add(top);
-            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
-            topNode.side = NeighbourTrackerNode.CubeSide.top;
+            //PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            //top.BuildGeometry();
+            //AddPatch(top);
+            //rootNodes.Add(top);
+            //topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
+            //topNode.side = NeighbourTrackerNode.CubeSide.top;
 
             //////bottom
             //PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
@@ -187,31 +187,31 @@ namespace MonoGameEngineCore.Procedural
             //bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
 
             ////forward
-            //PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
-            //forward.BuildGeometry();
-            //AddPatch(forward);
-            //rootNodes.Add(forward);
-            //forwardNode = new NeighbourTrackerNode(1, forward.min, forward.max, vectorSpacing, Vector3.Forward);
-            //forwardNode.side = NeighbourTrackerNode.CubeSide.front;
+            PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
+            forward.BuildGeometry();
+            AddPatch(forward);
+            rootNodes.Add(forward);
+            forwardNode = new NeighbourTrackerNode(1, forward.min, forward.max, vectorSpacing, Vector3.Forward);
+            forwardNode.side = NeighbourTrackerNode.CubeSide.front;
 
             ////backward
-            //PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
-            //backward.BuildGeometry();
-            //AddPatch(backward);
-            //rootNodes.Add(backward);
-            //backwardNode = new NeighbourTrackerNode(1, backward.min, backward.max, vectorSpacing, Vector3.Backward);
-            //backwardNode.side = NeighbourTrackerNode.CubeSide.back;
+            PlanetNode backward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2 - 1), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2 - 1), vectorSpacing, Vector3.Backward, sphereSize);
+            backward.BuildGeometry();
+            AddPatch(backward);
+            rootNodes.Add(backward);
+            backwardNode = new NeighbourTrackerNode(1, backward.min, backward.max, vectorSpacing, Vector3.Backward);
+            backwardNode.side = NeighbourTrackerNode.CubeSide.back;
 
-            ////right
-            //PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
-            //right.BuildGeometry();
-            //AddPatch(right);
-            //rootNodes.Add(right);
-            //rightNode = new NeighbourTrackerNode(1, right.min, right.max, vectorSpacing, Vector3.Right);
-            //rightNode.side = NeighbourTrackerNode.CubeSide.right;
+            //right
+            PlanetNode right = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(-cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Right, sphereSize);
+            right.BuildGeometry();
+            AddPatch(right);
+            rootNodes.Add(right);
+            rightNode = new NeighbourTrackerNode(1, right.min, right.max, vectorSpacing, Vector3.Right);
+            rightNode.side = NeighbourTrackerNode.CubeSide.right;
 
 
-            ////left
+            //left
             PlanetNode left = new PlanetNode(testEffect, module, this, 1, new Vector3(cubeVerts / 2 - 1, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2 - 1, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Left, sphereSize);
             left.BuildGeometry();
             AddPatch(left);
@@ -313,6 +313,14 @@ namespace MonoGameEngineCore.Procedural
                     northEast.side = next.side;
                     PatchMinMax nePatchMinMax = new PatchMinMax(midRight, midTop, next.depth + 1, next.normal, next.step / 2, next.side);
                     nodesToCheck.Enqueue(nePatchMinMax);
+
+                    //if (next.side == NeighbourTrackerNode.CubeSide.right || next.side == NeighbourTrackerNode.CubeSide.back)
+                    //{
+                    //    southEast.quadrant = NeighbourTrackerNode.Quadrant.sw;
+                    //    northEast.quadrant = NeighbourTrackerNode.Quadrant.nw;
+                    //    southWest.quadrant = NeighbourTrackerNode.Quadrant.se;
+                    //    northWest.quadrant = NeighbourTrackerNode.Quadrant.ne;
+                    //}
 
                     neighbourTracker.ReplaceNodeWithChildren(neighbourTracker.nodeDictionary[(next.Min + next.Max) / 2],
                         northWest, southWest, southEast, northEast);
@@ -427,8 +435,6 @@ namespace MonoGameEngineCore.Procedural
             {
                 node.Update();
 
-                if (SystemWarGlobalSettings.RenderQuadtreeConnectivity)
-                    RenderConnections(node);
 
 
                 //all nodes are flagged for removal every frame. 
@@ -441,6 +447,10 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
+
+                    if (SystemWarGlobalSettings.RenderQuadtreeConnectivity)
+                        RenderConnections(node);
+
                     node.Enable();
                     activeCount++;
                 }

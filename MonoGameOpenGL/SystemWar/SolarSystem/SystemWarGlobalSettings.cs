@@ -14,5 +14,6 @@ namespace SystemWar
         public static bool VisualisePatches = true;
         public static bool RenderQuadtreeConnectivity = true;
         public static bool TerrainCollisionsEnabled = false;
+        public static bool EnableQuadTreeInterconnections = false;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using SystemWar;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -143,7 +144,7 @@ namespace MonoGameEngineCore.Procedural
             HandleWestConnections(nodeToReplace, nw, sw, westConnections);
             HandleEastConnections(nodeToReplace, ne, se, eastConnections);
 
-            GC.KeepAlive(parentConnections);
+          
             RemoveAllConnections(nodeToReplace);
 
         }
@@ -160,7 +161,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectNorthSideEdges(nodeToReplace, nw, ne, northConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectNorthSideEdges(nodeToReplace, nw, ne, northConnections);
                 }
             }
             if (northConnections.Count == 2)
@@ -177,7 +179,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectMultipleNorthEdges(nodeToReplace, nw, ne, northConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectMultipleNorthEdges(nodeToReplace, nw, ne, northConnections);
                 }
             }
         }
@@ -194,7 +197,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectWestSideEdges(nodeToReplace, nw, sw, westConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectWestSideEdges(nodeToReplace, nw, sw, westConnections);
                 }
 
             }
@@ -213,7 +217,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectMultipleWestSideEdges(nodeToReplace, nw, sw, westConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectMultipleWestSideEdges(nodeToReplace, nw, sw, westConnections);
                 }
             }
         }
@@ -230,7 +235,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectSouthSideEdges(nodeToReplace, sw, se, southConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectSouthSideEdges(nodeToReplace, sw, se, southConnections);
                 }
             }
             if (southConnections.Count == 2)
@@ -243,7 +249,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectMultipleSouthEdges(nodeToReplace, sw, se, southConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectMultipleSouthEdges(nodeToReplace, sw, se, southConnections);
                 }
             }
 
@@ -260,7 +267,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectEastSideEdges(nodeToReplace, ne, se, eastConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectEastSideEdges(nodeToReplace, ne, se, eastConnections);
                 }
 
             }
@@ -279,7 +287,8 @@ namespace MonoGameEngineCore.Procedural
                 }
                 else
                 {
-                    //ConnectMultipleEastSideEdges(nodeToReplace, ne, se, eastConnections);
+                    if (SystemWarGlobalSettings.EnableQuadTreeInterconnections)
+                        ConnectMultipleEastSideEdges(nodeToReplace, ne, se, eastConnections);
                 }
             }
         }
@@ -319,7 +328,7 @@ namespace MonoGameEngineCore.Procedural
                ConnectionDirection.west, ConnectionDirection.east);
                 MakeConnection(nw,
                     westConnections.Find(x => x.node.quadrant == NeighbourTrackerNode.Quadrant.ne).node,
-                    ConnectionDirection.west, ConnectionDirection.south);
+                    ConnectionDirection.west, ConnectionDirection.east);
 
             }
         }
