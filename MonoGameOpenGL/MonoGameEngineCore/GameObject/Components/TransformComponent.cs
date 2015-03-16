@@ -109,5 +109,12 @@ namespace MonoGameEngineCore.GameObject.Components
         }
 
 
+
+        public void SetLookAndUp(Vector3 lookAt, Vector3 up)
+        {
+            Vector3 pos = WorldMatrix.Translation;
+            WorldMatrix = Matrix.CreateWorld(pos, lookAt, up);
+            
+        }
     }
 }

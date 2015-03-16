@@ -26,6 +26,7 @@ namespace SystemWar.Screens
         private Vector3 hitPos = Vector3.Zero;
         private PlanetNode hitNode = null;
         private float shipDistanceOnFirstPlacement = 50000;
+        
 
         private PlanetSurfacePosition testPlanetSurfacePosition;
 
@@ -106,9 +107,12 @@ namespace SystemWar.Screens
 
             if (!firstTimePlacement)
             {
+               
                 ship.GetComponent<HighPrecisionPosition>().Position =
-                    SystemCore.GameObjectManager.GetObject("earth").GetComponent<HighPrecisionPosition>().Position +
-                    new Vector3d(shipDistanceOnFirstPlacement, 0, 0);
+                    earth.GetComponent<HighPrecisionPosition>().Position + earth.Transform.WorldMatrix.Backward * shipDistanceOnFirstPlacement;
+ 
+                ship.Transform.SetLookAndUp(SolarSystem.GetRenderPosition(ship.HighPrecisionPositionComponent.Position, earth.GetComponent<HighPrecisionPosition>().Position), Vector3.Up);
+
                 firstTimePlacement = true;
             }
 
