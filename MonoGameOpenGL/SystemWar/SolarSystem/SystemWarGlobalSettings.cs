@@ -10,9 +10,9 @@ namespace SystemWar
         public static bool FixedTimeStep = true;
         public static bool PhysicsOnBackgroundThread = false;
         public static bool BuildPatchesOnBackgroundThread = false;
-        public static bool RepairSeams = true;
-        public static bool VisualisePatches = true;
-        public static bool RenderQuadtreeConnectivity = true;
+        public static bool RepairSeams = false;
+        public static bool VisualisePatches = false;
+        public static bool RenderQuadtreeConnectivity = false;
         public static bool TerrainCollisionsEnabled = false;
         public static bool EnableQuadTreeInterconnections = true;
     }

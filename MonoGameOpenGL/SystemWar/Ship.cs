@@ -61,8 +61,8 @@ namespace SystemWar
             AddComponent(new HighPrecisionPosition());
             AddComponent(new ShipController());
 
-            if (System.Environment.MachineName != "NICKMCCREA-PC")
-                AddComponent(new MouseKeyboardShipController());
+
+            AddComponent(new MouseKeyboardShipController());
 
             AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(shipCameraObject);

@@ -41,8 +41,6 @@ namespace MonoGameEngineCore.Rendering
             }
           
             gd.IsFullScreen = fullScreen;
-            gd.ToggleFullScreen();
-            gd.ApplyChanges();
             return gd;
         }
 

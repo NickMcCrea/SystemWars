@@ -55,7 +55,9 @@ namespace MonoGameEngineCore.GameObject.Components
             if (!Visible)
                 return;
 
-            SystemCore.GraphicsDevice.DepthStencilState.DepthBufferWriteEnable = false;
+            var tempDepthState = new DepthStencilState();
+            tempDepthState.DepthBufferWriteEnable = false;
+            SystemCore.GraphicsDevice.DepthStencilState = tempDepthState;
             PreDraw(gameTime);
 
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
