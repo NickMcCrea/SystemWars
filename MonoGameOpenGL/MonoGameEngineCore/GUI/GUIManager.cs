@@ -80,7 +80,7 @@ namespace MonoGameEngineCore.GUI
             GUIFonts.Fonts.Add("test", content.Load<SpriteFont>("Fonts/Arial"));
             GUIFonts.Fonts.Add("neuropolitical", content.Load<SpriteFont>("Fonts/neuropolitical"));
 
-            GUITexture.Textures.Add("blank", content.Load<Texture2D>("blank"));
+            GUITexture.Textures.Add("blank", content.Load<Texture2D>("Textures/blank"));
         }
 
         public void Update(GameTime gameTime)

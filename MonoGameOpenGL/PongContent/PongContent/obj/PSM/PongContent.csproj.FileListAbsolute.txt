@@ -1,9 +1,0 @@
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\PSM\IgnoreMe.dll
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\PSM\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\PSM\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\PSM\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\PSM\PongContent.csprojResolveAssemblyReference.cache
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\PSM\Microsoft.Xna.Framework.RuntimeProfile.txt
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\obj\PSM\IgnoreMe.dll
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\PSM\Content\Pong.xnb
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContent\bin\PSM\Content\Pong.xnb

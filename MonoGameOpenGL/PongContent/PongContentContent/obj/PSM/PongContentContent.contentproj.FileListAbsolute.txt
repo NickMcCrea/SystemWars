@@ -1,2 +1,0 @@
-C:\Users\NickMcCrea\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\PSM\PongContentContent.contentprojResolveAssemblyReference.cache
-C:\Users\nick\Dropbox\MonoGame\MonoGameOpenGL\PongContent\PongContentContent\obj\PSM\PongContentContent.contentprojResolveAssemblyReference.cache

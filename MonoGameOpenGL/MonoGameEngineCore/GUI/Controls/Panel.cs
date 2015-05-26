@@ -112,6 +112,7 @@ namespace MonoGameEngineCore.GUI.Controls
 
             base.Draw(gameTime, spriteBatch, device);
         }
+
         public void DrawBorder(SpriteBatch spriteBatch)
         {
           
@@ -154,6 +155,7 @@ namespace MonoGameEngineCore.GUI.Controls
 
 
         }
+
         public override void SetPaletteSecondary(Palette palette)
         {
             MainColor = palette.SecondaryColor;

@@ -69,14 +69,8 @@
     <Content Include="Icon.ico" />
     <Content Include="SDL.dll" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Content\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject\MonoGameEngineContentProject.csproj">
-      <Project>{36ea0a7c-802f-439e-a767-fd20ecb67710}</Project>
-      <Name>MonoGameEngineContentProject</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MonoGameEngineCore\MonoGameEngineCore.csproj">
       <Project>{02d66f0b-5f5c-4f91-89ab-baf35133a56f}</Project>
       <Name>MonoGameEngineCore</Name>
