@@ -127,3 +127,9 @@
 /processorParam:TextureFormat=Color
 /build:Textures/blank.png
 
+#begin Fonts/SimpleSansSerif.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/SimpleSansSerif.spritefont
+

@@ -23,7 +23,7 @@ namespace MonoGameDirectX11
         [STAThread]
         static void Main()
         {
-            SystemCore.ActiveColorScheme = ColorScheme.ColorSchemes["space"];
+            SystemCore.ActiveColorScheme = ColorScheme.ColorSchemes["flatui"];
             ScreenResolutionName resToUse = ScreenResolutionName.WXGA;
 
             if (System.Environment.MachineName == "NICKMCCREA-PC")

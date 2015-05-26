@@ -77,9 +77,9 @@ namespace MonoGameEngineCore.GUI
 
         private static void LoadTexturesAndFonts(ContentManager content)
         {
-            GUIFonts.Fonts.Add("test", content.Load<SpriteFont>("Fonts/Arial"));
+            GUIFonts.Fonts.Add("test", content.Load<SpriteFont>("Fonts/SimpleSansSerif"));
             GUIFonts.Fonts.Add("neuropolitical", content.Load<SpriteFont>("Fonts/neuropolitical"));
-
+            GUIFonts.Fonts.Add("sansserif", content.Load<SpriteFont>("Fonts/SimpleSansSerif"));
             GUITexture.Textures.Add("blank", content.Load<Texture2D>("Textures/blank"));
         }
 
