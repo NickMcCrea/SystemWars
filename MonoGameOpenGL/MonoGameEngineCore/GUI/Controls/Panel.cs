@@ -18,7 +18,6 @@ namespace MonoGameEngineCore.GUI.Controls
         public bool Border { get; set; }
         public Color BorderColor { get; set; }
         public int BorderThickness { get; set; }
-      
 
         public Panel(Rectangle rec, Texture2D texture)
         {
@@ -28,9 +27,10 @@ namespace MonoGameEngineCore.GUI.Controls
             Texture = texture;
         }
 
+
         public override void Update(GameTime gameTime, InputManager input)
         {
-            
+
 
             if (input.MouseInRectangle(Rect) && Visible)
             {
@@ -98,7 +98,7 @@ namespace MonoGameEngineCore.GUI.Controls
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice device)
         {
-         
+
             if (MouseOver && HighlightOnMouseOver)
                 spriteBatch.Draw(Texture, Rect, HighlightColor * Alpha);
             else
@@ -115,7 +115,7 @@ namespace MonoGameEngineCore.GUI.Controls
 
         public void DrawBorder(SpriteBatch spriteBatch)
         {
-          
+
             Rectangle topBorder = new Rectangle(Rect.X - BorderThickness, Rect.Y - BorderThickness, Rect.Width + BorderThickness * 2, BorderThickness);
             spriteBatch.Draw(GUITexture.Textures["blank"], topBorder, BorderColor * Alpha);
 
@@ -168,6 +168,59 @@ namespace MonoGameEngineCore.GUI.Controls
                 b.SetPaletteSecondary(palette);
         }
 
-     
+        public override void Anchor(AnchorPoint anchorPoint, GUIManager.ScreenPoint screenPoint, Vector2 offset)
+        {
+            Vector2 topLeftDiff = GetAnchorOffset(anchorPoint);
+            Vector2 screenAnchor = SystemCore.GUIManager.GetScreenPoint(screenPoint);
+            screenAnchor += topLeftDiff;
+            screenAnchor += offset;
+            Rect = new Rectangle((int)screenAnchor.X, (int)screenAnchor.Y, Rect.Width, Rect.Height);
+
+        }
+
+        public override void Anchor(AnchorPoint anchorPoint, GUIManager.ScreenPoint screenPoint, float xScreenRatioOffset, float yScreenRatioOffset)
+        {
+            int xOffset = GUIManager.ScreenRatioX(xScreenRatioOffset);
+            int yOffset = GUIManager.ScreenRatioY(yScreenRatioOffset);
+            Anchor(anchorPoint, screenPoint, new Vector2(xOffset, yOffset));
+        }
+
+        public  override Vector2 GetAnchorOffset(AnchorPoint anchorPoint)
+        {
+            switch (anchorPoint)
+            {
+                case (AnchorPoint.topLeft):
+                    return Vector2.Zero;
+                    break;
+                case (AnchorPoint.topMid):
+                    return new Vector2(-Rect.Width / 2, 0);
+                    break;
+                case (AnchorPoint.topRight):
+                    return new Vector2(-Rect.Width, 0);
+                    break;
+                case (AnchorPoint.midRight):
+                    return new Vector2(-Rect.Width, -Rect.Height / 2);
+                    break;
+                case (AnchorPoint.bottomRight):
+                    return new Vector2(-Rect.Width, -Rect.Height);
+                    break;
+                case (AnchorPoint.bottomMid):
+                    return new Vector2(-Rect.Width / 2, -Rect.Height);
+                    break;
+                case (AnchorPoint.bottomLeft):
+                    return new Vector2(0, -Rect.Height);
+                    break;
+                case (AnchorPoint.midLeft):
+                    return new Vector2(0, -Rect.Height / 2);
+                    break;
+                case (AnchorPoint.middle):
+                    return new Vector2(-Rect.Width / 2, -Rect.Height / 2);
+                    break;
+            }
+
+            return Vector2.Zero;
+
+        }
+
     }
 }

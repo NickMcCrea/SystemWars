@@ -11,7 +11,7 @@ namespace MonoGameEngineCore.GUI
 {
     public class GUIManager : IGameSubSystem
     {
-     
+
         public Dictionary<string, Palette> Palettes = new Dictionary<string, Palette>();
         SpriteBatch guiBatch;
         public List<BaseControl> controlsToAdd = new List<BaseControl>();
@@ -39,7 +39,7 @@ namespace MonoGameEngineCore.GUI
 
         public GUIManager()
         {
-        
+
 
         }
 
@@ -48,7 +48,7 @@ namespace MonoGameEngineCore.GUI
             guiBatch = new SpriteBatch(SystemCore.GraphicsDevice);
             controls = new List<BaseControl>();
             controlsToRemove = new List<BaseControl>();
-        
+
             if (!initialised)
             {
                 LoadTexturesAndFonts(SystemCore.ContentManager);
@@ -112,9 +112,9 @@ namespace MonoGameEngineCore.GUI
         }
 
         public void Render(GameTime gameTime)
-        {      
+        {
             guiBatch.Begin();
-           
+
             foreach (BaseControl control in controls)
             {
                 if (control.Visible)
@@ -149,6 +149,18 @@ namespace MonoGameEngineCore.GUI
             return Vector2.Zero;
         }
 
+        public static int ScreenRatioX(float x)
+        {
+            float width = SystemCore.GraphicsDevice.Viewport.Width;
+            return (int) (width*x);
+        }
+
+        public static int ScreenRatioY(float y)
+        {
+            float width = SystemCore.GraphicsDevice.Viewport.Height;
+            return (int)(width * y);
+        }
+
         public void RemoveControl(BaseControl control)
         {
             control.RemoveEvents();
@@ -175,7 +187,7 @@ namespace MonoGameEngineCore.GUI
             AddControl(p);
             return p;
 
-          
+
         }
 
         public Button AddDefaultLabelledButton(Vector2 midPoint, int buttonWidth, int buttonHeight, string labelText, Color mainButtonColor, Color buttonHighlight, Color labelTextColor)
@@ -206,7 +218,7 @@ namespace MonoGameEngineCore.GUI
 
             AddBackground("blank", background);
 
-        
+
 
             Vector2 buttonSpace = new Vector2(0, 0);
             float spacing = 50;
@@ -228,7 +240,7 @@ namespace MonoGameEngineCore.GUI
             lab.TextColor = textColor;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
-           
+
         }
 
         public Panel AddPanel(int x, int y, int width, int height, string availableTextures, Color color)
@@ -242,13 +254,13 @@ namespace MonoGameEngineCore.GUI
         public void CreateDefaultMenuScreen(string mainmenuName, Color backgroundColor, Color textColor, Color mainColor, Color highlightColor, params string[] labels)
         {
             AddBackground("blank", backgroundColor);
-           
+
             Vector2 buttonSpace = new Vector2(0, 0);
             float spacing = 50;
             foreach (string label in labels)
             {
 
-                var button1 = AddDefaultLabelledButton(screenMidPoint + buttonSpace, 150, 25, label, mainColor,highlightColor, textColor);
+                var button1 = AddDefaultLabelledButton(screenMidPoint + buttonSpace, 150, 25, label, mainColor, highlightColor, textColor);
                 button1.Name = label;
                 buttonSpace.Y += spacing;
             }
@@ -277,7 +289,7 @@ namespace MonoGameEngineCore.GUI
 
         public TextBox AddDefaultTextbox(Rectangle rectangle)
         {
-            TextBox t = new TextBox(new Rectangle(100, 100, 100, 50), GUITexture.Textures["blank"],GUIFonts.Fonts["test"]);
+            TextBox t = new TextBox(new Rectangle(100, 100, 100, 50), GUITexture.Textures["blank"], GUIFonts.Fonts["test"]);
             controls.Add(t);
             return t;
         }
@@ -288,7 +300,7 @@ namespace MonoGameEngineCore.GUI
             {
                 control.SetPalette(palette);
             }
-            foreach(BaseControl control in controlsToAdd)
+            foreach (BaseControl control in controlsToAdd)
             {
                 control.SetPalette(palette);
             }

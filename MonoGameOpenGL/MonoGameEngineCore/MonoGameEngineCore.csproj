@@ -87,6 +87,7 @@
     <Compile Include="GUI\Controls\Panel.cs" />
     <Compile Include="GUI\Controls\ScrollBar.cs" />
     <Compile Include="GUI\Controls\TextBox.cs" />
+    <Compile Include="GUI\Controls\UIAnchor.cs" />
     <Compile Include="GUI\Controls\UITransition.cs" />
     <Compile Include="GUI\GUIFonts.cs" />
     <Compile Include="GUI\GUIManager.cs" />

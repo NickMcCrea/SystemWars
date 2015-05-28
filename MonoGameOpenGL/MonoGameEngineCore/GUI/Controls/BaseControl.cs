@@ -118,6 +118,24 @@ namespace MonoGameEngineCore.GUI.Controls
             }
         }
 
-     
+        public virtual void Anchor(AnchorPoint anchorPoint, GUIManager.ScreenPoint screenPoint, Vector2 offset)
+        {
+           
+
+        }
+
+        public virtual void Anchor(AnchorPoint anchorPoint, GUIManager.ScreenPoint screenPoint, float xScreenRatioOffset, float yScreenRatioOffset)
+        {
+
+
+        }
+
+        public virtual Vector2 GetAnchorOffset(AnchorPoint anchorPoint)
+        {
+            return Vector2.Zero;
+
+        }
+       
+
     }
 }
