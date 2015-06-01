@@ -30,15 +30,6 @@ namespace MonoGameEngineCore.GUI.Controls
             
         }
 
-      
-
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice device)
-        {
-            
-            base.Draw(gameTime, spriteBatch, device);
-
-        }
-
         public override void RemoveEvents()
         {
             if (OnClick != null)
@@ -51,7 +42,6 @@ namespace MonoGameEngineCore.GUI.Controls
             }
             base.RemoveEvents();
         }
-
 
         public void AttachLabel(Label label)
         {
@@ -72,11 +62,6 @@ namespace MonoGameEngineCore.GUI.Controls
 
             foreach (BaseControl b in Children)
                 b.SetPosition(GetMidPoint());
-        }
-
-        public override void Translate(Vector2 offset)
-        {
-            base.Translate(offset);
         }
 
         public void SetLabelText(string p)
