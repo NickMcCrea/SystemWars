@@ -171,20 +171,20 @@ namespace MonoGameEngineCore.Procedural
 
 
             //top
-            //PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
-            //top.BuildGeometry();
-            //AddPatch(top);
-            //rootNodes.Add(top);
-            //topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
-            //topNode.side = NeighbourTrackerNode.CubeSide.top;
+            PlanetNode top = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, cubeVerts / 2 - 1, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2 - 1, cubeVerts / 2), vectorSpacing, Vector3.Up, sphereSize);
+            top.BuildGeometry();
+            AddPatch(top);
+            rootNodes.Add(top);
+            topNode = new NeighbourTrackerNode(1, top.min, top.max, vectorSpacing, Vector3.Up);
+            topNode.side = NeighbourTrackerNode.CubeSide.top;
 
-            //////bottom
-            //PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
-            //bottom.BuildGeometry();
-            //AddPatch(bottom);
-            //rootNodes.Add(bottom);
-            //bottomNode = new NeighbourTrackerNode(1, bottom.min, bottom.max, vectorSpacing, Vector3.Down);
-            //bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
+            ////bottom
+            PlanetNode bottom = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, -cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Down, sphereSize);
+            bottom.BuildGeometry();
+            AddPatch(bottom);
+            rootNodes.Add(bottom);
+            bottomNode = new NeighbourTrackerNode(1, bottom.min, bottom.max, vectorSpacing, Vector3.Down);
+            bottomNode.side = NeighbourTrackerNode.CubeSide.bottom;
 
             ////forward
             PlanetNode forward = new PlanetNode(testEffect, module, this, 1, new Vector3(-cubeVerts / 2, -cubeVerts / 2, -cubeVerts / 2), new Vector3(cubeVerts / 2, cubeVerts / 2, cubeVerts / 2), vectorSpacing, Vector3.Forward, sphereSize);
