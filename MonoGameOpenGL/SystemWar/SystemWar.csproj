@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Components\MouseShipController.cs" />
     <Compile Include="Components\ShipController.cs" />
+    <Compile Include="Game1.cs" />
     <Compile Include="PlanetSurfacePosition.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,16 +68,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\BepuLatest\BEPUutilities.dll</HintPath>
     </Reference>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.4.0.456, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="SDL.dll" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\MonoGameEngineCore\MonoGameEngineCore.csproj">
       <Project>{02d66f0b-5f5c-4f91-89ab-baf35133a56f}</Project>
@@ -87,6 +89,7 @@
   <PropertyGroup>
     <PostBuildEvent>XCOPY "$(SolutionDir)Content\Content\*.*" "$(TargetDir)Content" /s /i /y /c</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\MonoGame.Binaries.3.2.3-alpha\build\net40\MonoGame.Binaries.targets" Condition="Exists('..\packages\MonoGame.Binaries.3.2.3-alpha\build\net40\MonoGame.Binaries.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
