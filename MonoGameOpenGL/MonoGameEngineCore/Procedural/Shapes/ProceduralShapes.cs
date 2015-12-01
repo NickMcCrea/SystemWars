@@ -736,11 +736,6 @@ namespace MonoGameEngineCore.Procedural
             PrimitiveCount = 12;
         }
 
-
-
-
-
-
     }
 
     public class ProceduralSphereTwo : ProceduralShape
@@ -1107,7 +1102,7 @@ namespace MonoGameEngineCore.Procedural
         }
     }
 
-    public static class CompoundShapeBuilder
+    public static class CompoundShapeHelper
     {
         /// <summary>
         /// Builds a composite shape composed of a cylinder and two spheres.
@@ -1184,7 +1179,6 @@ namespace MonoGameEngineCore.Procedural
 
     public class LineBatch : ProceduralShape
     {
-
         public LineBatch(params Vector3 [] linePoints)
         {
             Indices = new short[linePoints.Length*2-2];

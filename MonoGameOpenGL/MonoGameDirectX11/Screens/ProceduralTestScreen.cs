@@ -32,22 +32,21 @@ namespace MonoGameDirectX11.Screens
             //AddLine(Vector3.Zero, Vector3.Backward * 5, 0.1f);
 
             //SystemCore.GameObjectManager.AddTestSphere(Vector3.Up, 0.5f);
-            // SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(10,0,0));
+            SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(0,0,0));
 
 
             //var capsuleCube = CompoundShapeBuilder.CapsuleCube();
             //SystemCore.GameObjectManager.AddShapeToScene(capsuleCube);
 
-            var lines = new LineBatch(Vector3.Zero, Vector3.Left, Vector3.Up, Vector3.Right, Vector3.Down);
-            SystemCore.GameObjectManager.AddLineBatchToScene(lines);
+            
 
-            mouseCamera.moveSpeed = 0.001f;
+            mouseCamera.moveSpeed = 0.01f;
 
         }
 
         private static void AddLine(Vector3 start, Vector3 end, float thickness)
         {
-            ProceduralShape line = CompoundShapeBuilder.Capsule(start, end, thickness);
+            ProceduralShape line = CompoundShapeHelper.Capsule(start, end, thickness);
             SystemCore.GameObjectManager.AddShapeToScene(line);
         }
 
@@ -60,7 +59,7 @@ namespace MonoGameDirectX11.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.DarkGray);
 
-            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(Vector3.Zero, 1f), Color.Blue);
+            //DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(Vector3.Zero, 1f), Color.Blue);
 
             base.Render(gameTime);
         }
