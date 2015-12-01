@@ -22,29 +22,31 @@ namespace MonoGameDirectX11.Screens
         {
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            AddLine(new Vector3(5, 5, 0), new Vector3(-5, -5, 0), 0.1f);
+            //AddLine(new Vector3(5, 5, 0), new Vector3(-5, -5, 0), 0.1f);
 
-            AddLine(Vector3.Zero, Vector3.Right * 5f, 0.1f);
-            AddLine(Vector3.Zero, Vector3.Up * 5, 0.1f);
-            AddLine(Vector3.Zero, Vector3.Left * 5f, 0.1f);
-            AddLine(Vector3.Zero, Vector3.Down * 5, 0.1f);
-            AddLine(Vector3.Zero, Vector3.Forward * 5f, 0.1f);
-            AddLine(Vector3.Zero, Vector3.Backward * 5, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Right * 5f, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Up * 5, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Left * 5f, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Down * 5, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Forward * 5f, 0.1f);
+            //AddLine(Vector3.Zero, Vector3.Backward * 5, 0.1f);
 
-            SystemCore.GameObjectManager.AddTestSphere(Vector3.Up, 0.5f);
+            //SystemCore.GameObjectManager.AddTestSphere(Vector3.Up, 0.5f);
            // SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(10,0,0));
 
-            mouseCamera.moveSpeed = 0.01f;
+
+            var capsuleCube = CompoundShapeBuilder.CapsuleCube();
+            SystemCore.GameObjectManager.AddShapeToScene(capsuleCube);
+
+            mouseCamera.moveSpeed = 0.001f;
            
         }
 
         private static void AddLine(Vector3 start, Vector3 end, float thickness)
         {
-            ProceduralShape line = CompoundShapeBuilder.ThreeDLine(start,end,thickness);
-            GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(line, EffectLoader.LoadEffect("flatshaded"));
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
+            ProceduralShape line = CompoundShapeBuilder.Capsule(start,end,thickness);
+            SystemCore.GameObjectManager.AddShapeToScene(line);
         }
-
 
         public override void Update(GameTime gameTime)
         {

@@ -30,6 +30,13 @@ namespace MonoGameEngineCore.GameObject
 
         }
 
+        public GameObject AddShapeToScene(ProceduralShape shape)
+        {
+            GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadEffect("flatshaded"));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
+            return o;
+        }
+
         public void AddAndInitialiseGameObject(GameObject obj)
         {
             if (obj is IUpdateable)

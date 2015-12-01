@@ -702,6 +702,11 @@ namespace MonoGameEngineCore.Procedural
                 Vertices[vertindex + 2].Position = vert2;
                 Vertices[vertindex + 3].Position = vert3;
 
+                Vertices[vertindex].Color = Color.White;
+                Vertices[vertindex + 1].Color = Color.White; ;
+                Vertices[vertindex + 2].Color = Color.White; ;
+                Vertices[vertindex + 3].Color = Color.White; ;
+
                 Plane plane = new Plane(vert0, vert2, vert1);
 
                 Vertices[vertindex].Normal = plane.Normal;
@@ -1111,7 +1116,7 @@ namespace MonoGameEngineCore.Procedural
         /// <param name="end"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public static ProceduralShape ThreeDLine(Vector3 start, Vector3 end, float width)
+        public static ProceduralShape Capsule(Vector3 start, Vector3 end, float width)
         {
 
 
@@ -1147,6 +1152,30 @@ namespace MonoGameEngineCore.Procedural
             }
 
             finalShape.Translate(-translation);
+
+            return finalShape;
+        }
+
+        public static ProceduralShape CapsuleCube()
+        {
+            var cube = new ProceduralCube();
+
+            var cyl1 = Capsule(new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), 0.01f);
+            var cyl2 = Capsule(new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0.5f, 0.5f, -0.5f), 0.01f);
+            var cyl3 = Capsule(new Vector3(-0.5f, 0.5f, 0.5f), new Vector3(-0.5f, 0.5f, -0.5f), 0.01f);
+            var cyl4 = Capsule(new Vector3(0.5f, 0.5f, 0.5f), new Vector3(0.5f, 0.5f, -0.5f), 0.01f);
+
+            var cyl5 = Capsule(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), 0.01f);
+            var cyl6 = Capsule(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f), 0.01f);
+            var cyl7 = Capsule(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(-0.5f, -0.5f, -0.5f), 0.01f);
+            var cyl8 = Capsule(new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, -0.5f), 0.01f);
+
+            var cyl9 = Capsule(new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(-0.5f, 0.5f, 0.5f), 0.01f);
+            var cyl10 = Capsule(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(-0.5f, 0.5f, -0.5f), 0.01f);
+            var cyl11 = Capsule(new Vector3(0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, -0.5f), 0.01f);
+            var cyl12 = Capsule(new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), 0.01f);
+
+            var finalShape = ProceduralShape.Combine(cube, cyl1, cyl2, cyl3, cyl4, cyl5, cyl6, cyl7, cyl8, cyl9,cyl10,cyl11,cyl12);
 
             return finalShape;
         }
