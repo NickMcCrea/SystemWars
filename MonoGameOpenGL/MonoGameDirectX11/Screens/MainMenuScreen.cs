@@ -13,7 +13,7 @@ namespace MonoGameDirectX11
         {
 
             string screenOne = "Render";
-            string screenTwo = "UI Test";
+            string screenTwo = "Procedural";
             string screenThree = "Physics";
         
 
@@ -29,7 +29,7 @@ namespace MonoGameDirectX11
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new UITestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new ProceduralTestScreen());
             };
 
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;

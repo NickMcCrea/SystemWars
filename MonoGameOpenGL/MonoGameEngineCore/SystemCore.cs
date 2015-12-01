@@ -59,6 +59,7 @@ namespace MonoGameEngineCore
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
+
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
         {
             SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;     
@@ -268,3 +269,5 @@ namespace MonoGameEngineCore
 
 
 }
+
+

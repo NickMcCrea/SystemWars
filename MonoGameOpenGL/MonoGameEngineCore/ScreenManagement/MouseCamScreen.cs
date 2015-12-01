@@ -80,7 +80,7 @@ namespace MonoGameEngineCore.ScreenManagement
 
         public override void Render(GameTime gameTime)
         {
-            SystemCore.GraphicsDevice.Clear(Color.Black);
+            
             base.Render(gameTime);
 
 

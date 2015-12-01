@@ -173,6 +173,7 @@
     <Compile Include="ScreenManagement\Screen.cs" />
     <Compile Include="ScreenManagement\ScreenManager.cs" />
     <Compile Include="SystemCore.cs" />
+    <Compile Include="SystemCoreHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Networking\" />

@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Helper;
+using MonoGameEngineCore.Procedural;
+using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject
 {
@@ -202,5 +204,21 @@ namespace MonoGameEngineCore.GameObject
         }
 
 
+
+        public void AddTestSphere(Vector3 vector3, float p)
+        {
+            ProceduralSphereTwo s = new ProceduralSphereTwo(10);
+            s.Scale(p);
+            s.Translate(vector3);
+            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadEffect("flatshaded")));
+        }
+
+        public void AddTestUnitCube(Vector3 vector3)
+        {
+            ProceduralCube s = new ProceduralCube();
+            s.SetColor(Color.White);
+            s.Translate(vector3);
+            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadEffect("flatshaded")));
+        }
     }
 }

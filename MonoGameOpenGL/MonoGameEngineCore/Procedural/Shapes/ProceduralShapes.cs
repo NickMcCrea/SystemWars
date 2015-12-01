@@ -738,6 +738,73 @@ namespace MonoGameEngineCore.Procedural
 
     }
 
+    public class ProceduralSphereTwo : ProceduralShape
+    {
+
+        private int detail = 20;
+
+        public ProceduralSphereTwo(int detail)
+            : base()
+        {
+
+            this.detail = detail;
+            GenerateVertexArray();
+            GenerateIndices();
+        }
+
+
+
+        private void GenerateVertexArray()
+        {
+
+            Vertices = new VertexPositionColorTextureNormal[detail * detail];
+            Vector3 center = new Vector3(0, 0, 0);
+            Vector3 rad = new Vector3((float)Math.Abs(1), 0, 0);
+            for (int x = 0; x < detail; x++) //90 circles, difference between each is 4 degrees
+            {
+                float difx = 360.0f / detail;
+                for (int y = 0; y < detail; y++) //90 veritces, difference between each is 4 degrees 
+                {
+                    float dify = 360.0f / detail;
+                    Matrix zrot = Matrix.CreateRotationZ(MathHelper.ToRadians(y * dify));
+                    Matrix yrot = Matrix.CreateRotationY(MathHelper.ToRadians(x * difx)); 
+                    Vector3 point = Vector3.Transform(Vector3.Transform(rad, zrot), yrot);//transformation
+                    Vertices[x + y * detail] = new VertexPositionColorTextureNormal(point, Color.White, Vector2.Zero, Vector3.Normalize(point));
+                }
+            }
+
+        }
+
+        public void GenerateIndices()
+        {
+            Indices = new short[detail * detail * 6];
+            int i = 0;
+            for (int x = 0; x < detail; x++)
+            {
+                for (int y = 0; y < detail; y++)
+                {
+                    int s1 = x == detail-1 ? 0 : x + 1;
+                    int s2 = y == detail-1 ? 0 : y + 1;
+                    short upperLeft = (short)(x * detail + y);
+                    short upperRight = (short)(s1 * detail + y);
+                    short lowerLeft = (short)(x * detail + s2);
+                    short lowerRight = (short)(s1 * detail + s2);
+                    Indices[i++] = upperLeft;
+                    Indices[i++] = upperRight;
+                    Indices[i++] = lowerLeft;
+                    Indices[i++] = lowerLeft;
+                    Indices[i++] = upperRight;
+                    Indices[i++] = lowerRight;
+                }
+            }
+            PrimitiveCount = Indices.Length / 3;
+
+        }
+
+
+    }
+
+
     public class ProceduralSphere : ProceduralShape
     {
         private readonly int slices;
@@ -754,6 +821,8 @@ namespace MonoGameEngineCore.Procedural
             GenerateIndices();
         }
 
+    
+
         private void GenerateVertexArray()
         {
             Vertices = new VertexPositionColorTextureNormal[(slices + 1) * (stacks + 1)];
@@ -769,8 +838,10 @@ namespace MonoGameEngineCore.Procedural
                     float l = (float)System.Math.Sqrt(1 - v.Position.Y * v.Position.Y);
                     v.Position.X = l * (float)System.Math.Sin((double)slice / slices * System.Math.PI * 2);
                     v.Position.Z = l * (float)System.Math.Cos((double)slice / slices * System.Math.PI * 2);
-                    v.Normal = v.Position;
+                    v.Normal = Vector3.Normalize(v.Position);
+               
                     v.Texture = new Vector2((float)slice / slices, (float)stack / stacks);
+                    v.Color = Color.White;
                     Vertices[currentIndex] = v;
                     currentIndex++;
                 }
@@ -930,8 +1001,6 @@ namespace MonoGameEngineCore.Procedural
         public ProceduralCylinder(float bottomRadius, float topRadius, float length, int slices, int stacks)
         {
 
-
-
             float sliceStep = MathHelper.TwoPi / slices;
             float heightStep = length / stacks;
             float radiusStep = (topRadius - bottomRadius) / stacks;
@@ -1032,5 +1101,57 @@ namespace MonoGameEngineCore.Procedural
 
         }
     }
+
+    public static class CompoundShapeBuilder
+    {
+        /// <summary>
+        /// Builds a composite shape composed of a cylinder and two spheres.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="width"></param>
+        /// <returns></returns>
+        public static ProceduralShape ThreeDLine(Vector3 start, Vector3 end, float width)
+        {
+
+
+            ProceduralSphereTwo s = new ProceduralSphereTwo(20);
+            ProceduralSphereTwo e = new ProceduralSphereTwo(20);
+            s.Scale(width);
+            e.Scale(width);
+           
+          
+            Vector3 translation = Vector3.Zero - ((start + end) / 2);
+           
+            //untranslated cylinder will have a centroid at zero, a bottom point at (0,-length/2,0) and a top point at (0,length/2,0).
+            // we want to find the transform that takes these points to our desired start + end. 
+            Vector3 length = start - end;
+            float l = length.Length();
+            Vector3 oldBottom = new Vector3(0, -l / 2, 0);
+            Vector3 oldTop = new Vector3(0, l / 2, 0);
+            s.Translate(oldBottom);
+            e.Translate(oldTop);
+            Vector3 oldLength = oldBottom - oldTop;
+            Vector3 crossAxis = Vector3.Cross(Vector3.Normalize(oldLength), Vector3.Normalize(length));
+
+            
+            ProceduralCylinder cylinder = new ProceduralCylinder(width, width, l, 20, 2);
+
+            var finalShape = ProceduralShape.Combine(cylinder, s, e);
+
+            if (crossAxis != Vector3.Zero)
+            {
+                float angleOfRotation = (float)MonoMathHelper.GetSignedAngleBetween2DVectors(oldLength, length);
+                Matrix rotation = Matrix.CreateFromAxisAngle(Vector3.Normalize(crossAxis), angleOfRotation);
+                finalShape.Transform(rotation);
+            }
+
+            finalShape.Translate(-translation);
+
+            return finalShape;
+        }
+
+    }
+   
 
 }
