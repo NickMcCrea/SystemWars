@@ -24,7 +24,10 @@ namespace MonoGameEngineCore.GameObject
             ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
 
 
-            if (effect is BasicEffect)
+
+            if (shape is LineBatch)
+                ob.AddComponent(new LineRenderComponent(effect as BasicEffect));
+            else if (effect is BasicEffect)
                 ob.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
             else
                 ob.AddComponent(new EffectRenderComponent(effect));

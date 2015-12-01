@@ -16,6 +16,7 @@ namespace MonoGameEngineCore.GameObject
         private List<IUpdateable> updateableGameOjectComponents;
         private List<IDrawable> drawableGameObjectComponents;
         private List<IUpdateable> updateableObjects;
+        private BasicEffect lineEffect;
         public static int drawCalls;
         public static int verts;
         public static int primitives;
@@ -27,12 +28,19 @@ namespace MonoGameEngineCore.GameObject
             updateableGameOjectComponents = new List<IUpdateable>();
             drawableGameObjectComponents = new List<IDrawable>();
             updateableObjects = new List<IUpdateable>();
-
+            lineEffect = new BasicEffect(SystemCore.GraphicsDevice);
         }
 
         public GameObject AddShapeToScene(ProceduralShape shape)
         {
             GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadEffect("flatshaded"));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
+            return o;
+        }
+
+        public GameObject AddLineBatchToScene(LineBatch lines)
+        {
+            GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(lines, lineEffect);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
             return o;
         }
@@ -227,5 +235,7 @@ namespace MonoGameEngineCore.GameObject
             s.Translate(vector3);
             AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadEffect("flatshaded")));
         }
+
+       
     }
 }

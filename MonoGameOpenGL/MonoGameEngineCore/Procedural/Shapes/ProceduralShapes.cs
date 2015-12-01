@@ -1181,6 +1181,32 @@ namespace MonoGameEngineCore.Procedural
         }
 
     }
+
+    public class LineBatch : ProceduralShape
+    {
+
+        public LineBatch(params Vector3 [] linePoints)
+        {
+            Indices = new short[linePoints.Length*2-2];
+            Vertices = new VertexPositionColorTextureNormal[linePoints.Length];
+
+            for (int i = 0; i < linePoints.Length; i++)
+            {
+                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.White, Vector2.Zero, Vector3.Zero);
+
+                if (i < linePoints.Length - 1)
+                {
+                    Indices[i * 2] = (short)(i);
+                    Indices[(i * 2) + 1] = (short)(i + 1);
+                }
+            }
+
+
+          
+
+            PrimitiveCount = linePoints.Length - 1;
+        }
+    }
    
 
 }
