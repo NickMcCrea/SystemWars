@@ -37,7 +37,20 @@ namespace MonoGameDirectX11.Screens
 
 
             ProceduralPlane p = new ProceduralPlane();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadEffect("flatshaded")));
+            GameObject plane = GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadEffect("flatshaded"));
+            
+
+            LineBatch l = new LineBatch(new Vector3(0.5f, 0.001f, 0.5f), new Vector3(0.5f, 0.001f, -0.5f), new Vector3(-0.5f, 0.001f, -0.5f), new Vector3(-0.5f, 0.001f, 0.5f), new Vector3(0.5f, 0.001f, 0.5f));
+            GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
+
+            plane.AddChild(lineObject);
+            plane.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(plane);
+
+
+
 
             //var capsuleCube = CompoundShapeBuilder.CapsuleCube();
             //SystemCore.GameObjectManager.AddShapeToScene(capsuleCube);

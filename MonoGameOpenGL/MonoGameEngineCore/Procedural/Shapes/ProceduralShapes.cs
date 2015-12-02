@@ -249,6 +249,7 @@ namespace MonoGameEngineCore.Procedural
     public class ProceduralShape
     {
 
+       
         public VertexPositionColorTextureNormal[] Vertices { get; set; }
         public short[] Indices { get; set; }
 
@@ -265,7 +266,6 @@ namespace MonoGameEngineCore.Procedural
             Array.Copy(indices, Indices, indices.Length);
             PrimitiveCount = Indices.Count()/3;
         }
-
 
         public int PrimitiveCount { get; set; }
 

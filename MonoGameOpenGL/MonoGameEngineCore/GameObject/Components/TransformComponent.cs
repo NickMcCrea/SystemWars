@@ -34,6 +34,9 @@ namespace MonoGameEngineCore.GameObject.Components
             WorldMatrix.Translation = Vector3.Zero;
             WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
             WorldMatrix.Translation = pos;
+
+            foreach (GameObject child in ParentObject.Children)
+                child.Transform.Rotate(axis, amount);
         }
 
         public void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
@@ -42,6 +45,9 @@ namespace MonoGameEngineCore.GameObject.Components
             WorldMatrix.Translation -= OrbitPoint;
             WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
             WorldMatrix.Translation += OrbitPoint;
+
+            foreach (GameObject child in ParentObject.Children)
+                child.Transform.RotateAround(axis, OrbitPoint, amount);
         }
 
 
@@ -59,10 +65,14 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             if (highPrecisionmode)
             {
-               highPrecisionPosition.Position = new Vector3d(position);
+                highPrecisionPosition.Position = new Vector3d(position);
             }
             else
+            {
                 WorldMatrix.Translation = position;
+                foreach (GameObject child in ParentObject.Children)
+                    child.Transform.WorldMatrix.Translation = position;
+            }
         }
 
         public void Translate(Vector3 translation)
@@ -72,7 +82,11 @@ namespace MonoGameEngineCore.GameObject.Components
                 highPrecisionPosition.Position += translation;
             }
             else
+            {
                 WorldMatrix.Translation += translation;
+                foreach (GameObject child in ParentObject.Children)
+                    child.Transform.WorldMatrix.Translation += translation;
+            }
 
         }
 
