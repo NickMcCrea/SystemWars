@@ -32,7 +32,7 @@ namespace MonoGameEngineCore.Rendering
                     for (int i = 0; i < array.Length; i++)
                     {
                         newArray[i] = new VertexPositionColorTextureNormal(array[i].Position, Color.DarkGray,
-                            Vector2.Zero, array[i].Normal);
+                            Vector3.Zero, array[i].Normal);
                     }
 
 
@@ -75,7 +75,7 @@ namespace MonoGameEngineCore.Rendering
                     for (int i = 0; i < array.Length; i++)
                     {
                         newArray[i] = new VertexPositionColorTextureNormal(array[i].Position, Color.DarkGray,
-                           array[i].TextureCoordinate, array[i].Normal);
+                           new Vector3(array[i].TextureCoordinate,0), array[i].Normal);
                     }
 
 

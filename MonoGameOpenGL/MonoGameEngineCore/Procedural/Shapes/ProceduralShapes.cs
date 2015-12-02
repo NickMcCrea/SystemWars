@@ -49,20 +49,20 @@ namespace MonoGameEngineCore.Procedural
             v1.Position = a;
             v1.Normal = p.Normal;
             v1.Color = col;
-            v1.Texture = new Vector2(0, 0);
+            v1.Texture = new Vector3(0, 0,0);
 
             VertexPositionColorTextureNormal v2 = new VertexPositionColorTextureNormal();
             v2.Position = b;
             v2.Normal = p.Normal;
             v2.Color = col;
-            v2.Texture = new Vector2(0, 0);
+            v2.Texture = new Vector3(0, 0, 0);
 
 
             VertexPositionColorTextureNormal v3 = new VertexPositionColorTextureNormal();
             v3.Position = c;
             v3.Normal = p.Normal;
             v3.Color = col;
-            v3.Texture = new Vector2(0, 0);
+            v3.Texture = new Vector3(0, 0, 0);
 
             vertices.Add(v1);
             vertices.Add(v2);
@@ -87,20 +87,20 @@ namespace MonoGameEngineCore.Procedural
             v1.Position = a;
             v1.Normal = p.Normal;
             v1.Color = Color.White;
-            v1.Texture = new Vector2(0, 0);
+            v1.Texture = new Vector3(0, 0,0);
 
             VertexPositionColorTextureNormal v2 = new VertexPositionColorTextureNormal();
             v2.Position = b;
             v2.Normal = p.Normal;
             v2.Color = Color.White;
-            v2.Texture = new Vector2(0, 0);
+            v2.Texture = new Vector3(0, 0,0);
 
 
             VertexPositionColorTextureNormal v3 = new VertexPositionColorTextureNormal();
             v3.Position = c;
             v3.Normal = p.Normal;
             v3.Color = Color.White;
-            v3.Texture = new Vector2(0, 0);
+            v3.Texture = new Vector3(0,0, 0);
 
             vertices.Add(v1);
             vertices.Add(v2);
@@ -630,10 +630,10 @@ namespace MonoGameEngineCore.Procedural
                 Vertices[vertindex + 2].Normal = plane.Normal;
                 Vertices[vertindex + 3].Normal = plane.Normal;
 
-                Vertices[vertindex].Texture = GenerateBoxMap(vert0, plane.Normal);
-                Vertices[vertindex + 1].Texture = GenerateBoxMap(vert1, plane.Normal);
-                Vertices[vertindex + 2].Texture = GenerateBoxMap(vert2, plane.Normal);
-                Vertices[vertindex + 3].Texture = GenerateBoxMap(vert3, plane.Normal);
+                Vertices[vertindex].Texture = Vector3.Zero;
+                Vertices[vertindex + 1].Texture = Vector3.Zero;
+                Vertices[vertindex + 2].Texture = Vector3.Zero;
+                Vertices[vertindex + 3].Texture = Vector3.Zero;
 
                 Indices[indexoffset++] = (byte)(vertindex);
                 Indices[indexoffset++] = (byte)(vertindex + 1);
@@ -714,10 +714,10 @@ namespace MonoGameEngineCore.Procedural
                 Vertices[vertindex + 2].Normal = plane.Normal;
                 Vertices[vertindex + 3].Normal = plane.Normal;
 
-                Vertices[vertindex].Texture = GenerateBoxMap(vert0, plane.Normal);
-                Vertices[vertindex + 1].Texture = GenerateBoxMap(vert1, plane.Normal);
-                Vertices[vertindex + 2].Texture = GenerateBoxMap(vert2, plane.Normal);
-                Vertices[vertindex + 3].Texture = GenerateBoxMap(vert3, plane.Normal);
+                Vertices[vertindex].Texture = Vector3.Zero;
+                Vertices[vertindex + 1].Texture = Vector3.Zero;
+                Vertices[vertindex + 2].Texture = Vector3.Zero;
+                Vertices[vertindex + 3].Texture = Vector3.Zero;
 
                 Indices[indexoffset++] = (byte)(vertindex);
                 Indices[indexoffset++] = (byte)(vertindex + 1);
@@ -769,7 +769,7 @@ namespace MonoGameEngineCore.Procedural
                     Matrix zrot = Matrix.CreateRotationZ(MathHelper.ToRadians(y * dify));
                     Matrix yrot = Matrix.CreateRotationY(MathHelper.ToRadians(x * difx)); 
                     Vector3 point = Vector3.Transform(Vector3.Transform(rad, zrot), yrot);//transformation
-                    Vertices[x + y * detail] = new VertexPositionColorTextureNormal(point, Color.White, Vector2.Zero, Vector3.Normalize(point));
+                    Vertices[x + y * detail] = new VertexPositionColorTextureNormal(point, Color.White, Vector3.Zero, Vector3.Normalize(point));
                 }
             }
 
@@ -839,8 +839,8 @@ namespace MonoGameEngineCore.Procedural
                     v.Position.X = l * (float)System.Math.Sin((double)slice / slices * System.Math.PI * 2);
                     v.Position.Z = l * (float)System.Math.Cos((double)slice / slices * System.Math.PI * 2);
                     v.Normal = Vector3.Normalize(v.Position);
-               
-                    v.Texture = new Vector2((float)slice / slices, (float)stack / stacks);
+
+                    v.Texture = Vector3.Zero;
                     v.Color = Color.White;
                     Vertices[currentIndex] = v;
                     currentIndex++;
@@ -897,10 +897,10 @@ namespace MonoGameEngineCore.Procedural
             Vertices[2].Normal = Vector3.Up;
             Vertices[3].Normal = Vector3.Up;
 
-            Vertices[0].Texture = new Vector2(0,0);
-            Vertices[1].Texture = new Vector2(0,1);
-            Vertices[2].Texture = new Vector2(1,1);
-            Vertices[3].Texture = new Vector2(1,0);
+            Vertices[0].Texture = Vector3.Zero;
+            Vertices[1].Texture = Vector3.Zero;
+            Vertices[2].Texture = Vector3.Zero;
+            Vertices[3].Texture = Vector3.Zero;
 
             Indices[0] = (byte)(0);
             Indices[1] = (byte)(3);
@@ -945,7 +945,7 @@ namespace MonoGameEngineCore.Procedural
             {
                 Vertices[i].Position = vertices[i];
                 Vertices[i].Normal = Vector3.Up;
-                Vertices[i].Texture = GenerateBoxMap(Vertices[i].Position, Vertices[i].Normal);
+                Vertices[i].Texture = Vector3.Zero;
             }
 
 
@@ -978,16 +978,16 @@ namespace MonoGameEngineCore.Procedural
 
             Vertices[0].Position = a;
             Vertices[0].Normal = normal;
-            Vertices[0].Texture = GenerateBoxMap(Vertices[0].Position, normal);
+            Vertices[0].Texture = Vector3.Zero;
 
 
             Vertices[1].Position = b;
             Vertices[1].Normal = normal;
-            Vertices[1].Texture = GenerateBoxMap(Vertices[1].Position, normal);
+            Vertices[1].Texture = Vector3.Zero;
 
             Vertices[2].Position = c;
             Vertices[2].Normal = normal;
-            Vertices[2].Texture = GenerateBoxMap(Vertices[0].Position, normal);
+            Vertices[2].Texture = Vector3.Zero;
 
 
 
@@ -1016,7 +1016,7 @@ namespace MonoGameEngineCore.Procedural
 
             // Start at the bottom of the cylinder            
             int currentVertex = 0;
-            Vertices[currentVertex++] = new VertexPositionColorTextureNormal(new Vector3(0, currentHeight, 0), Color.White, Vector2.Zero, Vector3.Down);
+            Vertices[currentVertex++] = new VertexPositionColorTextureNormal(new Vector3(0, currentHeight, 0), Color.White, Vector3.Zero, Vector3.Down);
             for (int i = 0; i <= stacks; i++)
             {
                 float sliceAngle = 0;
@@ -1027,14 +1027,14 @@ namespace MonoGameEngineCore.Procedural
                     float z = currentRadius * (float)Math.Sin(sliceAngle);
 
                     Vector3 position = new Vector3(x, y, z);
-                    Vertices[currentVertex++] = new VertexPositionColorTextureNormal(position, Color.White, Vector2.Zero, Vector3.Normalize(position));
+                    Vertices[currentVertex++] = new VertexPositionColorTextureNormal(position, Color.White, Vector3.Zero, Vector3.Normalize(position));
 
                     sliceAngle += sliceStep;
                 }
                 currentHeight += heightStep;
                 currentRadius += radiusStep;
             }
-            Vertices[currentVertex++] = new VertexPositionColorTextureNormal(new Vector3(0, length / 2, 0), Color.White, Vector2.Zero, Vector3.Up);
+            Vertices[currentVertex++] = new VertexPositionColorTextureNormal(new Vector3(0, length / 2, 0), Color.White, Vector3.Zero, Vector3.Up);
 
             // Create the actual vertex buffer object
 
@@ -1188,7 +1188,7 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < linePoints.Length; i++)
             {
-                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.White, Vector2.Zero, Vector3.Zero);
+                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.White, Vector3.Zero, Vector3.Zero);
 
                 if (i < linePoints.Length - 1)
                 {

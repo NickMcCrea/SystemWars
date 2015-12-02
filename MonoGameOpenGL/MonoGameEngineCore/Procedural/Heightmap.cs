@@ -44,7 +44,7 @@ namespace MonoGameEngineCore.Procedural
                     v.Position.X = l * (float)System.Math.Sin((double)slice / slices * System.Math.PI * 2);
                     v.Position.Z = l * (float)System.Math.Cos((double)slice / slices * System.Math.PI * 2);
                     v.Normal = v.Position;
-                    v.Texture = new Vector2((float)slice / slices, (float)stack / stacks);
+                    v.Texture = Vector3.Zero;
                     verts.Add(v);
                 }
             }
@@ -86,7 +86,7 @@ namespace MonoGameEngineCore.Procedural
                     v.Position.X = l * (float)System.Math.Sin((double)slice / slices * System.Math.PI * 2);
                     v.Position.Z = l * (float)System.Math.Cos((double)slice / slices * System.Math.PI * 2);
                     v.Normal = v.Position;
-                    v.Texture = new Vector2((float)slice / slices, (float)stack / stacks);
+                    v.Texture = Vector3.Zero;
 
 
 
@@ -164,7 +164,7 @@ namespace MonoGameEngineCore.Procedural
                     var vert = new VertexPositionColorTextureNormal();
                     vert.Position = new Vector3(i * scale, heights[i, j] * scale * 0.2f, j * scale);
                     vert.Color = Color.DarkOrange;
-                    vert.Texture = new Vector2(i * 2f / heightMapSize * scale, j * 2f / heightMapSize * scale);
+                    vert.Texture = Vector3.Zero;
                     vert.Normal = Vector3.Up;
                     vertArray[vertIndex] = vert;
                     vertIndex++;
