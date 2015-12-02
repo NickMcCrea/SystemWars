@@ -28,6 +28,13 @@ namespace MonoGameEngineCore.Rendering
             lightDir.Normalize();
             LightsInScene.Add(new DiffuseLight(lightDir, Color.LightYellow, 0.7f));
         }
+
+        public void SetDiffuseLightDir(int index, Vector3 lightDir)
+        {
+            if (LightsInScene[index] is DiffuseLight)
+                ((DiffuseLight)LightsInScene[index]).LightDirection = lightDir;
+
+        }
     }
 
     public abstract class SceneLight

@@ -913,6 +913,8 @@ namespace MonoGameEngineCore.Procedural
 
 
             PrimitiveCount = 2;
+
+            SetColor(Color.White);
         }
 
     }

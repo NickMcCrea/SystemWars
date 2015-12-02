@@ -21,6 +21,7 @@ namespace MonoGameDirectX11.Screens
             : base()
         {
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetDiffuseLightDir(1,new Vector3(1, 1, 1));
 
             //AddLine(new Vector3(5, 5, 0), new Vector3(-5, -5, 0), 0.1f);
 
@@ -32,8 +33,11 @@ namespace MonoGameDirectX11.Screens
             //AddLine(Vector3.Zero, Vector3.Backward * 5, 0.1f);
 
             //SystemCore.GameObjectManager.AddTestSphere(Vector3.Up, 0.5f);
-            SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(0,0,0));
+            //SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(0,0,0));
 
+
+            ProceduralPlane p = new ProceduralPlane();
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadEffect("flatshaded")));
 
             //var capsuleCube = CompoundShapeBuilder.CapsuleCube();
             //SystemCore.GameObjectManager.AddShapeToScene(capsuleCube);
