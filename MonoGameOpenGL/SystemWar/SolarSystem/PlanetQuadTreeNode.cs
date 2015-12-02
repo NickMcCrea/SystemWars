@@ -92,7 +92,7 @@ namespace MonoGameEngineCore.Procedural
                     var vert = new VertexPositionColorTextureNormal();
 
                     vert.Position = CalculateVertexPosition(i, j);
-                    vert.Texture = Vector3.Zero;
+                    vert.Texture = new Vector2(i * 2f / heightMapSize, j * 2f / heightMapSize);
                     vert.Normal = normal;
                     vert.Color = NodeColor;
                     vertices[vertIndex] = vert;
