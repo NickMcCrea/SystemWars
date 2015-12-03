@@ -25,14 +25,11 @@ namespace GridForgeResurrected.Screens
 
             float arenaSize = 40f;
             var arenaObject = CreateTestArena(arenaSize);
-           
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
 
 
 
-
-
+            //how do we collide with the arena?
+            
 
         }
 
@@ -70,11 +67,8 @@ namespace GridForgeResurrected.Screens
 
             side2.Transform(Matrix.CreateRotationY(MathHelper.Pi));
             side2.Translate(new Vector3(arenaSize*2,0,0));
-
             side3.Transform(Matrix.CreateRotationY(MathHelper.PiOver2));
             side3.Translate(new Vector3(0, 0, arenaSize*2));
-
-
             side4.Transform(Matrix.CreateRotationY(-MathHelper.PiOver2));
             side4.Translate(new Vector3(0, 0, -arenaSize * 2));
 
@@ -85,8 +79,12 @@ namespace GridForgeResurrected.Screens
             var arenaObject = GameObjectFactory.CreateRenderableGameObjectFromShape(final,
                 EffectLoader.LoadEffect("flatshaded"));
 
-           
-           
+
+            arenaObject.AddComponent(new StaticMeshColliderComponent(arenaObject, final.GetVertices(),
+                final.GetIndicesAsInt().ToArray()));
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
+
 
             return arenaObject;
         }

@@ -36,7 +36,7 @@ namespace MonoGameEngineCore.Procedural
         public int quadTreeNodeID;
         private readonly int rootNodeId;
         public EffectRenderComponent renderComponent;
-        public MeshColliderComponent meshCollider;
+        public MobileMeshColliderComponent meshCollider;
 
 
         public Vector3 se, sw, mid1, mid2, nw, ne, midBottom, midRight, midLeft, midTop;
@@ -172,7 +172,7 @@ namespace MonoGameEngineCore.Procedural
 
             this.AddComponent(new RenderGeometryComponent(spherePatch));
 
-            meshCollider = new MeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
+            meshCollider = new MobileMeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
             AddComponent(meshCollider);
 
             if (this.effect is BasicEffect)

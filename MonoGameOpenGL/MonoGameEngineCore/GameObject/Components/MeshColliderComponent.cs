@@ -12,7 +12,7 @@ using ConversionHelper;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class MeshColliderComponent : IComponent, IUpdateable, IDisposable
+    public class MobileMeshColliderComponent : IComponent, IUpdateable, IDisposable
     {
         public GameObject ParentObject { get; set; }
         public MobileMesh mobileMesh;
@@ -20,7 +20,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public object Tag { get; set; }
 
-        public MeshColliderComponent(object tag, List<Microsoft.Xna.Framework.Vector3> verts, int[] indices)
+        public MobileMeshColliderComponent(object tag, List<Microsoft.Xna.Framework.Vector3> verts, int[] indices)
         {
             if (tag != null)
                 Tag = tag;
