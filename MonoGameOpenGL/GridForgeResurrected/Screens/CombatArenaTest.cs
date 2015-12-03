@@ -21,13 +21,14 @@ namespace GridForgeResurrected.Screens
     {
         public CombatArenaTest()
         {
+            
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(1, new Vector3(1, 1, 1));
 
             float arenaSize = 40f;
             var arenaObject = CreateTestArena(arenaSize);
 
-
+            
 
             //how do we collide with the arena?
             
@@ -84,8 +85,18 @@ namespace GridForgeResurrected.Screens
             arenaObject.AddComponent(new StaticMeshColliderComponent(arenaObject, final.GetVertices(),
                 final.GetIndicesAsInt().ToArray()));
 
+
+            arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
+
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
 
+
+            LineBatch l = new LineBatch(new Vector3(-arenaSize, 0.1f, -arenaSize), new Vector3(-arenaSize, 0.1f, arenaSize), new Vector3(arenaSize, 0.1f, arenaSize), new Vector3(arenaSize, 0.1f, -arenaSize), new Vector3(-arenaSize, 0.1f, -arenaSize));
+            GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
+
+            arenaObject.AddChild(lineObject);
+
+            
 
             return arenaObject;
         }
