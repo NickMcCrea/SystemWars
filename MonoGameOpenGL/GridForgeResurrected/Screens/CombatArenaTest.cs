@@ -23,7 +23,9 @@ namespace GridForgeResurrected.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(1, new Vector3(1, 1, 1));
 
-            var arenaObject = CreateTestArena();
+            float arenaSize = 40f;
+            var arenaObject = CreateTestArena(arenaSize);
+           
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
 
@@ -34,9 +36,9 @@ namespace GridForgeResurrected.Screens
 
         }
 
-        private static GameObject CreateTestArena()
+        private static GameObject CreateTestArena(float arenaSize)
         {
-            float arenaSize = 40f;
+            
             ProceduralShapeBuilder floor = new ProceduralShapeBuilder();
 
             floor.AddSquareFace(new Vector3(arenaSize, 0, arenaSize), new Vector3(-arenaSize, 0, arenaSize),
@@ -53,15 +55,39 @@ namespace GridForgeResurrected.Screens
             b.Translate(new Vector3(0, 0, -arenaSize*2));
 
             ProceduralShape c = ProceduralShape.Combine(a, b);
-            ProceduralShape d = c.Clone();
+            ProceduralShape d = b.Clone();
             d.Transform(Matrix.CreateRotationY(MathHelper.Pi/2));
 
             ProceduralShape e = ProceduralShape.Combine(arenaFloor, c, d);
 
-            var arenaObject = GameObjectFactory.CreateRenderableGameObjectFromShape(e,
+
+           
+            var side2 = e.Clone();
+            var side3 = e.Clone();
+            var side4 = e.Clone();
+
+            e.Translate(new Vector3(-arenaSize*2, 0, 0));
+
+            side2.Transform(Matrix.CreateRotationY(MathHelper.Pi));
+            side2.Translate(new Vector3(arenaSize*2,0,0));
+
+            side3.Transform(Matrix.CreateRotationY(MathHelper.PiOver2));
+            side3.Translate(new Vector3(0, 0, arenaSize*2));
+
+
+            side4.Transform(Matrix.CreateRotationY(-MathHelper.PiOver2));
+            side4.Translate(new Vector3(0, 0, -arenaSize * 2));
+
+
+
+            var final = ProceduralShape.Combine(e, side2, side3, side4, arenaFloor);
+
+            var arenaObject = GameObjectFactory.CreateRenderableGameObjectFromShape(final,
                 EffectLoader.LoadEffect("flatshaded"));
 
-            arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
+           
+           
+
             return arenaObject;
         }
 
