@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.Xna.Framework;
 using MonoGameDirectX11.Screens;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
@@ -11,33 +15,32 @@ namespace MonoGameDirectX11
         public MainMenuScreen()
             : base()
         {
-
-            string screenOne = "Render";
-            string screenTwo = "Procedural";
-            string screenThree = "Physics";
-        
-
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
             SystemCore.CursorVisible = true;
 
-            Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
-            b.OnClick += (sender, args) =>
-           { 
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
-            };
+            var typesInNameSpace =
+                Assembly.GetAssembly(this.GetType()).GetTypes().Where(t => typeof(Screen).IsAssignableFrom(t) && t != typeof(MainMenuScreen));
 
-            Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
-            a.OnClick += (sender, args) =>
+            List<string> names = new List<string>();
+
+            foreach (Type type in typesInNameSpace)
             {
-                SystemCore.ScreenManager.AddAndSetActive(new ProceduralTestScreen());
-            };
+                names.Add(type.Name);
+            }
 
-            Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
-            c.OnClick += (sender, args) =>
+
+            SystemCore.GetSubsystem<GUIManager>()
+                .CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, names);
+
+
+            foreach (Type type in typesInNameSpace)
             {
-                SystemCore.ScreenManager.AddAndSetActive(new PhysicsTestScreen());
-            };
-
+                Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(type.Name) as Button;
+                b.OnClick += (sender, args) =>
+                {
+                    Screen screen = Activator.CreateInstance(type) as Screen;
+                    SystemCore.ScreenManager.AddAndSetActive(screen);
+                };
+            }
 
 
         }
@@ -45,7 +48,7 @@ namespace MonoGameDirectX11
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
-         
+
             base.OnRemove();
         }
 

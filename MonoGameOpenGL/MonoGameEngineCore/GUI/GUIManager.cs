@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using MonoGameEngineCore;
@@ -207,7 +208,7 @@ namespace MonoGameEngineCore.GUI
             return paintButton;
         }
 
-        public void CreateDefaultMenuScreen(string mainmenuName, ColorScheme activeColorScheme, params string[] labels)
+        public void CreateDefaultMenuScreen(string mainmenuName, ColorScheme activeColorScheme, List<string> labels )
         {
 
             ColorScheme scheme = activeColorScheme;
@@ -220,7 +221,7 @@ namespace MonoGameEngineCore.GUI
 
 
 
-            Vector2 buttonSpace = new Vector2(0, 0);
+            Vector2 buttonSpace = new Vector2(0, -100);
             float spacing = 50;
             foreach (string label in labels)
             {
@@ -240,6 +241,13 @@ namespace MonoGameEngineCore.GUI
             lab.TextColor = textColor;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
+
+        }
+
+        public void CreateDefaultMenuScreen(string mainmenuName, ColorScheme activeColorScheme, params string[] labels)
+        {
+
+            CreateDefaultMenuScreen(mainmenuName, activeColorScheme, labels.ToList());
 
         }
 
