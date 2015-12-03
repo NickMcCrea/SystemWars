@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BEPUphysics;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
@@ -91,6 +92,20 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
+
+            RayCastResult result;
+            Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
+            BEPUutilities.Ray ray =
+                new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 3f,
+                    camWorld.Forward.ToBepuVector());
+
+            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
+            {
+                var hitPos = result.HitData.Location.ToXNAVector();
+                DebugShapeRenderer.AddLine(hitPos,
+                    hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
+            }
+
             base.Update(gameTime);
         }
 
