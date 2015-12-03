@@ -42,7 +42,6 @@
     <Compile Include="Screens\RenderTextureTest.cs" />
     <Compile Include="Screens\PhysicsTestScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
-    <Compile Include="Screens\RenderTestScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\UITestScreen.cs" />

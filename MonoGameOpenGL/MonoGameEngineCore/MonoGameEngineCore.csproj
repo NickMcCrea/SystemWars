@@ -171,6 +171,7 @@
     <Compile Include="Rendering\GraphicsDeviceSetup.cs" />
     <Compile Include="Rendering\VertexPositionColorNormal.cs" />
     <Compile Include="ScreenManagement\MouseCamScreen.cs" />
+    <Compile Include="ScreenManagement\RenderTestScreen.cs" />
     <Compile Include="ScreenManagement\Screen.cs" />
     <Compile Include="ScreenManagement\ScreenManager.cs" />
     <Compile Include="SystemCore.cs" />
