@@ -1,18 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class BasicEffectRenderComponent : IComponent, IDrawable
+    public class LineRenderComponent : IComponent, IDrawable
     {
         private readonly BasicEffect effect;
         public GameObject ParentObject { get; set; }
         public int DrawOrder { get; set; }
         public bool Visible { get; set; }
-     
-        public BasicEffectRenderComponent(BasicEffect effect)
+
+        public LineRenderComponent(BasicEffect effect)
         {
             this.effect = effect;
             effect.EnableDefaultLighting();
@@ -56,7 +55,7 @@ namespace MonoGameEngineCore.GameObject.Components
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, renderGeometry.VertexBuffer.VertexCount, 0, renderGeometry.PrimitiveCount);
+                SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.LineList, 0, 0, renderGeometry.VertexBuffer.VertexCount, 0, renderGeometry.PrimitiveCount);
             }
         }
 

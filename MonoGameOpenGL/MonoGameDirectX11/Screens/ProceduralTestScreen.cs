@@ -40,7 +40,7 @@ namespace MonoGameDirectX11.Screens
             GameObject plane = GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadEffect("flatshaded"));
             
 
-            LineBatch l = new LineBatch(new Vector3(0.5f, 0.001f, 0.5f), new Vector3(0.5f, 0.001f, -0.5f), new Vector3(-0.5f, 0.001f, -0.5f), new Vector3(-0.5f, 0.001f, 0.5f), new Vector3(0.5f, 0.001f, 0.5f));
+            LineBatch l = new LineBatch(new Vector3(0.5f, 0, 0.5f), new Vector3(0.5f, 0, -0.5f), new Vector3(-0.5f, 0, -0.5f), new Vector3(-0.5f, 0, 0.5f), new Vector3(0.5f, 0, 0.5f));
             GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
 
             plane.AddChild(lineObject);
