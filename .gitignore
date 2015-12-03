@@ -41,6 +41,8 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+bin
+obj
 MonoGameOpenGL/Content/Content/
 MonoGameOpenGL/Content/obj/
 MonoGameOpenGL/SystemWar/bin/
