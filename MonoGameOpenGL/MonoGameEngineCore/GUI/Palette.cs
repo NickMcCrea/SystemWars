@@ -42,6 +42,8 @@ namespace MonoGameEngineCore.GUI
             AddColorScheme("firenze", 70, 137, 102, 255, 240, 165, 255, 176, 59, 182, 73, 38, 142, 40, 0);
             AddColorScheme("flatui", 44, 62, 80, 231, 76, 60, 236, 240, 241, 52, 152, 219, 41, 128, 185);
             AddColorScheme("space", 43, 68, 140, 42, 85, 140, 90, 184, 243, 160, 227, 242, 13, 13, 13);
+
+            AddColorScheme("elgray", 30,30,31,66,65,67,103,102,106,128,127,131,203,201,207);
         }
 
         static void AddColorScheme(string name, params int[] colorValues)
