@@ -6,8 +6,14 @@ using MonoGameEngineCore;
 
 namespace GridForgeResurrected.Screens
 {
+    /// <summary>
+    /// Test for major core systems - collision, combat etc.
+    /// </summary>
     class CombatArenaTest : Screen
     {
-
+        public CombatArenaTest()
+        {
+            
+        }
     }
 }

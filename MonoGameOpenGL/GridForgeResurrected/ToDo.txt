@@ -1,0 +1,13 @@
+
+
+Grid Forge
+
+Action schmup with some additional elements of rpg, rogue likes, base building.
+
+First port of call is to develop simple, fun, top down twin-stick mechanics.
+
+- arena with some walls.
+- controllable cube with slightly slidy physics. Move and aim with M+K or controller. Collides with walls.
+- shooting. Projectiles collide sensibly.
+
+
