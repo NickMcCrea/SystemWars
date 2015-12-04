@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BEPUphysics;
-using BEPUphysics.BroadPhaseEntries;
-using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+﻿using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
-using BEPUutilities;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -17,8 +9,6 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
-using MonoGameEngineCore.ScreenManagement;
-using Matrix = Microsoft.Xna.Framework.Matrix;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace GridForgeResurrected.Screens
@@ -33,6 +23,7 @@ namespace GridForgeResurrected.Screens
 
         public CombatArenaTest()
         {
+            //CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
 
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
@@ -56,8 +47,7 @@ namespace GridForgeResurrected.Screens
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(testPlayer);
 
-            testPlayer.Transform.SetPosition(new Vector3(0, 0, 0));
-
+            testPlayer.Transform.SetPosition(new Vector3(0,5,0));
          
         }
 
@@ -134,30 +124,29 @@ namespace GridForgeResurrected.Screens
         {
 
 
-            PhysicsComponent playerPhysics = testPlayer.GetComponent<PhysicsComponent>();
-            if (playerPhysics.InCollision())
-            {
-                testPlayer.Transform.Velocity = Vector3.Zero;
-                var pairs = playerPhysics.PhysicsEntity.CollisionInformation.Pairs;
+            //PhysicsComponent playerPhysics = testPlayer.GetComponent<PhysicsComponent>();
+            //DebugText.Write(testPlayer.Transform.WorldMatrix.Translation.ToString());
+            //DebugText.Write(playerPhysics.PhysicsEntity.WorldTransform.Translation.ToString());
+            //if (playerPhysics.InCollision())
+            //{
+            //    testPlayer.Transform.Velocity = Vector3.Zero;
+            //    var pairs = playerPhysics.PhysicsEntity.CollisionInformation.Pairs;
 
-                foreach (CollidablePairHandler pair in pairs)
-                {
-                    if (pair.EntityA != playerPhysics.PhysicsEntity)
-                        continue;
+            //    foreach (CollidablePairHandler pair in pairs)
+            //    {
+            //        if (pair.EntityA != playerPhysics.PhysicsEntity)
+            //            continue;
 
-                    var contacts = pair.Contacts;
-                    foreach (ContactInformation contact in contacts)
-                    {
-                        var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                        testPlayer.Transform.Translate(remove);             
-                        break;
-                    }
-                   
-                }
+            //        var contacts = pair.Contacts;
+            //        foreach (ContactInformation contact in contacts)
+            //        {
+            //            var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
+            //            testPlayer.Transform.Translate(remove * 1.0001f);
+            //            break;
+            //        }
 
-
-
-            }
+            //    }
+            //}
 
             base.Update(gameTime);
         }
