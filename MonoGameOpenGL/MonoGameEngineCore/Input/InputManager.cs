@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Resources;
+using BEPUphysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -402,6 +403,11 @@ namespace MonoGameEngineCore
         public BEPUutilities.Ray GetBepuProjectedMouseRay()
         {
             return ConversionHelper.MathConverter.Convert(GetProjectedMouseRay());
+        }
+
+        public bool GetMouseImpact(out RayCastResult result)
+        {
+            return SystemCore.PhysicsSimulation.RayCast(SystemCore.Input.GetBepuProjectedMouseRay(), out result);
         }
     }
 }

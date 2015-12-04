@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GameObject.Components.Controllers;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -47,6 +48,8 @@ namespace GridForgeResurrected.Screens
             playerShape.Scale(5f);
             testPlayer = GameObjectFactory.CreateCollidableObject(playerShape,
                 EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.box);
+
+            testPlayer.AddComponent(new TopDownMouseAndKeyboardController());
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(testPlayer);
 
@@ -122,21 +125,10 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
-
-
-            RayCastResult result;
-            Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
-
-
-            if (SystemCore.PhysicsSimulation.RayCast(SystemCore.Input.GetBepuProjectedMouseRay(), out result))
-            {
-                var hitPos = result.HitData.Location.ToXNAVector();
-                DebugShapeRenderer.AddLine(hitPos,
-                    hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 20f), Color.Blue);
-            }
-
             base.Update(gameTime);
         }
+
+        
 
         public override void Render(GameTime gameTime)
         {
