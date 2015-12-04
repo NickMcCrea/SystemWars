@@ -20,7 +20,7 @@ namespace GridForgeResurrected
             if (System.Environment.MachineName == "NICKMCCREA-PC")
                 resToUse = ScreenResolutionName.WUXGA;
 
-            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24, true, true))
+            using (var game = new MonoEngineGame(typeof(MainMenuScreen), resToUse, DepthFormat.Depth24, true, false))
                 game.Run();
         }
     }

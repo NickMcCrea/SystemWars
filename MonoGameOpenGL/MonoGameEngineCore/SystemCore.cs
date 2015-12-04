@@ -169,7 +169,7 @@ namespace MonoGameEngineCore
 
         public static void PhysicsUpdate()
         {
-            while (!GameExiting)
+            while (!GameExiting && PhysicsOnBackgroundThread)
             {
                 DateTime now = DateTime.Now;
                 double elapsed = (now - physicsLastUpdate).TotalMilliseconds;

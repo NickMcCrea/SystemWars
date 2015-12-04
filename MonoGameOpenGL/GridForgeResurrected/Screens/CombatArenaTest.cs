@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BEPUphysics;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
 using BEPUutilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -53,8 +56,13 @@ namespace GridForgeResurrected.Screens
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(testPlayer);
 
+            testPlayer.Transform.SetPosition(new Vector3(0, 0, 0));
 
+         
         }
+
+      
+
 
         private static GameObject CreateTestArena(float arenaSize)
         {
@@ -125,10 +133,36 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
+
+            PhysicsComponent playerPhysics = testPlayer.GetComponent<PhysicsComponent>();
+            if (playerPhysics.InCollision())
+            {
+                testPlayer.Transform.Velocity = Vector3.Zero;
+                var pairs = playerPhysics.PhysicsEntity.CollisionInformation.Pairs;
+
+
+                foreach (CollidablePairHandler pair in pairs)
+                {
+                    if (pair.EntityA != playerPhysics.PhysicsEntity)
+                        continue;
+
+                    var contacts = pair.Contacts;
+                    foreach (ContactInformation contact in contacts)
+                    {
+                        var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
+                        testPlayer.Transform.Translate(remove);
+
+                        break;
+                    }
+                }
+
+
+            }
+
             base.Update(gameTime);
         }
 
-        
+
 
         public override void Render(GameTime gameTime)
         {

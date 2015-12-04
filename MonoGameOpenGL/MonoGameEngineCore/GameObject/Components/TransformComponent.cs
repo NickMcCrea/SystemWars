@@ -70,8 +70,15 @@ namespace MonoGameEngineCore.GameObject.Components
             else
             {
                 WorldMatrix.Translation = position;
+
+                if(ParentObject.ContainsComponent<PhysicsComponent>())
+                    ParentObject.GetComponent<PhysicsComponent>().SetPosition(position);
+
                 foreach (GameObject child in ParentObject.Children)
                     child.Transform.WorldMatrix.Translation = position;
+
+
+
             }
         }
 
@@ -86,6 +93,9 @@ namespace MonoGameEngineCore.GameObject.Components
                 WorldMatrix.Translation += translation;
                 foreach (GameObject child in ParentObject.Children)
                     child.Transform.WorldMatrix.Translation += translation;
+
+                if (ParentObject.ContainsComponent<PhysicsComponent>())
+                    ParentObject.GetComponent<PhysicsComponent>().SetPosition(WorldMatrix.Translation);
             }
 
         }

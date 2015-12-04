@@ -73,6 +73,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(PhysicsEntity);
             }
 
+
         }
 
         private void GenerateSphereCollider()
@@ -113,7 +114,7 @@ namespace MonoGameEngineCore.GameObject.Components
                         MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.BufferedStates.States.WorldTransform);
                 else
                 {
-                    PhysicsEntity.BufferedStates.States.WorldTransform =
+                    PhysicsEntity.WorldTransform =
                         MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
                 }
             }
@@ -152,8 +153,14 @@ namespace MonoGameEngineCore.GameObject.Components
             return false;
         }
 
-        
-        
+
+
+
+        internal void SetPosition(Vector3 position)
+        {
+            PhysicsEntity.WorldTransform =
+                MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+        }
     }
 
 
