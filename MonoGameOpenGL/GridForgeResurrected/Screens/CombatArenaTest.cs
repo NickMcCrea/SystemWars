@@ -140,7 +140,6 @@ namespace GridForgeResurrected.Screens
                 testPlayer.Transform.Velocity = Vector3.Zero;
                 var pairs = playerPhysics.PhysicsEntity.CollisionInformation.Pairs;
 
-
                 foreach (CollidablePairHandler pair in pairs)
                 {
                     if (pair.EntityA != playerPhysics.PhysicsEntity)
@@ -150,11 +149,12 @@ namespace GridForgeResurrected.Screens
                     foreach (ContactInformation contact in contacts)
                     {
                         var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                        testPlayer.Transform.Translate(remove);
-
+                        testPlayer.Transform.Translate(remove);             
                         break;
                     }
+                   
                 }
+
 
 
             }

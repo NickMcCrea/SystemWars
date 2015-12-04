@@ -111,7 +111,7 @@ namespace MonoGameEngineCore.GameObject.Components
             {
                 if (Simulated)
                     ParentObject.Transform.WorldMatrix =
-                        MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.BufferedStates.States.WorldTransform);
+                        MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
                 else
                 {
                     PhysicsEntity.WorldTransform =
@@ -158,6 +158,10 @@ namespace MonoGameEngineCore.GameObject.Components
 
         internal void SetPosition(Vector3 position)
         {
+            //not yet initialized
+            if(PhysicsEntity == null)
+                return;
+            
             PhysicsEntity.WorldTransform =
                 MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
         }
