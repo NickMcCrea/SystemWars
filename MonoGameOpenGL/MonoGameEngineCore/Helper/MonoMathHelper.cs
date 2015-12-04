@@ -1043,5 +1043,25 @@ namespace MonoGameEngineCore.Helper
             }
             return intarray;
         }
+
+        public static Matrix RotateNinetyDegreesAroundUp(bool clockwise)
+        {
+            if (clockwise)
+                return Matrix.CreateRotationY(MathHelper.PiOver2);
+            else
+            {
+                return Matrix.CreateRotationY(-MathHelper.PiOver2);
+            }
+        }
+
+        public static Matrix RotateHundredEightyDegreesAroundUp(bool clockwise)
+        {
+            if (clockwise)
+                return Matrix.CreateRotationY(MathHelper.Pi);
+            else
+            {
+                return Matrix.CreateRotationY(-MathHelper.Pi);
+            }
+        }
     }
 }

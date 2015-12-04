@@ -3,41 +3,59 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BEPUphysics;
+using BEPUutilities;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Rendering.Camera;
 using MonoGameEngineCore.ScreenManagement;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace GridForgeResurrected.Screens
 {
     /// <summary>
     /// Test for major core systems - collision, combat etc.
     /// </summary>
-    class CombatArenaTest : MouseCamScreen
+    class CombatArenaTest : Screen
     {
+        private GameObject cameraGameObject;
+        private GameObject testPlayer;
+
         public CombatArenaTest()
         {
-            
+
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            SystemCore.ActiveScene.SetDiffuseLightDir(1, new Vector3(1, 1, 1));
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
             float arenaSize = 40f;
             var arenaObject = CreateTestArena(arenaSize);
 
-            
+            cameraGameObject = new GameObject("camera");
+            cameraGameObject.AddComponent(new ComponentCamera());
+            cameraGameObject.Transform.SetPosition(new Vector3(0, 200, 0));
+            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
+            SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
-            //how do we collide with the arena?
-            
+            ProceduralCube playerShape = new ProceduralCube();
+            playerShape.Scale(5f);
+            testPlayer = GameObjectFactory.CreateCollidableObject(playerShape,
+                EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.box);
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(testPlayer);
+
 
         }
 
         private static GameObject CreateTestArena(float arenaSize)
         {
-            
+
             ProceduralShapeBuilder floor = new ProceduralShapeBuilder();
 
             floor.AddSquareFace(new Vector3(arenaSize, 0, arenaSize), new Vector3(-arenaSize, 0, arenaSize),
@@ -46,32 +64,32 @@ namespace GridForgeResurrected.Screens
             ProceduralShape arenaFloor = floor.BakeShape();
             arenaFloor.SetColor(Color.DarkOrange);
 
-            ProceduralCuboid a = new ProceduralCuboid(arenaSize, 1, arenaSize/5);
-            a.Translate(new Vector3(0, arenaSize/5, arenaSize));
+            ProceduralCuboid a = new ProceduralCuboid(arenaSize, 1, arenaSize / 5);
+            a.Translate(new Vector3(0, arenaSize / 5, arenaSize));
             a.SetColor(Color.LightGray);
 
             ProceduralShape b = a.Clone();
-            b.Translate(new Vector3(0, 0, -arenaSize*2));
+            b.Translate(new Vector3(0, 0, -arenaSize * 2));
 
             ProceduralShape c = ProceduralShape.Combine(a, b);
             ProceduralShape d = b.Clone();
-            d.Transform(Matrix.CreateRotationY(MathHelper.Pi/2));
+            d.Transform(MonoMathHelper.RotateNinetyDegreesAroundUp(true));
 
             ProceduralShape e = ProceduralShape.Combine(arenaFloor, c, d);
 
 
-           
+
             var side2 = e.Clone();
             var side3 = e.Clone();
             var side4 = e.Clone();
 
-            e.Translate(new Vector3(-arenaSize*2, 0, 0));
+            e.Translate(new Vector3(-arenaSize * 2, 0, 0));
 
-            side2.Transform(Matrix.CreateRotationY(MathHelper.Pi));
-            side2.Translate(new Vector3(arenaSize*2,0,0));
-            side3.Transform(Matrix.CreateRotationY(MathHelper.PiOver2));
-            side3.Translate(new Vector3(0, 0, arenaSize*2));
-            side4.Transform(Matrix.CreateRotationY(-MathHelper.PiOver2));
+            side2.Transform(MonoMathHelper.RotateHundredEightyDegreesAroundUp(true));
+            side2.Translate(new Vector3(arenaSize * 2, 0, 0));
+            side3.Transform(MonoMathHelper.RotateNinetyDegreesAroundUp(true));
+            side3.Translate(new Vector3(0, 0, arenaSize * 2));
+            side4.Transform(MonoMathHelper.RotateNinetyDegreesAroundUp(false));
             side4.Translate(new Vector3(0, 0, -arenaSize * 2));
 
 
@@ -86,7 +104,7 @@ namespace GridForgeResurrected.Screens
                 final.GetIndicesAsInt().ToArray()));
 
 
-            arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
+            //arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
 
@@ -96,7 +114,7 @@ namespace GridForgeResurrected.Screens
 
             arenaObject.AddChild(lineObject);
 
-            
+
 
             return arenaObject;
         }
@@ -104,17 +122,17 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
+
+
             RayCastResult result;
             Matrix camWorld = Matrix.Invert(SystemCore.ActiveCamera.View);
-            BEPUutilities.Ray ray =
-                new BEPUutilities.Ray(camWorld.Translation.ToBepuVector() + camWorld.Forward.ToBepuVector() * 3f,
-                    camWorld.Forward.ToBepuVector());
 
-            if (SystemCore.PhysicsSimulation.RayCast(ray, out result))
+
+            if (SystemCore.PhysicsSimulation.RayCast(SystemCore.Input.GetBepuProjectedMouseRay(), out result))
             {
                 var hitPos = result.HitData.Location.ToXNAVector();
                 DebugShapeRenderer.AddLine(hitPos,
-                    hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 5f), Color.Blue);
+                    hitPos + Vector3.Normalize(result.HitData.Normal.ToXNAVector() * 20f), Color.Blue);
             }
 
             base.Update(gameTime);

@@ -3,6 +3,7 @@ using System.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using MonoGameEngineCore.Helper;
 
 namespace MonoGameEngineCore
 {
@@ -391,6 +392,16 @@ namespace MonoGameEngineCore
             return currentGamePadState.IsButtonDown(button);
         }
 
-       
+        public Ray GetProjectedMouseRay()
+        {
+            return MonoMathHelper.GetProjectedMouseRay(SystemCore.ActiveCamera.View,
+                SystemCore.ActiveCamera.Projection, SystemCore.GraphicsDevice, (int) SystemCore.Input.MousePosition.X,
+                (int) SystemCore.Input.MousePosition.Y);
+        }
+
+        public BEPUutilities.Ray GetBepuProjectedMouseRay()
+        {
+            return ConversionHelper.MathConverter.Convert(GetProjectedMouseRay());
+        }
     }
 }
