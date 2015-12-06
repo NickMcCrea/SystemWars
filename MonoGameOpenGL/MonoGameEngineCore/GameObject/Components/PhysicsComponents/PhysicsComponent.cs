@@ -99,6 +99,8 @@ namespace MonoGameEngineCore.GameObject.Components
             PhysicsEntity = new Box(new BEPUutilities.Vector3(ParentObject.Transform.WorldMatrix.Translation.X,
                 ParentObject.Transform.WorldMatrix.Translation.X,
                 ParentObject.Transform.WorldMatrix.Translation.X), width, height, depth, 1);
+
+            
         }
 
         public bool Enabled { get; set; }
@@ -137,7 +139,10 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public bool InCollision()
         {
-            return PhysicsEntity.CollisionInformation.Pairs.Count > 0;
+            if (PhysicsEntity.CollisionInformation.Pairs.Count > 0)
+                if (PhysicsEntity.CollisionInformation.Pairs[0].Contacts.Count > 0)
+                    return true;
+            return false;
         }
 
         public bool CollidedWithEntity(int entityID)

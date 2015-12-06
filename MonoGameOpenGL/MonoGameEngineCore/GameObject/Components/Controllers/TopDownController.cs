@@ -3,6 +3,7 @@ using BEPUphysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore.Helper;
+using BEPUphysics.Entities;
 
 namespace MonoGameEngineCore.GameObject.Components.Controllers
 {
@@ -17,6 +18,7 @@ namespace MonoGameEngineCore.GameObject.Components.Controllers
         {
             this.Enabled = true;
             this.inputManager = SystemCore.Input;
+           
         }
 
         public bool Enabled { get; set; }
@@ -24,6 +26,8 @@ namespace MonoGameEngineCore.GameObject.Components.Controllers
 
         public void Update(GameTime gameTime)
         {
+
+
             if (inputManager.IsKeyDown(Keys.Left))
             {
                 ParentObject.Transform.Velocity -= Vector3.Left * speed;
