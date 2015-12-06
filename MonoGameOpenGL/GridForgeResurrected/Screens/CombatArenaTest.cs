@@ -108,7 +108,7 @@ namespace GridForgeResurrected.Screens
                 final.GetIndicesAsInt().ToArray()));
 
 
-            //arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
+           // arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
 
