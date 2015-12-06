@@ -136,7 +136,7 @@
 #begin Effects/SM5.0/ParticleEffect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
-/processorParam:DebugMode=Auto
+/processorParam:DebugMode=Debug
 /build:Effects/SM5.0/ParticleEffect.fx
 
 #begin Textures/fire.png

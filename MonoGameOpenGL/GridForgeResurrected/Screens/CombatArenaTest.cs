@@ -135,7 +135,7 @@ namespace GridForgeResurrected.Screens
             // Create a number of fire particles, randomly positioned around a circle.
             for (int i = 0; i < fireParticlesPerFrame; i++)
             {
-                fireParticles.AddParticle(RandomHelper.RandomNormalVector3, Vector3.Zero);
+                fireParticles.AddParticle(new Vector3(0,10,0), RandomHelper.RandomNormalVector3);
             }
 
 

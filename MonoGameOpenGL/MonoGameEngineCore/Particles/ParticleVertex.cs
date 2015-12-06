@@ -40,19 +40,19 @@ namespace Particle3DSample
         public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration
         (
             new VertexElement(0, VertexElementFormat.Short2,
-                                 VertexElementUsage.Position, 0),
+                    VertexElementUsage.Normal, 0),
 
             new VertexElement(4, VertexElementFormat.Vector3,
-                                 VertexElementUsage.Position, 1),
+                    VertexElementUsage.Position, 0),
 
             new VertexElement(16, VertexElementFormat.Vector3,
-                                  VertexElementUsage.Normal, 0),
+                    VertexElementUsage.Normal, 1),
 
             new VertexElement(28, VertexElementFormat.Color,
-                                  VertexElementUsage.Color, 0),
+                    VertexElementUsage.Color, 0),
 
             new VertexElement(32, VertexElementFormat.Single,
-                                  VertexElementUsage.TextureCoordinate, 0)
+                    VertexElementUsage.TextureCoordinate, 0)
         );
 
 
