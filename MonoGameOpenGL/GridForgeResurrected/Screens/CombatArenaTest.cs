@@ -11,6 +11,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
+using System.Collections.Generic;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace GridForgeResurrected.Screens
@@ -22,6 +23,7 @@ namespace GridForgeResurrected.Screens
     {
         private GameObject cameraGameObject;
         private GridWarrior player;
+        private List<SimpleEnemy> enemies;
         
         public CombatArenaTest()
         {
@@ -44,8 +46,13 @@ namespace GridForgeResurrected.Screens
 
             player = new GridWarrior(new Vector3(0, 5, 0));
 
-
-            var enemy = new SimpleEnemy(new Vector3(10, 5, 10));
+            enemies = new List<SimpleEnemy>();
+            for (int i = 0; i < 5; i++)
+            {
+                int spread = 50;
+                var enemy = new SimpleEnemy(new Vector3(RandomHelper.GetRandomInt(-spread, spread), 5, RandomHelper.GetRandomInt(-spread, spread)));
+                enemies.Add(enemy);
+            }
 
         }
 
@@ -119,11 +126,17 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
-            base.Update(gameTime);
 
-
+            cameraGameObject.Transform.Translate(new Vector3(0, -(float)input.ScrollDelta/10f, 0));
 
             player.Update(gameTime);
+
+            foreach (SimpleEnemy enemy in enemies)
+            {
+                enemy.Update(gameTime);
+            }
+
+            base.Update(gameTime);
 
         }
 

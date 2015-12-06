@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
 using Matrix = BEPUutilities.Matrix;
 using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
@@ -131,6 +132,11 @@ namespace MonoGameEngineCore.GameObject.Components
                         MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
                 }
             }
+        }
+
+        public void DoCollisionResponse(float speed)
+        {
+            
         }
 
         public int UpdateOrder { get; set; }

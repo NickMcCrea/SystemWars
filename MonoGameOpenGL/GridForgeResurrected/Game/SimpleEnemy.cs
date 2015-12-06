@@ -17,39 +17,32 @@ using MonoGameEngineCore.Helper;
 
 namespace GridForgeResurrected.Game
 {
-    class SimpleEnemy
+    
+
+    class SimpleEnemy : GameEntity
     {
-        private GameObject enemyGameObject;
-        private PhysicsComponent physicsComponent;
 
         public SimpleEnemy(Vector3 startPos)
+            : base()
+        {
+            gameObject.Transform.SetPosition(startPos);
+        }
+
+        protected override void Initialise()
         {
             ProceduralSphereTwo playerShape = new ProceduralSphereTwo(10);
             playerShape.Scale(2f);
-            enemyGameObject = GameObjectFactory.CreateCollidableObject(playerShape,
+            gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
                 EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.sphere);
 
-            enemyGameObject.AddComponent(new SimpleEnemyAIController());
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(enemyGameObject);
-
-            enemyGameObject.Transform.SetPosition(startPos);
-
-            physicsComponent = enemyGameObject.GetComponent<PhysicsComponent>();
+            gameObject.AddComponent(new SimpleEnemyAIController());
+            
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
+            physicsComponent = gameObject.GetComponent<PhysicsComponent>();
+           
         }
 
-        public void Update()
-        {
-
-        }
-
-        internal void Update(GameTime gameTime)
-        {
-
-            CollisionResponse();
-        }
-
-        private void CollisionResponse()
+        public override void Update(GameTime gameTime)
         {
             var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
             foreach (CollidablePairHandler pair in pairs)
@@ -58,12 +51,20 @@ namespace GridForgeResurrected.Game
                 foreach (ContactInformation contact in contacts)
                 {
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                    enemyGameObject.Transform.Translate(remove);
-                    enemyGameObject.Transform.Velocity += (remove / 20);
+
+                    if (pair.EntityB == physicsComponent.PhysicsEntity)
+                        remove *= -1;
+
+                    remove.Y = 0;
+                    gameObject.Transform.Translate(remove);
+                    gameObject.Transform.Velocity += (remove * 0.001f);
                     break;
                 }
 
             }
+
         }
+
+
     }
 }

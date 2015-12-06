@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonoGameEngineCore.GameObject.Components;
 
 namespace GridForgeResurrected
 {
@@ -15,7 +16,8 @@ namespace GridForgeResurrected
     {
         public GameObject ParentObject { get; set; }
         private InputManager inputManager;
-        private float speed = 0.003f;
+        private GameObject playerObject;
+        private float speed = 0.00005f;
         private float bleed = 0.95f;
 
         public void Initialise()
@@ -30,10 +32,23 @@ namespace GridForgeResurrected
 
         public void Update(GameTime gameTime)
         {
+            if (playerObject == null)
+            {
+                playerObject = SystemCore.GameObjectManager.GetObject("player");
+            }
+
+            Vector3 toPlayer = playerObject.Transform.WorldMatrix.Translation - ParentObject.Transform.WorldMatrix.Translation;
 
             //look where we're heading.
-            if (ParentObject.Transform.Velocity != Vector3.Zero)
-                ParentObject.Transform.SetLookAndUp(Vector3.Normalize(ParentObject.Transform.Velocity), Vector3.Up);
+            if (toPlayer != Vector3.Zero)
+            {
+                ParentObject.Transform.SetLookAndUp(Vector3.Normalize(toPlayer), Vector3.Up);
+                ParentObject.Transform.Velocity += toPlayer * speed;
+            }
+
+            ParentObject.Transform.Velocity *= 0.95f;
+
+           
             
         }
 

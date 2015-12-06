@@ -55,6 +55,8 @@ namespace MonoGameEngineCore.GameObject.Components.Controllers
                 lookAt.Normalize();
                 ParentObject.Transform.SetLookAndUp(lookAt, Vector3.Up);
             }
+
+            ParentObject.GetComponent<PhysicsComponent>().DoCollisionResponse(speed);
         }
 
         public int UpdateOrder { get; set; }

@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\GameEntity.cs" />
     <Compile Include="Game\GridWarrior.cs" />
     <Compile Include="Game\SimpleEnemy.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />

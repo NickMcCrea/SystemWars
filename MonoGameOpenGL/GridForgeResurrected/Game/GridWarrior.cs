@@ -16,39 +16,30 @@ using MonoGameEngineCore.Helper;
 
 namespace GridForgeResurrected.Game
 {
-    class GridWarrior
+    class GridWarrior : GameEntity
     {
-        private GameObject playerGameObject;
-        private PhysicsComponent physicsComponent;
+   
 
         public GridWarrior(Vector3 startPos)
         {
+            gameObject.Transform.SetPosition(startPos);
+        }
+
+        protected override void Initialise()
+        {
             ProceduralCube playerShape = new ProceduralCube();
             playerShape.Scale(5f);
-            playerGameObject = GameObjectFactory.CreateCollidableObject(playerShape,
+            gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
                 EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.box);
-
-            playerGameObject.AddComponent(new TopDownMouseAndKeyboardController());
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(playerGameObject);
-
-            playerGameObject.Transform.SetPosition(startPos);
-
-            physicsComponent = playerGameObject.GetComponent<PhysicsComponent>();
+            gameObject.Name = "player";
+            gameObject.AddComponent(new TopDownMouseAndKeyboardController());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
+            physicsComponent = gameObject.GetComponent<PhysicsComponent>();
+            base.Initialise();
         }
 
-        public void Update()
-        {
-
-        }
 
         internal void Update(GameTime gameTime)
-        {
-
-            CollisionResponse();
-        }
-
-        private void CollisionResponse()
         {
             var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
             foreach (CollidablePairHandler pair in pairs)
@@ -57,13 +48,16 @@ namespace GridForgeResurrected.Game
                 foreach (ContactInformation contact in contacts)
                 {
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                    playerGameObject.Transform.Translate(remove);
-                    playerGameObject.Transform.Velocity += (remove / 20);
+                    remove.Y = 0;
+                    gameObject.Transform.Translate(remove);
+                    gameObject.Transform.Velocity += (remove * 0.01f);
                     break;
                 }
 
             }
         }
+
+       
     }
 
   
