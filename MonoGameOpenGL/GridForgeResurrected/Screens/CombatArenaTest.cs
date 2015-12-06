@@ -11,6 +11,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
+using Particle3DSample;
 using System.Collections.Generic;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
@@ -24,7 +25,8 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         private GridWarrior player;
         private List<SimpleEnemy> enemies;
-     
+        ParticleSystem fireParticles;
+
         public CombatArenaTest()
         {
            
@@ -54,7 +56,9 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
-          
+            fireParticles = new FireParticleSystem(SystemCore.Game, SystemCore.ContentManager);
+            fireParticles.DrawOrder = 500;
+            SystemCore.Game.Components.Add(fireParticles);
         }
 
 
@@ -126,6 +130,13 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
+            const int fireParticlesPerFrame = 20;
+
+            // Create a number of fire particles, randomly positioned around a circle.
+            for (int i = 0; i < fireParticlesPerFrame; i++)
+            {
+                fireParticles.AddParticle(RandomHelper.RandomNormalVector3, Vector3.Zero);
+            }
 
 
             cameraGameObject.Transform.Translate(new Vector3(0, -(float)input.ScrollDelta/10f, 0));
@@ -147,7 +158,8 @@ namespace GridForgeResurrected.Screens
             SystemCore.GraphicsDevice.Clear(Color.Gray);
             DebugShapeRenderer.VisualiseAxes(5f);
 
-           
+            fireParticles.SetCamera(SystemCore.ActiveCamera.View, SystemCore.ActiveCamera.Projection);
+
 
             base.Render(gameTime);
         }
