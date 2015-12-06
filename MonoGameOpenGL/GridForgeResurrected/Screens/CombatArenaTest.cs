@@ -1,6 +1,7 @@
 ﻿using BEPUphysics.CollisionRuleManagement;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
 using ConversionHelper;
+using GridForgeResurrected.Game;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
@@ -20,12 +21,12 @@ namespace GridForgeResurrected.Screens
     class CombatArenaTest : Screen
     {
         private GameObject cameraGameObject;
-        private GameObject testPlayer;
-
+        private GridWarrior player;
+        
         public CombatArenaTest()
         {
-            //CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
-
+           
+            CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
@@ -39,23 +40,14 @@ namespace GridForgeResurrected.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
-            ProceduralCube playerShape = new ProceduralCube();
-            playerShape.Scale(5f);
-            testPlayer = GameObjectFactory.CreateCollidableObject(playerShape,
-                EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.box);
-
-            testPlayer.AddComponent(new TopDownMouseAndKeyboardController());
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(testPlayer);
-
-            CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
 
 
-            testPlayer.Transform.SetPosition(new Vector3(0, 5, 0));
+            player = new GridWarrior(new Vector3(0, 5, 0));
+
+
+            var enemy = new SimpleEnemy(new Vector3(10, 5, 10));
 
         }
-
-
 
 
         private static GameObject CreateTestArena(float arenaSize)
@@ -129,25 +121,11 @@ namespace GridForgeResurrected.Screens
 
             base.Update(gameTime);
 
-            PhysicsComponent playerPhysics = testPlayer.GetComponent<PhysicsComponent>();
-            var pairs = playerPhysics.PhysicsEntity.CollisionInformation.Pairs;
-            foreach (CollidablePairHandler pair in pairs)
-            {
-                var contacts = pair.Contacts;
-                foreach (ContactInformation contact in contacts)
-                {
-                    var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                    testPlayer.Transform.Translate(remove);
-                    testPlayer.Transform.Velocity += (remove / 20);
-                    break;
-                }
-
-            }
 
 
+            player.Update(gameTime);
 
         }
-
 
 
         public override void Render(GameTime gameTime)
