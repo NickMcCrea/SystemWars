@@ -54,8 +54,8 @@ sampler Sampler = sampler_state
 // along with some random values that affect its size and rotation.
 struct VertexShaderInput
 {
-	float2 Corner : NORMAL0;
 	float3 Position : SV_POSITION;
+	float2 Corner : NORMAL0;
 	float3 Velocity : NORMAL1;
 	float4 Random : COLOR0;
 	float Time : TEXCOORD0;
@@ -65,9 +65,9 @@ struct VertexShaderInput
 // Vertex shader output structure specifies the position and color of the particle.
 struct VertexShaderOutput
 {
-    float4 Position : SV_POSITION;
-    float4 Color : COLOR0;
-    float2 TextureCoordinate : COLOR1;
+	float4 Position : SV_POSITION;
+	float4 Color : COLOR0;
+	float2 TextureCoordinate : COLOR1;
 };
 
 
