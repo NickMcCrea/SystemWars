@@ -11,7 +11,6 @@ using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
-using Particle3DSample;
 using MonoGameEngineCore;
 using MonoGameEngineCore.Helper;
 

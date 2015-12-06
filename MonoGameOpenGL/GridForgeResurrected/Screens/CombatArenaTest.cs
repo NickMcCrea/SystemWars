@@ -24,7 +24,7 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         private GridWarrior player;
         private List<SimpleEnemy> enemies;
-        
+     
         public CombatArenaTest()
         {
            
@@ -54,6 +54,7 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
+          
         }
 
 
@@ -145,6 +146,9 @@ namespace GridForgeResurrected.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.Gray);
             DebugShapeRenderer.VisualiseAxes(5f);
+
+           
+
             base.Render(gameTime);
         }
     }
