@@ -31,7 +31,7 @@ namespace MonoGameEngineCore
 
     public interface IGameComponent
     {
-        
+
     }
 
 
@@ -45,7 +45,7 @@ namespace MonoGameEngineCore
         public static GraphicsDevice GraphicsDevice { get; private set; }
         public static ContentManager ContentManager { get; private set; }
         public static GUIManager GUIManager { get; private set; }
-        
+
         public static Space PhysicsSimulation { get; private set; }
         public static GameObjectManager GameObjectManager { get; private set; }
         public static AudioManager AudioManager { get; private set; }
@@ -55,26 +55,25 @@ namespace MonoGameEngineCore
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
         public static bool PhysicsOnBackgroundThread = false;
-        private static  Dictionary<string, ICamera> cameras;  
+        private static Dictionary<string, ICamera> cameras;
         private static List<IGameSubSystem> gameSubSystems;
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
-        public static bool EnableBloom { get; set; }
-        private static BloomComponent bloomComponent;
+
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
         {
-            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;     
+            SystemCore.GraphicsDeviceManager = GraphicsDeviceSetup.SetupDisplay(game, screenRes, false, preferreDepthFormat, isFixedTimeStep); ;
             SystemCore.ContentManager = content;
             SystemCore.Game = game;
             SystemCore.PhysicsOnBackgroundThread = physicsOnBackgroundThread;
             cameras = new Dictionary<string, ICamera>();
 
-            EnableBloom = false;
+
         }
 
-      
+
         public static void InitialiseGameSystems()
         {
             SystemCore.GraphicsDevice = SystemCore.GraphicsDeviceManager.GraphicsDevice;
@@ -113,11 +112,7 @@ namespace MonoGameEngineCore
             DebugText.InjectDebugFont(GUIFonts.Fonts["test"]);
             DebugText.InjectGraphicsDevice(SystemCore.GraphicsDevice);
 
-            bloomComponent = new BloomComponent(Game);
-            bloomComponent.Enabled = EnableBloom;
-            bloomComponent.Visible = EnableBloom;
-            bloomComponent.DrawOrder = 1000;
-            Game.Components.Add(bloomComponent);
+
         }
 
         public static void AddNewUpdateRenderSubsystem(IGameSubSystem newSystem)
@@ -165,17 +160,16 @@ namespace MonoGameEngineCore
             }
 
 
-            if(SystemCore.EscapeQuitsGame)
-                if(SystemCore.Input.KeyPress(Keys.Escape))
+            if (SystemCore.EscapeQuitsGame)
+                if (SystemCore.Input.KeyPress(Keys.Escape))
                     SystemCore.Game.Exit();
 
             if (!PhysicsOnBackgroundThread)
-                PhysicsSimulation.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+                PhysicsSimulation.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
 
             DebugText.Update(gameTime);
 
-            bloomComponent.Enabled = EnableBloom;
-            bloomComponent.Visible = EnableBloom;
+
 
         }
 
@@ -185,7 +179,7 @@ namespace MonoGameEngineCore
             {
                 DateTime now = DateTime.Now;
                 double elapsed = (now - physicsLastUpdate).TotalMilliseconds;
-                PhysicsSimulation.Update((float) elapsed/1000);
+                PhysicsSimulation.Update((float)elapsed / 1000);
                 physicsLastUpdate = now;
                 Thread.Sleep(5);
             }
@@ -210,11 +204,6 @@ namespace MonoGameEngineCore
                     rasterizerState.FillMode = FillMode.Solid;
                     GraphicsDevice.RasterizerState = rasterizerState;
                 }
-            }
-
-            if(EnableBloom)
-            {
-                bloomComponent.BeginDraw();
             }
 
             for (int i = 0; i < gameSubSystems.Count; i++)
@@ -251,7 +240,7 @@ namespace MonoGameEngineCore
         public static ICamera GetCamera(string cameraName)
         {
             return cameras[cameraName];
-        } 
+        }
 
         public static T GetSubsystem<T>()
         {
@@ -267,7 +256,7 @@ namespace MonoGameEngineCore
             if (gameSubSystem != null)
                 return (T)gameSubSystem;
             return default(T);
-            
+
         }
 
         public static Vector3 Unproject(Vector3 inWorldPoint)

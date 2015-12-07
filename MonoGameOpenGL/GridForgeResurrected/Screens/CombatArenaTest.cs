@@ -58,7 +58,7 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
-            SystemCore.EnableBloom = true;
+        
             
         }
 

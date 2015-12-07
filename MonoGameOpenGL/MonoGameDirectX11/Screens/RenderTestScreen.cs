@@ -61,6 +61,8 @@ namespace MonoGameDirectX11
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 
+            //SystemCore.EnableBloom = true;
+
         }
 
         private void AddInputBindings()
