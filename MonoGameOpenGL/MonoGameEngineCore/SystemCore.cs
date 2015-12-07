@@ -18,6 +18,7 @@ using MonoGameEngineCore.Helper;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
+using BloomPostprocess;
 
 namespace MonoGameEngineCore
 {
@@ -59,6 +60,8 @@ namespace MonoGameEngineCore
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
+        public static bool EnableBloom { get; set; }
+        private static BloomComponent bloomComponent;
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
         {
@@ -68,7 +71,7 @@ namespace MonoGameEngineCore
             SystemCore.PhysicsOnBackgroundThread = physicsOnBackgroundThread;
             cameras = new Dictionary<string, ICamera>();
 
-            
+            EnableBloom = false;
         }
 
       
@@ -109,6 +112,12 @@ namespace MonoGameEngineCore
 
             DebugText.InjectDebugFont(GUIFonts.Fonts["test"]);
             DebugText.InjectGraphicsDevice(SystemCore.GraphicsDevice);
+
+            bloomComponent = new BloomComponent(Game);
+            bloomComponent.Enabled = EnableBloom;
+            bloomComponent.Visible = EnableBloom;
+            bloomComponent.DrawOrder = 1000;
+            Game.Components.Add(bloomComponent);
         }
 
         public static void AddNewUpdateRenderSubsystem(IGameSubSystem newSystem)
@@ -165,6 +174,9 @@ namespace MonoGameEngineCore
 
             DebugText.Update(gameTime);
 
+            bloomComponent.Enabled = EnableBloom;
+            bloomComponent.Visible = EnableBloom;
+
         }
 
         public static void PhysicsUpdate()
@@ -198,6 +210,11 @@ namespace MonoGameEngineCore
                     rasterizerState.FillMode = FillMode.Solid;
                     GraphicsDevice.RasterizerState = rasterizerState;
                 }
+            }
+
+            if(EnableBloom)
+            {
+                bloomComponent.BeginDraw();
             }
 
             for (int i = 0; i < gameSubSystems.Count; i++)

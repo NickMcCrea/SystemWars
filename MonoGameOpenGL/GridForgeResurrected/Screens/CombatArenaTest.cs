@@ -25,12 +25,11 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         private GridWarrior player;
         private List<SimpleEnemy> enemies;
-        ParticleSystem fireParticles;
+       
 
         public CombatArenaTest()
         {
 
-            fireParticles = new FireParticleSystem();
           
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
@@ -43,8 +42,7 @@ namespace GridForgeResurrected.Screens
             cameraGameObject.AddComponent(new ComponentCamera());
             cameraGameObject.Transform.SetPosition(new Vector3(0, 200, 0));
             cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
-            cameraGameObject.AddComponent(fireParticles);
-
+          
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
@@ -60,7 +58,7 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
-           
+            SystemCore.EnableBloom = true;
             
         }
 
@@ -133,14 +131,7 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
-            const int fireParticlesPerFrame = 20;
-
-            // Create a number of fire particles, randomly positioned around a circle.
-            for (int i = 0; i < fireParticlesPerFrame; i++)
-            {
-                fireParticles.AddParticle(new Vector3(0,10,0), RandomHelper.RandomNormalVector3);
-            }
-
+           
         
             cameraGameObject.Transform.Translate(new Vector3(0, -(float)input.ScrollDelta/10f, 0));
 
