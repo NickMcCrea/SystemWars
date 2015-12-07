@@ -13,6 +13,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
+using MonoGameEngineCore;
+using MonoGameEngineCore.GameObject;
+
 #endregion
 
 namespace Particle3DSample
@@ -20,17 +23,16 @@ namespace Particle3DSample
     /// <summary>
     /// The main component in charge of displaying particles.
     /// </summary>
-    public abstract class ParticleSystem : DrawableGameComponent
+    public abstract class ParticleSystem : IComponent, IDrawable, IUpdateable
     {
-        #region Fields
-
+      
 
         // Settings class controls the appearance and animation of this particle system.
         ParticleSettings settings = new ParticleSettings();
 
 
         // For loading the effect and particle texture.
-        ContentManager content;
+      
 
 
         // Custom effect for drawing particles. This computes the particle
@@ -148,25 +150,24 @@ namespace Particle3DSample
         static Random random = new Random();
 
 
-        #endregion
-
-        #region Initialization
-
+     
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        protected ParticleSystem(Game game, ContentManager content)
-            : base(game)
+        protected ParticleSystem()
         {
-            this.content = content;
+            Visible = true;
+            Enabled = true;
+            DrawOrder = 500;
+
         }
 
 
         /// <summary>
         /// Initializes the component.
         /// </summary>
-        public override void Initialize()
+        public void Initialise()
         {
             InitializeSettings(settings);
 
@@ -181,7 +182,7 @@ namespace Particle3DSample
                 particles[i * 4 + 3].Corner = new Vector2(-1, 1);
             }
 
-            base.Initialize();
+            LoadContent();
         }
 
 
@@ -195,12 +196,12 @@ namespace Particle3DSample
         /// <summary>
         /// Loads graphics for the particle system.
         /// </summary>
-        protected override void LoadContent()
+        protected void LoadContent()
         {
             LoadParticleEffect();
 
             // Create a dynamic vertex buffer.
-            vertexBuffer = new DynamicVertexBuffer(GraphicsDevice, ParticleVertex.VertexDeclaration,
+            vertexBuffer = new DynamicVertexBuffer(SystemCore.GraphicsDevice, ParticleVertex.VertexDeclaration,
                                                    settings.MaxParticles * 4, BufferUsage.WriteOnly);
 
             // Create and populate the index buffer.
@@ -217,7 +218,7 @@ namespace Particle3DSample
                 indices[i * 6 + 5] = (ushort)(i * 4 + 3);
             }
 
-            indexBuffer = new IndexBuffer(GraphicsDevice, typeof(ushort), indices.Length, BufferUsage.WriteOnly);
+            indexBuffer = new IndexBuffer(SystemCore.GraphicsDevice, typeof(ushort), indices.Length, BufferUsage.WriteOnly);
 
             indexBuffer.SetData(indices);
         }
@@ -228,7 +229,7 @@ namespace Particle3DSample
         /// </summary>
         void LoadParticleEffect()
         {
-            Effect effect = content.Load<Effect>("Effects//SM5.0//ParticleEffect");
+            Effect effect = SystemCore.ContentManager.Load<Effect>("Effects//SM5.0//ParticleEffect");
 
             // If we have several particle systems, the content manager will return
             // a single shared effect instance to them all. But we want to preconfigure
@@ -264,21 +265,18 @@ namespace Particle3DSample
                 new Vector2(settings.MinEndSize, settings.MaxEndSize));
 
             // Load the particle texture, and set it onto the effect.
-            Texture2D texture = content.Load<Texture2D>(settings.TextureName);
+            Texture2D texture = SystemCore.ContentManager.Load<Texture2D>(settings.TextureName);
 
             parameters["Texture"].SetValue(texture);
         }
 
 
-        #endregion
-
-        #region Update and Draw
 
 
         /// <summary>
         /// Updates the particle system.
         /// </summary>
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (gameTime == null)
                 throw new ArgumentNullException("gameTime");
@@ -366,9 +364,11 @@ namespace Particle3DSample
         /// <summary>
         /// Draws the particle system.
         /// </summary>
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
-            GraphicsDevice device = GraphicsDevice;
+            effectViewParameter.SetValue(SystemCore.ActiveCamera.View);
+            effectProjectionParameter.SetValue(SystemCore.ActiveCamera.Projection);
+
 
             // Restore the vertex buffer contents if the graphics device was lost.
             if (vertexBuffer.IsContentLost)
@@ -386,20 +386,20 @@ namespace Particle3DSample
             // If there are any active particles, draw them now!
             if (firstActiveParticle != firstFreeParticle)
             {
-                device.BlendState = settings.BlendState;
-                device.DepthStencilState = DepthStencilState.DepthRead;
+                SystemCore.GraphicsDevice.BlendState = settings.BlendState;
+                SystemCore.GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
 
                 // Set an effect parameter describing the viewport size. This is
                 // needed to convert particle sizes into screen space point sizes.
-                effectViewportScaleParameter.SetValue(new Vector2(0.5f / device.Viewport.AspectRatio, -0.5f));
+                effectViewportScaleParameter.SetValue(new Vector2(0.5f / SystemCore.GraphicsDevice.Viewport.AspectRatio, -0.5f));
 
                 // Set an effect parameter describing the current time. All the vertex
                 // shader particle animation is keyed off this value.
                 effectTimeParameter.SetValue(currentTime);
 
                 // Set the particle vertex and index buffer.
-                device.SetVertexBuffer(vertexBuffer);
-                device.Indices = indexBuffer;
+                SystemCore.GraphicsDevice.SetVertexBuffer(vertexBuffer);
+                SystemCore.GraphicsDevice.Indices = indexBuffer;
 
                 // Activate the particle effect.
                 foreach (EffectPass pass in particleEffect.CurrentTechnique.Passes)
@@ -410,7 +410,7 @@ namespace Particle3DSample
                     {
                         // If the active particles are all in one consecutive range,
                         // we can draw them all in a single call.
-                        device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                        SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
                                                      firstActiveParticle * 4, (firstFreeParticle - firstActiveParticle) * 4,
                                                      firstActiveParticle * 6, (firstFreeParticle - firstActiveParticle) * 2);
                     }
@@ -418,13 +418,13 @@ namespace Particle3DSample
                     {
                         // If the active particle range wraps past the end of the queue
                         // back to the start, we must split them over two draw calls.
-                        device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                        SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
                                                      firstActiveParticle * 4, (settings.MaxParticles - firstActiveParticle) * 4,
                                                      firstActiveParticle * 6, (settings.MaxParticles - firstActiveParticle) * 2);
 
                         if (firstFreeParticle > 0)
                         {
-                            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                            SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
                                                          0, firstFreeParticle * 4,
                                                          0, firstFreeParticle * 2);
                         }
@@ -433,7 +433,7 @@ namespace Particle3DSample
 
                 // Reset some of the renderstates that we changed,
                 // so as not to mess up any other subsequent drawing.
-                device.DepthStencilState = DepthStencilState.Default;
+                SystemCore.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             }
 
             drawCounter++;
@@ -479,21 +479,9 @@ namespace Particle3DSample
         }
 
 
-        #endregion
+   
 
-        #region Public Methods
-
-
-        /// <summary>
-        /// Sets the camera view and projection matrices
-        /// that will be used to draw this particle system.
-        /// </summary>
-        public void SetCamera(Matrix view, Matrix projection)
-        {
-            effectViewParameter.SetValue(view);
-            effectProjectionParameter.SetValue(projection);
-        }
-
+    
 
         /// <summary>
         /// Adds a new particle to the system.
@@ -549,6 +537,25 @@ namespace Particle3DSample
         }
 
 
-        #endregion
+        public GameObject ParentObject { get; set; }
+
+
+
+
+        public int DrawOrder { get; set; }
+
+        public event EventHandler<EventArgs> DrawOrderChanged;
+
+        public bool Visible { get; set; }
+
+        public event EventHandler<EventArgs> VisibleChanged;
+
+        public bool Enabled { get; set; }
+
+        public event EventHandler<EventArgs> EnabledChanged;
+
+        public int UpdateOrder { get; set; }
+
+        public event EventHandler<EventArgs> UpdateOrderChanged;
     }
 }

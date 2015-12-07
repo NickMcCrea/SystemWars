@@ -29,7 +29,9 @@ namespace GridForgeResurrected.Screens
 
         public CombatArenaTest()
         {
-           
+
+            fireParticles = new FireParticleSystem();
+          
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
@@ -41,6 +43,8 @@ namespace GridForgeResurrected.Screens
             cameraGameObject.AddComponent(new ComponentCamera());
             cameraGameObject.Transform.SetPosition(new Vector3(0, 200, 0));
             cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
+            cameraGameObject.AddComponent(fireParticles);
+
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
@@ -56,9 +60,8 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
-            fireParticles = new FireParticleSystem(SystemCore.Game, SystemCore.ContentManager);
-            fireParticles.DrawOrder = 500;
-            SystemCore.Game.Components.Add(fireParticles);
+           
+            
         }
 
 
@@ -138,7 +141,7 @@ namespace GridForgeResurrected.Screens
                 fireParticles.AddParticle(new Vector3(0,10,0), RandomHelper.RandomNormalVector3);
             }
 
-
+        
             cameraGameObject.Transform.Translate(new Vector3(0, -(float)input.ScrollDelta/10f, 0));
 
             player.Update(gameTime);
@@ -158,10 +161,11 @@ namespace GridForgeResurrected.Screens
             SystemCore.GraphicsDevice.Clear(Color.Gray);
             DebugShapeRenderer.VisualiseAxes(5f);
 
-            fireParticles.SetCamera(SystemCore.ActiveCamera.View, SystemCore.ActiveCamera.Projection);
-
-
+       
             base.Render(gameTime);
+
+          
+
         }
     }
 }

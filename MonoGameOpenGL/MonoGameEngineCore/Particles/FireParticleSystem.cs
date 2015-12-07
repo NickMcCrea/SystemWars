@@ -21,8 +21,7 @@ namespace Particle3DSample
     /// </summary>
     public class FireParticleSystem : ParticleSystem
     {
-        public FireParticleSystem(Game game, ContentManager content)
-            : base(game, content)
+        public FireParticleSystem()    
         { }
 
 
