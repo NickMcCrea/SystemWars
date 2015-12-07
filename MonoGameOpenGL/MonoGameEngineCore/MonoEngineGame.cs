@@ -17,7 +17,7 @@ namespace MonoGameEngineCore
         private Type startScreenType;
 
         private static BloomComponent bloomComponent;
-        private bool enableBloom = true;
+        private bool enableBloom = false;
 
         public MonoEngineGame(Type startScreenType, ScreenResolutionName resolution, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
             : base()
