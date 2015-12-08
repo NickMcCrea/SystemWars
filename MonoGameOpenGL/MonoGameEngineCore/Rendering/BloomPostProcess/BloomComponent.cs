@@ -192,32 +192,41 @@ namespace BloomPostprocess
 
             Viewport viewport = GraphicsDevice.Viewport;
 
-            //DrawFullscreenQuad(renderTarget1,
-            //                   viewport.Width, viewport.Height,
-            //                   bloomCombineEffect,
-            //                   IntermediateBuffer.FinalResult);
+            bool test = true;
 
-            GraphicsDevice.SetRenderTarget(null);
+            if (!test)
+            {
+                DrawFullscreenQuad(renderTarget1,
+                                   viewport.Width, viewport.Height,
+                                   bloomCombineEffect,
+                                   IntermediateBuffer.FinalResult);
 
-            DrawTestQuad(sceneRenderTarget,
-                new Rectangle(0, 0, GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2));
+            }
+            else
+            {
+                GraphicsDevice.SetRenderTarget(null);
 
-            DrawTestQuad(renderTarget1,
-              new Rectangle(GraphicsDevice.Viewport.Width / 2, 0, GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2));
+                DrawTestQuad(sceneRenderTarget,
+                    new Rectangle(0, 0, GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2));
 
-            DrawTestQuad(renderTarget2,
-                new Rectangle(0, GraphicsDevice.Viewport.Height / 2,
-                    GraphicsDevice.Viewport.Width / 2,
-                    GraphicsDevice.Viewport.Height / 2));
+                DrawTestQuad(renderTarget1,
+                    new Rectangle(GraphicsDevice.Viewport.Width/2, 0, GraphicsDevice.Viewport.Width/2,
+                        GraphicsDevice.Viewport.Height/2));
 
-            //end result.
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, bloomCombineEffect);
+                DrawTestQuad(renderTarget2,
+                    new Rectangle(0, GraphicsDevice.Viewport.Height/2,
+                        GraphicsDevice.Viewport.Width/2,
+                        GraphicsDevice.Viewport.Height/2));
 
-            spriteBatch.Draw(renderTarget1,
-                new Rectangle(GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2,
-                    GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2), Color.White);
+                //end result.
+                spriteBatch.Begin(0, BlendState.Opaque, null, null, null, bloomCombineEffect);
 
-            spriteBatch.End();
+                spriteBatch.Draw(renderTarget1,
+                    new Rectangle(GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2,
+                        GraphicsDevice.Viewport.Width/2, GraphicsDevice.Viewport.Height/2), Color.White);
+
+                spriteBatch.End();
+            }
 
 
 
