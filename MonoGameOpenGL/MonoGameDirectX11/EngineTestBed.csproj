@@ -36,7 +36,6 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Screens\CockpitTest.cs" />
     <Compile Include="Screens\ProceduralTestScreen.cs" />
     <Compile Include="Screens\RenderTestScreen.cs" />
     <Compile Include="Screens\ShapeTester.cs" />
