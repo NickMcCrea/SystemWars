@@ -37,7 +37,7 @@ namespace MonoGameEngineCore
             SystemCore.InitialiseGameSystems();
 
             bloomComponent = new BloomComponent(this);
-            bloomComponent.Settings = new BloomSettings(null, 0.25f, 4, 2, 1, 1.5f, 1);
+            bloomComponent.Settings = BloomSettings.PresetSettings[0];
             bloomComponent.DrawOrder = 1000;
 
             if (enableBloom)

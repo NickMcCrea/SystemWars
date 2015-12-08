@@ -160,12 +160,6 @@ namespace BloomPostprocess
                                bloomExtractEffect,
                                IntermediateBuffer.PreBloom);
 
-
-            //GraphicsDevice.SetRenderTarget(null);
-            //DrawFullscreenTestQuad(renderTarget1);
-
-
-            
             // Pass 2: draw from rendertarget 1 into rendertarget 2,
             // using a shader to apply a horizontal gaussian blur filter.
             SetBlurEffectParameters(1.0f / (float)renderTarget1.Width, 0);

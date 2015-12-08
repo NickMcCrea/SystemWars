@@ -13,6 +13,7 @@ float4 PixelShaderFunction(float2 texCoord : TEXCOORD0) : COLOR0
 
     // Adjust it to keep only values brighter than the specified threshold.
     return saturate((c - BloomThreshold) / (1 - BloomThreshold));
+	
 }
 
 
