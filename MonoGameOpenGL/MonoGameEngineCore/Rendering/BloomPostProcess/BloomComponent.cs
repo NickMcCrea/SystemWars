@@ -153,8 +153,8 @@ namespace BloomPostprocess
 
             // Pass 1: draw the scene into rendertarget 1, using a
             // shader that extracts only the brightest parts of the image.
-            bloomExtractEffect.Parameters["BloomThreshold"].SetValue(
-                Settings.BloomThreshold);
+            //bloomExtractEffect.Parameters["BloomThreshold"].SetValue(
+            //    Settings.BloomThreshold);
 
             DrawFullscreenQuad(sceneRenderTarget, renderTarget1,
                                bloomExtractEffect,
