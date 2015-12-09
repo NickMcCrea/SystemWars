@@ -35,6 +35,9 @@
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Screens\ProceduralTestScreen.cs" />
     <Compile Include="Screens\RenderTestScreen.cs" />
