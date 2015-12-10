@@ -70,7 +70,7 @@ namespace MonoGameEngineCore.GameObject
             ob.Transform.Scale = scale;
             sphere.SetColor(color);
             ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(sphere), BufferBuilder.IndexBufferBuild(sphere), sphere.PrimitiveCount));
-            ob.AddComponent(new SkyDomeRenderer(EffectLoader.LoadEffect("skydome")));
+            ob.AddComponent(new SkyDomeRenderer(EffectLoader.LoadSM5Effect("skydome")));
 
             return ob;
         }

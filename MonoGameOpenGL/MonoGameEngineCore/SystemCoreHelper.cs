@@ -21,7 +21,7 @@ namespace MonoGameEngineCore
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             ProceduralCube cube = new ProceduralCube();
             cube.SetColor(Color.OrangeRed);
-            GameObject.GameObject testObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadEffect("flatshaded"));
+            GameObject.GameObject testObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadSM5Effect("flatshaded"));
             testObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(testObject);
         }

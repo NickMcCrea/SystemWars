@@ -113,6 +113,7 @@
     <Compile Include="Procedural\Shapes\ProceduralShapes.cs" />
     <Compile Include="Rendering\Atmosphere.cs" />
     <Compile Include="Rendering\BloomPostProcess\BloomComponent.cs" />
+    <Compile Include="Rendering\BloomPostProcess\PostProcessComponent.cs" />
     <Compile Include="Rendering\BloomPostProcess\BloomSettings.cs" />
     <Compile Include="Rendering\Camera\ComponentCamera.cs" />
     <Compile Include="Rendering\Camera\DummyCamera.cs" />

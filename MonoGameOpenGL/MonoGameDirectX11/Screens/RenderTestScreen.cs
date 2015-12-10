@@ -23,7 +23,7 @@ namespace MonoGameDirectX11
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            var effect = EffectLoader.LoadEffect("FlatShaded");
+            var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
@@ -57,7 +57,7 @@ namespace MonoGameDirectX11
             ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelNoUVs(geoDesicModel);
             geodesicShape.Scale(20f);
             geodesicShape.InsideOut();
-            GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadEffect("cockpitscreen"));
+            GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 

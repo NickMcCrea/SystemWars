@@ -37,7 +37,7 @@ namespace MonoGameDirectX11.Screens
 
 
             ProceduralPlane p = new ProceduralPlane();
-            GameObject plane = GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadEffect("flatshaded"));
+            GameObject plane = GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadSM5Effect("flatshaded"));
             
 
             LineBatch l = new LineBatch(new Vector3(0.5f, 0, 0.5f), new Vector3(0.5f, 0, -0.5f), new Vector3(-0.5f, 0, -0.5f), new Vector3(-0.5f, 0, 0.5f), new Vector3(0.5f, 0, 0.5f));

@@ -37,7 +37,7 @@ namespace MonoGameDirectX11
             SystemCore.SetActiveCamera(mouseCamera);
 
 
-            var effect = EffectLoader.LoadEffect("FlatShaded");
+            var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
             //ground plane
             var groundShape = new ProceduralCuboid(10,10,0.5f);

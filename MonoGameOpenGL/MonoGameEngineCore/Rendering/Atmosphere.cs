@@ -202,7 +202,7 @@ namespace MonoGameEngineCore.Rendering
             m_fWavelength4.Y = (float)Math.Pow(m_fWavelength.Y, 4.0f);
             m_fWavelength4.Z = (float)Math.Pow(m_fWavelength.Z, 4.0f);
 
-            atmosphereEffect = EffectLoader.LoadEffect("AtmosphericScatteringSky");
+            atmosphereEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringSky");
             EffectRenderComponent effectRenderComponent = new EffectRenderComponent(atmosphereEffect);
             AddComponent(effectRenderComponent);
 

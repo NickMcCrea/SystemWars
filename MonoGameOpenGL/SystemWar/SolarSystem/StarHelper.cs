@@ -18,7 +18,7 @@ namespace SystemWar
         {
             var sunShape = new ProceduralSphere(20, 20);
             sunShape.SetColor(color);
-            var sun = GameObjectFactory.CreateRenderableGameObjectFromShape("sun", sunShape, EffectLoader.LoadEffect("flatshaded"));
+            var sun = GameObjectFactory.CreateRenderableGameObjectFromShape("sun", sunShape, EffectLoader.LoadSM5Effect("flatshaded"));
             sun.Transform.Scale = scale;
             sun.AddComponent(new SolarSystemPlaneteryBody(0, Vector3d.Zero, 0));
 
@@ -29,7 +29,7 @@ namespace SystemWar
         {
             var shape = new ProceduralSphere(20, 20);
             shape.SetColor(color);
-            var planet = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadEffect("flatshaded"));
+            var planet = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
             planet.Transform.Scale = scale;
             planet.Name = name;
             var solarBody = new SolarSystemPlaneteryBody(0, Vector3d.Zero, 0);

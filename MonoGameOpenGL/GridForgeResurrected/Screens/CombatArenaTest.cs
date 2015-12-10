@@ -107,7 +107,7 @@ namespace GridForgeResurrected.Screens
             var final = ProceduralShape.Combine(e, side2, side3, side4, arenaFloor);
 
             var arenaObject = GameObjectFactory.CreateRenderableGameObjectFromShape(final,
-                EffectLoader.LoadEffect("flatshaded"));
+                EffectLoader.LoadSM5Effect("flatshaded"));
 
 
             arenaObject.AddComponent(new StaticMeshColliderComponent(arenaObject, final.GetVertices(),

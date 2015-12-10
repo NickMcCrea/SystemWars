@@ -30,7 +30,7 @@ namespace GridForgeResurrected.Game
             ProceduralCube playerShape = new ProceduralCube();
             playerShape.Scale(5f);
             gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
-                EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.box);
+                EffectLoader.LoadSM5Effect("flatshaded"), PhysicsMeshType.box);
             gameObject.Name = "player";
             gameObject.AddComponent(new TopDownMouseAndKeyboardController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);

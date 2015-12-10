@@ -34,7 +34,7 @@ namespace MonoGameDirectX11.Screens
 
             ProceduralCube cube = new ProceduralCube();
             cube.SetColor(Color.OrangeRed);
-            testObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadEffect("flatshaded"));
+            testObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadSM5Effect("flatshaded"));
             testObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(testObject);
 
@@ -42,7 +42,7 @@ namespace MonoGameDirectX11.Screens
             plane.Scale(10f);
             plane.SetColor(Color.LightBlue);
             planeToDrawOn = GameObjectFactory.CreateRenderTextureSurface(plane,
-                EffectLoader.LoadEffect("rendertexturesurface"));
+                EffectLoader.LoadSM5Effect("rendertexturesurface"));
 
             planeToDrawOn.Transform.Rotate(Vector3.Forward, MathHelper.ToRadians(90));
             planeToDrawOn.Transform.Rotate(Vector3.Left, MathHelper.ToRadians(-90));
@@ -59,7 +59,7 @@ namespace MonoGameDirectX11.Screens
             SystemCore.AddCamera("renderTextureCamera", renderTextureCamera);
 
             var secondCube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(),
-            EffectLoader.LoadEffect("flatshaded"));
+            EffectLoader.LoadSM5Effect("flatshaded"));
 
             secondCube.Transform.SetPosition(new Vector3(-20, 0, 0));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(secondCube);

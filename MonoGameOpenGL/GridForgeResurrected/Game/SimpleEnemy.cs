@@ -33,7 +33,7 @@ namespace GridForgeResurrected.Game
             ProceduralSphereTwo playerShape = new ProceduralSphereTwo(10);
             playerShape.Scale(2f);
             gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
-                EffectLoader.LoadEffect("flatshaded"), PhysicsMeshType.sphere);
+                EffectLoader.LoadSM5Effect("flatshaded"), PhysicsMeshType.sphere);
 
             gameObject.AddComponent(new SimpleEnemyAIController());
             

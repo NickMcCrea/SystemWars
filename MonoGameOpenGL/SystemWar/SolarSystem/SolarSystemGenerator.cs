@@ -30,7 +30,7 @@ namespace SystemWar.Screens
 
             Planet earth = new Planet("earth", new Vector3d(ScaleHelper.Millions(20), 0, 0),
                 NoiseGenerator.FastPlanet(6000),
-               EffectLoader.LoadEffect("AtmosphericScatteringGround").Clone(),
+               EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone(),
                 6000, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0.000001f);
             earth.Orbit(Vector3d.Zero, ScaleHelper.Millions(20), ScaleHelper.Millionths(0.1f));
             earth.AddAtmosphere();

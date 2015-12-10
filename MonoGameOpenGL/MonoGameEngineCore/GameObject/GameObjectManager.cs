@@ -33,7 +33,7 @@ namespace MonoGameEngineCore.GameObject
 
         public GameObject AddShapeToScene(ProceduralShape shape)
         {
-            GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadEffect("flatshaded"));
+            GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
             return o;
         }
@@ -225,7 +225,7 @@ namespace MonoGameEngineCore.GameObject
             ProceduralSphereTwo s = new ProceduralSphereTwo(10);
             s.Scale(p);
             s.Translate(vector3);
-            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadEffect("flatshaded")));
+            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadSM5Effect("flatshaded")));
         }
 
         public void AddTestUnitCube(Vector3 vector3)
@@ -233,7 +233,7 @@ namespace MonoGameEngineCore.GameObject
             ProceduralCube s = new ProceduralCube();
             s.SetColor(Color.White);
             s.Translate(vector3);
-            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadEffect("flatshaded")));
+            AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(s, EffectLoader.LoadSM5Effect("flatshaded")));
         }
 
        

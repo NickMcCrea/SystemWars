@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Rendering;
 using BloomPostprocess;
+using MonoGameEngineCore.Rendering.BloomPostProcess;
 
 namespace MonoGameEngineCore
 {
@@ -10,7 +11,7 @@ namespace MonoGameEngineCore
     {
         private Type startScreenType;
 
-        private static BloomComponent bloomComponent;
+        private static PostProcessComponent postProcessComponent;
         private bool enableBloom = true;
 
         public MonoEngineGame(Type startScreenType, ScreenResolutionName resolution, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
@@ -36,12 +37,12 @@ namespace MonoGameEngineCore
            
             SystemCore.InitialiseGameSystems();
 
-            bloomComponent = new BloomComponent(this);
-            bloomComponent.Settings = BloomSettings.PresetSettings[0];
-            bloomComponent.DrawOrder = 1000;
+            postProcessComponent = new PostProcessComponent(this, EffectLoader.LoadEffect("BloomExtract"));
+     
+            postProcessComponent.DrawOrder = 1000;
 
             if (enableBloom)
-                this.Components.Add(bloomComponent);
+                this.Components.Add(postProcessComponent);
 
             base.Initialize();
         }
@@ -85,7 +86,7 @@ namespace MonoGameEngineCore
         protected override void Draw(GameTime gameTime)
         {
             if (enableBloom)
-                bloomComponent.BeginDraw();
+                postProcessComponent.BeginDraw();
          
             SystemCore.Render(gameTime);
 
