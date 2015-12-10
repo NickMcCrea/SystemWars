@@ -12,11 +12,11 @@ namespace MonoGameEngineCore.Rendering.BloomPostProcess
     {
         SpriteBatch spriteBatch;
         RenderTarget2D sceneRenderTarget;
-        Effect effect;
+        public Effect Effect { get; private set; }
 
         public PostProcessComponent(Game game, Effect postProcessEffect) : base(game)
         {
-            effect = postProcessEffect;
+            Effect = postProcessEffect;
         }
 
         protected override void LoadContent()
@@ -32,6 +32,7 @@ namespace MonoGameEngineCore.Rendering.BloomPostProcess
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+         
             base.LoadContent();
         }
 
@@ -61,14 +62,13 @@ namespace MonoGameEngineCore.Rendering.BloomPostProcess
 
         public override void Draw(GameTime gameTime)
         {
+
+
+            GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+
+          
             GraphicsDevice.SetRenderTarget(null);
-
-            //spriteBatch.Begin();
-            //spriteBatch.Draw(sceneRenderTarget,
-            //    new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-            //spriteBatch.End();
-
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, effect);
+            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, Effect);
             spriteBatch.Draw(sceneRenderTarget, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
             spriteBatch.End();
 

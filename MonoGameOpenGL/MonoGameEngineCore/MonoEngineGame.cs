@@ -11,8 +11,8 @@ namespace MonoGameEngineCore
     {
         private Type startScreenType;
 
-        private static PostProcessComponent postProcessComponent;
-        private bool enableBloom = true;
+        private static BloomComponent postProcessComponent;
+        private bool enableBloom = false;
 
         public MonoEngineGame(Type startScreenType, ScreenResolutionName resolution, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
             : base()
@@ -37,8 +37,8 @@ namespace MonoGameEngineCore
            
             SystemCore.InitialiseGameSystems();
 
-            postProcessComponent = new PostProcessComponent(this, EffectLoader.LoadEffect("BloomExtract"));
-     
+            postProcessComponent = new BloomComponent(this);
+            postProcessComponent.Settings = new BloomSettings(null, 0.8f, 0.2f, 2, 1, 1.5f, 1);
             postProcessComponent.DrawOrder = 1000;
 
             if (enableBloom)
