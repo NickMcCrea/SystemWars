@@ -191,13 +191,13 @@ namespace MonoGameEngineCore.GUI
 
         }
 
-        public Button AddDefaultLabelledButton(Vector2 midPoint, string labelText, Color mainButtonColor, Color buttonHighlight, Color labelTextColor)
+        public Button AddDefaultLabelledButton(Vector2 midPoint, string labelText, int width, int height, Color mainButtonColor, Color buttonHighlight, Color labelTextColor)
         {
 
 
-            Vector2 labelSize = GUIFonts.Fonts["neuropolitical"].MeasureString(labelText);
+           
 
-            var paintButton = new Button(new Rectangle((int)midPoint.X - (int)labelSize.X / 2, (int)midPoint.Y - (int)labelSize.Y / 2, (int)labelSize.X, (int)labelSize.Y),
+            var paintButton = new Button(new Rectangle((int)midPoint.X - width / 2, (int)midPoint.Y - height / 2, width,height),
                GUITexture.Textures["blank"]);
             paintButton.HighlightColor = buttonHighlight;
             paintButton.MainColor = mainButtonColor;
@@ -234,10 +234,26 @@ namespace MonoGameEngineCore.GUI
 
             Vector2 buttonSpace = new Vector2(0, GUIManager.GetFractionOfHeight(0.02f));
             float spacing = 50;
+
+
+            int maxWidth = 0;
+            int maxHeight = 0;
+
+            foreach (string l in labels)
+            {
+                Vector2 labelSize = GUIFonts.Fonts["neuropolitical"].MeasureString(l);
+                if (labelSize.X > maxWidth)
+                    maxWidth = (int)labelSize.X;
+                if (labelSize.Y > maxHeight)
+                    maxHeight = (int)labelSize.Y;
+
+            }
+
+
             foreach (string label in labels)
             {
 
-                var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y) + buttonSpace, label, button1Col, button2Col, Color.Black);            
+                var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y) + buttonSpace, label,maxWidth,maxHeight, button1Col, button2Col, Color.Black);            
                 button1.Name = label;
                 button1.MainAlpha = 0f;
                 button1.HighlightAlpha = 0.1f;
@@ -269,29 +285,7 @@ namespace MonoGameEngineCore.GUI
             return p;
         }
 
-        public void CreateDefaultMenuScreen(string mainmenuName, Color backgroundColor, Color textColor, Color mainColor, Color highlightColor, params string[] labels)
-        {
-            AddBackground("blank", backgroundColor);
-
-            Vector2 buttonSpace = new Vector2(0, 0);
-            float spacing = 50;
-            foreach (string label in labels)
-            {
-
-                var button1 = AddDefaultLabelledButton(screenMidPoint + buttonSpace, label, mainColor, highlightColor, textColor);
-                button1.Name = label;
-                buttonSpace.Y += spacing;
-            }
-
-
-            var lab = new Label(GUIFonts.Fonts["neuropolitical"], mainmenuName);
-            lab.Position = screenMidPoint - new Vector2(0, 200);
-            lab.TextColor = textColor;
-            AddControl(lab);
-            lab.Name = "mainMenuLabel";
-
-        }
-
+     
         public BaseControl GetControl(string name)
         {
             foreach (BaseControl control in controls)
