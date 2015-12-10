@@ -228,7 +228,7 @@ namespace MonoGameEngineCore.GUI
                         SystemCore.GraphicsDevice.Viewport.Height), GUITexture.Textures["blank"]);
 
             leftPanel.MainColor = scheme.Color3;
-            leftPanel.MainAlpha = 0.1f;
+            leftPanel.MainAlpha = 0.6f;
             AddControl(leftPanel);
 
 
