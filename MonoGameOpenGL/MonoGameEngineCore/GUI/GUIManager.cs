@@ -218,7 +218,7 @@ namespace MonoGameEngineCore.GUI
             ColorScheme scheme = activeColorScheme;
             Color background = scheme.Color1;
             Color button1Col = scheme.Color3;
-            Color button2Col = scheme.Color5;
+            Color button2Col = scheme.Color1;
 
             AddBackground("blank", background);
 
@@ -256,7 +256,7 @@ namespace MonoGameEngineCore.GUI
                 var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y) + buttonSpace, label,maxWidth,maxHeight, button1Col, button2Col, Color.Black);            
                 button1.Name = label;
                 button1.MainAlpha = 0f;
-                button1.HighlightAlpha = 0.1f;
+                button1.HighlightAlpha = 0.8f;
                 buttonSpace.Y += spacing;
             }
 
