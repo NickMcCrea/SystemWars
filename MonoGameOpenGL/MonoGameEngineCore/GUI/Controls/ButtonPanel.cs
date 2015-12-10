@@ -178,10 +178,10 @@ namespace MonoGameEngineCore.GUI.Controls
             foreach (Button b in Buttons.Values)
             {
                 b.Update(gameTime, input);
-                b.Alpha = Alpha;
+                b.MainAlpha = MainAlpha;
 
                 foreach (BaseControl child in b.Children)
-                    child.Alpha = Alpha;
+                    child.MainAlpha = MainAlpha;
             }
 
             if (SelectableItems && MouseOver)

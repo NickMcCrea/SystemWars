@@ -13,7 +13,9 @@ namespace MonoGameEngineCore.GUI.Controls
         public List<BaseControl> Children;
         public string Name { get; set; }
         public bool Visible { get; set; }
-        public float Alpha { get; set; }
+        public float MainAlpha { get; set; }
+        public float HighlightAlpha { get; set; }
+
         public EventHandler OnMouseEnterEvent;
         public EventHandler OnMouseLeaveEvent;
         public EventHandler OnFocusEvent;

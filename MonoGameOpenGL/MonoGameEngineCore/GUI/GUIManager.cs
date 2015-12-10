@@ -202,6 +202,7 @@ namespace MonoGameEngineCore.GUI
             var label = new Label(GUIFonts.Fonts["test"], labelText);
             label.Position = new Vector2(100, 100);
             label.TextColor = labelTextColor;
+            label.TextOutline = false;
             label.OutlineColor = labelTextColor;
             paintButton.AttachLabel(label);
             AddControl(paintButton);
@@ -212,33 +213,39 @@ namespace MonoGameEngineCore.GUI
         {
 
             ColorScheme scheme = activeColorScheme;
-            Color background = scheme.Color2;
-            Color textColor = scheme.Color3;
-            Color button1Col = scheme.Color4;
+            Color background = scheme.Color1;
+            Color button1Col = scheme.Color3;
             Color button2Col = scheme.Color5;
 
             AddBackground("blank", background);
 
+            Panel leftPanel =
+                new Panel(
+                    new Rectangle(GUIManager.GetFractionOfWidth(0.1f), 0, GUIManager.GetFractionOfWidth(0.3f),
+                        SystemCore.GraphicsDevice.Viewport.Height), GUITexture.Textures["blank"]);
+
+            leftPanel.MainColor = scheme.Color3;
+            leftPanel.MainAlpha = 0.1f;
+            AddControl(leftPanel);
 
 
-            Vector2 buttonSpace = new Vector2(0, -100);
+            Vector2 buttonSpace = new Vector2(0, GUIManager.GetFractionOfHeight(0.02f));
             float spacing = 50;
             foreach (string label in labels)
             {
 
-                var button1 = AddDefaultLabelledButton(screenMidPoint + buttonSpace, 150, 25, label, button1Col, button2Col, textColor);
-                button1.BorderThickness = 1;
-                button1.Border = true;
-                button1.BorderColor = scheme.Color1;
+                var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y) + buttonSpace, 150, 25, label, button1Col, button2Col, Color.Black);            
                 button1.Name = label;
+                button1.MainAlpha = 0f;
+                button1.HighlightAlpha = 0.1f;
                 buttonSpace.Y += spacing;
             }
 
 
 
             var lab = new Label(GUIFonts.Fonts["test"], mainmenuName);
-            lab.Position = screenMidPoint - new Vector2(0, 200);
-            lab.TextColor = textColor;
+            lab.Position = new Vector2(GUIManager.GetFractionOfWidth(0.25f), GUIManager.GetFractionOfHeight(0.25f));
+            lab.TextColor = Color.Black;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
 
@@ -335,5 +342,13 @@ namespace MonoGameEngineCore.GUI
             return SystemCore.GraphicsDevice.Viewport.Width - (SystemCore.GraphicsDevice.Viewport.Width / 4);
         }
 
+        public static int GetFractionOfWidth(float fraction)
+        {
+            return (int) ((float) SystemCore.GraphicsDevice.Viewport.Width*fraction);
+        }
+        public static int GetFractionOfHeight(float fraction)
+        {
+            return (int)((float)SystemCore.GraphicsDevice.Viewport.Height * fraction);
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace MonoGameDirectX11.Screens
 
             //panel
             p = new Panel(new Rectangle(0, 0, GUIManager.ScreenRatioX(0.1f), GUIManager.ScreenRatioY(0.1f)), GUITexture.Textures["blank"]);
-            p.Alpha = 0.3f;
+            p.HighlightAlpha = 0.3f;
             p.MainColor = SystemCore.ActiveColorScheme.Color4;
             p.Anchor(AnchorPoint.middle, GUIManager.ScreenPoint.midpoint, new Vector2(0,0));
             guiManager.AddControl(p);
@@ -27,7 +27,7 @@ namespace MonoGameDirectX11.Screens
 
             //button
             Button b = new Button(new Rectangle(0, 0, GUIManager.ScreenRatioX(0.1f), GUIManager.ScreenRatioY(0.05f)), GUITexture.Textures["blank"]);
-            b.Alpha = 0.4f;
+            b.HighlightAlpha = 0.4f;
             b.MainColor = SystemCore.ActiveColorScheme.Color3;
             b.HighlightColor = SystemCore.ActiveColorScheme.Color4;
             b.Anchor(AnchorPoint.topMid, GUIManager.ScreenPoint.topMiddle, Vector2.Zero);

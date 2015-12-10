@@ -30,7 +30,7 @@ namespace MonoGameEngineCore.GUI.Controls
             OutlineColor = Color.White;
             Alignment = LabelAlignment.middle;
             OutlineSize = 1;
-            Alpha = 1;
+            MainAlpha = 1;
         }
 
         public override void Update(GameTime gameTime, InputManager input)
@@ -43,22 +43,22 @@ namespace MonoGameEngineCore.GUI.Controls
         {
             if (TextOutline)
             {
-                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) - new Vector2(OutlineSize, 0), OutlineColor * Alpha);
-                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) + new Vector2(OutlineSize, 0), OutlineColor * Alpha);
-                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) - new Vector2(0, OutlineSize), OutlineColor * Alpha);
-                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) + new Vector2(0, OutlineSize), OutlineColor * Alpha);
+                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) - new Vector2(OutlineSize, 0), OutlineColor * MainAlpha);
+                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) + new Vector2(OutlineSize, 0), OutlineColor * MainAlpha);
+                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) - new Vector2(0, OutlineSize), OutlineColor * MainAlpha);
+                spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment) + new Vector2(0, OutlineSize), OutlineColor * MainAlpha);
             }
             Color finalTextColor;
             if (Parent != null && Parent.MouseOver)
             {
                 if (TextOutline)
-                    finalTextColor = OutlineColor * Alpha;
+                    finalTextColor = OutlineColor * MainAlpha;
                 else
-                    finalTextColor = TextColor * Alpha;
+                    finalTextColor = TextColor * MainAlpha;
 
             }
             else
-                finalTextColor = TextColor * Alpha;
+                finalTextColor = TextColor * MainAlpha;
 
             spriteBatch.DrawString(Font, Text, CalculateStringPosition(Alignment), finalTextColor);
 

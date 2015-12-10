@@ -21,7 +21,8 @@ namespace MonoGameEngineCore.GUI.Controls
 
         public Panel(Rectangle rec, Texture2D texture)
         {
-            Alpha = 1;
+            HighlightAlpha = 1;
+            MainAlpha = 1;
             MainColor = Color.White;
             Rect = rec;
             Texture = texture;
@@ -100,9 +101,9 @@ namespace MonoGameEngineCore.GUI.Controls
         {
 
             if (MouseOver && HighlightOnMouseOver)
-                spriteBatch.Draw(Texture, Rect, HighlightColor * Alpha);
+                spriteBatch.Draw(Texture, Rect, HighlightColor*HighlightAlpha);
             else
-                spriteBatch.Draw(Texture, Rect, MainColor * Alpha);
+                spriteBatch.Draw(Texture, Rect, MainColor * MainAlpha);
 
 
             if (Border)
@@ -117,17 +118,17 @@ namespace MonoGameEngineCore.GUI.Controls
         {
 
             Rectangle topBorder = new Rectangle(Rect.X - BorderThickness, Rect.Y - BorderThickness, Rect.Width + BorderThickness * 2, BorderThickness);
-            spriteBatch.Draw(GUITexture.Textures["blank"], topBorder, BorderColor * Alpha);
+            spriteBatch.Draw(GUITexture.Textures["blank"], topBorder, BorderColor * MainAlpha);
 
             Rectangle bottomBorder = new Rectangle(Rect.X - BorderThickness, Rect.Y + Rect.Height, Rect.Width + BorderThickness, BorderThickness);
-            spriteBatch.Draw(GUITexture.Textures["blank"], bottomBorder, BorderColor * Alpha);
+            spriteBatch.Draw(GUITexture.Textures["blank"], bottomBorder, BorderColor * MainAlpha);
 
             Rectangle leftBorder = new Rectangle(Rect.X - BorderThickness, Rect.Y - BorderThickness, BorderThickness, Rect.Height + BorderThickness * 2);
-            spriteBatch.Draw(GUITexture.Textures["blank"], leftBorder, BorderColor * Alpha);
+            spriteBatch.Draw(GUITexture.Textures["blank"], leftBorder, BorderColor * MainAlpha);
 
 
             Rectangle rightBorder = new Rectangle(Rect.X + Rect.Width, Rect.Y - BorderThickness, BorderThickness, Rect.Height + BorderThickness * 2);
-            spriteBatch.Draw(GUITexture.Textures["blank"], rightBorder, BorderColor * Alpha);
+            spriteBatch.Draw(GUITexture.Textures["blank"], rightBorder, BorderColor * MainAlpha);
         }
 
         public override void Translate(Vector2 offset)

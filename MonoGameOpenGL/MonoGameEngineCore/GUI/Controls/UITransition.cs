@@ -72,18 +72,18 @@ namespace MonoGameEngineCore.GUI.Controls
 
         public override void SetStartState()
         {
-            control.Alpha = StartValue;
+            control.MainAlpha = StartValue;
             base.SetStartState();
         }
 
         public override void ApplyTransition(GameTime gameTime)
         {
-            if (control.Alpha != EndValue)
+            if (control.MainAlpha != EndValue)
             {
                 float timeProgression = (float)(timeSinceInitialisation - (float)StartDelay) /
                                         (float)TransitionDuration;
 
-                control.Alpha = MathHelper.Lerp(StartValue, EndValue, timeProgression);
+                control.MainAlpha = MathHelper.Lerp(StartValue, EndValue, timeProgression);
 
                 if (timeProgression > TransitionDuration)
                     Done = true;
