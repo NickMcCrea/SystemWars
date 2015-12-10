@@ -346,6 +346,7 @@ namespace MonoGameEngineCore.GUI
         {
             return (int) ((float) SystemCore.GraphicsDevice.Viewport.Width*fraction);
         }
+
         public static int GetFractionOfHeight(float fraction)
         {
             return (int)((float)SystemCore.GraphicsDevice.Viewport.Height * fraction);
