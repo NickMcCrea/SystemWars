@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BEPUphysics;
+using Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
@@ -45,7 +46,9 @@ namespace MonoGameEngineCore
         public static GraphicsDevice GraphicsDevice { get; private set; }
         public static ContentManager ContentManager { get; private set; }
         public static GUIManager GUIManager { get; private set; }
-
+        public static EventManager EventManager { get; private set; }
+      
+        
         public static Space PhysicsSimulation { get; private set; }
         public static GameObjectManager GameObjectManager { get; private set; }
         public static AudioManager AudioManager { get; private set; }
@@ -113,6 +116,8 @@ namespace MonoGameEngineCore
             DebugText.InjectGraphicsDevice(SystemCore.GraphicsDevice);
 
 
+            EventManager = new EventManager();
+
         }
 
         public static void AddNewUpdateRenderSubsystem(IGameSubSystem newSystem)
@@ -169,7 +174,7 @@ namespace MonoGameEngineCore
 
             DebugText.Update(gameTime);
 
-
+            EventManager.Update(gameTime.ElapsedGameTime);
 
         }
 

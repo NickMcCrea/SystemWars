@@ -69,7 +69,9 @@
       <Name>MonoGameEngineCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="ToDo.txt" />
   </ItemGroup>

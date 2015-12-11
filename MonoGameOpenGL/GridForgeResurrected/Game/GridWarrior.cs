@@ -38,7 +38,6 @@ namespace GridForgeResurrected.Game
             base.Initialise();
         }
 
-
         internal void Update(GameTime gameTime)
         {
             var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
