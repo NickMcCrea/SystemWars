@@ -290,6 +290,14 @@ namespace NicksLib.Rendering
             {
                 transition.Update(gameTime);
             }
+
+            if (activeGuiTransitions.Count > 0)
+                activeGuiTransitions.RemoveAll(x => x.IsComplete);
+        }
+
+        internal void AddTransition(GUITransition fadeOutTransition)
+        {
+            activeGuiTransitions.Add(fadeOutTransition);
         }
     }
 }

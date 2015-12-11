@@ -25,6 +25,7 @@ namespace MonoGameEngineCore.GUI
         private Vector2 bottomRight;
         private Vector2 topRight;
         private Vector2 topLeft;
+        public GUITransitionManager GuiTransitionManager { get;private set; }
         public enum ScreenPoint
         {
             midpoint,
@@ -74,6 +75,8 @@ namespace MonoGameEngineCore.GUI
             a.TextOutlineColor = Color.Black;
             a.TextOutline = true;
             Palettes.Add("Dwarf", a);
+
+            GuiTransitionManager = new GUITransitionManager();
         }
 
         private static void LoadTexturesAndFonts(ContentManager content)
@@ -110,6 +113,8 @@ namespace MonoGameEngineCore.GUI
                 controls.Add(c);
 
             controlsToAdd.Clear();
+
+            GuiTransitionManager.Update(gameTime);
         }
 
         public void Render(GameTime gameTime)
@@ -230,6 +235,9 @@ namespace MonoGameEngineCore.GUI
             leftPanel.MainColor = scheme.Color3;
             leftPanel.MainAlpha = 0.6f;
             AddControl(leftPanel);
+
+            FadeInTransition fadeInTransition = new FadeInTransition(leftPanel, 1000);
+            GuiTransitionManager.AddTransition(fadeInTransition);
 
 
             Vector2 buttonSpace = new Vector2(0, GUIManager.GetFractionOfHeight(0.02f));
