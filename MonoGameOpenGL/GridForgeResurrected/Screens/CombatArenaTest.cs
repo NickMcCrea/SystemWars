@@ -7,6 +7,8 @@ using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.GameObject.Components.Controllers;
+using MonoGameEngineCore.GUI;
+using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -25,7 +27,8 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         private GridWarrior player;
         private List<SimpleEnemy> enemies;
-       
+        private Label healthLabel;
+        private Label killLabel;
 
         public CombatArenaTest()
         {
@@ -58,10 +61,21 @@ namespace GridForgeResurrected.Screens
                 enemies.Add(enemy);
             }
 
-        
-            
-        }
 
+            healthLabel = new Label(GUIFonts.Fonts["neuropolitical"], "Health:");
+
+            healthLabel.SetPosition(new Vector2(GUIManager.GetFractionOfWidth(0.1f),
+                GUIManager.GetFractionOfHeight(0.02f)));
+
+            SystemCore.GUIManager.AddControl(healthLabel);
+
+            killLabel = new Label(GUIFonts.Fonts["neuropolitical"], "Kills:");
+            killLabel.SetPosition(new Vector2(GUIManager.GetFractionOfWidth(0.9f),
+              GUIManager.GetFractionOfHeight(0.02f)));
+
+            SystemCore.GUIManager.AddControl(killLabel);
+
+        }
 
         private static GameObject CreateTestArena(float arenaSize)
         {
@@ -131,9 +145,9 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
-           
-        
-            cameraGameObject.Transform.Translate(new Vector3(0, -(float)input.ScrollDelta/10f, 0));
+
+
+            cameraGameObject.Transform.Translate(new Vector3(0, -(float) input.ScrollDelta/10f, 0));
 
             player.Update(gameTime);
 
@@ -142,10 +156,35 @@ namespace GridForgeResurrected.Screens
                 enemy.Update(gameTime);
             }
 
+            foreach (CollidablePairHandler handler in SystemCore.PhysicsSimulation.NarrowPhase.Pairs)
+            {
+                //two things are colliding.
+                if (handler.Contacts.Count > 0)
+                {
+                    GameObject a = handler.EntityA.Tag as GameObject;
+                    GameObject b = handler.EntityB.Tag as GameObject;
+
+                    player.Damage(1);
+
+                    if (b.Name == "simpleenemy")
+                        RemoveEnemy(b as SimpleEnemy);
+                    if (a.Name == "simpleenemy")
+                        RemoveEnemy(a as SimpleEnemy);
+
+                }
+            }
+
+            healthLabel.Text = "Health: " + player.Health;
+
             base.Update(gameTime);
 
         }
 
+        private void RemoveEnemy(SimpleEnemy enemy)
+        {
+           // SystemCore.GameObjectManager.RemoveObject(enemy.GameObject);
+            //enemies.Remove(enemy);
+        }
 
         public override void Render(GameTime gameTime)
         {

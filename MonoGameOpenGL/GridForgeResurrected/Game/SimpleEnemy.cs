@@ -25,20 +25,25 @@ namespace GridForgeResurrected.Game
         public SimpleEnemy(Vector3 startPos)
             : base()
         {
-            gameObject.Transform.SetPosition(startPos);
+            Transform.SetPosition(startPos);
         }
 
         protected override void Initialise()
         {
             ProceduralSphereTwo playerShape = new ProceduralSphereTwo(10);
             playerShape.Scale(2f);
-            gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
-                EffectLoader.LoadSM5Effect("flatshaded"), PhysicsMeshType.sphere);
 
-            gameObject.AddComponent(new SimpleEnemyAIController());
-            
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
-            physicsComponent = gameObject.GetComponent<PhysicsComponent>();
+            AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(playerShape),
+                BufferBuilder.IndexBufferBuild(playerShape), playerShape.PrimitiveCount));
+
+            AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+
+            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
+
+            AddComponent(new SimpleEnemyAIController());
+            Name = "simpleenemy";
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(this);
+            physicsComponent = GetComponent<PhysicsComponent>();
            
         }
 
@@ -56,8 +61,8 @@ namespace GridForgeResurrected.Game
                         remove *= -1;
 
                     remove.Y = 0;
-                    gameObject.Transform.Translate(remove);
-                    gameObject.Transform.Velocity += (remove * 0.001f);
+                    Transform.Translate(remove);
+                    Transform.Velocity += (remove * 0.001f);
                     break;
                 }
 

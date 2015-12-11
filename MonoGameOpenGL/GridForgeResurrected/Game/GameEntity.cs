@@ -8,9 +8,9 @@ using System.Text;
 
 namespace GridForgeResurrected.Game
 {
-    class GameEntity
+    public class GameEntity : GameObject
     {
-        protected GameObject gameObject;
+        
         protected PhysicsComponent physicsComponent;
 
         public GameEntity()

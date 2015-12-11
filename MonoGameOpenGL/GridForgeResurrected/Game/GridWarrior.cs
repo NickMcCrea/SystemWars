@@ -19,22 +19,33 @@ namespace GridForgeResurrected.Game
     class GridWarrior : GameEntity
     {
    
+        public int Health { get; private set; }
+        public int Score { get; private set; }
 
         public GridWarrior(Vector3 startPos)
         {
-            gameObject.Transform.SetPosition(startPos);
+            Transform.SetPosition(startPos);
+            Health = 100;
         }
 
         protected override void Initialise()
         {
             ProceduralCube playerShape = new ProceduralCube();
             playerShape.Scale(5f);
-            gameObject = GameObjectFactory.CreateCollidableObject(playerShape,
-                EffectLoader.LoadSM5Effect("flatshaded"), PhysicsMeshType.box);
-            gameObject.Name = "player";
-            gameObject.AddComponent(new TopDownMouseAndKeyboardController());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
-            physicsComponent = gameObject.GetComponent<PhysicsComponent>();
+
+            AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(playerShape),
+                BufferBuilder.IndexBufferBuild(playerShape), playerShape.PrimitiveCount));
+
+            AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+
+            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.box));
+            
+            Name = "player";
+
+
+            AddComponent(new TopDownMouseAndKeyboardController());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(this);
+            physicsComponent = GetComponent<PhysicsComponent>();
             base.Initialise();
         }
 
@@ -48,14 +59,22 @@ namespace GridForgeResurrected.Game
                 {
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
                     remove.Y = 0;
-                    gameObject.Transform.Translate(remove);
-                    gameObject.Transform.Velocity += (remove * 0.01f);
+                    Transform.Translate(remove);
+                    Transform.Velocity += (remove * 0.01f);
                     break;
                 }
 
             }
+
+
         }
 
+        internal void Damage(int damage)
+        {
+            Health -= damage;
+            if (Health < damage)
+                Health = 0;
+        }
        
     }
 
