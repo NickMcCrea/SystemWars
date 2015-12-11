@@ -235,9 +235,7 @@ namespace MonoGameEngineCore.GUI
             leftPanel.MainColor = scheme.Color3;
             leftPanel.MainAlpha = 0.6f;
             AddControl(leftPanel);
-
-            FadeInTransition fadeInTransition = new FadeInTransition(leftPanel, 1000);
-            GuiTransitionManager.AddTransition(fadeInTransition);
+            leftPanel.AddFadeInTransition(1000);
 
 
             Vector2 buttonSpace = new Vector2(0, GUIManager.GetFractionOfHeight(0.02f));
@@ -266,6 +264,7 @@ namespace MonoGameEngineCore.GUI
                 button1.MainAlpha = 0f;
                 button1.HighlightAlpha = 0.8f;
                 buttonSpace.Y += spacing;
+                button1.AddFadeInTransition(1000);
             }
 
 
@@ -275,6 +274,7 @@ namespace MonoGameEngineCore.GUI
             lab.TextColor = Color.Black;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
+            lab.AddFadeInTransition(1000);
 
         }
 

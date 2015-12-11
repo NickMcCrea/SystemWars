@@ -137,7 +137,28 @@ namespace MonoGameEngineCore.GUI.Controls
             return Vector2.Zero;
 
         }
-       
+
+        public virtual void AddFadeInTransition(int durationInMilliseconds)
+        {
+            var fadeInTransition = new FadeInTransition(this, durationInMilliseconds);
+            SystemCore.GUIManager.GuiTransitionManager.AddTransition(fadeInTransition);
+
+            foreach (BaseControl baseControl in Children)
+            {
+                baseControl.AddFadeInTransition(durationInMilliseconds);
+            }
+        }
+
+        public virtual void AddFadeOutTransition(int durationInMilliseconds)
+        {
+            var fadeOutTransition = new FadeOutTransition(this, durationInMilliseconds);
+            SystemCore.GUIManager.GuiTransitionManager.AddTransition(fadeOutTransition);
+
+            foreach (BaseControl baseControl in Children)
+            {
+                baseControl.AddFadeOutTransition(durationInMilliseconds);
+            }
+        }
 
     }
 }

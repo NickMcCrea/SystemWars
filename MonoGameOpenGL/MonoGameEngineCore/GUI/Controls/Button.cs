@@ -68,5 +68,7 @@ namespace MonoGameEngineCore.GUI.Controls
         {
             ((Label)Children[0]).Text = p;
         }
+
+       
     }
 }

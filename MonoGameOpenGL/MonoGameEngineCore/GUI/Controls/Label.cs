@@ -31,6 +31,7 @@ namespace MonoGameEngineCore.GUI.Controls
             Alignment = LabelAlignment.middle;
             OutlineSize = 1;
             MainAlpha = 1;
+            HighlightAlpha = 1;
         }
 
         public override void Update(GameTime gameTime, InputManager input)
