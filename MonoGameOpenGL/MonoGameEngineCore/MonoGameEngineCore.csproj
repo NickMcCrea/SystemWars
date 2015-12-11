@@ -92,6 +92,7 @@
     <Compile Include="GUI\GUIManager.cs" />
     <Compile Include="GUI\GUITexture.cs" />
     <Compile Include="GUI\GUITransition.cs" />
+    <Compile Include="GUI\GUITransitionManager.cs" />
     <Compile Include="GUI\Palette.cs" />
     <Compile Include="GUI\UITransitionHelper.cs" />
     <Compile Include="Helper\DebugShapeRenderer.cs" />

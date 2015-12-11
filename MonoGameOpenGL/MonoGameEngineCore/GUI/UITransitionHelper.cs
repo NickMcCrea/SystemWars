@@ -5,7 +5,6 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GUI.Controls;
-using MonoGameEngineCore.GUI;
 
 namespace NicksLib.Rendering
 {
@@ -272,32 +271,5 @@ namespace NicksLib.Rendering
             return fader;
         }
 
-    }
-
-    public class GUITransitionManager
-    {
-
-        List<GUITransition> activeGuiTransitions;
-
-        public GUITransitionManager()
-        {
-            activeGuiTransitions = new List<GUITransition>();
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            foreach (GUITransition transition in activeGuiTransitions)
-            {
-                transition.Update(gameTime);
-            }
-
-            if (activeGuiTransitions.Count > 0)
-                activeGuiTransitions.RemoveAll(x => x.IsComplete);
-        }
-
-        internal void AddTransition(GUITransition fadeOutTransition)
-        {
-            activeGuiTransitions.Add(fadeOutTransition);
-        }
     }
 }

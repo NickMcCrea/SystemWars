@@ -264,7 +264,7 @@ namespace MonoGameEngineCore.GUI
                 button1.MainAlpha = 0f;
                 button1.HighlightAlpha = 0.8f;
                 buttonSpace.Y += spacing;
-                button1.AddFadeInTransition(1000);
+                button1.AddFadeInTransition(2000);
             }
 
 
@@ -274,7 +274,7 @@ namespace MonoGameEngineCore.GUI
             lab.TextColor = Color.Black;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
-            lab.AddFadeInTransition(1000);
+            lab.AddFadeInTransition(2000);
 
         }
 
@@ -293,7 +293,6 @@ namespace MonoGameEngineCore.GUI
             return p;
         }
 
-     
         public BaseControl GetControl(string name)
         {
             foreach (BaseControl control in controls)
