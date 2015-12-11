@@ -56,9 +56,7 @@ namespace GridForgeResurrected.Screens
             enemies = new List<SimpleEnemy>();
             for (int i = 0; i < 5; i++)
             {
-                int spread = 50;
-                var enemy = new SimpleEnemy(new Vector3(RandomHelper.GetRandomInt(-spread, spread), 5, RandomHelper.GetRandomInt(-spread, spread)));
-                enemies.Add(enemy);
+                SpawnEnemy();
             }
 
 
@@ -75,6 +73,15 @@ namespace GridForgeResurrected.Screens
 
             SystemCore.GUIManager.AddControl(killLabel);
 
+        }
+
+        private void SpawnEnemy()
+        {
+            int spread = 50;
+            var enemy =
+                new SimpleEnemy(new Vector3(RandomHelper.GetRandomInt(-spread, spread), 5,
+                    RandomHelper.GetRandomInt(-spread, spread)));
+            enemies.Add(enemy);
         }
 
         private static GameObject CreateTestArena(float arenaSize)
@@ -170,6 +177,8 @@ namespace GridForgeResurrected.Screens
                         RemoveEnemy(b as SimpleEnemy);
                     if (a.Name == "simpleenemy")
                         RemoveEnemy(a as SimpleEnemy);
+
+                    SpawnEnemy();
 
                 }
             }
