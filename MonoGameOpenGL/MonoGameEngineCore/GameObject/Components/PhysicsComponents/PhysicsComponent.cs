@@ -19,7 +19,7 @@ namespace MonoGameEngineCore.GameObject.Components
         box
     }
 
-    public class PhysicsComponent : IComponent, IUpdateable
+    public class PhysicsComponent : IComponent, IUpdateable, IDisposable
     {
         public GameObject ParentObject { get; set; }
         public Entity PhysicsEntity { get; private set; }
@@ -164,9 +164,6 @@ namespace MonoGameEngineCore.GameObject.Components
             return false;
         }
 
-
-
-
         internal void SetPosition(Vector3 position)
         {
             //not yet initialized
@@ -175,6 +172,11 @@ namespace MonoGameEngineCore.GameObject.Components
             
             PhysicsEntity.WorldTransform =
                 MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+        }
+
+        public void Dispose()
+        {
+            SystemCore.PhysicsSimulation.Remove(PhysicsEntity);
         }
     }
 

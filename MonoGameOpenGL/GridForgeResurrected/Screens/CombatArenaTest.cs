@@ -159,7 +159,7 @@ namespace GridForgeResurrected.Screens
             foreach (CollidablePairHandler handler in SystemCore.PhysicsSimulation.NarrowPhase.Pairs)
             {
                 //two things are colliding.
-                if (handler.Contacts.Count > 0)
+                if (handler.Contacts.Count > 0 && handler is BoxSpherePairHandler)
                 {
                     GameObject a = handler.EntityA.Tag as GameObject;
                     GameObject b = handler.EntityB.Tag as GameObject;
@@ -182,8 +182,8 @@ namespace GridForgeResurrected.Screens
 
         private void RemoveEnemy(SimpleEnemy enemy)
         {
-           // SystemCore.GameObjectManager.RemoveObject(enemy.GameObject);
-            //enemies.Remove(enemy);
+            SystemCore.GameObjectManager.RemoveObject(enemy);
+            enemies.Remove(enemy);
         }
 
         public override void Render(GameTime gameTime)
