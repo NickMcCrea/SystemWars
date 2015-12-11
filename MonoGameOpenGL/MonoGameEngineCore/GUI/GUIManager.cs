@@ -270,11 +270,12 @@ namespace MonoGameEngineCore.GUI
 
 
             var lab = new Label(GUIFonts.Fonts["neuropolitical"], mainmenuName);
-            lab.Position = new Vector2(GUIManager.GetFractionOfWidth(0.25f), GUIManager.GetFractionOfHeight(0.25f));
+            lab.Position = new Vector2(GUIManager.GetFractionOfWidth(0.25f), GUIManager.GetFractionOfHeight(0.30f));
             lab.TextColor = Color.Black;
             AddControl(lab);
             lab.Name = "mainMenuLabel";
             lab.AddFadeInTransition(2000);
+            lab.AddMovementTransition(500, new Vector2(0, -40));
 
         }
 

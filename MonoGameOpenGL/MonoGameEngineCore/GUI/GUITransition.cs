@@ -22,7 +22,7 @@ namespace MonoGameEngineCore.GUI
     public class FadeOutTransition : GUITransition
     {
         private float duration;
-        private DateTime starTime;
+        private DateTime startTime;
         private float startMainAlpha;
         private float startHighlightAlpha;
         private float mainAlphaChangePerLoop;
@@ -32,7 +32,7 @@ namespace MonoGameEngineCore.GUI
             : base(control)
         {
             this.duration = durationInMilliseconds;
-            starTime = DateTime.Now;
+            startTime = DateTime.Now;
 
             startMainAlpha = control.MainAlpha;
             startHighlightAlpha = control.HighlightAlpha;
@@ -45,7 +45,7 @@ namespace MonoGameEngineCore.GUI
                 return;
 
 
-            float timeSinceStart =(float)(DateTime.Now - starTime).TotalMilliseconds;
+            float timeSinceStart =(float)(DateTime.Now - startTime).TotalMilliseconds;
 
           
 
@@ -66,12 +66,12 @@ namespace MonoGameEngineCore.GUI
         private float duration;
         private float highlightAlpha;
         private float mainAlpha;
-        private DateTime starTime;
+        private DateTime startTime;
 
         public FadeInTransition(BaseControl control, float durationInMilliseconds)
             : base(control)
         {
-            starTime = DateTime.Now;
+            startTime = DateTime.Now;
             this.duration = durationInMilliseconds;
             this.mainAlpha = control.MainAlpha;
             this.highlightAlpha = control.HighlightAlpha;
@@ -87,7 +87,7 @@ namespace MonoGameEngineCore.GUI
             if (IsComplete)
                 return;
 
-            float timeSinceStart = (float)(DateTime.Now - starTime).TotalMilliseconds;
+            float timeSinceStart = (float)(DateTime.Now - startTime).TotalMilliseconds;
 
 
 
@@ -104,15 +104,34 @@ namespace MonoGameEngineCore.GUI
 
     public class MoveTransition : GUITransition
     {
-        public MoveTransition(BaseControl control)
+        private DateTime startTime;
+        private Vector2 movementPerMillisecond;
+        private float duration;
+
+        public MoveTransition(BaseControl control, Vector2 movement, float durationInMilliseconds)
             : base(control)
         {
+
+            this.duration = durationInMilliseconds;
+            movementPerMillisecond = movement/durationInMilliseconds;
+            startTime = DateTime.Now;
 
         }
 
         public override void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            if (IsComplete)
+                return;
+
+            float timeSinceStart = (float)(DateTime.Now - startTime).TotalMilliseconds;
+
+            double millisecondsSinceLastUpdate = gameTime.ElapsedGameTime.TotalMilliseconds;
+            control.Translate(movementPerMillisecond*(float) millisecondsSinceLastUpdate);
+
+
+            if (timeSinceStart > duration)
+                IsComplete = true;
+
         }
     }
 }

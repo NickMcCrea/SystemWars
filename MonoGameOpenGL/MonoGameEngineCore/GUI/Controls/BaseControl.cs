@@ -160,5 +160,16 @@ namespace MonoGameEngineCore.GUI.Controls
             }
         }
 
+        public virtual void AddMovementTransition(int durationInMilliseconds, Vector2 movement)
+        {
+            MoveTransition moveTransition = new MoveTransition(this, movement,durationInMilliseconds);
+            SystemCore.GUIManager.GuiTransitionManager.AddTransition(moveTransition);
+
+            foreach (BaseControl baseControl in Children)
+            {
+                baseControl.AddMovementTransition(durationInMilliseconds, movement);
+            }
+        }
+
     }
 }
