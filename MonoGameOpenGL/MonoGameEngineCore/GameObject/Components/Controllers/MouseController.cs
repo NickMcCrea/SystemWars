@@ -50,6 +50,11 @@ namespace MonoGameEngineCore.GameObject.Components
                 ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left,
                     (float) mouseMovement.Y*rotationSpeed);
 
+            if (inputManager.IsKeyDown(Keys.RightShift))
+                moveSpeed = 1f;
+            else
+                moveSpeed = 0.1f;
+
 
             if (inputManager.IsKeyDown(Keys.Left))
             {

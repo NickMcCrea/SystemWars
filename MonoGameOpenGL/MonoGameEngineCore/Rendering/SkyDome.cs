@@ -11,19 +11,21 @@ namespace SystemWar
         static SkyDomeRenderer skyDomeRenderer;
 
 
-        public void Initalise()
+        public SkyDome(Color vertexColour, Color ambientLightColor, Color diffuseLightColor)
         {
-            var skyDomeGameObject = GameObjectFactory.CreateSkyDomeObject(Color.Black, 100, 10);
+             var skyDomeGameObject = GameObjectFactory.CreateSkyDomeObject(vertexColour, 100, 10);
 
             skyDomeRenderer = skyDomeGameObject.GetComponent<SkyDomeRenderer>();
-            skyDomeRenderer.AmbientLightColor = Color.Black;
+            skyDomeRenderer.AmbientLightColor = ambientLightColor;
             skyDomeRenderer.AmbientLightIntensity = 0.2f;
-            skyDomeRenderer.DiffuseLightColor = Color.Black;
+            skyDomeRenderer.DiffuseLightColor = diffuseLightColor;
             skyDomeRenderer.DiffuseLightIntensity = 0.3f;
             skyDomeRenderer.DiffuseLightDirection = Vector3.Forward;
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDomeGameObject);
         }
+
+       
 
         public static void TransitionToColor(Color newColor, float transitionTime)
         {
@@ -53,6 +55,11 @@ namespace SystemWar
         public void Render(GameTime gameTime)
         {
 
+        }
+
+        public void Initalise()
+        {
+            
         }
     }
 }

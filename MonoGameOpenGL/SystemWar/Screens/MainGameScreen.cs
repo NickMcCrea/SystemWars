@@ -36,7 +36,7 @@ namespace SystemWar.Screens
 
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome());
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.Black));
 
 
             ship = new Ship("ship");

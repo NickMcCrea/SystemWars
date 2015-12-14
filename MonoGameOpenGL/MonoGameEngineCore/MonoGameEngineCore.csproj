@@ -173,6 +173,7 @@
     <Compile Include="Rendering\Lights.cs" />
     <Compile Include="Rendering\ModelMeshParser.cs" />
     <Compile Include="Rendering\RenderHelper.cs" />
+    <Compile Include="Rendering\SkyDome.cs" />
     <Compile Include="Rendering\VertexPositionColorTextureNormal.cs" />
     <Compile Include="Rendering\GraphicsDeviceSetup.cs" />
     <Compile Include="Rendering\VertexPositionColorNormal.cs" />

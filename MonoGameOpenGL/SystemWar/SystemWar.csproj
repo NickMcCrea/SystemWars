@@ -50,7 +50,6 @@
     <Compile Include="SolarSystem\Planet.cs" />
     <Compile Include="SolarSystem\PlanetBuilder.cs" />
     <Compile Include="SolarSystem\PlanetQuadTreeNode.cs" />
-    <Compile Include="SolarSystem\SkyDome.cs" />
     <Compile Include="SolarSystem\SolarSystemGenerator.cs" />
     <Compile Include="SolarSystem\SolarSystemSettings.cs" />
     <Compile Include="SolarSystem\SolarSystem.cs" />

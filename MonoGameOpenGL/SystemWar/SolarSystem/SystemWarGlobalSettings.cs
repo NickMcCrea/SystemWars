@@ -8,7 +8,7 @@ namespace SystemWar
     public static class SystemWarGlobalSettings
     {
         public static bool FixedTimeStep = true;
-        public static bool PhysicsOnBackgroundThread = false;
+        public static bool PhysicsOnBackgroundThread = true;
         public static bool BuildPatchesOnBackgroundThread = false;
         public static bool RepairSeams = false;
         public static bool VisualisePatches = false;
