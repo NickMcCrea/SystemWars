@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using System;
@@ -28,5 +29,9 @@ namespace GridForgeResurrected.Game
 
         }
 
+        public virtual void Remove()
+        {
+            SystemCore.GameObjectManager.RemoveObject(this);
+        }
     }
 }

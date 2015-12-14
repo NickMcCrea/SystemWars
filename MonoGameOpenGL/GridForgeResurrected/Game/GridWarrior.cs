@@ -21,11 +21,14 @@ namespace GridForgeResurrected.Game
    
         public int Health { get; private set; }
         public int Score { get; private set; }
+        private List<Projectile> projectiles; 
 
         public GridWarrior(Vector3 startPos)
         {
             Transform.SetPosition(startPos);
             Health = 100;
+
+            projectiles = new List<Projectile>();
         }
 
         protected override void Initialise()
@@ -54,9 +57,16 @@ namespace GridForgeResurrected.Game
             var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
             foreach (CollidablePairHandler pair in pairs)
             {
+
                 var contacts = pair.Contacts;
                 foreach (ContactInformation contact in contacts)
                 {
+
+                    if (pair.EntityB != null && pair.EntityB.Tag is Projectile)
+                        continue;
+                    if (pair.EntityA != null && pair.EntityA.Tag is Projectile)
+                        continue;
+
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
                     remove.Y = 0;
                     Transform.Translate(remove);
@@ -66,7 +76,21 @@ namespace GridForgeResurrected.Game
 
             }
 
+            if (SystemCore.Input.MouseLeftPress())
+            {
+                Projectile p = new Projectile(Transform.WorldMatrix.Translation, -Transform.WorldMatrix.Forward*0.3f);
+                projectiles.Add(p);
+            }
 
+            foreach (Projectile projectile in projectiles)
+            {
+                projectile.Update(gameTime);
+            }
+
+            int killed = projectiles.RemoveAll(x => x.Killed);
+            Score += killed;
+
+            projectiles.RemoveAll(x => x.Collided);
         }
 
         internal void Damage(int damage)
@@ -76,6 +100,58 @@ namespace GridForgeResurrected.Game
                 Health = 0;
         }
        
+    }
+
+    public class Projectile : GameEntity
+    {
+        public bool Killed { get; set; }
+        public bool Collided { get; set; }
+
+        public Projectile(Vector3 position, Vector3 velocity)
+        {
+            ProceduralSphereTwo projectileShape = new ProceduralSphereTwo(10);
+            projectileShape.Scale(1f);
+
+            AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(projectileShape),
+                BufferBuilder.IndexBufferBuild(projectileShape), projectileShape.PrimitiveCount));
+
+            AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.box));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(this);
+            physicsComponent = GetComponent<PhysicsComponent>();
+
+            base.Initialise();
+
+            Transform.SetPosition(position);
+            Transform.Velocity = velocity;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            
+            var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
+            foreach (CollidablePairHandler pair in pairs)
+            {
+                var contacts = pair.Contacts;
+                foreach (ContactInformation contact in contacts)
+                {
+                    if ((pair.EntityB != null && pair.EntityB.Tag is SimpleEnemy )||(pair.EntityA != null && pair.EntityA.Tag is SimpleEnemy))
+                    {
+                        Remove();
+                        Killed = true;
+                    }
+                    else
+                    {
+                        Collided = true;
+                        Remove();
+                    }
+             
+                 
+                }
+            }
+
+            base.Update(gameTime);
+        }
     }
 
   

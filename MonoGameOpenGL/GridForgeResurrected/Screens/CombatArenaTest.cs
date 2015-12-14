@@ -184,7 +184,7 @@ namespace GridForgeResurrected.Screens
             }
 
             healthLabel.Text = "Health: " + player.Health;
-
+            killLabel.Text = "Kills: " + player.Score;
             base.Update(gameTime);
 
         }
