@@ -171,7 +171,8 @@ namespace GridForgeResurrected.Screens
                     GameObject a = handler.EntityA.Tag as GameObject;
                     GameObject b = handler.EntityB.Tag as GameObject;
 
-                    player.Damage(1);
+                    if ((a is GridWarrior && b is SimpleEnemy) || (b is GridWarrior && a is SimpleEnemy))
+                        player.Damage(1);
 
                     if (b.Name == "simpleenemy")
                         RemoveEnemy(b as SimpleEnemy);
