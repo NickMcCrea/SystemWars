@@ -43,7 +43,7 @@ namespace MonoGameEngineCore.GameObject.Components
             Point mouseMovement = inputManager.MouseDelta;
 
             if (mouseMovement.X != 0)
-                ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Up,
+                ParentObject.Transform.Rotate(Vector3.Up,
                     (float)-mouseMovement.X * rotationSpeed);
 
             if (mouseMovement.Y != 0)

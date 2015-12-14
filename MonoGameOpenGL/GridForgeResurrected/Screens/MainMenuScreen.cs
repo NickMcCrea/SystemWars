@@ -18,8 +18,8 @@ namespace GridForgeResurrected
             : base()
         {
 
-            string screenOne = "Combat Arena";
-            string screenTwo = "Two";
+            string screenOne = "Combat Test";
+            string screenTwo = "Procedural Test";
         
 
 
@@ -35,10 +35,10 @@ namespace GridForgeResurrected
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new ProceduralTerrainTestScreen());
             };
 
-         
+          
 
 
         }
