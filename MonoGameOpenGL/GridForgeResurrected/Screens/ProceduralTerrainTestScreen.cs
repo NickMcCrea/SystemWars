@@ -37,15 +37,18 @@ namespace GridForgeResurrected.Screens
 
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(1000), 100, 1, 20f, 0, 0,
+            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(1000), 100, 1, 40f, 0, 0,
                 1);
-            
+
 
             GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray());
+            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-50,0,-50));
+
+         
+
             var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
             terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
-            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("AtmosphericScatteringGround")));
+            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
 
         }

@@ -150,7 +150,7 @@ namespace MonoGameEngineCore.Procedural
                 }
         }
 
-        public VertexPositionColorTextureNormal[] GenerateVertexArray()
+        public VertexPositionColorTextureNormal[] GenerateVertexArray(float xOffset = 0, float yOffset = 0, float zOffset = 0)
         {
 
             int heightMapSize = heights.GetLength(0);
@@ -162,7 +162,7 @@ namespace MonoGameEngineCore.Procedural
                 for (int j = 0; j < heightMapSize; j++)
                 {
                     var vert = new VertexPositionColorTextureNormal();
-                    vert.Position = new Vector3(i * scale, heights[i, j] * scale * 0.2f, j * scale);
+                    vert.Position = new Vector3(i * scale + xOffset, (heights[i, j] * scale * 0.2f) + yOffset, j * scale + zOffset);
                     vert.Color = Color.DarkOrange;
                     vert.Texture = new Vector2(i * 2f / heightMapSize * scale, j * 2f / heightMapSize * scale);
                     vert.Normal = Vector3.Up;
