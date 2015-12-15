@@ -19,7 +19,8 @@ namespace GridForgeResurrected.Screens
     {
         private GameObject cameraGameObject;
         GroundScatteringHelper helper;
-        Vector3 startPos = new Vector3(0, 6500, 0);
+        Vector3 startPos = new Vector3(0, 10, 0);
+        int terrainSize = 100;
 
         public ProceduralTerrainTestScreen()
         {
@@ -41,12 +42,12 @@ namespace GridForgeResurrected.Screens
 
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(6000), 100, 50, 1f, 0, 0,
+            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), terrainSize, 1, 10f, 0, 0,
                 1);
 
 
             GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-2500,6000,-2500));
+            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-terrainSize/2,0,-terrainSize/2));
 
          
 
@@ -54,7 +55,8 @@ namespace GridForgeResurrected.Screens
             terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
 
             Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
-            helper = new GroundScatteringHelper(effect, 6000 * 1.05f, 6000);
+
+            helper = new GroundScatteringHelper(effect, terrainSize * 2, 0);
             
             terrain.AddComponent(new EffectRenderComponent(effect));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
@@ -70,8 +72,11 @@ namespace GridForgeResurrected.Screens
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
-            helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, Vector3.Normalize(light.LightDirection),
-                cameraGameObject.Transform.WorldMatrix.Translation);
+            if (helper != null)
+            {
+                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, Vector3.Normalize(light.LightDirection),
+                    cameraGameObject.Transform.WorldMatrix.Translation);
+            }
 
             base.Update(gameTime);
 
@@ -82,7 +87,7 @@ namespace GridForgeResurrected.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.Gray);
 
-            DebugText.Write(cameraGameObject.Transform.WorldMatrix.Translation.Y.ToString());
+            DebugText.Write(cameraGameObject.Transform.WorldMatrix.Translation.ToString());
 
             DebugShapeRenderer.VisualiseAxes(5f);
 
