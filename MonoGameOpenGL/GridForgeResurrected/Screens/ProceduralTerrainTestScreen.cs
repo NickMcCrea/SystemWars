@@ -19,9 +19,9 @@ namespace GridForgeResurrected.Screens
     {
         private GameObject cameraGameObject;
         GroundScatteringHelper helper;
-        Vector3 startPos = new Vector3(0, 10, 0);
-        int terrainSize = 100;
-
+        Atmosphere atmosphere;
+        Vector3 startPos = new Vector3(0, 6500, 0);
+      
         public ProceduralTerrainTestScreen()
         {
            
@@ -42,25 +42,30 @@ namespace GridForgeResurrected.Screens
 
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), terrainSize, 1, 10f, 0, 0,
-                1);
+            //Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), terrainSize, 1, 10f, 0, 0,
+            //    1);
 
 
-            GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-terrainSize/2,0,-terrainSize/2));
-
-         
-
-            var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
-            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
+            //GameObject terrain = new GameObject("terrain");
+            //var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-terrainSize/2,0,-terrainSize/2));
 
             Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
 
-            helper = new GroundScatteringHelper(effect, terrainSize * 2, 1);
-            
-            terrain.AddComponent(new EffectRenderComponent(effect));
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
 
+            //var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
+            //terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
+            //terrain.AddComponent(new EffectRenderComponent(effect));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
+
+       
+            ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
+            sphere.Scale(5000);
+            var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
+
+            helper = new GroundScatteringHelper(effect, 5000 * 1.05f, 5000);
+            atmosphere = new Atmosphere(5000*1.05f, 5000);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
         }
 
        
@@ -74,8 +79,10 @@ namespace GridForgeResurrected.Screens
 
             if (helper != null)
             {
-                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, light.LightDirection,
+                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Length(), light.LightDirection,
                     cameraGameObject.Transform.WorldMatrix.Translation);
+
+                atmosphere.Update(light.LightDirection, cameraGameObject.Transform.WorldMatrix.Translation);
             }
 
             base.Update(gameTime);

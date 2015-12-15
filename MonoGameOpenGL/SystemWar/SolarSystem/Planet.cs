@@ -410,6 +410,7 @@ namespace MonoGameEngineCore.Procedural
                 atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
                 SolarSystem.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
 
+          
             }
 
 

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
+using MonoGameEngineCore.Helper;
 
 namespace MonoGameEngineCore.Rendering
 {
@@ -155,6 +156,10 @@ namespace MonoGameEngineCore.Rendering
 
             public void Update(float cameraHeight, Vector3 lightDir, Vector3 cameraPos)
             {
+                DebugText.Write(cameraHeight.ToString());
+                DebugText.Write(lightDir.ToString());
+                DebugText.Write(cameraPos.ToString());
+                  
                 atmosphereEffect.Parameters["fCameraHeight"].SetValue(cameraHeight);
                 atmosphereEffect.Parameters["fCameraHeight2"].SetValue(cameraHeight * cameraHeight);
                 atmosphereEffect.Parameters["v3LightPos"].SetValue(lightDir);
