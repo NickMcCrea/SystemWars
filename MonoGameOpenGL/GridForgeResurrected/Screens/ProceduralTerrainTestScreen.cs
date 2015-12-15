@@ -56,7 +56,7 @@ namespace GridForgeResurrected.Screens
 
             Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
 
-            helper = new GroundScatteringHelper(effect, terrainSize * 2, 0);
+            helper = new GroundScatteringHelper(effect, terrainSize * 2, 1);
             
             terrain.AddComponent(new EffectRenderComponent(effect));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
@@ -74,7 +74,7 @@ namespace GridForgeResurrected.Screens
 
             if (helper != null)
             {
-                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, Vector3.Normalize(light.LightDirection),
+                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, light.LightDirection,
                     cameraGameObject.Transform.WorldMatrix.Translation);
             }
 
