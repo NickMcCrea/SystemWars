@@ -41,12 +41,12 @@ namespace GridForgeResurrected.Screens
 
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(6000), 100, 50, 10f, 0, 0,
+            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(6000), 100, 50, 1f, 0, 0,
                 1);
 
 
             GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-2500,5800,-2500));
+            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-2500,6000,-2500));
 
          
 
