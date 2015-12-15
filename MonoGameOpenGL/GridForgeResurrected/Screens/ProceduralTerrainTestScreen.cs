@@ -18,21 +18,21 @@ namespace GridForgeResurrected.Screens
     class ProceduralTerrainTestScreen : Screen
     {
         private GameObject cameraGameObject;
-        GroundScatteringHelper helper;
+        Vector3 startPos = new Vector3(0, 100, 0);
+
         public ProceduralTerrainTestScreen()
         {
-
-
+           
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
+          
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.SkyBlue));
 
 
             cameraGameObject = new GameObject("camera");
             cameraGameObject.AddComponent(new ComponentCamera());
-            cameraGameObject.Transform.SetPosition(new Vector3(0, 30, 0));
+            cameraGameObject.Transform.SetPosition(startPos);
             cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
             cameraGameObject.AddComponent(new MouseController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
@@ -40,21 +40,19 @@ namespace GridForgeResurrected.Screens
 
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(1000), 100, 1, 40f, 0, 0,
+            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.FastPlanet(100), 100, 1, 10f, 0, 0,
                 1);
 
 
             GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-50,0,-50));
+            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(0,0,0));
 
          
 
             var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
             terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
 
-            Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
-            helper = new GroundScatteringHelper(effect, 100, 1);
-            
+            Effect effect = EffectLoader.LoadSM5Effect("flatshaded");
             terrain.AddComponent(new EffectRenderComponent(effect));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
 
@@ -69,7 +67,7 @@ namespace GridForgeResurrected.Screens
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
-            helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Y, light.LightDirection, cameraGameObject.Transform.WorldMatrix.Translation);
+           
 
             base.Update(gameTime);
 
@@ -79,6 +77,9 @@ namespace GridForgeResurrected.Screens
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.Gray);
+
+            DebugText.Write(cameraGameObject.Transform.WorldMatrix.Translation.Y.ToString());
+
             DebugShapeRenderer.VisualiseAxes(5f);
 
 

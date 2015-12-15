@@ -51,7 +51,7 @@ namespace MonoGameEngineCore.GameObject.Components
                     (float) mouseMovement.Y*rotationSpeed);
 
             if (inputManager.IsKeyDown(Keys.RightShift))
-                moveSpeed = 1f;
+                moveSpeed = 10f;
             else
                 moveSpeed = 0.1f;
 
