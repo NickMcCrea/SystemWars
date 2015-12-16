@@ -29,7 +29,7 @@ namespace GridForgeResurrected.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
           
-            //SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.SkyBlue));
+           SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.DarkBlue));
 
 
             cameraGameObject = new GameObject("camera");
@@ -59,6 +59,7 @@ namespace GridForgeResurrected.Screens
 
        
             ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
+            sphere.SetColor(Color.DarkOrange);
             sphere.Scale(5000);
             var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
