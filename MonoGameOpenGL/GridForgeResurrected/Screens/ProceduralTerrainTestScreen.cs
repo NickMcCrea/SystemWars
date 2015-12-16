@@ -20,11 +20,13 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         GroundScatteringHelper helper;
         Atmosphere atmosphere;
-        Vector3 startPos = new Vector3(0, 6500, 0);
+        private Vector3 startPos;
+        private float planetSize = 500f;
       
         public ProceduralTerrainTestScreen()
         {
-           
+            startPos = new Vector3(0, planetSize * 1.25f, 0);
+
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
@@ -57,12 +59,12 @@ namespace GridForgeResurrected.Screens
        
             ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
             sphere.SetColor(Color.DarkOrange);
-            sphere.Scale(5000);
+            sphere.Scale(planetSize);
             var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
 
-            helper = new GroundScatteringHelper(effect, 5000 * 1.05f, 5000);
-            atmosphere = new Atmosphere(5000*1.05f, 5000);
+            helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
+            atmosphere = new Atmosphere(planetSize*1.05f, planetSize);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
         }
 
