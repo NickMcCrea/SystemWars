@@ -116,7 +116,7 @@ namespace MonoGameEngineCore.Procedural
 
             Sphere sphere = new Sphere(32, 32);
 
-            VertexPositionColorTextureNormal[] verts = sphere.GenerateVertexArray(module);
+            VertexPositionColorTextureNormal[] verts = sphere.GenerateVertexArray();
             short[] ind = sphere.GenerateIndices();
             var p = verts.Select(x => x.Position).ToList();
             var s = BoundingSphere.CreateFromPoints(p);

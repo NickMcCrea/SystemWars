@@ -14,7 +14,7 @@ namespace GridForgeResurrected
     {
         static void Main(string[] args)
         {
-            SystemCore.ActiveColorScheme = ColorScheme.ColorSchemes["grayyellow"];
+            SystemCore.ActiveColorScheme = ColorScheme.ColorSchemes["elgray"];
             ScreenResolutionName resToUse = ScreenResolutionName.WXGA;
 
             if (System.Environment.MachineName == "NICKMCCREA-PC")

@@ -72,7 +72,7 @@ namespace MonoGameEngineCore.Procedural
             return indices.ToArray();
         }
 
-        public VertexPositionColorTextureNormal[] GenerateVertexArray(FastRidgedMultifractal module)
+        public VertexPositionColorTextureNormal[] GenerateVertexArray(IModule module, float radius)
         {
             for (int slice = 0; slice <= slices; ++slice)
             {
@@ -88,11 +88,11 @@ namespace MonoGameEngineCore.Procedural
                     v.Normal = v.Position;
                     v.Texture = new Vector2((float)slice / slices, (float)stack / stacks);
 
-
+                    v.Position *= radius;
 
                     double heightValue = module.GetValue(v.Position.X, v.Position.Y, v.Position.Z);
 
-                    v.Position *= (float)(heightValue + 1);
+                    v.Position = Vector3.Normalize(v.Position)*(float) (radius + heightValue);
 
 
                     verts.Add(v);
