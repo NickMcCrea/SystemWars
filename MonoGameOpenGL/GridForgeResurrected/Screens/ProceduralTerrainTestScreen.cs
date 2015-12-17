@@ -22,7 +22,7 @@ namespace GridForgeResurrected.Screens
         Atmosphere atmosphere;
         private Vector3 startPos;
         private float planetSize = 500f;
-        private float terrainSize = 500f;
+  
       
         public ProceduralTerrainTestScreen()
         {
@@ -31,8 +31,8 @@ namespace GridForgeResurrected.Screens
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
-          
-           SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.DarkBlue));
+
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.DarkBlue));
 
 
             cameraGameObject = new GameObject("camera");
@@ -47,32 +47,48 @@ namespace GridForgeResurrected.Screens
             Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
 
 
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100,
-                terrainSize/100, 10f, 0, 0,
-                1);
-
-            GameObject terrain = new GameObject("terrain");
-            var verts = BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray(-terrainSize / 2, 0, -terrainSize / 2));
-            var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
-            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
-            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
-
-       
             ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
             sphere.SetColor(Color.DarkOrange);
             sphere.Scale(planetSize);
             var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
+
+
+            
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
 
             helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
-            atmosphere = new Atmosphere(planetSize*1.05f, planetSize);
+            atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
         }
 
-       
+        private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
+        {
+            
 
-       
+
+            int vertCount = 100;
+            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), vertCount,
+                size/vertCount, 10f, sampleX, sampleY,
+                1);
+
+            GameObject terrain = new GameObject("terrain");
+
+            //we want to center it
+            var verts =
+                BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray());
+
+
+            var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
+            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount/3));
+            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+
+
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
+
+            return terrain;
+        }
+
 
         public override void Update(GameTime gameTime)
         {
