@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Audio\IAudioEmitter.cs" />
+    <Compile Include="Editor\ModelEditor.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="GameObject\Components\Controllers\TopDownController.cs" />
     <Compile Include="GameObject\Components\RenderComponents\BasicEffectRenderComponent.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="SystemCoreHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Editor\Shapes\" />
     <Folder Include="Networking\" />
   </ItemGroup>
   <ItemGroup>

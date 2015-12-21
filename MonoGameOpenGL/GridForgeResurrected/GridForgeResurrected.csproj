@@ -55,6 +55,7 @@
     <Compile Include="Game\GridWarrior.cs" />
     <Compile Include="Game\SimpleEnemy.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />
+    <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

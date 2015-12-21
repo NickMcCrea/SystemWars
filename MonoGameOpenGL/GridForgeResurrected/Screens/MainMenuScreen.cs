@@ -20,10 +20,10 @@ namespace GridForgeResurrected
 
             string screenOne = "Combat Test";
             string screenTwo = "Procedural Test";
-        
+            string screenThree = "Editor Test";
 
 
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Grid Forge", SystemCore.ActiveColorScheme, screenOne, screenTwo);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Grid Forge", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
@@ -38,8 +38,12 @@ namespace GridForgeResurrected
                 SystemCore.ScreenManager.AddAndSetActive(new ProceduralTerrainTestScreen());
             };
 
-          
 
+            Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
+            c.OnClick += (sender, args) =>
+            {
+                SystemCore.ScreenManager.AddAndSetActive(new EditorTest());
+            };
 
         }
 
