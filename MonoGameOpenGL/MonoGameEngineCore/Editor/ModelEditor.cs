@@ -12,6 +12,7 @@ namespace MonoGameEngineCore.Editor
     public class SimpleModelEditor : IGameSubSystem
     {
         public bool RenderGrid { get; set; }
+        public bool RenderActivePlaneOnly { get; set; }
         public Vector3 CurrentSnapPoint { get; set; }
         public EditMode CurrentMode { get; set; }  
         public int CurrentXIndex { get; set; }
@@ -25,12 +26,29 @@ namespace MonoGameEngineCore.Editor
         }
         private ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
-        private float modellingAreaSize = 8;
+        private float modellingAreaSize;
         private GameObject.GameObject cameraGameObject;
        
-        public SimpleModelEditor()
+        public SimpleModelEditor(int modellingAreaSize = 8)
         {
             RenderGrid = true;
+            RenderActivePlaneOnly = true;
+            this.modellingAreaSize = modellingAreaSize;
+        }
+
+        public void Initalise()
+        {
+            shapeBuilder = new ProceduralShapeBuilder();
+
+            CurrentMode = EditMode.Voxel;
+            cameraGameObject = new GameObject.GameObject("camera");
+            cameraGameObject.AddComponent(new ComponentCamera());
+            cameraGameObject.Transform.SetPosition(new Vector3(0, 0, 10));
+            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, 0, -1), new Vector3(0, 1, 0));
+            cameraGameObject.AddComponent(new MouseController());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
+            SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
+
         }
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
@@ -72,21 +90,6 @@ namespace MonoGameEngineCore.Editor
             return s;
         }
 
-        public void Initalise()
-        {
-            shapeBuilder = new ProceduralShapeBuilder();
-
-            CurrentMode = EditMode.Voxel;
-            cameraGameObject = new GameObject.GameObject("camera");
-            cameraGameObject.AddComponent(new ComponentCamera());
-            cameraGameObject.Transform.SetPosition(new Vector3(0, 10, 0));
-            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
-            cameraGameObject.AddComponent(new MouseController());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
-            SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
-
-        }
-
         public void Update(GameTime gameTime)
         {
             if (SystemCore.Input.KeyPress(Keys.X))
@@ -116,18 +119,44 @@ namespace MonoGameEngineCore.Editor
         {
             if (RenderGrid)
             {
-                for (float i = -modellingAreaSize / 2; i <= modellingAreaSize / 2; i++)
+                for (float i = -modellingAreaSize/2; i <= modellingAreaSize/2; i++)
                 {
-                    DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
-                        modellingAreaSize,
-                        modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
+                    if (RenderActivePlaneOnly && i == CurrentZIndex)
+                    {
+                        DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize/2, -modellingAreaSize/2, i),
+                            modellingAreaSize,
+                            modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
+                    }
+                  
 
-                    DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
-                        modellingAreaSize,
-                        modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
+                    if (RenderActivePlaneOnly && i == CurrentYIndex)
+                    {
+                        DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize/2, i, -modellingAreaSize/2),
+                            modellingAreaSize,
+                            modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
+                    }
 
-                    DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize/2, -modellingAreaSize/2),
-                        modellingAreaSize, modellingAreaSize, 1, (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
+                    if (RenderActivePlaneOnly && i == CurrentXIndex)
+                    {
+                        DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize/2, -modellingAreaSize/2),
+                            modellingAreaSize, modellingAreaSize, 1,
+                            (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
+                    }
+
+                    if (!RenderActivePlaneOnly)
+                    {
+                        DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
+                           modellingAreaSize,
+                           modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
+
+                        DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
+                           modellingAreaSize,
+                           modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
+
+                        DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
+                          modellingAreaSize, modellingAreaSize, 1,
+                          (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
+                    }
 
                 }
             }

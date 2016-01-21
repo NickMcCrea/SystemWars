@@ -29,7 +29,7 @@ namespace GridForgeResurrected.Screens
 
 
  
-            modelEditor = new SimpleModelEditor();
+            modelEditor = new SimpleModelEditor(10);
 
             SystemCore.AddNewUpdateRenderSubsystem(modelEditor);
 
