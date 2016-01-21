@@ -18,9 +18,8 @@ namespace GridForgeResurrected.Screens
 {
     public class EditorTest : Screen
     {
-        private GameObject cameraGameObject;
         private SimpleModelEditor modelEditor;
-        
+     
 
         public EditorTest()
         {
@@ -29,14 +28,7 @@ namespace GridForgeResurrected.Screens
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.LightBlue, Color.OrangeRed, Color.DarkBlue));
 
 
-            cameraGameObject = new GameObject("camera");
-            cameraGameObject.AddComponent(new ComponentCamera());
-            cameraGameObject.Transform.SetPosition(new Vector3(0,10,0));
-            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
-            cameraGameObject.AddComponent(new MouseController());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
-            SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
-
+ 
             modelEditor = new SimpleModelEditor();
 
             SystemCore.AddNewUpdateRenderSubsystem(modelEditor);

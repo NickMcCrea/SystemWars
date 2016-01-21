@@ -1,28 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
+using MonoGameEngineCore.Rendering.Camera;
 
 namespace MonoGameEngineCore.Editor
 {
     public class SimpleModelEditor : IGameSubSystem
     {
+        public bool RenderGrid { get; set; }
+        public Vector3 CurrentSnapPoint { get; set; }
+        public EditMode CurrentMode { get; set; }  
+        public int CurrentXIndex { get; set; }
+        public int CurrentZIndex { get; set; }
+        public int CurrentYIndex { get; set; }
 
-        ProceduralShapeBuilder shapeBuilder;
+        public enum EditMode
+        {
+            Vertex,
+            Voxel
+        }
+        private ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
         private float modellingAreaSize = 8;
-        public bool RenderGrid { get; set; }
-
+        private GameObject.GameObject cameraGameObject;
+       
         public SimpleModelEditor()
         {
             RenderGrid = true;
         }
-
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
         {
@@ -63,20 +72,44 @@ namespace MonoGameEngineCore.Editor
             return s;
         }
 
-
         public void Initalise()
         {
             shapeBuilder = new ProceduralShapeBuilder();
 
-
-           
-
+            CurrentMode = EditMode.Voxel;
+            cameraGameObject = new GameObject.GameObject("camera");
+            cameraGameObject.AddComponent(new ComponentCamera());
+            cameraGameObject.Transform.SetPosition(new Vector3(0, 10, 0));
+            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
+            cameraGameObject.AddComponent(new MouseController());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
+            SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
         }
 
         public void Update(GameTime gameTime)
         {
-           
+            if (SystemCore.Input.KeyPress(Keys.X))
+            {
+                CurrentXIndex++;
+                if (CurrentXIndex > modellingAreaSize/2)
+                    CurrentXIndex = -(int)modellingAreaSize/2;
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.Y))
+            {
+                CurrentYIndex++;
+                if (CurrentYIndex > modellingAreaSize / 2)
+                    CurrentYIndex = -(int)modellingAreaSize / 2;
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.Z))
+            {
+                CurrentZIndex++;
+                if (CurrentZIndex > modellingAreaSize / 2)
+                    CurrentZIndex = -(int)modellingAreaSize / 2;
+            }
+
         }
 
         public void Render(GameTime gameTime)
@@ -87,14 +120,14 @@ namespace MonoGameEngineCore.Editor
                 {
                     DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
                         modellingAreaSize,
-                        modellingAreaSize, 1, Color.DarkGray);
+                        modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
 
                     DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
                         modellingAreaSize,
-                        modellingAreaSize, 1, Color.DarkGray);
+                        modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
 
-                    DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
-                        modellingAreaSize, modellingAreaSize, 1, Color.DarkGray);
+                    DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize/2, -modellingAreaSize/2),
+                        modellingAreaSize, modellingAreaSize, 1, (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
 
                 }
             }
