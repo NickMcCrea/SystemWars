@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Security;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
@@ -18,12 +19,20 @@ namespace MonoGameEngineCore.Editor
         public int CurrentXIndex { get; set; }
         public int CurrentZIndex { get; set; }
         public int CurrentYIndex { get; set; }
+        public CurrentActivePlane ActivePlane { get; set; }
 
         public enum EditMode
         {
             Vertex,
             Voxel
         }
+
+        public enum CurrentActivePlane
+        {
+            X,
+            Y,
+            Z
+        };
         private ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
         private float modellingAreaSize;
@@ -92,8 +101,16 @@ namespace MonoGameEngineCore.Editor
 
         public void Update(GameTime gameTime)
         {
+
+
             if (SystemCore.Input.KeyPress(Keys.X))
             {
+                if (ActivePlane != CurrentActivePlane.X)
+                {
+                    ActivePlane = CurrentActivePlane.X;
+                    return;
+                }
+
                 CurrentXIndex++;
                 if (CurrentXIndex > modellingAreaSize/2)
                     CurrentXIndex = -(int)modellingAreaSize/2;
@@ -101,6 +118,11 @@ namespace MonoGameEngineCore.Editor
 
             if (SystemCore.Input.KeyPress(Keys.Y))
             {
+                if (ActivePlane != CurrentActivePlane.Y)
+                {
+                    ActivePlane = CurrentActivePlane.Y;
+                    return;
+                }
                 CurrentYIndex++;
                 if (CurrentYIndex > modellingAreaSize / 2)
                     CurrentYIndex = -(int)modellingAreaSize / 2;
@@ -108,6 +130,12 @@ namespace MonoGameEngineCore.Editor
 
             if (SystemCore.Input.KeyPress(Keys.Z))
             {
+                if (ActivePlane != CurrentActivePlane.Z)
+                {
+                    ActivePlane = CurrentActivePlane.Z;
+                    return;
+                }
+
                 CurrentZIndex++;
                 if (CurrentZIndex > modellingAreaSize / 2)
                     CurrentZIndex = -(int)modellingAreaSize / 2;
@@ -158,8 +186,32 @@ namespace MonoGameEngineCore.Editor
                           (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
                     }
 
+
+
                 }
             }
+        }
+
+        public void AddVoxel(Color color)
+        {
+            Plane activePlane = new Plane(Vector3.Up, 0);
+
+            //first find the active voxel, then 
+            if (ActivePlane == CurrentActivePlane.X)
+            {
+                activePlane = new Plane(Vector3.Up, CurrentXIndex);
+            }
+
+
+
+            Ray mouseRay = SystemCore.Input.GetProjectedMouseRay();
+            float? result;
+            mouseRay.Intersects(ref activePlane, out result);
+            if (result.HasValue)
+            {
+                Vector3 collisionPoint = mouseRay.Position + mouseRay.Direction*result.Value;
+            }
+
         }
     }
 }

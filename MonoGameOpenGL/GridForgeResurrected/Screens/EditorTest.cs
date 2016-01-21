@@ -39,11 +39,7 @@ namespace GridForgeResurrected.Screens
         {
             if (SystemCore.Input.MouseLeftPress())
             {
-                modelEditor.AddTriangle(new Vector3(-1, -1, 0), new Vector3(-1, 1, 0), new Vector3(1, -1, 0), Color.White);
-                modelEditor.SaveCurrentShape("testShape");
-
-                var shape = modelEditor.LoadShape("testShape");
-                SystemCore.GameObjectManager.AddAndInitialiseGameObject(GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded")));
+                modelEditor.AddVoxel(Color.Blue);
             }
 
 
