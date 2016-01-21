@@ -20,6 +20,7 @@ namespace GridForgeResurrected.Screens
     {
         private GameObject cameraGameObject;
         private SimpleModelEditor modelEditor;
+        
 
         public EditorTest()
         {
@@ -38,7 +39,7 @@ namespace GridForgeResurrected.Screens
 
             modelEditor = new SimpleModelEditor();
 
-
+            SystemCore.AddNewUpdateRenderSubsystem(modelEditor);
 
         }
 
@@ -46,7 +47,7 @@ namespace GridForgeResurrected.Screens
         {
             if (SystemCore.Input.MouseLeftPress())
             {
-                modelEditor.AddTriangle(new Vector3(-1, -1, 0), new Vector3(-1, 1, 0), new Vector3(1, -1, 0));
+                modelEditor.AddTriangle(new Vector3(-1, -1, 0), new Vector3(-1, 1, 0), new Vector3(1, -1, 0), Color.White);
                 modelEditor.SaveCurrentShape("testShape");
 
                 var shape = modelEditor.LoadShape("testShape");
@@ -58,13 +59,13 @@ namespace GridForgeResurrected.Screens
         }
 
 
-        public override void Render(Microsoft.Xna.Framework.GameTime gameTime)
+        public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(Color.Gray);
 
        
             DebugShapeRenderer.VisualiseAxes(5f);
-
+      
 
             base.Render(gameTime);
         }

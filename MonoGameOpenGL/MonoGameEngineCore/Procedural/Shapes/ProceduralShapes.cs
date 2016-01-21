@@ -34,7 +34,7 @@ namespace MonoGameEngineCore.Procedural
         private List<short> indices;
         private int primCount;
         private short currentIndex = 0;
-
+      
         public ProceduralShapeBuilder()
         {
             vertices = new List<VertexPositionColorTextureNormal>();
@@ -81,6 +81,7 @@ namespace MonoGameEngineCore.Procedural
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
         {
+           
             Plane p = new Plane(a, b, c);
 
             VertexPositionColorTextureNormal v1 = new VertexPositionColorTextureNormal();
@@ -99,7 +100,7 @@ namespace MonoGameEngineCore.Procedural
             VertexPositionColorTextureNormal v3 = new VertexPositionColorTextureNormal();
             v3.Position = c;
             v3.Normal = p.Normal;
-            v3.Color = Color.White;
+            v3.Color =  Color.White;
             v3.Texture = new Vector2(0, 0);
 
             vertices.Add(v1);

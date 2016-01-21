@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using System;
 using System.Collections.Generic;
@@ -9,20 +10,28 @@ using System.Text;
 
 namespace MonoGameEngineCore.Editor
 {
-    public class SimpleModelEditor
+    public class SimpleModelEditor : IGameSubSystem
     {
 
         ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
+        private float modellingAreaSize = 8;
+        public bool RenderGrid { get; set; }
+
         public SimpleModelEditor()
         {
-            shapeBuilder = new ProceduralShapeBuilder();
+            RenderGrid = true;
         }
 
 
-        public void AddTriangle(Vector3 a, Vector3 b, Vector3 c)
+        public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
         {
-            shapeBuilder.AddTriangle(a, b, c);
+            shapeBuilder.AddTriangleWithColor(col, a, b, c);
+        }
+
+        public void AddFace(Color col, params Vector3[] points)
+        {
+            shapeBuilder.AddFaceWithColor(col, points);
         }
 
         public void Clear()
@@ -39,7 +48,7 @@ namespace MonoGameEngineCore.Editor
             {
                 bf.Serialize(fs, s);
             }
-            
+
         }
 
         public ProceduralShape LoadShape(string name)
@@ -54,5 +63,41 @@ namespace MonoGameEngineCore.Editor
             return s;
         }
 
+
+        public void Initalise()
+        {
+            shapeBuilder = new ProceduralShapeBuilder();
+
+
+           
+
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+           
+        }
+
+        public void Render(GameTime gameTime)
+        {
+            if (RenderGrid)
+            {
+                for (float i = -modellingAreaSize / 2; i <= modellingAreaSize / 2; i++)
+                {
+                    DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
+                        modellingAreaSize,
+                        modellingAreaSize, 1, Color.DarkGray);
+
+                    DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
+                        modellingAreaSize,
+                        modellingAreaSize, 1, Color.DarkGray);
+
+                    DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
+                        modellingAreaSize, modellingAreaSize, 1, Color.DarkGray);
+
+                }
+            }
+        }
     }
 }
