@@ -48,7 +48,7 @@ namespace MonoGameEngineCore.Editor
             XY
         };
 
-        private List<ProceduralShape> shapesToBake;
+        private Dictionary<GameObject.GameObject,ProceduralShape> shapesToBake;
         private ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
         private float modellingAreaSize;
@@ -81,7 +81,7 @@ namespace MonoGameEngineCore.Editor
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(mouseCursor);
 
-            shapesToBake = new List<ProceduralShape>();
+           shapesToBake = new Dictionary<GameObject.GameObject, ProceduralShape>();
 
         }
 
@@ -132,6 +132,19 @@ namespace MonoGameEngineCore.Editor
                 RenderGrid = !RenderGrid;
                 mouseCursor.GetComponent<EffectRenderComponent>().Visible = RenderGrid;
             }
+
+            if (SystemCore.Input.KeyPress(Keys.Delete))
+            {
+
+                GameObject.GameObject obj =
+                    SystemCore.GameObjectManager.GetRayCastObject();
+
+                shapesToBake.Remove(obj);
+
+                SystemCore.GameObjectManager.RemoveObject(obj);
+
+            }
+
 
             MoveCursor();
 
@@ -298,13 +311,18 @@ namespace MonoGameEngineCore.Editor
             ProceduralCube c = new ProceduralCube();
             c.Translate(currentbuildPoint);
             c.SetColor(color);
-            shapesToBake.Add(c);
-
+           
             //this object is for visualisation in the editor only. The procedural shape will be 
             //cached and used to bake the final shape for serialization
             var tempObject = GameObjectFactory.CreateRenderableGameObjectFromShape(c,
                 EffectLoader.LoadSM5Effect("flatshaded"));
+
+            tempObject.AddComponent(new PhysicsComponent(false,false, PhysicsMeshType.box));
+            
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(tempObject);
+
+            shapesToBake.Add(tempObject, c);
+
 
 
         }

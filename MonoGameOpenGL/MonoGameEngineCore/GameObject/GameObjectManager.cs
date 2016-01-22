@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BEPUphysics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Helper;
@@ -210,6 +211,16 @@ namespace MonoGameEngineCore.GameObject
             if (gameObjects.ContainsKey(id))
                 return gameObjects[id];
 
+            return null;
+        }
+
+        public GameObject GetRayCastObject()
+        {
+            RayCastResult result;
+            if (SystemCore.PhysicsSimulation.RayCast(SystemCore.Input.GetBepuProjectedMouseRay(), out result))
+            {
+                return result.HitObject.Tag as GameObject;
+            }
             return null;
         }
 

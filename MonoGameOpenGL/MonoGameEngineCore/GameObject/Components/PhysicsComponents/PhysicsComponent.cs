@@ -60,6 +60,7 @@ namespace MonoGameEngineCore.GameObject.Components
             }
 
             PhysicsEntity.Tag = ParentObject;
+            PhysicsEntity.CollisionInformation.Tag = ParentObject;
 
             if (!SystemCore.PhysicsOnBackgroundThread)
             {
