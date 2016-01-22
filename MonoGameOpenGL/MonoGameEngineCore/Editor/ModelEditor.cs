@@ -3,6 +3,7 @@ using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore.GameObject;
+using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using System.IO;
@@ -20,6 +21,8 @@ namespace MonoGameEngineCore.Editor
     //non-voxel mode
     //baking + saving
     //camera improvements
+    //fix 'stutter'
+  
 
     public class SimpleModelEditor : IGameSubSystem
     {
@@ -124,6 +127,12 @@ namespace MonoGameEngineCore.Editor
         public void Update(GameTime gameTime)
         {
 
+            if (SystemCore.Input.KeyPress(Keys.G))
+            {
+                RenderGrid = !RenderGrid;
+                mouseCursor.GetComponent<EffectRenderComponent>().Visible = RenderGrid;
+            }
+
             MoveCursor();
 
             MoveCamera();
@@ -174,9 +183,10 @@ namespace MonoGameEngineCore.Editor
 
         private void MoveCamera()
         {
+            float speedFactor = 40;
             if (SystemCore.Input.MouseRightDown())
             {
-                float speedFactor = 40;
+              
 
                 float xChange = SystemCore.Input.MouseDelta.X;
                 cameraGameObject.Transform.RotateAround(Vector3.Up, Vector3.Zero, xChange/speedFactor);
@@ -185,6 +195,12 @@ namespace MonoGameEngineCore.Editor
                 cameraGameObject.Transform.RotateAround(cameraGameObject.Transform.WorldMatrix.Right, Vector3.Zero,
                     yChange/speedFactor);
             }
+
+            Vector3 position = cameraGameObject.Transform.WorldMatrix.Translation;
+            float distanceFromOrigin = position.Length();
+            float newDistance = distanceFromOrigin - SystemCore.Input.ScrollDelta/speedFactor;
+            Vector3 newPosition = Vector3.Normalize(position)*newDistance;
+            cameraGameObject.Transform.SetPosition(newPosition);
         }
 
         private void MoveCursor()
@@ -276,7 +292,9 @@ namespace MonoGameEngineCore.Editor
 
         public void AddVoxel(Color color)
         {
-          
+            if (!RenderGrid)
+                return;
+
             ProceduralCube c = new ProceduralCube();
             c.Translate(currentbuildPoint);
             c.SetColor(color);
