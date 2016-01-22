@@ -409,5 +409,19 @@ namespace MonoGameEngineCore
         {
             return SystemCore.PhysicsSimulation.RayCast(SystemCore.Input.GetBepuProjectedMouseRay(), out result);
         }
+
+        internal bool GetPlaneMouseRayCollision(Plane activePlane, out Vector3 collisionPoint)
+        {
+            Ray mouseRay = SystemCore.Input.GetProjectedMouseRay();
+            float? result;
+            mouseRay.Intersects(ref activePlane, out result);
+            if (result.HasValue)
+            {
+                collisionPoint = mouseRay.Position + mouseRay.Direction * result.Value;
+                return true;
+            }
+            collisionPoint = Vector3.Zero;
+            return false;
+        }
     }
 }

@@ -1,15 +1,26 @@
-﻿using System.Security;
+﻿using System.Collections.Generic;
+using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
+using Math = System.Math;
 
 namespace MonoGameEngineCore.Editor
 {
+
+    //To do
+    //undo or delete
+    //color changing
+    //non-voxel mode
+    //baking + saving
+    //camera improvements
+
     public class SimpleModelEditor : IGameSubSystem
     {
         public bool RenderGrid { get; set; }
@@ -20,7 +31,7 @@ namespace MonoGameEngineCore.Editor
         public int CurrentZIndex { get; set; }
         public int CurrentYIndex { get; set; }
         public CurrentActivePlane ActivePlane { get; set; }
-
+    
         public enum EditMode
         {
             Vertex,
@@ -29,14 +40,17 @@ namespace MonoGameEngineCore.Editor
 
         public enum CurrentActivePlane
         {
-            X,
-            Y,
-            Z
+            XZ,
+            YZ,
+            XY
         };
+
+        private List<ProceduralShape> shapesToBake;
         private ProceduralShapeBuilder shapeBuilder;
         private string shapeFolderPath = "//Editor//Shapes//";
         private float modellingAreaSize;
         private GameObject.GameObject cameraGameObject;
+        private Vector3 currentbuildPoint;
        
         public SimpleModelEditor(int modellingAreaSize = 8)
         {
@@ -45,6 +59,8 @@ namespace MonoGameEngineCore.Editor
             this.modellingAreaSize = modellingAreaSize;
         }
 
+        private GameObject.GameObject mouseCursor;
+
         public void Initalise()
         {
             shapeBuilder = new ProceduralShapeBuilder();
@@ -52,11 +68,17 @@ namespace MonoGameEngineCore.Editor
             CurrentMode = EditMode.Voxel;
             cameraGameObject = new GameObject.GameObject("camera");
             cameraGameObject.AddComponent(new ComponentCamera());
-            cameraGameObject.Transform.SetPosition(new Vector3(0, 0, 10));
+            cameraGameObject.Transform.SetPosition(new Vector3(0, 0, 20));
             cameraGameObject.Transform.SetLookAndUp(new Vector3(0, 0, -1), new Vector3(0, 1, 0));
-            cameraGameObject.AddComponent(new MouseController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
+
+            mouseCursor = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(),
+                EffectLoader.LoadSM5Effect("flatshaded"));
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(mouseCursor);
+
+            shapesToBake = new List<ProceduralShape>();
 
         }
 
@@ -102,27 +124,23 @@ namespace MonoGameEngineCore.Editor
         public void Update(GameTime gameTime)
         {
 
+            MoveCursor();
 
-            if (SystemCore.Input.KeyPress(Keys.X))
-            {
-                if (ActivePlane != CurrentActivePlane.X)
-                {
-                    ActivePlane = CurrentActivePlane.X;
-                    return;
-                }
+            MoveCamera();
 
-                CurrentXIndex++;
-                if (CurrentXIndex > modellingAreaSize/2)
-                    CurrentXIndex = -(int)modellingAreaSize/2;
-            }
+            ControlActivePlane();
+        }
 
+        private void ControlActivePlane()
+        {
             if (SystemCore.Input.KeyPress(Keys.Y))
             {
-                if (ActivePlane != CurrentActivePlane.Y)
+                if (ActivePlane != CurrentActivePlane.XZ)
                 {
-                    ActivePlane = CurrentActivePlane.Y;
+                    ActivePlane = CurrentActivePlane.XZ;
                     return;
                 }
+
                 CurrentYIndex++;
                 if (CurrentYIndex > modellingAreaSize / 2)
                     CurrentYIndex = -(int)modellingAreaSize / 2;
@@ -130,21 +148,85 @@ namespace MonoGameEngineCore.Editor
 
             if (SystemCore.Input.KeyPress(Keys.Z))
             {
-                if (ActivePlane != CurrentActivePlane.Z)
+                if (ActivePlane != CurrentActivePlane.XY)
                 {
-                    ActivePlane = CurrentActivePlane.Z;
+                    ActivePlane = CurrentActivePlane.XY;
                     return;
                 }
-
                 CurrentZIndex++;
                 if (CurrentZIndex > modellingAreaSize / 2)
                     CurrentZIndex = -(int)modellingAreaSize / 2;
             }
 
+            if (SystemCore.Input.KeyPress(Keys.X))
+            {
+                if (ActivePlane != CurrentActivePlane.YZ)
+                {
+                    ActivePlane = CurrentActivePlane.YZ;
+                    return;
+                }
+
+                CurrentXIndex++;
+                if (CurrentXIndex > modellingAreaSize / 2)
+                    CurrentXIndex = -(int)modellingAreaSize / 2;
+            }
+        }
+
+        private void MoveCamera()
+        {
+            if (SystemCore.Input.MouseRightDown())
+            {
+                float speedFactor = 40;
+
+                float xChange = SystemCore.Input.MouseDelta.X;
+                cameraGameObject.Transform.RotateAround(Vector3.Up, Vector3.Zero, xChange/speedFactor);
+
+                float yChange = SystemCore.Input.MouseDelta.Y;
+                cameraGameObject.Transform.RotateAround(cameraGameObject.Transform.WorldMatrix.Right, Vector3.Zero,
+                    yChange/speedFactor);
+            }
+        }
+
+        private void MoveCursor()
+        {
+            Plane activePlane = new Plane(Vector3.Up, 0);
+
+            //first find the active voxel, then 
+            if (ActivePlane == CurrentActivePlane.XZ)
+            {
+                activePlane = new Plane(Vector3.Up, -CurrentYIndex);
+            }
+
+            if (ActivePlane == CurrentActivePlane.YZ)
+            {
+                activePlane = new Plane(Vector3.Right, -CurrentXIndex);
+            }
+
+            if (ActivePlane == CurrentActivePlane.XY)
+            {
+                activePlane = new Plane(Vector3.Forward, CurrentZIndex);
+            }
+
+            Vector3 collisionPoint = Vector3.Zero;
+            if (SystemCore.Input.GetPlaneMouseRayCollision(activePlane, out collisionPoint))
+            {
+                collisionPoint.X = (float)Math.Floor(collisionPoint.X);
+                collisionPoint.Y = (float)Math.Floor(collisionPoint.Y);
+                collisionPoint.Z = (float)Math.Floor(collisionPoint.Z);
+
+                mouseCursor.Transform.SetPosition(collisionPoint);
+                currentbuildPoint = collisionPoint;
+            }
         }
 
         public void Render(GameTime gameTime)
         {
+
+            Color xzColor = (ActivePlane == CurrentActivePlane.XZ) ? Color.OrangeRed : Color.DarkGray;
+            Color yzColor = (ActivePlane == CurrentActivePlane.YZ) ? Color.CadetBlue : Color.DarkGray;
+            Color xyColor = (ActivePlane == CurrentActivePlane.XY) ? Color.DarkGreen : Color.DarkGray;
+
+
             if (RenderGrid)
             {
                 for (float i = -modellingAreaSize/2; i <= modellingAreaSize/2; i++)
@@ -153,7 +235,7 @@ namespace MonoGameEngineCore.Editor
                     {
                         DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize/2, -modellingAreaSize/2, i),
                             modellingAreaSize,
-                            modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
+                            modellingAreaSize, 1, (i == CurrentZIndex) ? xyColor : Color.DarkGray);
                     }
                   
 
@@ -161,29 +243,29 @@ namespace MonoGameEngineCore.Editor
                     {
                         DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize/2, i, -modellingAreaSize/2),
                             modellingAreaSize,
-                            modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
+                            modellingAreaSize, 1, (i == CurrentYIndex) ? xzColor : Color.DarkGray);
                     }
 
                     if (RenderActivePlaneOnly && i == CurrentXIndex)
                     {
                         DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize/2, -modellingAreaSize/2),
                             modellingAreaSize, modellingAreaSize, 1,
-                            (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
+                            (i == CurrentXIndex) ? yzColor : Color.DarkGray);
                     }
 
                     if (!RenderActivePlaneOnly)
                     {
-                        DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
-                           modellingAreaSize,
-                           modellingAreaSize, 1, (i == CurrentZIndex) ? Color.Green : Color.DarkGray);
+                        //DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
+                        //   modellingAreaSize,
+                        //   modellingAreaSize, 1, (i == CurrentYIndex) ? xyColor : Color.DarkGray);
 
-                        DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
-                           modellingAreaSize,
-                           modellingAreaSize, 1, (i == CurrentYIndex) ? Color.Blue : Color.DarkGray);
+                        //DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
+                        //   modellingAreaSize,
+                        //   modellingAreaSize, 1, (i == CurrentYIndex) ? xzColor : Color.DarkGray);
 
-                        DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
-                          modellingAreaSize, modellingAreaSize, 1,
-                          (i == CurrentXIndex) ? Color.OrangeRed : Color.DarkGray);
+                        //DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
+                        //  modellingAreaSize, modellingAreaSize, 1,
+                        //  (i == CurrentXIndex) ? yzColor : Color.DarkGray);
                     }
 
 
@@ -194,23 +276,18 @@ namespace MonoGameEngineCore.Editor
 
         public void AddVoxel(Color color)
         {
-            Plane activePlane = new Plane(Vector3.Up, 0);
+          
+            ProceduralCube c = new ProceduralCube();
+            c.Translate(currentbuildPoint);
+            c.SetColor(color);
+            shapesToBake.Add(c);
 
-            //first find the active voxel, then 
-            if (ActivePlane == CurrentActivePlane.X)
-            {
-                activePlane = new Plane(Vector3.Up, CurrentXIndex);
-            }
+            //this object is for visualisation in the editor only. The procedural shape will be 
+            //cached and used to bake the final shape for serialization
+            var tempObject = GameObjectFactory.CreateRenderableGameObjectFromShape(c,
+                EffectLoader.LoadSM5Effect("flatshaded"));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(tempObject);
 
-
-
-            Ray mouseRay = SystemCore.Input.GetProjectedMouseRay();
-            float? result;
-            mouseRay.Intersects(ref activePlane, out result);
-            if (result.HasValue)
-            {
-                Vector3 collisionPoint = mouseRay.Position + mouseRay.Direction*result.Value;
-            }
 
         }
     }
