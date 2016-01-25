@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SystemWar;
 using LibNoise;
 using Microsoft.Xna.Framework;
@@ -96,16 +97,7 @@ namespace MonoGameEngineCore.Editor
 
         private void AddGUI()
         {
-            var modeButton =
-                new Button(new Rectangle(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.05f), 150, 50),
-                    GUITexture.Textures["blank"]);
-
-            modeButton.MainColor = Color.Gray;
-            modeButton.HighlightColor = Color.LightGray;
-            modeButton.MainAlpha = 0.1f;
-            modeButton.HighlightAlpha = 0.1f;
-            modeButton.AddFadeInTransition(500);
-            modeButton.AttachLabel(new Label(GUIFonts.Fonts["neuropolitical"], CurrentMode.ToString()));
+            var modeButton = AddButton(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.05f), 150, 50, CurrentMode.ToString());
             modeButton.OnClick += (sender, args) =>
             {
                 if (CurrentMode == EditMode.Vertex)
@@ -119,8 +111,45 @@ namespace MonoGameEngineCore.Editor
             SystemCore.GUIManager.AddControl(modeButton);
 
 
+            var save = AddButton(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.15f), 130, 50, "Save");
+            save.OnClick += (sender, args) =>
+            {
+
+                TextBox textBox =
+                    new TextBox(new Rectangle(GUIManager.ScreenRatioX(0.5f)-100, GUIManager.ScreenRatioY(0.5f)-50, 200, 100),
+                        GUITexture.Textures["blank"], GUIFonts.Fonts["neuropolitical"]);
+
+                SystemCore.GUIManager.AddControl(textBox);
+
+                textBox.OnReturnEvent += (o, eventArgs) =>
+                {
+                    SaveCurrentShape(textBox.Text);
+                    SystemCore.GUIManager.RemoveControl(textBox);
+                };
 
 
+            };
+
+            SystemCore.GUIManager.AddControl(save);
+
+
+
+
+        }
+
+        private Button AddButton(int xPos, int yPos, int width, int height, string label)
+        {
+            var modeButton =
+                new Button(new Rectangle(xPos,yPos,width,height),
+                    GUITexture.Textures["blank"]);
+
+            modeButton.MainColor = Color.Gray;
+            modeButton.HighlightColor = Color.LightGray;
+            modeButton.MainAlpha = 0.1f;
+            modeButton.HighlightAlpha = 0.1f;
+            modeButton.AddFadeInTransition(500);
+            modeButton.AttachLabel(new Label(GUIFonts.Fonts["neuropolitical"], label));
+            return modeButton;
         }
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
@@ -140,12 +169,18 @@ namespace MonoGameEngineCore.Editor
 
         public void SaveCurrentShape(string name)
         {
-            ProceduralShape s = shapeBuilder.BakeShape();
+            List<ProceduralShape> shapes = shapesToBake.Values.ToList();
+
+            ProceduralShape combined = shapes[0];
+            for (int i = 1; i < shapes.Count; i++)
+            {
+                combined = ProceduralShape.Combine(combined, shapes[i]);
+            }
 
             BinaryFormatter bf = new BinaryFormatter();
             using (FileStream fs = new FileStream(name + ".shape", FileMode.Create))
             {
-                bf.Serialize(fs, s);
+                bf.Serialize(fs, combined);
             }
 
         }
@@ -164,7 +199,7 @@ namespace MonoGameEngineCore.Editor
 
         public void Update(GameTime gameTime)
         {
-            if (SystemCore.Input.MouseLeftPress())
+            if (SystemCore.Input.MouseLeftPress() && !SystemCore.GUIManager.MouseOverGUIElement)
             {
                 AddVoxel(Color.Blue);
             }
