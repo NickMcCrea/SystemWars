@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using SystemWar;
 using LibNoise;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GUI;
+using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using System.IO;
@@ -16,7 +19,6 @@ namespace MonoGameEngineCore.Editor
 {
 
     //To do
-    //undo or delete
     //color changing
     //non-voxel mode
     //baking + saving
@@ -66,9 +68,15 @@ namespace MonoGameEngineCore.Editor
 
         public void Initalise()
         {
-            shapeBuilder = new ProceduralShapeBuilder();
 
+            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.LightGray, Color.Gray, Color.DarkBlue));
+
+            shapeBuilder = new ProceduralShapeBuilder();
             CurrentMode = EditMode.Voxel;
+            shapesToBake = new Dictionary<GameObject.GameObject, ProceduralShape>();
+
+
             cameraGameObject = new GameObject.GameObject("camera");
             cameraGameObject.AddComponent(new ComponentCamera());
             cameraGameObject.Transform.SetPosition(new Vector3(0, 0, 20));
@@ -76,13 +84,39 @@ namespace MonoGameEngineCore.Editor
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
+
             mouseCursor = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(),
                 EffectLoader.LoadSM5Effect("flatshaded"));
-
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(mouseCursor);
 
-           shapesToBake = new Dictionary<GameObject.GameObject, ProceduralShape>();
+     
 
+            AddGUI();
+        }
+
+        private void AddGUI()
+        {
+            var modeButton =
+                new Button(new Rectangle(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.05f), 150, 50),
+                    GUITexture.Textures["blank"]);
+
+            modeButton.MainColor = Color.Gray;
+            modeButton.HighlightColor = Color.LightGray;
+            modeButton.MainAlpha = 0.1f;
+            modeButton.HighlightAlpha = 0.1f;
+            modeButton.AddFadeInTransition(500);
+            modeButton.AttachLabel(new Label(GUIFonts.Fonts["neuropolitical"], CurrentMode.ToString()));
+            modeButton.OnClick += (sender, args) =>
+            {
+                if (CurrentMode == EditMode.Vertex)
+                    CurrentMode = EditMode.Voxel;
+                if (CurrentMode == EditMode.Voxel)
+                    CurrentMode = EditMode.Vertex;
+
+                modeButton.SetLabelText(CurrentMode.ToString());
+            };
+
+            SystemCore.GUIManager.AddControl(modeButton);
         }
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
@@ -139,9 +173,11 @@ namespace MonoGameEngineCore.Editor
                 GameObject.GameObject obj =
                     SystemCore.GameObjectManager.GetRayCastObject();
 
-                shapesToBake.Remove(obj);
-
-                SystemCore.GameObjectManager.RemoveObject(obj);
+                if (obj != null)
+                {
+                    shapesToBake.Remove(obj);
+                    SystemCore.GameObjectManager.RemoveObject(obj);
+                }
 
             }
 
@@ -308,8 +344,7 @@ namespace MonoGameEngineCore.Editor
             if (!RenderGrid)
                 return;
 
-            ProceduralCube c = new ProceduralCube();
-            c.Translate(currentbuildPoint);
+            ProceduralCube c = new ProceduralCube();     
             c.SetColor(color);
            
             //this object is for visualisation in the editor only. The procedural shape will be 
@@ -320,7 +355,9 @@ namespace MonoGameEngineCore.Editor
             tempObject.AddComponent(new PhysicsComponent(false,false, PhysicsMeshType.box));
             
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(tempObject);
+            tempObject.Transform.SetPosition(currentbuildPoint);
 
+            c.Translate(currentbuildPoint);
             shapesToBake.Add(tempObject, c);
 
 

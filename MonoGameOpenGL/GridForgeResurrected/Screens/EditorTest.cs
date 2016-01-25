@@ -23,12 +23,7 @@ namespace GridForgeResurrected.Screens
 
         public EditorTest()
         {
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-
-            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.LightBlue, Color.OrangeRed, Color.DarkBlue));
-
-
- 
+           
             modelEditor = new SimpleModelEditor(10);
 
             SystemCore.AddNewUpdateRenderSubsystem(modelEditor);
