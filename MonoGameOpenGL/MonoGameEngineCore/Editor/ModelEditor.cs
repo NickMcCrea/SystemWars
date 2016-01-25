@@ -117,6 +117,10 @@ namespace MonoGameEngineCore.Editor
             };
 
             SystemCore.GUIManager.AddControl(modeButton);
+
+
+
+
         }
 
         public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
@@ -160,6 +164,10 @@ namespace MonoGameEngineCore.Editor
 
         public void Update(GameTime gameTime)
         {
+            if (SystemCore.Input.MouseLeftPress())
+            {
+                AddVoxel(Color.Blue);
+            }
 
             if (SystemCore.Input.KeyPress(Keys.G))
             {
@@ -181,6 +189,41 @@ namespace MonoGameEngineCore.Editor
 
             }
 
+            if (SystemCore.Input.KeyPress(Keys.NumPad5))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Backward * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Forward,Vector3.Up);
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.NumPad0))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Forward * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Backward, Vector3.Up);
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.NumPad4))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Left * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Right, Vector3.Up);
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.NumPad6))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Right * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Left, Vector3.Up);
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.NumPad8))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Up * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Down, Vector3.Backward);
+            }
+
+            if (SystemCore.Input.KeyPress(Keys.NumPad2))
+            {
+                cameraGameObject.Transform.SetPosition(Vector3.Down * 20f);
+                cameraGameObject.Transform.SetLookAndUp(Vector3.Up, Vector3.Forward);
+            }
 
             MoveCursor();
 
@@ -342,6 +385,13 @@ namespace MonoGameEngineCore.Editor
         public void AddVoxel(Color color)
         {
             if (!RenderGrid)
+                return;
+
+            if(currentbuildPoint.X < -modellingAreaSize/2 || currentbuildPoint.X > modellingAreaSize/2)
+                return;
+            if (currentbuildPoint.Y < -modellingAreaSize / 2 || currentbuildPoint.Y > modellingAreaSize / 2)
+                return;
+            if (currentbuildPoint.Z < -modellingAreaSize / 2 || currentbuildPoint.Z > modellingAreaSize / 2)
                 return;
 
             ProceduralCube c = new ProceduralCube();     

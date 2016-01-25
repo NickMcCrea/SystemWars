@@ -32,10 +32,7 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
-            if (SystemCore.Input.MouseLeftPress())
-            {
-                modelEditor.AddVoxel(Color.Blue);
-            }
+           
 
 
             base.Update(gameTime);
