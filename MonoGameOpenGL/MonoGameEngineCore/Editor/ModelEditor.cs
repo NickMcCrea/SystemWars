@@ -353,12 +353,13 @@ namespace MonoGameEngineCore.Editor
             Vector3 collisionPoint = Vector3.Zero;
             if (SystemCore.Input.GetPlaneMouseRayCollision(activePlane, out collisionPoint))
             {
-                collisionPoint.X = (float)Math.Floor(collisionPoint.X);
-                collisionPoint.Y = (float)Math.Floor(collisionPoint.Y);
-                collisionPoint.Z = (float)Math.Floor(collisionPoint.Z);
+                collisionPoint.X = (float)Math.Round(collisionPoint.X);
+                collisionPoint.Y = (float)Math.Round(collisionPoint.Y);
+                collisionPoint.Z = (float)Math.Round(collisionPoint.Z);
 
                 mouseCursor.Transform.SetPosition(collisionPoint);
                 currentbuildPoint = collisionPoint;
+                DebugText.Write(collisionPoint.ToString());
             }
         }
 
