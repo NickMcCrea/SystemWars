@@ -286,5 +286,24 @@ namespace MonoGameEngineCore.GUI.Controls
             return buttonTex;
         }
 
+        public static List<Color> GenerateColorList()
+        {
+            List<Color> colours = new List<Color>();
+
+            colours.Add(Color.Red);
+            colours.Add(Color.Blue);
+            colours.Add(Color.Green);
+
+            colours.Add(Color.Yellow);
+            colours.Add(Color.Orange);
+            colours.Add(Color.Black);
+
+            colours.Add(Color.White);
+            colours.Add(Color.Gray);
+            colours.Add(Color.Brown);
+
+            return colours;
+        } 
+
     }
 }

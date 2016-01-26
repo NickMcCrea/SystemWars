@@ -23,8 +23,7 @@ namespace MonoGameEngineCore.Editor
     //color changing
     //non-voxel mode
     //baking + saving
-    //camera improvements
-    //fix 'stutter'
+
   
 
     public class SimpleModelEditor : IGameSubSystem
@@ -37,7 +36,7 @@ namespace MonoGameEngineCore.Editor
         public int CurrentZIndex { get; set; }
         public int CurrentYIndex { get; set; }
         public CurrentActivePlane ActivePlane { get; set; }
-    
+        private Color currentColour = Color.Blue;
         public enum EditMode
         {
             Vertex,
@@ -132,8 +131,25 @@ namespace MonoGameEngineCore.Editor
 
             SystemCore.GUIManager.AddControl(save);
 
+            var colourPanel =
+                new ButtonGridPanel(
+                    new Rectangle(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.25f), 300, 300),
+                    GUITexture.BlankTexture);
+            colourPanel.SelectableItems = true;
+            colourPanel.MainColor = Color.Gray;
+            colourPanel.HighlightColor = Color.LightGray;
+            colourPanel.MainAlpha = 0.1f;
+            colourPanel.HighlightAlpha = 0.1f;
 
+            colourPanel.AddColorPanel(ButtonGridPanel.GenerateColorList(), 15, 15, 2, 2, 4, 2);
+            colourPanel.AddFadeInTransition(500);
 
+            colourPanel.OnSelectionChanged += (sender, args) =>
+            {
+                currentColour = colourPanel.SelectedItem.MainColor;
+            };
+            
+            SystemCore.GUIManager.AddControl(colourPanel);
 
         }
 
@@ -201,7 +217,7 @@ namespace MonoGameEngineCore.Editor
         {
             if (SystemCore.Input.MouseLeftPress() && !SystemCore.GUIManager.MouseOverGUIElement)
             {
-                AddVoxel(Color.Blue);
+                AddVoxel(currentColour);
             }
 
             if (SystemCore.Input.KeyPress(Keys.G))
@@ -359,7 +375,7 @@ namespace MonoGameEngineCore.Editor
 
                 mouseCursor.Transform.SetPosition(collisionPoint);
                 currentbuildPoint = collisionPoint;
-                DebugText.Write(collisionPoint.ToString());
+              
             }
         }
 
