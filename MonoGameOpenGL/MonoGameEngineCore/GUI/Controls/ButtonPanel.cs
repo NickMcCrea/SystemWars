@@ -302,6 +302,10 @@ namespace MonoGameEngineCore.GUI.Controls
             colours.Add(Color.Gray);
             colours.Add(Color.Brown);
 
+            colours.Add(Color.Purple);
+            colours.Add(Color.OrangeRed);
+            colours.Add(Color.MediumSeaGreen);
+
             return colours;
         } 
 

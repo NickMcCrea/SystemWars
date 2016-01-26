@@ -324,7 +324,11 @@ namespace MonoGameEngineCore.Editor
                     return;
                 }
 
-                CurrentYIndex++;
+                if (SystemCore.Input.IsKeyDown(Keys.LeftShift))
+                    CurrentYIndex--;
+                else
+                    CurrentYIndex++;
+
                 if (CurrentYIndex > modellingAreaSize / 2)
                     CurrentYIndex = -(int)modellingAreaSize / 2;
             }
@@ -336,7 +340,11 @@ namespace MonoGameEngineCore.Editor
                     ActivePlane = CurrentActivePlane.XY;
                     return;
                 }
-                CurrentZIndex++;
+                if (SystemCore.Input.IsKeyDown(Keys.LeftShift))
+                    CurrentZIndex--;
+                else
+                    CurrentZIndex++;
+
                 if (CurrentZIndex > modellingAreaSize / 2)
                     CurrentZIndex = -(int)modellingAreaSize / 2;
             }
@@ -349,7 +357,11 @@ namespace MonoGameEngineCore.Editor
                     return;
                 }
 
-                CurrentXIndex++;
+                if (SystemCore.Input.IsKeyDown(Keys.LeftShift))
+                    CurrentXIndex--;
+                else
+                    CurrentXIndex++;
+
                 if (CurrentXIndex > modellingAreaSize / 2)
                     CurrentXIndex = -(int)modellingAreaSize / 2;
             }
@@ -404,8 +416,17 @@ namespace MonoGameEngineCore.Editor
                 collisionPoint.Y = (float)Math.Round(collisionPoint.Y);
                 collisionPoint.Z = (float)Math.Round(collisionPoint.Z);
 
-                mouseCursor.Transform.SetPosition(collisionPoint);
+              
                 currentbuildPoint = collisionPoint;
+
+                if (currentbuildPoint.X < -modellingAreaSize / 2 || currentbuildPoint.X > modellingAreaSize / 2)
+                    return;
+                if (currentbuildPoint.Y < -modellingAreaSize / 2 || currentbuildPoint.Y > modellingAreaSize / 2)
+                    return;
+                if (currentbuildPoint.Z < -modellingAreaSize / 2 || currentbuildPoint.Z > modellingAreaSize / 2)
+                    return;
+
+                mouseCursor.Transform.SetPosition(collisionPoint);
               
             }
         }
