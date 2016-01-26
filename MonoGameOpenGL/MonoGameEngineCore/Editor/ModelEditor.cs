@@ -128,8 +128,39 @@ namespace MonoGameEngineCore.Editor
 
 
             };
-
             SystemCore.GUIManager.AddControl(save);
+
+
+            var load = AddButton(GUIManager.ScreenRatioX(0.17f), GUIManager.ScreenRatioY(0.15f), 130, 50, "Load");
+            load.OnClick += (sender, args) =>
+            {
+
+                TextBox textBox =
+                    new TextBox(new Rectangle(GUIManager.ScreenRatioX(0.5f) - 100, GUIManager.ScreenRatioY(0.5f) - 50, 200, 100),
+                        GUITexture.Textures["blank"], GUIFonts.Fonts["neuropolitical"]);
+
+                SystemCore.GUIManager.AddControl(textBox);
+
+                textBox.OnReturnEvent += (o, eventArgs) =>
+                {
+                    var shape =LoadShape(textBox.Text);
+                    SystemCore.GUIManager.RemoveControl(textBox);
+
+                    if (shape != null)
+                    {
+                        var gameObj = GameObjectFactory.CreateRenderableGameObjectFromShape(shape,
+                            EffectLoader.LoadSM5Effect("flatshaded"));
+
+                        gameObj.AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
+                        SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObj);
+
+                        shapesToBake.Add(gameObj, shape);
+                    }
+                };
+
+
+            };
+            SystemCore.GUIManager.AddControl(load);
 
             var colourPanel =
                 new ButtonGridPanel(

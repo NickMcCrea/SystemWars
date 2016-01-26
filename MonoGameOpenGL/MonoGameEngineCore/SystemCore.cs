@@ -211,13 +211,19 @@ namespace MonoGameEngineCore
                 }
             }
 
+          
+
             for (int i = 0; i < gameSubSystems.Count; i++)
             {
+                if (gameSubSystems[i] is GUIManager)
+                    continue;
                 gameSubSystems[i].Render(gameTime);
             }
 
-
+           
             DebugShapeRenderer.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection);
+            GUIManager.Render(gameTime);
+
             DebugText.Draw(gameTime);
             ScreenManager.RenderSprites(gameTime);
         }
