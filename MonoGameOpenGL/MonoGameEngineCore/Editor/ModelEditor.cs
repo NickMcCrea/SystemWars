@@ -235,10 +235,14 @@ namespace MonoGameEngineCore.Editor
         public ProceduralShape LoadShape(string name)
         {
             BinaryFormatter bf = new BinaryFormatter();
+           
             ProceduralShape s = null;
-            using (FileStream fs = new FileStream(name + ".shape", FileMode.Open))
+            if (File.Exists(name + ".shape"))
             {
-                s = bf.Deserialize(fs) as ProceduralShape;
+                using (FileStream fs = new FileStream(name + ".shape", FileMode.Open))
+                {
+                    s = bf.Deserialize(fs) as ProceduralShape;
+                }
             }
 
             return s;
