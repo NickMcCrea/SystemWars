@@ -1,4 +1,6 @@
-﻿using BEPUphysics.CollisionRuleManagement;
+﻿using System.Collections.Generic;
+using System.Linq;
+using BEPUphysics.CollisionRuleManagement;
 using LibNoise.Modifiers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -48,23 +50,47 @@ namespace GridForgeResurrected.Screens
             Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
 
 
-            var one = AddTerrainSegment(100, 0, 0);
-            var two = AddTerrainSegment(100, 99, 0);
-            two.Transform.Translate(new Vector3(99, 0, 0));
+            //var one = AddTerrainSegment(100, 0, 0);
+            //var two = AddTerrainSegment(100, 99, 0);
+            //two.Transform.Translate(new Vector3(99, 0, 0));
 
-            var three = AddTerrainSegment(100, -99, 0);
-            three.Transform.Translate(new Vector3(-99, 0, 0));
+            //var three = AddTerrainSegment(100, -99, 0);
+            //three.Transform.Translate(new Vector3(-99, 0, 0));
 
 
 
-            ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
-            sphere.SetColor(Color.DarkOrange);
-            sphere.Scale(planetSize);
-            var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
-            helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
-            atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+            //ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
+            //sphere.SetColor(Color.DarkOrange);
+            //sphere.Scale(planetSize);
+            //var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
+            //helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
+            //atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+
+
+            Heightmap a = new Heightmap(100,1);
+            GameObject terrain = new GameObject("testHeightMap");
+
+            VertexPositionColorTextureNormal[] v = a.GenerateVertexArray();
+
+            for (int i = 0; i < v.Length; i++)
+            {
+                v[i].Position = v[i].Position - new Vector3(50, 0, 50);
+                v[i].Position = v[i].Position + Vector3.Up*10;
+                v[i].Position = Vector3.Normalize(v[i].Position)*100;
+            }
+
+            var verts =
+               BufferBuilder.VertexBufferBuild(v);
+
+            
+
+            var indices = BufferBuilder.IndexBufferBuild(a.GenerateIndices());
+            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
+            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
         }
 
         private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
