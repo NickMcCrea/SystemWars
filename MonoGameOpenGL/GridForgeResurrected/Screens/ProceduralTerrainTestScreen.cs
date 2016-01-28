@@ -80,8 +80,8 @@ namespace GridForgeResurrected.Screens
             VertexPositionColorTextureNormal[] v = top.GenerateVertexArray();
 
           
-            helper = new GroundScatteringHelper(effect, radius * 1.05f, radius);
-            atmosphere = new Atmosphere(radius * 1.05f, radius);
+            helper = new GroundScatteringHelper(effect, radius * 1.2f, radius * 0.9f);
+            atmosphere = new Atmosphere(radius * 1.2f, radius *  0.9f);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
            
