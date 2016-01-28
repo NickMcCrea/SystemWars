@@ -66,32 +66,33 @@ namespace GridForgeResurrected.Screens
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
 
 
-            helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
-            atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+        
 
+            var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.05f);
 
-            var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.1f);
-
-
-
+            int radius =49;
+            int vertCount = 100;
+            float scale = 1;
             //top
-            Heightmap top = new Heightmap(100,1);
+            Heightmap top = new Heightmap(vertCount,scale);
             GameObject terrainTopObject = new GameObject();
 
             VertexPositionColorTextureNormal[] v = top.GenerateVertexArray();
 
-            int displacement = 49;
-           
+          
+            helper = new GroundScatteringHelper(effect, radius * 1.05f, radius);
+            atmosphere = new Atmosphere(radius * 1.05f, radius);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+
            
             for (int i = 0; i < v.Length; i++)
             {
-                v[i].Position = v[i].Position - new Vector3(displacement, 0, displacement);
-                v[i].Position = v[i].Position + Vector3.Up * displacement;
-                v[i].Position = Vector3.Normalize(v[i].Position) * displacement;
+                v[i].Position = v[i].Position - new Vector3(radius, 0, radius);
+                v[i].Position = v[i].Position + Vector3.Up * radius;
+                v[i].Position = Vector3.Normalize(v[i].Position) * radius;
 
                 double heightValue = noiseGenerator.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
-                v[i].Position = (Vector3.Normalize(v[i].Position)*(displacement + (float) heightValue));
+                v[i].Position = (Vector3.Normalize(v[i].Position)*(radius + (float) heightValue));
             }
 
             var verts =
@@ -99,14 +100,14 @@ namespace GridForgeResurrected.Screens
          
             var indices = BufferBuilder.IndexBufferBuild(top.GenerateIndices());
             terrainTopObject.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
-            terrainTopObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            terrainTopObject.AddComponent(new EffectRenderComponent(effect));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainTopObject);
 
 
 
             //front
-            Heightmap front = new Heightmap(100, 1);
+            Heightmap front = new Heightmap(vertCount, scale);
             GameObject terrainfrontGameObjectObject = new GameObject();
 
             VertexPositionColorTextureNormal[] vF = front.GenerateVertexArray();
@@ -114,13 +115,13 @@ namespace GridForgeResurrected.Screens
 
             for (int i = 0; i < vF.Length; i++)
             {
-                vF[i].Position = vF[i].Position - new Vector3(displacement, 0, displacement);
+                vF[i].Position = vF[i].Position - new Vector3(radius, 0, radius);
                 vF[i].Position = Vector3.Transform(vF[i].Position, Matrix.CreateRotationX(MathHelper.PiOver2));
-                vF[i].Position = vF[i].Position - Vector3.Forward * displacement;
-                vF[i].Position = Vector3.Normalize(vF[i].Position) * displacement;
+                vF[i].Position = vF[i].Position - Vector3.Forward * radius;
+                vF[i].Position = Vector3.Normalize(vF[i].Position) * radius;
 
                 double heightValue = noiseGenerator.GetValue(vF[i].Position.X, vF[i].Position.Y, vF[i].Position.Z);
-                vF[i].Position = (Vector3.Normalize(vF[i].Position) * (displacement + (float)heightValue));
+                vF[i].Position = (Vector3.Normalize(vF[i].Position) * (radius + (float)heightValue));
             }
 
             var vertsFront =
@@ -128,7 +129,7 @@ namespace GridForgeResurrected.Screens
 
             var indicesFront = BufferBuilder.IndexBufferBuild(front.GenerateIndices());
             terrainfrontGameObjectObject.AddComponent(new RenderGeometryComponent(vertsFront, indicesFront, indicesFront.IndexCount / 3));
-            terrainfrontGameObjectObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            terrainfrontGameObjectObject.AddComponent(new EffectRenderComponent(effect));
 
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainfrontGameObjectObject);
 
