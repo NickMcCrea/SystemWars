@@ -52,6 +52,20 @@ namespace MonoGameEngineCore.GameObject.Components
             return vertices;
         }
 
+        internal void TransformVerts(Matrix transform)
+        {
+            var list = new VertexPositionColorTextureNormal[VertexBuffer.VertexCount];
+            VertexBuffer.GetData(list);
+
+            for(int i = 0;i<list.Length;i++)
+            {
+                list[i].Position = Vector3.Transform(list[i].Position, transform);
+            }
+
+            VertexBuffer.SetData(list);
+
+        }
+
         internal short[] GetIndices()
         {
             var list = new short[IndexBuffer.IndexCount];

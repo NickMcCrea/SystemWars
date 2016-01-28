@@ -24,7 +24,7 @@ namespace GridForgeResurrected.Screens
         GroundScatteringHelper helper;
         Atmosphere atmosphere;
         private Vector3 startPos;
-        private float planetSize = 500f;
+        private float planetSize = 50f;
 
 
         public ProceduralTerrainTestScreen()
@@ -64,33 +64,75 @@ namespace GridForgeResurrected.Screens
             //sphere.Scale(planetSize);
             //var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
-            //helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
-            //atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
 
-            Heightmap a = new Heightmap(100,1);
-            GameObject terrain = new GameObject("testHeightMap");
+            helper = new GroundScatteringHelper(effect, planetSize * 1.05f, planetSize);
+            atmosphere = new Atmosphere(planetSize * 1.05f, planetSize);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
-            VertexPositionColorTextureNormal[] v = a.GenerateVertexArray();
 
+            var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.1f);
+
+
+
+            //top
+            Heightmap top = new Heightmap(100,1);
+            GameObject terrainTopObject = new GameObject();
+
+            VertexPositionColorTextureNormal[] v = top.GenerateVertexArray();
+
+            int displacement = 49;
+           
+           
             for (int i = 0; i < v.Length; i++)
             {
-                v[i].Position = v[i].Position - new Vector3(50, 0, 50);
-                v[i].Position = v[i].Position + Vector3.Up*10;
-                v[i].Position = Vector3.Normalize(v[i].Position)*100;
+                v[i].Position = v[i].Position - new Vector3(displacement, 0, displacement);
+                v[i].Position = v[i].Position + Vector3.Up * displacement;
+                v[i].Position = Vector3.Normalize(v[i].Position) * displacement;
+
+                double heightValue = noiseGenerator.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
+                v[i].Position = (Vector3.Normalize(v[i].Position)*(displacement + (float) heightValue));
             }
 
             var verts =
                BufferBuilder.VertexBufferBuild(v);
+         
+            var indices = BufferBuilder.IndexBufferBuild(top.GenerateIndices());
+            terrainTopObject.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
+            terrainTopObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
 
-            
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainTopObject);
 
-            var indices = BufferBuilder.IndexBufferBuild(a.GenerateIndices());
-            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
-            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
 
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
+
+            //front
+            Heightmap front = new Heightmap(100, 1);
+            GameObject terrainfrontGameObjectObject = new GameObject();
+
+            VertexPositionColorTextureNormal[] vF = front.GenerateVertexArray();
+
+
+            for (int i = 0; i < vF.Length; i++)
+            {
+                vF[i].Position = vF[i].Position - new Vector3(displacement, 0, displacement);
+                vF[i].Position = Vector3.Transform(vF[i].Position, Matrix.CreateRotationX(MathHelper.PiOver2));
+                vF[i].Position = vF[i].Position - Vector3.Forward * displacement;
+                vF[i].Position = Vector3.Normalize(vF[i].Position) * displacement;
+
+                double heightValue = noiseGenerator.GetValue(vF[i].Position.X, vF[i].Position.Y, vF[i].Position.Z);
+                vF[i].Position = (Vector3.Normalize(vF[i].Position) * (displacement + (float)heightValue));
+            }
+
+            var vertsFront =
+               BufferBuilder.VertexBufferBuild(vF);
+
+            var indicesFront = BufferBuilder.IndexBufferBuild(front.GenerateIndices());
+            terrainfrontGameObjectObject.AddComponent(new RenderGeometryComponent(vertsFront, indicesFront, indicesFront.IndexCount / 3));
+            terrainfrontGameObjectObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainfrontGameObjectObject);
+
+
         }
 
         private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
