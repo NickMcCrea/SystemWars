@@ -25,7 +25,7 @@ namespace GridForgeResurrected.Screens
 
         public ProceduralTerrainTestScreen()
         {
-            startPos = new Vector3(0, planetSize * 1.25f, 0);
+            startPos = new Vector3(0, planetSize*1.25f, 0);
 
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
@@ -43,16 +43,50 @@ namespace GridForgeResurrected.Screens
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
 
-
-            var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.05f);
+            
+           
 
             planets = new List<MiniPlanet>();
 
-            planet1 = new MiniPlanet(new Vector3(100,0,0),  49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.OrangeRed);
-            planets.Add(planet1);
 
-            planet2 = new MiniPlanet(new Vector3(1000, 0, 0), 49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.PaleGreen);
-            planets.Add(planet2);
+            //int planetCount = 10;
+
+            //for (int i = 0; i < planetCount; i++)
+            //{
+            //    var noiseGenerator = NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000,3000)/100000f);
+            //    int startX = RandomHelper.GetRandomInt(-1000, 1000);
+            //    int startY = RandomHelper.GetRandomInt(-100, 100);
+            //    int startZ = RandomHelper.GetRandomInt(-1000, 1000);
+
+            //    int planetRadius = RandomHelper.GetRandomInt(20, 60);
+
+            //    MiniPlanet p = new MiniPlanet(new Vector3(startX, startY, startZ), planetRadius, planetRadius-2,
+            //        planetRadius *1.05f, noiseGenerator, planetRadius*2+1, 1, RandomHelper.RandomColor);
+            //    planets.Add(p);
+            //}
+
+
+            MiniPlanet earth = new MiniPlanet(new Vector3(200, 0, 0), 50,
+                NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000, 5000)/100000f), 101, 1,
+                Color.DarkOrange);
+
+            earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);
+            earth.AddAtmosphere(0.97f, 1.05f);
+            planets.Add(earth);
+
+
+
+            MiniPlanet moon = new MiniPlanet(new Vector3(300, 0, 0), 15,
+                NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000, 3000)/100000f), 31, 1,
+                Color.DarkGray);
+
+            moon.SetOrbit(earth, Vector3.Up, 0.01f);
+
+          
+            planets.Add(moon);
+
+
+
 
 
         }
@@ -100,12 +134,7 @@ namespace GridForgeResurrected.Screens
             }
 
 
-            planets[0].Rotate(Vector3.Up,0.001f);
-            planets[1].Rotate(Vector3.Left,0.002f);
-            planets[0].Orbit(Vector3.Zero, Vector3.Up, 0.001f);
-            planets[1].Orbit(Vector3.Zero, Vector3.Up, 0.001f);
-
-
+      
 
 
             base.Update(gameTime);

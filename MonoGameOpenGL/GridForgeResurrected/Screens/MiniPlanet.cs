@@ -15,8 +15,6 @@ namespace GridForgeResurrected.Screens
     {
         private readonly Vector3 startPosition;
         private readonly float planetRadius;
-        private readonly float innerAtmosphereRadius;
-        private readonly float outerAtmosphereRadius;
         private readonly IModule noiseModule;
         private readonly int heightMapVertCount;
         private readonly float heightMapScale;
@@ -26,29 +24,59 @@ namespace GridForgeResurrected.Screens
         private List<GameObject> planetPieces;
         private Effect planetEffect;
         public Vector3 CurrentCenterPosition { get; private set; }
+        public Orbit CurrentOrbit { get; set; }
+        public Spin CurrentSpin { get; set; }
+        private List<MiniPlanet> childPlanets; 
 
-        public MiniPlanet(Vector3 startPosition, float planetRadius, float innerAtmosphereRadius, float outerAtmosphereRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color terrainColor)
+        public class Spin
+        {
+            public Vector3 Axis { get; set; }
+            public float Speed { get; set; }
+        }
+        public class Orbit
+        {
+            public MiniPlanet BodyToOrbit { get; set; }
+            public Vector3 Axis { get; set; }
+            public Vector3 OrbitPoint { get; set; }
+            public float Speed { get; set; }
+        }
+
+        public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color terrainColor)
         {
             this.startPosition = startPosition;
             this.planetRadius = planetRadius;
-            this.innerAtmosphereRadius = innerAtmosphereRadius;
-            this.outerAtmosphereRadius = outerAtmosphereRadius;
+          
             this.noiseModule = noiseModule;
             this.heightMapVertCount = heightMapVertCount;
             this.heightMapScale = heightMapScale;
             this.terrainColor = terrainColor;
-            planetPieces = new List<GameObject>();
+          
+            planetEffect = EffectLoader.LoadSM5Effect("flatshaded").Clone();
+            GenerateGeometry();
+            childPlanets = new List<MiniPlanet>();
+        }
+
+        public void AddAtmosphere(float innerAtmosphereRatio, float outerAtmosphereRatio)
+        {
+
+            foreach (GameObject planetPiece in planetPieces)
+            {
+                SystemCore.GameObjectManager.RemoveObject(planetPiece);
+            }
+
             planetEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone();
+            groundScatteringHelper = new GroundScatteringHelper(planetEffect, planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio);
+            atmosphere = new Atmosphere(planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+
             GenerateGeometry();
         }
 
         public void GenerateGeometry()
         {
 
-
-            groundScatteringHelper = new GroundScatteringHelper(planetEffect, outerAtmosphereRadius, innerAtmosphereRadius);
-            atmosphere = new Atmosphere(outerAtmosphereRadius, innerAtmosphereRadius);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
+            planetPieces = new List<GameObject>();
+         
 
 
             //top
@@ -164,6 +192,27 @@ namespace GridForgeResurrected.Screens
 
         }
 
+        public void SetOrbit(Vector3 point, Vector3 axis, float speed)
+        {
+            CurrentOrbit = new Orbit() {Axis = axis, OrbitPoint = point, Speed = speed};
+        }
+
+        public void SetOrbit(MiniPlanet bodyToOrbit, Vector3 axis, float speed)
+        {
+            CurrentOrbit = new Orbit() { Axis = axis, BodyToOrbit = bodyToOrbit, Speed = speed };
+            bodyToOrbit.AddChildBody(this);
+        }
+
+        public void AddChildBody(MiniPlanet miniPlanet)
+        {
+           childPlanets.Add(miniPlanet);
+        }
+
+        public void SetRotation(Vector3 axis, float speed)
+        {
+            CurrentSpin = new Spin() {Axis = axis, Speed = speed};
+        }
+
         private void ModifyHeight(VertexPositionColorTextureNormal[] v, int i)
         {
             double heightValue = noiseModule.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
@@ -197,11 +246,11 @@ namespace GridForgeResurrected.Screens
             terrainTopObject = new GameObject();
             v = top.GenerateVertexArray();
 
-            for(int i = 0;i<v.Length;i++)
+            for (int i = 0; i < v.Length; i++)
             {
                 v[i].Color = terrainColor;
             }
-      
+
 
             return top;
         }
@@ -215,7 +264,21 @@ namespace GridForgeResurrected.Screens
                 groundScatteringHelper.Update(heightAbovePlanetSurface, light.LightDirection,
                     cameraPos - CurrentCenterPosition);
 
-                atmosphere.Update(light.LightDirection, cameraPos, heightAbovePlanetSurface);
+                if (atmosphere != null)
+                    atmosphere.Update(light.LightDirection, cameraPos, heightAbovePlanetSurface);
+            }
+
+            if (CurrentOrbit != null)
+            {
+                Vector3 pointToOrbit = CurrentOrbit.OrbitPoint;
+                if (CurrentOrbit.BodyToOrbit != null)
+                    pointToOrbit = CurrentOrbit.BodyToOrbit.CurrentCenterPosition;
+
+                CalculateOrbit(pointToOrbit, CurrentOrbit.Axis, CurrentOrbit.Speed);
+            }
+            if (CurrentSpin != null)
+            {
+                CalculateRotation(CurrentSpin.Axis, CurrentSpin.Speed);
             }
 
         }
@@ -226,21 +289,22 @@ namespace GridForgeResurrected.Screens
             {
                 piece.Transform.SetPosition(position);
             }
-            atmosphere.Transform.WorldMatrix.Translation = position;
+            if (atmosphere != null)
+                atmosphere.Transform.WorldMatrix.Translation = position;
             CurrentCenterPosition = position;
         }
 
-        internal void Rotate(Vector3 axis, float p)
+        internal void CalculateRotation(Vector3 axis, float p)
         {
             foreach (GameObject gameObject in planetPieces)
             {
-                gameObject.Transform.Rotate(axis,p);
+                gameObject.Transform.Rotate(axis, p);
             }
         }
 
-        internal void Orbit(Vector3 point, Vector3 axis, float p)
+        internal void CalculateOrbit(Vector3 point, Vector3 axis, float p)
         {
-
+            Vector3 oldPosition = CurrentCenterPosition;
             Vector3 posAverage = Vector3.Zero;
             foreach (GameObject gameObject in planetPieces)
             {
@@ -249,9 +313,22 @@ namespace GridForgeResurrected.Screens
             }
             posAverage /= 6;
             CurrentCenterPosition = posAverage;
-            atmosphere.Transform.SetPosition(CurrentCenterPosition);
+
+            if (atmosphere != null)
+                atmosphere.Transform.SetPosition(CurrentCenterPosition);
+
+            foreach (MiniPlanet childPlanet in childPlanets)
+            {
+                childPlanet.Translate(CurrentCenterPosition - oldPosition);
+            }
         }
 
-     
+        public void Translate(Vector3 translation)
+        {
+            Vector3 newPos = CurrentCenterPosition + translation;
+            SetPosition(newPos);
+        }
+
+
     }
 }
