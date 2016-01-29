@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BEPUphysics.CollisionRuleManagement;
+﻿using BEPUphysics.CollisionRuleManagement;
 using LibNoise.Modifiers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,15 +14,12 @@ using SystemWar;
 
 namespace GridForgeResurrected.Screens
 {
-
-
     class ProceduralTerrainTestScreen : Screen
     {
         private GameObject cameraGameObject;
-        GroundScatteringHelper helper;
-        Atmosphere atmosphere;
         private Vector3 startPos;
         private float planetSize = 50f;
+        private MiniPlanet planet;
 
 
         public ProceduralTerrainTestScreen()
@@ -35,7 +30,7 @@ namespace GridForgeResurrected.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
 
-            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.DarkBlue, Color.Black, Color.DarkBlue));
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.DarkGray));
 
 
             cameraGameObject = new GameObject("camera");
@@ -70,69 +65,8 @@ namespace GridForgeResurrected.Screens
 
             var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.05f);
 
-            int radius =49;
-            int vertCount = 100;
-            float scale = 1;
-            //top
-            Heightmap top = new Heightmap(vertCount,scale);
-            GameObject terrainTopObject = new GameObject();
 
-            VertexPositionColorTextureNormal[] v = top.GenerateVertexArray();
-
-          
-            helper = new GroundScatteringHelper(effect, radius * 1.2f, radius * 0.9f);
-            atmosphere = new Atmosphere(radius * 1.2f, radius *  0.9f);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
-
-           
-            for (int i = 0; i < v.Length; i++)
-            {
-                v[i].Position = v[i].Position - new Vector3(radius, 0, radius);
-                v[i].Position = v[i].Position + Vector3.Up * radius;
-                v[i].Position = Vector3.Normalize(v[i].Position) * radius;
-
-                double heightValue = noiseGenerator.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
-                v[i].Position = (Vector3.Normalize(v[i].Position)*(radius + (float) heightValue));
-            }
-
-            var verts =
-               BufferBuilder.VertexBufferBuild(v);
-         
-            var indices = BufferBuilder.IndexBufferBuild(top.GenerateIndices());
-            terrainTopObject.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
-            terrainTopObject.AddComponent(new EffectRenderComponent(effect));
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainTopObject);
-
-
-
-            //front
-            Heightmap front = new Heightmap(vertCount, scale);
-            GameObject terrainfrontGameObjectObject = new GameObject();
-
-            VertexPositionColorTextureNormal[] vF = front.GenerateVertexArray();
-
-
-            for (int i = 0; i < vF.Length; i++)
-            {
-                vF[i].Position = vF[i].Position - new Vector3(radius, 0, radius);
-                vF[i].Position = Vector3.Transform(vF[i].Position, Matrix.CreateRotationX(MathHelper.PiOver2));
-                vF[i].Position = vF[i].Position - Vector3.Forward * radius;
-                vF[i].Position = Vector3.Normalize(vF[i].Position) * radius;
-
-                double heightValue = noiseGenerator.GetValue(vF[i].Position.X, vF[i].Position.Y, vF[i].Position.Z);
-                vF[i].Position = (Vector3.Normalize(vF[i].Position) * (radius + (float)heightValue));
-            }
-
-            var vertsFront =
-               BufferBuilder.VertexBufferBuild(vF);
-
-            var indicesFront = BufferBuilder.IndexBufferBuild(front.GenerateIndices());
-            terrainfrontGameObjectObject.AddComponent(new RenderGeometryComponent(vertsFront, indicesFront, indicesFront.IndexCount / 3));
-            terrainfrontGameObjectObject.AddComponent(new EffectRenderComponent(effect));
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainfrontGameObjectObject);
-
+            planet = new MiniPlanet(Vector3.Zero, 49, 45, 60, noiseGenerator, 100, 1);
 
         }
 
@@ -170,15 +104,8 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
-            DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
-
-            if (helper != null)
-            {
-                helper.Update(cameraGameObject.Transform.WorldMatrix.Translation.Length(), light.LightDirection,
-                    cameraGameObject.Transform.WorldMatrix.Translation);
-
-                atmosphere.Update(light.LightDirection, cameraGameObject.Transform.WorldMatrix.Translation);
-            }
+            planet.Update(gameTime, cameraGameObject.Transform.WorldMatrix.Translation.Length(),
+                cameraGameObject.Transform.WorldMatrix.Translation);
 
             base.Update(gameTime);
 

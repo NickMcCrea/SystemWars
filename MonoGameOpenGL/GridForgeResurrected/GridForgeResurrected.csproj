@@ -59,6 +59,7 @@
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="Screens\ProceduralTerrainTestScreen.cs" />
     <Compile Include="SimpleEnemyAIController.cs" />
   </ItemGroup>
