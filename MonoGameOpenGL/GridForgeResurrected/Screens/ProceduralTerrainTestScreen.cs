@@ -67,7 +67,7 @@ namespace GridForgeResurrected.Screens
 
 
             MiniPlanet earth = new MiniPlanet(new Vector3(200, 0, 0), 50,
-                NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000, 5000)/100000f), 101, 1,
+                NoiseGenerator.RidgedMultiFractal(0.03f), 101, 1,
                 Color.DarkOrange);
 
             earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);
@@ -77,7 +77,7 @@ namespace GridForgeResurrected.Screens
 
 
             MiniPlanet moon = new MiniPlanet(new Vector3(300, 0, 0), 15,
-                NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000, 3000)/100000f), 31, 1,
+                NoiseGenerator.RidgedMultiFractal(0.02f), 31, 1,
                 Color.DarkGray);
 
             moon.SetOrbit(earth, Vector3.Up, 0.01f);
