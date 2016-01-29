@@ -49,24 +49,8 @@ namespace GridForgeResurrected.Screens
             planets = new List<MiniPlanet>();
 
 
-            //int planetCount = 10;
 
-            //for (int i = 0; i < planetCount; i++)
-            //{
-            //    var noiseGenerator = NoiseGenerator.RidgedMultiFractal(RandomHelper.GetRandomFloat(1000,3000)/100000f);
-            //    int startX = RandomHelper.GetRandomInt(-1000, 1000);
-            //    int startY = RandomHelper.GetRandomInt(-100, 100);
-            //    int startZ = RandomHelper.GetRandomInt(-1000, 1000);
-
-            //    int planetRadius = RandomHelper.GetRandomInt(20, 60);
-
-            //    MiniPlanet p = new MiniPlanet(new Vector3(startX, startY, startZ), planetRadius, planetRadius-2,
-            //        planetRadius *1.05f, noiseGenerator, planetRadius*2+1, 1, RandomHelper.RandomColor);
-            //    planets.Add(p);
-            //}
-
-
-            MiniPlanet earth = new MiniPlanet(new Vector3(200, 0, 0), 50,
+            MiniPlanet earth = new MiniPlanet(new Vector3(500, 0, 0), 50,
                 NoiseGenerator.RidgedMultiFractal(0.03f), 101, 1,
                 Color.DarkOrange);
 
@@ -76,7 +60,7 @@ namespace GridForgeResurrected.Screens
 
 
 
-            MiniPlanet moon = new MiniPlanet(new Vector3(300, 0, 0), 15,
+            MiniPlanet moon = new MiniPlanet(new Vector3(600, 0, 0), 15,
                 NoiseGenerator.RidgedMultiFractal(0.02f), 31, 1,
                 Color.DarkGray);
 
