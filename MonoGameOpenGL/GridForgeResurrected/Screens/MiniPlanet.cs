@@ -25,7 +25,7 @@ namespace GridForgeResurrected.Screens
         private Atmosphere atmosphere;
         private List<GameObject> planetPieces;
         private Effect planetEffect;
-        public Vector3 CurrentPosition { get; private set; }
+        public Vector3 CurrentCenterPosition { get; private set; }
 
         public MiniPlanet(Vector3 startPosition, float planetRadius, float innerAtmosphereRadius, float outerAtmosphereRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color terrainColor)
         {
@@ -213,7 +213,7 @@ namespace GridForgeResurrected.Screens
             if (groundScatteringHelper != null)
             {
                 groundScatteringHelper.Update(heightAbovePlanetSurface, light.LightDirection,
-                    cameraPos - CurrentPosition);
+                    cameraPos - CurrentCenterPosition);
 
                 atmosphere.Update(light.LightDirection, cameraPos, heightAbovePlanetSurface);
             }
@@ -227,7 +227,31 @@ namespace GridForgeResurrected.Screens
                 piece.Transform.SetPosition(position);
             }
             atmosphere.Transform.WorldMatrix.Translation = position;
-            CurrentPosition = position;
+            CurrentCenterPosition = position;
         }
+
+        internal void Rotate(Vector3 axis, float p)
+        {
+            foreach (GameObject gameObject in planetPieces)
+            {
+                gameObject.Transform.Rotate(axis,p);
+            }
+        }
+
+        internal void Orbit(Vector3 point, Vector3 axis, float p)
+        {
+
+            Vector3 posAverage = Vector3.Zero;
+            foreach (GameObject gameObject in planetPieces)
+            {
+                gameObject.Transform.RotateAround(axis, point, p);
+                posAverage += gameObject.Transform.WorldMatrix.Translation;
+            }
+            posAverage /= 6;
+            CurrentCenterPosition = posAverage;
+            atmosphere.Transform.SetPosition(CurrentCenterPosition);
+        }
+
+     
     }
 }

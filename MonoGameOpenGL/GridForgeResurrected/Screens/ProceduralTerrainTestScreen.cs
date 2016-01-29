@@ -48,7 +48,7 @@ namespace GridForgeResurrected.Screens
 
             planets = new List<MiniPlanet>();
 
-            planet1 = new MiniPlanet(new Vector3(100,0,0), 49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.OrangeRed);
+            planet1 = new MiniPlanet(new Vector3(100,0,0),  49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.OrangeRed);
             planets.Add(planet1);
 
             planet2 = new MiniPlanet(new Vector3(1000, 0, 0), 49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.PaleGreen);
@@ -94,11 +94,16 @@ namespace GridForgeResurrected.Screens
             foreach (MiniPlanet miniPlanet in planets)
             {
                 float distanceFromSurface =
-                 (cameraGameObject.Transform.WorldMatrix.Translation - miniPlanet.CurrentPosition).Length();
+                 (cameraGameObject.Transform.WorldMatrix.Translation - miniPlanet.CurrentCenterPosition).Length();
 
                 miniPlanet.Update(gameTime, distanceFromSurface, cameraGameObject.Transform.WorldMatrix.Translation);
             }
 
+
+            planets[0].Rotate(Vector3.Up,0.001f);
+            planets[1].Rotate(Vector3.Left,0.002f);
+            planets[0].Orbit(Vector3.Zero, Vector3.Up, 0.001f);
+            planets[1].Orbit(Vector3.Zero, Vector3.Up, 0.001f);
 
 
 
