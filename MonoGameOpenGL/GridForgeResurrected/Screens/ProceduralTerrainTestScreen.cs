@@ -1,9 +1,8 @@
-﻿using BEPUphysics.CollisionRuleManagement;
-using LibNoise.Modifiers;
+﻿using System.Collections.Generic;
+using BEPUphysics.CollisionRuleManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
-using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
@@ -19,7 +18,9 @@ namespace GridForgeResurrected.Screens
         private GameObject cameraGameObject;
         private Vector3 startPos;
         private float planetSize = 50f;
-        private MiniPlanet planet;
+        private List<MiniPlanet> planets;
+        private MiniPlanet planet1;
+        private MiniPlanet planet2;
 
 
         public ProceduralTerrainTestScreen()
@@ -42,31 +43,17 @@ namespace GridForgeResurrected.Screens
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
 
-            Effect effect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround");
-
-
-            //var one = AddTerrainSegment(100, 0, 0);
-            //var two = AddTerrainSegment(100, 99, 0);
-            //two.Transform.Translate(new Vector3(99, 0, 0));
-
-            //var three = AddTerrainSegment(100, -99, 0);
-            //three.Transform.Translate(new Vector3(-99, 0, 0));
-
-
-
-            //ProceduralSphereTwo sphere = new ProceduralSphereTwo(100);
-            //sphere.SetColor(Color.DarkOrange);
-            //sphere.Scale(planetSize);
-            //var obj = GameObjectFactory.CreateRenderableGameObjectFromShape(sphere, effect);
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(obj);
-
-
-        
 
             var noiseGenerator = NoiseGenerator.RidgedMultiFractal(0.05f);
 
+            planets = new List<MiniPlanet>();
 
-            planet = new MiniPlanet(Vector3.Zero, 49, 45, 60, noiseGenerator, 100, 1);
+            planet1 = new MiniPlanet(new Vector3(100,0,0), 49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.OrangeRed);
+            planets.Add(planet1);
+
+            planet2 = new MiniPlanet(new Vector3(1000, 0, 0), 49, 48, 49 * 1.05f, noiseGenerator, 100, 1, Color.PaleGreen);
+            planets.Add(planet2);
+
 
         }
 
@@ -104,8 +91,17 @@ namespace GridForgeResurrected.Screens
         public override void Update(GameTime gameTime)
         {
 
-            planet.Update(gameTime, cameraGameObject.Transform.WorldMatrix.Translation.Length(),
-                cameraGameObject.Transform.WorldMatrix.Translation);
+            foreach (MiniPlanet miniPlanet in planets)
+            {
+                float distanceFromSurface =
+                 (cameraGameObject.Transform.WorldMatrix.Translation - miniPlanet.CurrentPosition).Length();
+
+                miniPlanet.Update(gameTime, distanceFromSurface, cameraGameObject.Transform.WorldMatrix.Translation);
+            }
+
+
+
+
 
             base.Update(gameTime);
 

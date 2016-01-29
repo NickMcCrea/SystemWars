@@ -156,9 +156,6 @@ namespace MonoGameEngineCore.Rendering
 
             public void Update(float cameraHeight, Vector3 lightDir, Vector3 cameraPos)
             {
-                DebugText.Write(cameraHeight.ToString());
-                DebugText.Write(lightDir.ToString());
-                DebugText.Write(cameraPos.ToString());
                   
                 atmosphereEffect.Parameters["fCameraHeight"].SetValue(cameraHeight);
                 atmosphereEffect.Parameters["fCameraHeight2"].SetValue(cameraHeight * cameraHeight);
@@ -207,7 +204,7 @@ namespace MonoGameEngineCore.Rendering
             m_fWavelength4.Y = (float)Math.Pow(m_fWavelength.Y, 4.0f);
             m_fWavelength4.Z = (float)Math.Pow(m_fWavelength.Z, 4.0f);
 
-            atmosphereEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringSky");
+            atmosphereEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringSky").Clone();
             EffectRenderComponent effectRenderComponent = new EffectRenderComponent(atmosphereEffect);
             AddComponent(effectRenderComponent);
 
@@ -243,11 +240,11 @@ namespace MonoGameEngineCore.Rendering
 
         }
 
-        public void Update(Vector3 lightDir, Vector3 cameraPos)
+        public void Update(Vector3 lightDir, Vector3 cameraPos, float heightAboveSurface)
         {
-            float camHeight = (cameraPos - Transform.WorldMatrix.Translation).Length();
-            atmosphereEffect.Parameters["fCameraHeight"].SetValue(camHeight);
-            atmosphereEffect.Parameters["fCameraHeight2"].SetValue(camHeight * camHeight);
+            
+            atmosphereEffect.Parameters["fCameraHeight"].SetValue(heightAboveSurface);
+            atmosphereEffect.Parameters["fCameraHeight2"].SetValue(heightAboveSurface * heightAboveSurface);
             atmosphereEffect.Parameters["v3LightPos"].SetValue(lightDir);
             atmosphereEffect.Parameters["v3CameraPos"].SetValue(cameraPos - Transform.WorldMatrix.Translation);
         }

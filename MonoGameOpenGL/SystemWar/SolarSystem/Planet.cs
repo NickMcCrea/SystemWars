@@ -405,7 +405,9 @@ namespace MonoGameEngineCore.Procedural
             if (HasAtmosphere)
             {
                 atmosphere.GetComponent<HighPrecisionPosition>().Position = planetCenter;
-                atmosphere.Update(SolarSystem.GetSun().LightDirection, Vector3.Zero);
+
+                atmosphere.Update(SolarSystem.GetSun().LightDirection, Vector3.Zero,
+                    (Vector3.Zero - Transform.WorldMatrix.Translation).Length());
 
                 atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
                 SolarSystem.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
