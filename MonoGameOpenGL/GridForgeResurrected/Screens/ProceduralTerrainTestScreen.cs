@@ -56,19 +56,12 @@ namespace GridForgeResurrected.Screens
 
 
             GenerateEarth();
-            //earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);         
+            
             planets.Add(earth);
 
 
 
-            MiniPlanet moon = new MiniPlanet(new Vector3(600, 0, 0), 15,
-                NoiseGenerator.RidgedMultiFractal(0.02f), 31, 1,
-                Color.DarkOrange, Color.PaleGreen);
-            //moon.SetOrbit(earth, Vector3.Up, 0.01f);
-            planets.Add(moon);
-
-
-
+ 
 
 
         }
@@ -83,10 +76,12 @@ namespace GridForgeResurrected.Screens
 
 
 
-            earth = new MiniPlanet(new Vector3(0, 0, 0), 50,
+            earth = new MiniPlanet(new Vector3(500, 0, 0), 50,
                 NoiseGenerator.ParameterisedFastPlanet(50, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 1,
                 Color.DarkOrange, Color.PaleGreen, true, 0.97f, 1.05f, 10, 4);
 
+            earth.SetOrbit(Vector3.Zero, Vector3.Up, 0.0005f);         
+            earth.SetRotation(Vector3.Up, 0.005f);
             planets.Add(earth);
        
         }
@@ -124,6 +119,8 @@ namespace GridForgeResurrected.Screens
 
         public override void Update(GameTime gameTime)
         {
+
+            SystemCore.ActiveScene.SetDiffuseLightDir(0,Vector3.Normalize(Vector3.Zero - earth.CurrentCenterPosition));
 
             foreach (MiniPlanet miniPlanet in planets)
             {
