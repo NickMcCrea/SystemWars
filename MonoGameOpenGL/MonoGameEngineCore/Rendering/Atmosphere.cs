@@ -110,7 +110,7 @@ namespace MonoGameEngineCore.Rendering
             private float m_fMieScaleDepth = 0.1f;
             private Effect atmosphereEffect;
 
-            public GroundScatteringHelper(Effect effect, float radius, float planetRadius)
+            public GroundScatteringHelper(Effect effect, float radius, float planetRadius, float scale=1)
             {
                 m_fInnerRadius = planetRadius;
                 m_fOuterRadius = radius;
@@ -145,7 +145,7 @@ namespace MonoGameEngineCore.Rendering
 
            
 
-                atmosphereEffect.Parameters["fScale"].SetValue(1.0f / (m_fOuterRadius - m_fInnerRadius));
+                atmosphereEffect.Parameters["fScale"].SetValue(scale / (m_fOuterRadius - m_fInnerRadius));
                 atmosphereEffect.Parameters["fScaleDepth"].SetValue(m_fRayleighScaleDepth);
                 atmosphereEffect.Parameters["fScaleOverScaleDepth"].SetValue(1.0f /
                                                                                              (m_fOuterRadius -
@@ -184,18 +184,18 @@ namespace MonoGameEngineCore.Rendering
 
         private Vector3 m_fWavelength;
         private Vector3 m_fWavelength4;
-        private float m_fRayleighScaleDepth = 0.25f;
+        private float m_fRayleighScaleDepth = 0.2f;
         private float m_fMieScaleDepth = 0.1f;
         private Effect atmosphereEffect;
 
-        public Atmosphere(float radius, float planetRadius)
+        public Atmosphere(float radius, float planetRadius, float scale=1)
         {
             m_fInnerRadius = planetRadius;
             m_fOuterRadius = radius;
 
             m_Kr4PI = m_Kr * 4.0f * MathHelper.Pi;
             m_Km4PI = m_Km * 4.0f * MathHelper.Pi;
-            m_fScale = 1 / (m_fOuterRadius - m_fInnerRadius);
+            m_fScale = scale / (m_fOuterRadius - m_fInnerRadius);
 
             m_fWavelength.X = 0.650f;		// 650 nm for red
             m_fWavelength.Y = 0.570f;		// 570 nm for green
@@ -231,9 +231,9 @@ namespace MonoGameEngineCore.Rendering
             atmosphereEffect.Parameters["g"].SetValue(m_g);
             atmosphereEffect.Parameters["g2"].SetValue(m_g * m_g);
 
-            atmosphereEffect.Parameters["fScale"].SetValue(1.0f / (m_fOuterRadius - m_fInnerRadius));
+            atmosphereEffect.Parameters["fScale"].SetValue(m_fScale);
             atmosphereEffect.Parameters["fScaleDepth"].SetValue(m_fRayleighScaleDepth);
-            atmosphereEffect.Parameters["fScaleOverScaleDepth"].SetValue(1.0f /
+            atmosphereEffect.Parameters["fScaleOverScaleDepth"].SetValue(1 /
                                                                                          (m_fOuterRadius -
                                                                                           m_fInnerRadius) /
                                                                                          m_fRayleighScaleDepth);

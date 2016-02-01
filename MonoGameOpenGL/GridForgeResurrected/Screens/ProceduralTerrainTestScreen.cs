@@ -32,7 +32,7 @@ namespace GridForgeResurrected.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
 
-            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(RandomHelper.RandomColor, RandomHelper.RandomColor, RandomHelper.RandomColor));
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.Black));
 
 
             cameraGameObject = new GameObject("camera");
@@ -56,20 +56,15 @@ namespace GridForgeResurrected.Screens
 
 
             GenerateEarth();
-
-            //earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);
-            earth.AddAtmosphere(0.97f, 1.05f);
+            //earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);         
             planets.Add(earth);
 
 
 
             MiniPlanet moon = new MiniPlanet(new Vector3(600, 0, 0), 15,
                 NoiseGenerator.RidgedMultiFractal(0.02f), 31, 1,
-                RandomHelper.RandomColor);
-
+                Color.DarkOrange, Color.PaleGreen);
             //moon.SetOrbit(earth, Vector3.Up, 0.01f);
-
-
             planets.Add(moon);
 
 
@@ -81,10 +76,19 @@ namespace GridForgeResurrected.Screens
         private void GenerateEarth()
         {
             if (earth != null)
+            {
                 earth.DestroyGeometry();
+                planets.Remove(earth);
+            }
+
+
+
             earth = new MiniPlanet(new Vector3(0, 0, 0), 50,
-                NoiseGenerator.ParameterisedFastPlanet(50, NoiseGenerator.miniPlanetParameters), 101, 1,
-                RandomHelper.RandomColor);
+                NoiseGenerator.ParameterisedFastPlanet(50, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 1,
+                Color.DarkOrange, Color.PaleGreen, true, 0.97f, 1.05f, 10, 4);
+
+            planets.Add(earth);
+       
         }
 
         private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
@@ -134,7 +138,6 @@ namespace GridForgeResurrected.Screens
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Enter))
             {
                
-
                 GenerateEarth();
             }
 

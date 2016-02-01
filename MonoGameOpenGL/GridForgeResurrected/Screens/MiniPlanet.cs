@@ -19,6 +19,7 @@ namespace GridForgeResurrected.Screens
         private readonly int heightMapVertCount;
         private readonly float heightMapScale;
         private readonly Color terrainColor;
+        private readonly Color oceanColour;
         private GroundScatteringHelper groundScatteringHelper;
         private Atmosphere atmosphere;
         private List<GameObject> planetPieces;
@@ -41,32 +42,42 @@ namespace GridForgeResurrected.Screens
             public float Speed { get; set; }
         }
 
-        public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color terrainColor)
+        public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color landColor, Color oceanColour, bool atmosphere=false,
+            float innerAtmosphereRatio = 0.97f, float outerAtmosphereRatio=1.1f, float atmosphericScale=30, float groundScale=20)
         {
+
+            
             this.startPosition = startPosition;
             this.planetRadius = planetRadius;
           
             this.noiseModule = noiseModule;
             this.heightMapVertCount = heightMapVertCount;
             this.heightMapScale = heightMapScale;
-            this.terrainColor = terrainColor;
-          
-            planetEffect = EffectLoader.LoadSM5Effect("flatshaded").Clone();
-            GenerateGeometry();
+            this.terrainColor = landColor;
+            this.oceanColour = oceanColour;
+
+            if (!atmosphere)
+            {
+                planetEffect = EffectLoader.LoadSM5Effect("flatshaded").Clone();
+                GenerateGeometry();
+            }
+            else
+            {
+                AddAtmosphere(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
+            }
+
+
             childPlanets = new List<MiniPlanet>();
         }
 
-        public void AddAtmosphere(float innerAtmosphereRatio, float outerAtmosphereRatio)
+        private void AddAtmosphere(float innerAtmosphereRatio, float outerAtmosphereRatio, float atmosphericScale, float groundScale)
         {
 
-            foreach (GameObject planetPiece in planetPieces)
-            {
-                SystemCore.GameObjectManager.RemoveObject(planetPiece);
-            }
-
             planetEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone();
-            groundScatteringHelper = new GroundScatteringHelper(planetEffect, planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio);
-            atmosphere = new Atmosphere(planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio);
+            groundScatteringHelper = new GroundScatteringHelper(planetEffect, planetRadius*outerAtmosphereRatio,
+                planetRadius * innerAtmosphereRatio, groundScale);
+
+            atmosphere = new Atmosphere(planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio, atmosphericScale);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(atmosphere);
 
             GenerateGeometry();
@@ -77,7 +88,6 @@ namespace GridForgeResurrected.Screens
 
             planetPieces = new List<GameObject>();
          
-
 
             //top
             GameObject oTop;
@@ -217,6 +227,14 @@ namespace GridForgeResurrected.Screens
         {
             double heightValue = noiseModule.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
             v[i].Position = (Vector3.Normalize(v[i].Position) * (planetRadius + (float)heightValue));
+
+            float finalHeight = v[i].Position.Length();
+            if (finalHeight < planetRadius)
+                v[i].Color = oceanColour;
+            else
+            {
+                v[i].Color = terrainColor;
+            }
         }
 
         private void InitialiseAndAddPlanetPiece(VertexPositionColorTextureNormal[] v, Heightmap hMap,
@@ -331,6 +349,9 @@ namespace GridForgeResurrected.Screens
 
         internal void DestroyGeometry()
         {
+            if (atmosphere != null)
+                SystemCore.GameObjectManager.RemoveObject(atmosphere);
+
             foreach (GameObject planetPiece in planetPieces)
             {
                 SystemCore.GameObjectManager.RemoveObject(planetPiece);

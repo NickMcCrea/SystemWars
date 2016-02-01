@@ -71,21 +71,21 @@ namespace MonoGameEngineCore.Procedural
         {
 
             miniPlanetParameters = new Dictionary<string, PlanetParameters>();
-            AddParameterToDictionary("continentFrequency", 0.0001f);
+            AddParameterToDictionary("continentFrequency", 0.01f);
             AddParameterToDictionary("lowlandFrequency", 0.01f);
             AddParameterToDictionary("lowlandScale", 1);
             AddParameterToDictionary("lowlandBias", 2);
-            AddParameterToDictionary("mountainBaseFrequency", 0.008f);
+            AddParameterToDictionary("mountainBaseFrequency", 0.08f);
             AddParameterToDictionary("mountainScale", 1);
             AddParameterToDictionary("mountainBias", 1);
             AddParameterToDictionary("mountainTurbulencePower", 1);
             AddParameterToDictionary("mountainTurbulenceFrequency", 0.05f);
-            AddParameterToDictionary("planetlandFilterFrequency", 0.0005f);
+            AddParameterToDictionary("planetlandFilterFrequency", 0.05f);
             AddParameterToDictionary("landEdgeFallOff", 0.1f);
             AddParameterToDictionary("oceanFrequency", 0.01f);
-            AddParameterToDictionary("oceanBias", -2f);
+            AddParameterToDictionary("oceanBias", 0f);
             AddParameterToDictionary("oceanScale", 1);
-            AddParameterToDictionary("finalEdgeFallOff", 0.01f);
+            AddParameterToDictionary("finalEdgeFallOff", 0.128f);
 
         }
 
@@ -95,9 +95,9 @@ namespace MonoGameEngineCore.Procedural
 
         }
       
-        public static IModule ParameterisedFastPlanet(float planetRadius, Dictionary<string,PlanetParameters> parameters)
+        public static IModule ParameterisedFastPlanet(float planetRadius, Dictionary<string,PlanetParameters> parameters, int seed=1000)
         {
-            int seed = RandomHelper.GetRandomInt(1000);
+            
             FastNoise fastPlanetContinents = new FastNoise(seed);
             fastPlanetContinents.Frequency = parameters["continentFrequency"].Value;
 
