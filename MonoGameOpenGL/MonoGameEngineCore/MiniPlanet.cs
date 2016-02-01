@@ -8,6 +8,7 @@ using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Helper;
 
 namespace GridForgeResurrected.Screens
 {
@@ -16,8 +17,10 @@ namespace GridForgeResurrected.Screens
         private readonly Vector3 startPosition;
         private readonly float planetRadius;
         private readonly IModule noiseModule;
+        private int originalHeightMapVertCount;
         private int heightMapVertCount;
         private float heightMapScale;
+        private float originalHeightMapScale;
         private readonly Color terrainColor;
         private readonly Color oceanColour;
         private readonly bool useAtmosphere;
@@ -58,6 +61,8 @@ namespace GridForgeResurrected.Screens
             this.noiseModule = noiseModule;
             this.heightMapVertCount = heightMapVertCount;
             this.heightMapScale = heightMapScale;
+            originalHeightMapScale = heightMapScale;
+            originalHeightMapVertCount = heightMapVertCount;
             this.terrainColor = landColor;
             this.oceanColour = oceanColour;
             this.useAtmosphere = useAtmosphere;
@@ -309,6 +314,10 @@ namespace GridForgeResurrected.Screens
                 CalculateRotation(CurrentSpin.Axis, CurrentSpin.Speed);
             }
 
+
+            DebugText.Write("Verts: "+heightMapVertCount.ToString());
+            DebugText.Write("Scale: "+heightMapScale.ToString());
+
         }
 
         public void SetPosition(Vector3 position)
@@ -370,9 +379,29 @@ namespace GridForgeResurrected.Screens
 
         public void SetLOD(int lodLevel)
         {
+
+            if (lodLevel > 5)
+                return;
+
             DestroyGeometry();
-            heightMapVertCount = heightMapVertCount/lodLevel + 1;
-            heightMapScale = heightMapScale*lodLevel;
+
+            if (lodLevel == 1)
+                heightMapVertCount = 101;
+            if (lodLevel == 2)
+                heightMapVertCount = 51;
+            if (lodLevel == 3)
+                heightMapVertCount = 35;
+            if (lodLevel == 4)
+                heightMapVertCount = 26;
+            if (lodLevel == 5)
+                heightMapVertCount = 21;
+
+            
+          
+                    
+
+
+            heightMapScale = originalHeightMapScale * lodLevel;
             if (useAtmosphere)
                 GenerateAtmosphereAndGeometry(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
             else

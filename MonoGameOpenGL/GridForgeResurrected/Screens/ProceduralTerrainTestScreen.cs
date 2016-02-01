@@ -24,6 +24,7 @@ namespace GridForgeResurrected.Screens
         MiniPlanet earth;
         int currentParameterIndex = 0;
         private GameObject testShip;
+        int lod = 1;
 
 
         public ProceduralTerrainTestScreen()
@@ -159,11 +160,14 @@ namespace GridForgeResurrected.Screens
             //
             if (SystemCore.Input.KeyPress(Keys.NumPad3))
             {
-                planets[0].SetLOD(1);
+                if (lod > 1)
+                    lod--;
+                planets[0].SetLOD(lod);
             }
             if (SystemCore.Input.KeyPress(Keys.NumPad4))
             {
-                planets[0].SetLOD(2);
+                lod++;
+                planets[0].SetLOD(lod);
             }
 
            
