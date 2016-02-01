@@ -1,45 +1,5 @@
 
+Some things which would be useful
 
-Grid Forge
-
-I want to build an awesome base, and fight + explore for resources to make it cooler.
-
-
-Base building
-
-- Some kind of underground lair. floorplan based (multiple levels?). 
-	But what's the point of layout unless it affects performance of the base? Implies fairly deep mechanics. Basically making two games, possibility they both end up bad?
-	
-- R&D unlocks new weapons, equipment + cosmetic improvements. Which allows exploration of deeper dungeon levels > more loot. 
-
-
-Combat
-- Nice, top down, twin-stick style mechanics, with some interesting tactical options based on a limited set of core abilities + trade offs. 
-	e.g. configurable power management, trade off shield strength, gun strength, speed + reserves for special abilities. Different for different encounters / installations
-	
-	
-
-Game flow thoughts
-
-- start the game with simple terrain. We have to pick the spot for our base. 
-- transitions underground, with a simple room. We can't do any building at this stage. We are low on resources. Let's find our first dungeon.
-- we go back to the terrain. We can drive around with some nice physics (simple flying might be easier) + set off a 'ping'. We are looking for old ruins to explore.
-- eventually we find one suitable for our level. Procedurally generated dungeon is generated, complete with resource pickups, bosses, treasure. We fight our way through it, pickup any loot. Return to the surface, head home.
-- We now have some resources! We can start building a base. Things we want
-	- accomodation 
-	- storage
-	- food + water facilities
-	- power
-	- r&d
-
-- return to base for refit + reconfigure
-
-Stuff to unlock
-	- teleportation.
-	- guns.
-	- abilities (blink. Charge. Grenade. Overpower. Chain lighting. Rocket launcher. Yada yada).
-	- better search equipment.
-	- faster flight mode.
-
-
-As base progresses, player gets stronger + more difficult dungeons become do-able.
+- slider UI widget
+- extend the editor to include vector placement and arbitrary geometry

@@ -159,13 +159,14 @@ namespace GridForgeResurrected.Screens
             //
             if (SystemCore.Input.KeyPress(Keys.NumPad3))
             {
-                GenerateSystem();
+                planets[0].SetLOD(1);
             }
             if (SystemCore.Input.KeyPress(Keys.NumPad4))
             {
-                GenerateSystem();
+                planets[0].SetLOD(2);
             }
 
+           
 
             base.Update(gameTime);
 
