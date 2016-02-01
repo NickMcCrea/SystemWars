@@ -106,6 +106,7 @@
     <Compile Include="Helper\ScaleHelper.cs" />
     <Compile Include="Helper\Vector3d.cs" />
     <Compile Include="Helper\XNATimer.cs" />
+    <Compile Include="MiniPlanet.cs" />
     <Compile Include="MonoEngineGame.cs" />
     <Compile Include="Particles\FireParticleSystem.cs" />
     <Compile Include="Particles\ParticleSettings.cs" />

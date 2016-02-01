@@ -232,7 +232,7 @@ namespace MonoGameEngineCore.Editor
 
         }
 
-        public ProceduralShape LoadShape(string name)
+        public static ProceduralShape LoadShape(string name)
         {
             BinaryFormatter bf = new BinaryFormatter();
            

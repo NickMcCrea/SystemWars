@@ -347,7 +347,7 @@ namespace GridForgeResurrected.Screens
             SetPosition(newPos);
         }
 
-        internal void DestroyGeometry()
+        public void DestroyGeometry()
         {
             if (atmosphere != null)
                 SystemCore.GameObjectManager.RemoveObject(atmosphere);

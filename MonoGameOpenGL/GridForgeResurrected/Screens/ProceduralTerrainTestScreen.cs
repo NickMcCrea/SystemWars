@@ -3,6 +3,7 @@ using BEPUphysics.CollisionRuleManagement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
+using MonoGameEngineCore.Editor;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
@@ -22,6 +23,7 @@ namespace GridForgeResurrected.Screens
         private List<MiniPlanet> planets;
         MiniPlanet earth;
         int currentParameterIndex = 0;
+        private GameObject testShip;
 
 
         public ProceduralTerrainTestScreen()
@@ -38,82 +40,58 @@ namespace GridForgeResurrected.Screens
             cameraGameObject = new GameObject("camera");
             cameraGameObject.AddComponent(new ComponentCamera());
             cameraGameObject.Transform.SetPosition(startPos);
-            cameraGameObject.Transform.SetLookAndUp(new Vector3(0, -1, 0), new Vector3(0, 0, 1));
+            cameraGameObject.Transform.SetLookAndUp(new Vector3(1, 0, 0), new Vector3(0, 1, 0));
             cameraGameObject.AddComponent(new MouseController());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraGameObject);
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
-
-
-
-
-
-
-
-
             planets = new List<MiniPlanet>();
 
+            var shape = SimpleModelEditor.LoadShape("testship");
 
+            if (shape != null)
+            {
+                testShip = GameObjectFactory.CreateRenderableGameObjectFromShape(shape,
+                    EffectLoader.LoadSM5Effect("flatshaded"));
 
-            GenerateEarth();
-            
-            planets.Add(earth);
+                testShip.Transform.Rotate(Vector3.Up, -MathHelper.PiOver2);
+                testShip.Transform.WorldMatrix.Translation = new Vector3(100, 0, 0);
+                testShip.AddComponent(new RotatorComponent(Vector3.Right, 0.001f));
 
+                SystemCore.GameObjectManager.AddAndInitialiseGameObject(testShip);
+            }
 
-
- 
+            GenerateSystem();
 
 
         }
 
-        private void GenerateEarth()
+        private void GenerateSystem()
         {
-            if (earth != null)
+            foreach (MiniPlanet miniPlanet in planets)
             {
-                earth.DestroyGeometry();
-                planets.Remove(earth);
+                if(miniPlanet != null)
+                    miniPlanet.DestroyGeometry();
             }
 
+            planets.Clear();
 
 
-            earth = new MiniPlanet(new Vector3(500, 0, 0), 50,
+
+            earth = new MiniPlanet(new Vector3(200, 0, 0), 50,
                 NoiseGenerator.ParameterisedFastPlanet(50, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 1,
                 Color.DarkOrange, Color.PaleGreen, true, 0.97f, 1.05f, 10, 4);
 
-            earth.SetOrbit(Vector3.Zero, Vector3.Up, 0.0005f);         
-            earth.SetRotation(Vector3.Up, 0.005f);
+            earth.SetOrbit(Vector3.Zero, Vector3.Up, 0.0001f);         
+            earth.SetRotation(Vector3.Up, 0.001f);
             planets.Add(earth);
+
+            MiniPlanet moon = new MiniPlanet(new Vector3(600, 0, 0), 20,
+                NoiseGenerator.RidgedMultiFractal(0.01f), 41, 1,
+                Color.DarkGray, Color.DarkGray);
+            moon.SetOrbit(earth, Vector3.Up, 0.001f);
+            planets.Add(moon);
        
-        }
-
-        private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
-        {
-
-
-
-            int vertCount = 100;
-            Heightmap heightmap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), vertCount,
-                size / vertCount, 10f, sampleX, sampleY,
-                1);
-
-            GameObject terrain = new GameObject("terrain");
-
-
-
-
-            var verts =
-                BufferBuilder.VertexBufferBuild(heightmap.GenerateVertexArray());
-
-
-            var indices = BufferBuilder.IndexBufferBuild(heightmap.GenerateIndices());
-            terrain.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
-            terrain.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
-
-
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrain);
-
-            return terrain;
         }
 
 
@@ -135,7 +113,7 @@ namespace GridForgeResurrected.Screens
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Enter))
             {
                
-                GenerateEarth();
+                GenerateSystem();
             }
 
             int currentIndex = 0;
@@ -169,23 +147,23 @@ namespace GridForgeResurrected.Screens
             if (SystemCore.Input.KeyPress(Keys.NumPad1))
             {
                 currentParameter.Value *= 2;
-                GenerateEarth();
+                GenerateSystem();
             }
             //half
             if (SystemCore.Input.KeyPress(Keys.NumPad2))
             {
                 currentParameter.Value /= 2f;
-                GenerateEarth();
+                GenerateSystem();
             }
 
             //
             if (SystemCore.Input.KeyPress(Keys.NumPad3))
             {
-                GenerateEarth();
+                GenerateSystem();
             }
             if (SystemCore.Input.KeyPress(Keys.NumPad4))
             {
-                GenerateEarth();
+                GenerateSystem();
             }
 
 
