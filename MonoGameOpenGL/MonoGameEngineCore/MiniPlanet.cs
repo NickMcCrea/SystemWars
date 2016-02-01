@@ -73,14 +73,14 @@ namespace GridForgeResurrected.Screens
             }
             else
             {
-                AddAtmosphere(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
+                GenerateAtmosphereAndGeometry(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
             }
 
 
             childPlanets = new List<MiniPlanet>();
         }
 
-        private void AddAtmosphere(float innerAtmosphereRatio, float outerAtmosphereRatio, float atmosphericScale, float groundScale)
+        private void GenerateAtmosphereAndGeometry(float innerAtmosphereRatio, float outerAtmosphereRatio, float atmosphericScale, float groundScale)
         {
 
             planetEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone();
@@ -374,7 +374,11 @@ namespace GridForgeResurrected.Screens
             heightMapVertCount = heightMapVertCount/lodLevel + 1;
             heightMapScale = heightMapScale*lodLevel;
             if (useAtmosphere)
-                AddAtmosphere(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
+                GenerateAtmosphereAndGeometry(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
+            else
+            {
+                GenerateGeometry();
+            }
         }
 
     
