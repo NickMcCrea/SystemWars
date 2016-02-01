@@ -10,6 +10,7 @@ using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
 using SystemWar;
+using Microsoft.Xna.Framework.Input;
 
 namespace GridForgeResurrected.Screens
 {
@@ -19,19 +20,19 @@ namespace GridForgeResurrected.Screens
         private Vector3 startPos;
         private float planetSize = 50f;
         private List<MiniPlanet> planets;
-        private MiniPlanet planet1;
-        private MiniPlanet planet2;
+        MiniPlanet earth;
+        int currentParameterIndex = 0;
 
 
         public ProceduralTerrainTestScreen()
         {
-            startPos = new Vector3(0, planetSize*1.25f, 0);
+            startPos = new Vector3(0, planetSize * 1.25f, 0);
 
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
 
 
-            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.DarkGray));
+            SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(RandomHelper.RandomColor, RandomHelper.RandomColor, RandomHelper.RandomColor));
 
 
             cameraGameObject = new GameObject("camera");
@@ -43,18 +44,20 @@ namespace GridForgeResurrected.Screens
             SystemCore.SetActiveCamera(cameraGameObject.GetComponent<ComponentCamera>());
 
 
-            
-           
+
+
+
+
+
+
 
             planets = new List<MiniPlanet>();
 
 
 
-            MiniPlanet earth = new MiniPlanet(new Vector3(500, 0, 0), 50,
-                NoiseGenerator.RidgedMultiFractal(0.03f), 101, 1,
-                Color.DarkOrange);
+            GenerateEarth();
 
-            earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);
+            //earth.SetOrbit(Vector3.Zero,Vector3.Up,0.001f);
             earth.AddAtmosphere(0.97f, 1.05f);
             planets.Add(earth);
 
@@ -62,17 +65,26 @@ namespace GridForgeResurrected.Screens
 
             MiniPlanet moon = new MiniPlanet(new Vector3(600, 0, 0), 15,
                 NoiseGenerator.RidgedMultiFractal(0.02f), 31, 1,
-                Color.DarkGray);
+                RandomHelper.RandomColor);
 
-            moon.SetOrbit(earth, Vector3.Up, 0.01f);
+            //moon.SetOrbit(earth, Vector3.Up, 0.01f);
 
-          
+
             planets.Add(moon);
 
 
 
 
 
+        }
+
+        private void GenerateEarth()
+        {
+            if (earth != null)
+                earth.DestroyGeometry();
+            earth = new MiniPlanet(new Vector3(0, 0, 0), 50,
+                NoiseGenerator.ParameterisedFastPlanet(50, NoiseGenerator.miniPlanetParameters), 101, 1,
+                RandomHelper.RandomColor);
         }
 
         private GameObject AddTerrainSegment(float size, float sampleX, float sampleY)
@@ -118,7 +130,63 @@ namespace GridForgeResurrected.Screens
             }
 
 
-      
+
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Enter))
+            {
+               
+
+                GenerateEarth();
+            }
+
+            int currentIndex = 0;
+            PlanetParameters currentParameter = null;
+            foreach (KeyValuePair<string, PlanetParameters> pair in NoiseGenerator.miniPlanetParameters)
+            {
+                if (currentIndex == currentParameterIndex)
+                {
+                    currentParameter = pair.Value;
+                    break;
+                }
+                currentIndex++;
+            }
+
+            DebugText.Write(currentParameter.Name + " : " + currentParameter.Value.ToString());
+
+            if (SystemCore.Input.KeyPress(Keys.OemPlus))
+            {
+                currentParameterIndex++;
+                if (currentParameterIndex >= NoiseGenerator.miniPlanetParameters.Count)
+                    currentParameterIndex = 0;
+            }
+            if (SystemCore.Input.KeyPress(Keys.OemMinus))
+            {
+                currentParameterIndex--;
+                if (currentParameterIndex < 0)
+                    currentParameterIndex = NoiseGenerator.miniPlanetParameters.Count - 1;
+            }
+
+            //double
+            if (SystemCore.Input.KeyPress(Keys.NumPad1))
+            {
+                currentParameter.Value *= 2;
+                GenerateEarth();
+            }
+            //half
+            if (SystemCore.Input.KeyPress(Keys.NumPad2))
+            {
+                currentParameter.Value /= 2f;
+                GenerateEarth();
+            }
+
+            //
+            if (SystemCore.Input.KeyPress(Keys.NumPad3))
+            {
+                GenerateEarth();
+            }
+            if (SystemCore.Input.KeyPress(Keys.NumPad4))
+            {
+                GenerateEarth();
+            }
 
 
             base.Update(gameTime);

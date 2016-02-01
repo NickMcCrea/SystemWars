@@ -329,6 +329,12 @@ namespace GridForgeResurrected.Screens
             SetPosition(newPos);
         }
 
-
+        internal void DestroyGeometry()
+        {
+            foreach (GameObject planetPiece in planetPieces)
+            {
+                SystemCore.GameObjectManager.RemoveObject(planetPiece);
+            }
+        }
     }
 }
