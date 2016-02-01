@@ -47,7 +47,7 @@ namespace GridForgeResurrected.Screens
 
             planets = new List<MiniPlanet>();
 
-            var shape = SimpleModelEditor.LoadShape("testship");
+            var shape = SimpleModelEditor.LoadShape("voxrocket");
 
             if (shape != null)
             {
@@ -56,7 +56,7 @@ namespace GridForgeResurrected.Screens
 
                 testShip.Transform.Rotate(Vector3.Up, -MathHelper.PiOver2);
                 testShip.Transform.WorldMatrix.Translation = new Vector3(100, 0, 0);
-                testShip.AddComponent(new RotatorComponent(Vector3.Right, 0.001f));
+                //testShip.AddComponent(new RotatorComponent(Vector3.Right, 0.001f));
 
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(testShip);
             }
