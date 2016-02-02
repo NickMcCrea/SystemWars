@@ -245,6 +245,12 @@ namespace MonoGameEngineCore.Procedural
 
             return shape;
         }
+
+        internal void Clear()
+        {
+            vertices = new List<VertexPositionColorTextureNormal>();
+            indices = new List<short>();
+        }
     }
 
     [Serializable]

@@ -30,6 +30,7 @@ namespace MonoGameEngineCore.Editor
 
     public class SimpleModelEditor : IGameSubSystem
     {
+        private List<Vector3> currentVertices; 
         public bool RenderGrid { get; set; }
         public bool RenderActivePlaneOnly { get; set; }
         public Vector3 CurrentSnapPoint { get; set; }
@@ -70,7 +71,7 @@ namespace MonoGameEngineCore.Editor
 
         public void Initalise()
         {
-
+            currentVertices = new List<Vector3>();
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.LightGray, Color.Gray, Color.DarkBlue));
 
@@ -102,9 +103,15 @@ namespace MonoGameEngineCore.Editor
             modeButton.OnClick += (sender, args) =>
             {
                 if (CurrentMode == EditMode.Vertex)
+                {
                     CurrentMode = EditMode.Voxel;
-                if (CurrentMode == EditMode.Voxel)
+                    mouseCursor.Transform.Scale = 1f;
+                }
+                else if (CurrentMode == EditMode.Voxel)
+                {
                     CurrentMode = EditMode.Vertex;
+                    mouseCursor.Transform.Scale = 0.1f;
+                }
 
                 modeButton.SetLabelText(CurrentMode.ToString());
             };
@@ -188,7 +195,7 @@ namespace MonoGameEngineCore.Editor
 
         }
 
-        private void AddShapeToEditor(ProceduralShape shape)
+        private void RehydrateShape(ProceduralShape shape)
         {
 
             //take the translation expressed in the verts, and switch it over to 
@@ -223,16 +230,7 @@ namespace MonoGameEngineCore.Editor
             modeButton.AttachLabel(new Label(GUIFonts.Fonts["neuropolitical"], label));
             return modeButton;
         }
-
-        public void AddTriangle(Vector3 a, Vector3 b, Vector3 c, Color col)
-        {
-            shapeBuilder.AddTriangleWithColor(col, a, b, c);
-        }
-
-        public void AddFace(Color col, params Vector3[] points)
-        {
-            shapeBuilder.AddFaceWithColor(col, points);
-        }
+  
 
         public void Clear()
         {
@@ -267,7 +265,7 @@ namespace MonoGameEngineCore.Editor
 
             foreach (string file in files)
             {
-                AddShapeToEditor(LoadShape(Path.GetFileNameWithoutExtension(file)));
+                RehydrateShape(LoadShape(Path.GetFileNameWithoutExtension(file)));
             }
 
 
@@ -315,7 +313,10 @@ namespace MonoGameEngineCore.Editor
         {
             if (SystemCore.Input.MouseLeftPress() && !SystemCore.GUIManager.MouseOverGUIElement)
             {
-                AddVoxel(currentColour);
+                if (CurrentMode == EditMode.Voxel)
+                    AddVoxel(currentColour);
+                if (CurrentMode == EditMode.Vertex)
+                    AddVertex();
             }
 
             if (SystemCore.Input.KeyPress(Keys.G))
@@ -379,6 +380,28 @@ namespace MonoGameEngineCore.Editor
             MoveCamera();
 
             ControlActivePlane();
+        }
+
+        private void AddVertex()
+        {
+            if (currentVertices.Contains(currentbuildPoint))
+            {
+                currentVertices.Add(currentbuildPoint);
+                AddPolygon();
+            }
+            currentVertices.Add(currentbuildPoint);
+        }
+
+        private void AddPolygon()
+        {
+            shapeBuilder.AddFaceWithColor(currentColour, currentVertices.ToArray());
+            currentVertices.Clear();
+
+            ProceduralShape s = shapeBuilder.BakeShape();
+
+            RehydrateShape(s);
+
+            shapeBuilder.Clear();
         }
 
         private void ControlActivePlane()
