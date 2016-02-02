@@ -245,6 +245,14 @@ namespace MonoGameEngineCore.Procedural
 
             return shape;
         }
+
+        internal void Clear()
+        {
+            vertices = new List<VertexPositionColorTextureNormal>();
+            indices = new List<short>();
+            primCount = 0;
+            currentIndex = 0;
+        }
     }
 
     [Serializable]
@@ -658,7 +666,7 @@ namespace MonoGameEngineCore.Procedural
     }
 
     
-
+    [Serializable]
     public class ProceduralCube : ProceduralShape
     {
 
