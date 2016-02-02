@@ -242,6 +242,14 @@ namespace MonoGameEngineCore.Editor
         public void SaveIntermediateShapes(string name)
         {
             int counter = 1;
+
+            var files = Directory.GetFiles(Directory.GetCurrentDirectory(), name + "*.shape");
+
+            //delete existing shapes that match this pattern.
+            foreach (string file in files)
+            {
+                File.Delete(file);
+            }
             
             foreach (KeyValuePair<GameObject.GameObject, ProceduralShape> kvp in shapesToBake)
             {
@@ -570,7 +578,7 @@ namespace MonoGameEngineCore.Editor
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(tempObject);
             tempObject.Transform.SetPosition(currentbuildPoint);
 
-
+            //shape is translated 
             c.Translate(currentbuildPoint);
             shapesToBake.Add(tempObject, c);
 
