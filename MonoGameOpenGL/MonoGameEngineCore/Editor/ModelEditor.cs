@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
+using System.Reflection;
 using SystemWar;
 using LibNoise;
 using Microsoft.Xna.Framework;
@@ -122,7 +124,7 @@ namespace MonoGameEngineCore.Editor
 
                 textBox.OnReturnEvent += (o, eventArgs) =>
                 {
-                    SaveCurrentShape(textBox.Text);
+                    SaveIntermediateShapes(textBox.Text);
                     SystemCore.GUIManager.RemoveControl(textBox);
                 };
 
@@ -143,24 +145,24 @@ namespace MonoGameEngineCore.Editor
 
                 textBox.OnReturnEvent += (o, eventArgs) =>
                 {
-                    var shape =LoadShape(textBox.Text);
+                    LoadIntermediateShapes(textBox.Text);
                     SystemCore.GUIManager.RemoveControl(textBox);
-
-                    if (shape != null)
-                    {
-                        var gameObj = GameObjectFactory.CreateRenderableGameObjectFromShape(shape,
-                            EffectLoader.LoadSM5Effect("flatshaded"));
-
-                        gameObj.AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
-                        SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObj);
-
-                        shapesToBake.Add(gameObj, shape);
-                    }
                 };
 
 
             };
+
             SystemCore.GUIManager.AddControl(load);
+
+            var clear = AddButton(GUIManager.ScreenRatioX(0.05f), GUIManager.ScreenRatioY(0.35f), 130, 50, "Clear");
+            clear.OnClick += (sender, args) =>
+            {
+
+               ClearEditor();
+
+            };
+
+            SystemCore.GUIManager.AddControl(clear);
 
             var colourPanel =
                 new ButtonGridPanel(
@@ -179,9 +181,32 @@ namespace MonoGameEngineCore.Editor
             {
                 currentColour = colourPanel.SelectedItem.MainColor;
             };
+
+
             
             SystemCore.GUIManager.AddControl(colourPanel);
 
+        }
+
+        private void AddShapeToEditor(ProceduralShape shape)
+        {
+
+            //take the translation expressed in the verts, and switch it over to 
+            //the world transform so the physics collision works.
+            //then translate back for when we bake out again.
+            var midPoint = shape.GetMidPoint();
+            shape.Translate(-midPoint);
+
+            var gameObj = GameObjectFactory.CreateRenderableGameObjectFromShape(shape,
+                EffectLoader.LoadSM5Effect("flatshaded"));
+
+            gameObj.Transform.Translate(midPoint);
+
+            gameObj.AddComponent(new PhysicsComponent(false, false, PhysicsMeshType.box));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObj);
+
+            shapesToBake.Add(gameObj, shape);
+            shape.Translate(midPoint);
         }
 
         private Button AddButton(int xPos, int yPos, int width, int height, string label)
@@ -214,7 +239,33 @@ namespace MonoGameEngineCore.Editor
             shapeBuilder = new ProceduralShapeBuilder();
         }
 
-        public void SaveCurrentShape(string name)
+        public void SaveIntermediateShapes(string name)
+        {
+            int counter = 1;
+            
+            foreach (KeyValuePair<GameObject.GameObject, ProceduralShape> kvp in shapesToBake)
+            {
+                SaveShape(name + counter.ToString(), kvp.Value);
+                counter++;
+
+            }
+        }
+
+        public void LoadIntermediateShapes(string name)
+        {
+            int counter = 1;
+
+            var files = Directory.GetFiles(Directory.GetCurrentDirectory(), name + "*.shape");
+
+            foreach (string file in files)
+            {
+                AddShapeToEditor(LoadShape(Path.GetFileNameWithoutExtension(file)));
+            }
+
+
+        }
+
+        public void BakeAndSaveCurrentShape(string name)
         {
             List<ProceduralShape> shapes = shapesToBake.Values.ToList();
 
@@ -224,12 +275,16 @@ namespace MonoGameEngineCore.Editor
                 combined = ProceduralShape.Combine(combined, shapes[i]);
             }
 
+            SaveShape(name, combined);
+        }
+
+        private static void SaveShape(string name, ProceduralShape combined)
+        {
             BinaryFormatter bf = new BinaryFormatter();
             using (FileStream fs = new FileStream(name + ".shape", FileMode.Create))
             {
                 bf.Serialize(fs, combined);
             }
-
         }
 
         public static ProceduralShape LoadShape(string name)
@@ -504,7 +559,7 @@ namespace MonoGameEngineCore.Editor
 
             ProceduralCube c = new ProceduralCube();     
             c.SetColor(color);
-           
+         
             //this object is for visualisation in the editor only. The procedural shape will be 
             //cached and used to bake the final shape for serialization
             var tempObject = GameObjectFactory.CreateRenderableGameObjectFromShape(c,
@@ -515,11 +570,21 @@ namespace MonoGameEngineCore.Editor
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(tempObject);
             tempObject.Transform.SetPosition(currentbuildPoint);
 
+
             c.Translate(currentbuildPoint);
             shapesToBake.Add(tempObject, c);
 
 
 
+        }
+
+        public void ClearEditor()
+        {
+            foreach (KeyValuePair<GameObject.GameObject, ProceduralShape> keyValuePair in shapesToBake)
+            {
+                SystemCore.GameObjectManager.RemoveObject(keyValuePair.Key);
+            }
+            shapesToBake.Clear();
         }
     }
 }

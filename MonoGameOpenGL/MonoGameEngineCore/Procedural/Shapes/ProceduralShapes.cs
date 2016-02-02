@@ -658,7 +658,7 @@ namespace MonoGameEngineCore.Procedural
     }
 
     
-
+    [Serializable]
     public class ProceduralCube : ProceduralShape
     {
 
