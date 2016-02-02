@@ -250,6 +250,8 @@ namespace MonoGameEngineCore.Procedural
         {
             vertices = new List<VertexPositionColorTextureNormal>();
             indices = new List<short>();
+            primCount = 0;
+            currentIndex = 0;
         }
     }
 

@@ -231,7 +231,6 @@ namespace MonoGameEngineCore.Editor
             return modeButton;
         }
   
-
         public void Clear()
         {
             shapeBuilder = new ProceduralShapeBuilder();
@@ -388,6 +387,7 @@ namespace MonoGameEngineCore.Editor
             {
                 currentVertices.Add(currentbuildPoint);
                 AddPolygon();
+                return;
             }
             currentVertices.Add(currentbuildPoint);
         }
@@ -555,23 +555,20 @@ namespace MonoGameEngineCore.Editor
                             (i == CurrentXIndex) ? yzColor : Color.DarkGray);
                     }
 
-                    if (!RenderActivePlaneOnly)
+
+                }
+            }
+
+
+            if (CurrentMode == EditMode.Vertex)
+            {
+                if (currentVertices.Count > 0)
+                {
+                    for (int i = 0; i < currentVertices.Count-1; i++)
                     {
-                        //DebugShapeRenderer.AddXYGrid(new Vector3(-modellingAreaSize / 2, -modellingAreaSize / 2, i),
-                        //   modellingAreaSize,
-                        //   modellingAreaSize, 1, (i == CurrentYIndex) ? xyColor : Color.DarkGray);
-
-                        //DebugShapeRenderer.AddXZGrid(new Vector3(-modellingAreaSize / 2, i, -modellingAreaSize / 2),
-                        //   modellingAreaSize,
-                        //   modellingAreaSize, 1, (i == CurrentYIndex) ? xzColor : Color.DarkGray);
-
-                        //DebugShapeRenderer.AddYZGrid(new Vector3(i, -modellingAreaSize / 2, -modellingAreaSize / 2),
-                        //  modellingAreaSize, modellingAreaSize, 1,
-                        //  (i == CurrentXIndex) ? yzColor : Color.DarkGray);
+                        DebugShapeRenderer.AddLine(currentVertices[i], currentVertices[i + 1], currentColour);
                     }
-
-
-
+                    DebugShapeRenderer.AddLine(currentVertices[currentVertices.Count-1], currentbuildPoint, currentColour);
                 }
             }
         }
