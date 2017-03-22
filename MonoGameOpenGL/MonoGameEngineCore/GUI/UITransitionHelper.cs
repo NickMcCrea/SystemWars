@@ -130,7 +130,7 @@ namespace NicksLib.Rendering
                     else
                     {
 
-                        m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position + new Vector2(1, 1), new Color(0, 0, 0, texColor.A));
+                        m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position + new Vector2(1, 1), new Color(0f, 0f, 0f, texColor.A));
                         m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position, texColor);
                     }
                 }
@@ -140,7 +140,7 @@ namespace NicksLib.Rendering
                         m_spriteBatch.Draw(textureFade.Texture, textureFade.Rectangle, texColor);
                     else
                     {
-                        m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position + new Vector2(1, 1), new Color(0, 0, 0, texColor.A));
+                        m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position + new Vector2(1, 1), new Color(0f, 0f, 0f, texColor.A));
                         m_spriteBatch.DrawString(textureFade.Font, textureFade.StringToDisplay, textureFade.Position, texColor);
                     }
 

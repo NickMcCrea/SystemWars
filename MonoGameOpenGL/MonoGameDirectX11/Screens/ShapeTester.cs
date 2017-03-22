@@ -42,7 +42,7 @@ namespace MonoGameDirectX11.Screens
             shape = ProceduralShape.Combine(cylinder, shape);
 
          
-            var effect = SystemCore.ContentManager.Load<Effect>("FlatShaded");
+            var effect = SystemCore.ContentManager.Load<Effect>("Effects/SM5.0/FlatShaded");
 
            
 
