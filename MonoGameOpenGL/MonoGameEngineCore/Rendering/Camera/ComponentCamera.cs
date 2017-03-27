@@ -98,6 +98,17 @@ namespace MonoGameEngineCore.Rendering.Camera
             set;
         }
 
+        public float FarZ
+        {
+            get; set;
+        }
+
+        public float NearZ
+        {
+            get; set;
+        }
+        public Vector3 Right { get; set; }
+
         public event EventHandler<EventArgs> UpdateOrderChanged;
     }
 

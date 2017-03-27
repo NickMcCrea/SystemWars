@@ -8,6 +8,48 @@ using System;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
+    public class TextureComponent : IComponent, IDisposable
+    {
+        public GameObject ParentObject { get; set; }
+        public Texture2D Texture { get; set; }
+
+        public TextureComponent(Texture2D texture)
+        {
+            this.Texture = texture;
+        }
+
+        public void Dispose()
+        {
+            Texture.Dispose();
+        }
+
+        public void Initialise()
+        {
+            
+        }
+    }
+
+    public class ModelComponent : IComponent, IDisposable
+    {
+        public GameObject ParentObject { get; set; }
+        public Model Model { get; set; }
+
+        public ModelComponent(Model model)
+        {
+            this.Model = model;
+        }
+
+        public void Dispose()
+        {
+            
+        }
+
+        public void Initialise()
+        {
+            
+        }
+    }
+
     public class RenderGeometryComponent : IComponent, IDisposable
     {
         public GameObject ParentObject { get; set; }
@@ -30,6 +72,7 @@ namespace MonoGameEngineCore.GameObject.Components
             this.PrimitiveCount = shape.PrimitiveCount;
         }
 
+ 
 
         public void Initialise()
         {

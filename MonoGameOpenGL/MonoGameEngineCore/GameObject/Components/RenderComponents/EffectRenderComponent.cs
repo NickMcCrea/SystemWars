@@ -58,6 +58,15 @@ namespace MonoGameEngineCore.GameObject.Components
 
         private void AssignTextureParameters()
         {
+            //check it has a texture
+
+            var texture = ParentObject.GetComponent<TextureComponent>();
+            if(texture != null)
+            {
+
+                if (ParameterExists("ModelTexture"))
+                    effect.Parameters["ModelTexture"].SetValue(texture.Texture);
+            }
 
         }
 
@@ -80,17 +89,44 @@ namespace MonoGameEngineCore.GameObject.Components
 
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
 
-            SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
-            SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
-
-            GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
-            GameObjectManager.primitives += renderGeometry.PrimitiveCount;
-
-
-            for (int i = 0; i < effect.CurrentTechnique.Passes.Count; i++)
+            if (renderGeometry != null)
             {
-                effect.CurrentTechnique.Passes[i].Apply();
-                SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, renderGeometry.VertexBuffer.VertexCount, 0, renderGeometry.PrimitiveCount);
+
+                SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
+                SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
+
+                GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
+                GameObjectManager.primitives += renderGeometry.PrimitiveCount;
+
+
+                for (int i = 0; i < effect.CurrentTechnique.Passes.Count; i++)
+                {
+                    effect.CurrentTechnique.Passes[i].Apply();
+                    SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, renderGeometry.VertexBuffer.VertexCount, 0, renderGeometry.PrimitiveCount);
+                }
+            }
+
+            var modelComponent = ParentObject.GetComponent<ModelComponent>();
+            if (modelComponent != null)
+            {
+                Model m = modelComponent.Model;
+                foreach (var mesh in m.Meshes)
+                {
+                    foreach (ModelMeshPart p in mesh.MeshParts)
+                    {
+                        SystemCore.GraphicsDevice.SetVertexBuffer(p.VertexBuffer);
+                        SystemCore.GraphicsDevice.Indices = p.IndexBuffer;
+
+                        GameObjectManager.verts += p.VertexBuffer.VertexCount;
+                        GameObjectManager.primitives += p.IndexBuffer.IndexCount;
+
+                        for (int i = 0; i < effect.CurrentTechnique.Passes.Count; i++)
+                        {
+                            effect.CurrentTechnique.Passes[i].Apply();
+                            SystemCore.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, p.PrimitiveCount);
+                        }
+                    }
+                }
             }
 
             PostDraw(gameTime);
@@ -138,7 +174,14 @@ namespace MonoGameEngineCore.GameObject.Components
             if (ParameterExists("ViewInvert"))
                 effect.Parameters["ViewInvert"].SetValue(Matrix.Invert(SystemCore.GetCamera(Camera).View));
 
-           
+            if(ParameterExists("WorldInverseTranspose"))
+                effect.Parameters["WorldInverseTranspose"].SetValue(Matrix.Transpose(Matrix.Invert(transform.WorldMatrix)));
+
+            if(ParameterExists("ViewVector"))
+                effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View).Forward);
+
+
+
         }
 
         public virtual void AssignLightingParameters()
@@ -190,6 +233,7 @@ namespace MonoGameEngineCore.GameObject.Components
             helper.Value = vec;
             paramsToSetBeforeNextRender.Add(helper);
         }
+
         public void SetParameterForNextFrame(string name, float floatParam)
         {
             EffectParameterHelper helper = new EffectParameterHelper();
@@ -201,5 +245,13 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public event System.EventHandler<System.EventArgs> VisibleChanged;
         public event System.EventHandler<System.EventArgs> DrawOrderChanged;
+    }
+
+    public class Material
+    {
+        public Vector3 Ka { get; set; }
+        public Vector3 Kd { get; set; }
+        public Vector3 Ks { get; set; }
+        public Texture2D DiffuseTexture { get; set; }
     }
 }

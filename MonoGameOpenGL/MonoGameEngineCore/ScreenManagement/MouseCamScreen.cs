@@ -64,9 +64,9 @@ namespace MonoGameEngineCore.ScreenManagement
                 if (input.EvaluateInputBinding("CameraBackward"))
                     mouseCamera.MoveBackward();
                 if (input.EvaluateInputBinding("CameraLeft"))
-                    mouseCamera.Left();
+                    mouseCamera.MoveLeft();
                 if (input.EvaluateInputBinding("CameraRight"))
-                    mouseCamera.Right();
+                    mouseCamera.MoveRight();
 
 
                 mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);

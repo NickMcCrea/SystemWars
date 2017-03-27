@@ -24,9 +24,9 @@ namespace MonoGameEngineCore.Rendering
         public void SetUpDefaultAmbientAndDiffuseLights()
         {
             AddAmbientLight(new AmbientLight(Color.White, 0.1f));
-            Vector3 lightDir = new Vector3(0.5f, 1, 0.7f);
+            Vector3 lightDir = new Vector3(1,0,0f);
             lightDir.Normalize();
-            LightsInScene.Add(new DiffuseLight(lightDir, Color.LightYellow, 0.7f));
+            LightsInScene.Add(new DiffuseLight(lightDir, Color.White, 1f));
         }
 
         public void SetDiffuseLightDir(int index, Vector3 lightDir)

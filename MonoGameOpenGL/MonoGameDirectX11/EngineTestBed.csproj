@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -45,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Screens\ProceduralTestScreen.cs" />
     <Compile Include="Screens\RenderTestScreen.cs" />
+    <Compile Include="Screens\ShadowTestScreen.cs" />
     <Compile Include="Screens\ShapeTester.cs" />
     <Compile Include="Screens\RenderTextureTest.cs" />
     <Compile Include="Screens\PhysicsTestScreen.cs" />
@@ -85,7 +87,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)Content\Content\*.*" "$(TargetDir)Content\" /s /i /y /c /u</PostBuildEvent>
+    <PostBuildEvent>rd /s /q $(ProjectDir)$(OutDir)Content\
+xcopy /y  /s $(SolutionDir)Content\Content\* $(ProjectDir)$(OutDir)Content\</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

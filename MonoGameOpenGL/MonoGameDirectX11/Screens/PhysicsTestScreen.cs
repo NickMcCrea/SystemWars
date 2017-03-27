@@ -92,9 +92,9 @@ namespace MonoGameDirectX11
             if (input.EvaluateInputBinding("CameraBackward"))
                 mouseCamera.MoveBackward();
             if (input.EvaluateInputBinding("CameraLeft"))
-                mouseCamera.Left();
+                mouseCamera.MoveLeft();
             if (input.EvaluateInputBinding("CameraRight"))
-                mouseCamera.Right();
+                mouseCamera.MoveRight();
 
             RayCastResult result;
             if (input.MouseLeftPress())

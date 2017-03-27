@@ -49,7 +49,6 @@ namespace MonoGameEngineCore.GameObject.Components
         
             SystemCore.GraphicsDevice.SetVertexBuffer(renderGeometry.VertexBuffer);
             SystemCore.GraphicsDevice.Indices = renderGeometry.IndexBuffer;
-
             GameObjectManager.verts += renderGeometry.VertexBuffer.VertexCount;
             GameObjectManager.primitives += renderGeometry.PrimitiveCount;
 

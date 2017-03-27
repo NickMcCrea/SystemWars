@@ -11,6 +11,9 @@ namespace MonoGameEngineCore.Camera
         Matrix View { get; set; }
         Matrix Projection { get; set; }
         Vector3 Position { get; }
-        
+
+        float FarZ { get; set; }
+        float NearZ { get; set; }
+        Vector3 Right { get; set; }
     }
 }

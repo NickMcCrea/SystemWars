@@ -34,7 +34,7 @@ namespace MonoGameDirectX11
 
 
 
-            //create 100 cubes, add collision and collision visualiser components, give them random position and velocity
+
             for (int i = 0; i < 100; i++)
             {
                 var gameObject = new GameObject();
@@ -53,16 +53,34 @@ namespace MonoGameDirectX11
 
             AddInputBindings();
 
-            Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic");
-            ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelNoUVs(geoDesicModel);
-            geodesicShape.Scale(20f);
-            geodesicShape.InsideOut();
-            GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
+            //Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic");
+            //ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelNoUVs(geoDesicModel);
+            //geodesicShape.Scale(20f);
+            //geodesicShape.InsideOut();
+            //GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 
-            //SystemCore.EnableBloom = true;
 
+            var crateObject = AddTestModel("Models/Crate", "Textures/Crate", "DiffuseSpecularTextured");
+            crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
+            crateObject.Transform.Scale = 0.1f;
+
+            var marioObject = AddTestModel("Models/mario-sculpture", "Textures/marioD", "DiffuseSpecularTextured");
+            marioObject.Transform.SetPosition(new Vector3(20, 5, 0));
+            marioObject.Transform.Scale = 0.1f;
+
+        }
+
+        private GameObject AddTestModel(string model, string texture, string effect)
+        {
+            GameObject gameObject = new GameObject();
+            gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
+            gameObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect(effect)));
+            gameObject.AddComponent(new TextureComponent(SystemCore.ContentManager.Load<Texture2D>(texture)));
+            gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
+            return gameObject;
         }
 
         private void AddInputBindings()
@@ -86,9 +104,9 @@ namespace MonoGameDirectX11
                 if (input.EvaluateInputBinding("CameraBackward"))
                     mouseCamera.MoveBackward();
                 if (input.EvaluateInputBinding("CameraLeft"))
-                    mouseCamera.Left();
+                    mouseCamera.MoveLeft();
                 if (input.EvaluateInputBinding("CameraRight"))
-                    mouseCamera.Right();
+                    mouseCamera.MoveRight();
 
 
                 mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);

@@ -16,7 +16,16 @@ namespace MonoGameEngineCore.Camera
         public Matrix Projection { get; set; }
         public Vector3 Position { get { return World.Translation; } }
         public Matrix World;
+        public float FarZ
+        {
+            get; set;
+        }
 
+        public float NearZ
+        {
+            get; set;
+        }
+        public Vector3 Right { get; set; }
 
         public DummyCamera()
         {
@@ -51,6 +60,16 @@ namespace MonoGameEngineCore.Camera
         public Matrix Projection { get; set; }
         public Matrix World;
         public Vector3 Position{get { return World.Translation; }}
+        public float FarZ
+        {
+            get; set;
+        }
+
+        public float NearZ
+        {
+            get; set;
+        }
+        public Vector3 Right { get; set; }
 
         public DummyOrthographicCamera(float width, float height, float near, float far)
         {

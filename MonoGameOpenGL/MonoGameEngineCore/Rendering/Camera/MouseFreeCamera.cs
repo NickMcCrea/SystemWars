@@ -17,6 +17,27 @@ namespace MonoGameEngineCore.Rendering.Camera
         public Matrix Projection { get; set; }
         public Matrix World;
         public Vector3 Position { get { return World.Translation; } }
+        public float FarZ
+        {
+            get; set;
+        }
+
+        public float NearZ
+        {
+            get; set;
+        }
+        public Vector3 Right
+        {
+            get
+            {
+                return Matrix.Invert(View).Right;
+
+            }
+            set
+            {
+
+            }
+        }
 
         float leftrightRot = MathHelper.PiOver2;
         float updownRot = MathHelper.PiOver4;
@@ -27,9 +48,10 @@ namespace MonoGameEngineCore.Rendering.Camera
 
         public MouseFreeCamera(Vector3 startPosition)
         {
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.01f, 50000f);
-            World.Translation = startPosition;
-
+            FarZ = 250f;
+            NearZ = 0.25f;
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, NearZ, FarZ);
+            World.Translation = startPosition;   
             UpdateViewMatrix();
         }
 
@@ -37,7 +59,8 @@ namespace MonoGameEngineCore.Rendering.Camera
         {
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, near, far);
             World.Translation = startPosition;
-
+            FarZ = far;
+            NearZ = near;
             UpdateViewMatrix();
         }
 
@@ -68,12 +91,12 @@ namespace MonoGameEngineCore.Rendering.Camera
             moveVector += new Vector3(0, 0, 1);
         }
 
-        public void Left()
+        public void MoveLeft()
         {
             moveVector += new Vector3(-1, 0, 0);
         }
 
-        public void Right()
+        public void MoveRight()
         {
             moveVector += new Vector3(1, 0, 0);
         }

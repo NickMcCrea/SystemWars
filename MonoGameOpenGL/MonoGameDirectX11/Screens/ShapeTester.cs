@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
-using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.ScreenManagement;
 
@@ -67,7 +62,8 @@ namespace MonoGameDirectX11.Screens
 
         public override void Render(GameTime gameTime)
         {
-           
+            SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
+
             base.Render(gameTime);
         }
     }
