@@ -8,26 +8,8 @@ using System;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class TextureComponent : IComponent, IDisposable
-    {
-        public GameObject ParentObject { get; set; }
-        public Texture2D Texture { get; set; }
-
-        public TextureComponent(Texture2D texture)
-        {
-            this.Texture = texture;
-        }
-
-        public void Dispose()
-        {
-            Texture.Dispose();
-        }
-
-        public void Initialise()
-        {
-            
-        }
-    }
+   
+    
 
     public class ModelComponent : IComponent, IDisposable
     {

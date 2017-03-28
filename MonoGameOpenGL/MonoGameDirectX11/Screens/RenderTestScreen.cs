@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GameObject.Components.RenderComponents;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -62,26 +63,37 @@ namespace MonoGameDirectX11
 
 
 
-            var crateObject = AddTestModel("Models/Crate", "Textures/Crate", "DiffuseSpecularTextured");
+            var crateObject = AddTestModel("Models/mario-sculpture", "OrangeGloss");
             crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
             crateObject.Transform.Scale = 0.1f;
 
-            var marioObject = AddTestModel("Models/mario-sculpture", "Textures/marioD", "DiffuseSpecularTextured");
-            marioObject.Transform.SetPosition(new Vector3(20, 5, 0));
-            marioObject.Transform.Scale = 0.1f;
+            var crateObject2 = AddTestModel("Models/mario-sculpture", "RedGloss");
+            crateObject2.Transform.SetPosition(new Vector3(10, 0, 0));
+            crateObject2.Transform.Scale = 0.1f;
+
+            var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
+            crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
+            crateObject3.Transform.Scale = 0.1f;
+
+
+            //var marioObject = AddTestModel("Models/mario-sculpture", "Textures/marioD", "DiffuseSpecularTextured");
+            //marioObject.Transform.SetPosition(new Vector3(20, 5, 0));
+            //marioObject.Transform.Scale = 0.1f;
 
         }
 
-        private GameObject AddTestModel(string model, string texture, string effect)
+        private GameObject AddTestModel(string model, string materialName)
         {
             GameObject gameObject = new GameObject();
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
-            gameObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect(effect)));
-            gameObject.AddComponent(new TextureComponent(SystemCore.ContentManager.Load<Texture2D>(texture)));
+            MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
             gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
         }
+
+
+       
 
         private void AddInputBindings()
         {

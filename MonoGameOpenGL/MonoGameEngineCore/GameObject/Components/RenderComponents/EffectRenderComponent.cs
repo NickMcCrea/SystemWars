@@ -3,69 +3,60 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.GameObject.Components.RenderComponents;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public enum EffectParamType
-    {
-        floatParam,
-        boolParam,
-        matrixParam,
-        vector3Param,
-        vector4Param,
-    }
-
-    public struct EffectParameterHelper
-    {
-        public EffectParamType TypeOfParam { get; set; }
-        public string Name { get; set; }
-        public object Value { get; set; }
-    }
+    
 
     public class EffectRenderComponent : IComponent, IDrawable
     {
 
         public readonly Effect effect;
-        private ICamera camera;
         public GameObject ParentObject { get; set; }
         public int DrawOrder { get; set; }
         public bool Visible { get; set; }
         public float ColorSaturation { get; set; }
         public string Camera { get; set; }
-        private List<EffectParameterHelper> paramsToSetBeforeNextRender;
 
         public EffectRenderComponent(Effect effect)
         {
             this.effect = effect;
             Visible = true;
-            paramsToSetBeforeNextRender = new List<EffectParameterHelper>();
-            //default to main active camera in scene. But overridable via property.
+           //default to main active camera in scene. But overridable via property.
             Camera = "main";
         }
 
         public void Initialise()
         {
             ColorSaturation = 1;
+            AssignTextureParameters();
         }
 
         public virtual void PreDraw(GameTime gameTime)
         {
             AssignMatrixParameters();
             AssignLightingParameters();
-            AssignTextureParameters();
-            SetVariableParams();
+            AssignMaterialParameters();
         }
 
         private void AssignTextureParameters()
         {
             //check it has a texture
 
-            var texture = ParentObject.GetComponent<TextureComponent>();
-            if(texture != null)
+            var material = ParentObject.GetComponent<MaterialComponent>();
+            if(material != null)
             {
+                if (!string.IsNullOrEmpty(material.TextureName))
+                {
+                    Texture2D t = SystemCore.ContentManager.Load<Texture2D>(material.TextureName);
 
-                if (ParameterExists("ModelTexture"))
-                    effect.Parameters["ModelTexture"].SetValue(texture.Texture);
+                    if (ParameterExists("ModelTexture"))
+                        effect.Parameters["ModelTexture"].SetValue(t);
+
+                    if (ParameterExists("TextureIntensity"))
+                        effect.Parameters["TextureIntensity"].SetValue(material.TextureIntensity);
+                }
             }
 
         }
@@ -135,20 +126,6 @@ namespace MonoGameEngineCore.GameObject.Components
 
         }
 
-        private void SetVariableParams()
-        {
-            for (int i = 0; i < paramsToSetBeforeNextRender.Count; i++)
-            {
-                var effectParameter = paramsToSetBeforeNextRender[i];
-                if (effectParameter.TypeOfParam == EffectParamType.vector3Param)
-                {
-                    Vector3 value = (Vector3)effectParameter.Value;
-                    effect.Parameters[effectParameter.Name].SetValue(value);
-                }
-            }
-            paramsToSetBeforeNextRender.Clear();
-        }
-
         public virtual void AssignMatrixParameters()
         {
             var transform = ParentObject.GetComponent<TransformComponent>();
@@ -183,7 +160,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
         }
-
+        
         public virtual void AssignLightingParameters()
         {
             if (ParameterExists("AmbientLightColor"))
@@ -201,6 +178,27 @@ namespace MonoGameEngineCore.GameObject.Components
                 if (light is DiffuseLight)
                     AddDiffuseLight(light as DiffuseLight);
             }
+
+        }
+
+        public virtual void AssignMaterialParameters()
+        {
+            MaterialComponent mat = ParentObject.GetComponent<MaterialComponent>();
+
+            if(ParameterExists("Shininess"))
+                effect.Parameters["Shininess"].SetValue(mat.Shininess);
+
+            if(ParameterExists("SpecularLightColor"))
+                effect.Parameters["SpecularLightColor"].SetValue(mat.SpecularColor.ToVector4());
+
+            if (ParameterExists("SpecularLightIntensity"))
+                effect.Parameters["SpecularLightIntensity"].SetValue(mat.SpecularIntensity);
+
+            if (ParameterExists("DiffuseColor"))
+                effect.Parameters["DiffuseColor"].SetValue(mat.MatColor.ToVector4());
+
+            if (ParameterExists("DiffuseColorIntensity"))
+                effect.Parameters["DiffuseColorIntensity"].SetValue(mat.MatColorIntensity);
 
         }
 
@@ -225,23 +223,7 @@ namespace MonoGameEngineCore.GameObject.Components
             return false;
         }
 
-        public void SetParameterForNextFrame(string name, Vector3 vec)
-        {
-            EffectParameterHelper helper = new EffectParameterHelper();
-            helper.Name = name;
-            helper.TypeOfParam = EffectParamType.vector3Param;
-            helper.Value = vec;
-            paramsToSetBeforeNextRender.Add(helper);
-        }
-
-        public void SetParameterForNextFrame(string name, float floatParam)
-        {
-            EffectParameterHelper helper = new EffectParameterHelper();
-            helper.Name = name;
-            helper.TypeOfParam = EffectParamType.floatParam;
-            helper.Value = floatParam;
-            paramsToSetBeforeNextRender.Add(helper);
-        }
+       
 
         public event System.EventHandler<System.EventArgs> VisibleChanged;
         public event System.EventHandler<System.EventArgs> DrawOrderChanged;

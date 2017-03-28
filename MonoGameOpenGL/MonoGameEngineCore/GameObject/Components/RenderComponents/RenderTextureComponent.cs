@@ -15,13 +15,11 @@ namespace MonoGameEngineCore.GameObject.Components
         public float BorderSize { get; set; }
 
         public string Camera { get; set; }
-        private List<EffectParameterHelper> paramsToSetBeforeNextRender;
 
         public RenderTextureComponent(Effect effect)
         {
             this.effect = effect;
             Visible = true;
-            paramsToSetBeforeNextRender = new List<EffectParameterHelper>();
             Camera = "main";
             BorderSize = 0.01f;
             BorderColor = Color.White;

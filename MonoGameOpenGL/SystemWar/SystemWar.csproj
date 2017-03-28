@@ -94,7 +94,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)Content\Content\*.*" "$(TargetDir)Content\" /s /i /y /c /u</PostBuildEvent>
+    <PostBuildEvent>rd /s /q $(ProjectDir)$(OutDir)Content\
+xcopy /y  /s $(SolutionDir)Content\Content\* $(ProjectDir)$(OutDir)Content\</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\MonoGame.Binaries.3.2.3-alpha\build\net40\MonoGame.Binaries.targets" Condition="Exists('..\packages\MonoGame.Binaries.3.2.3-alpha\build\net40\MonoGame.Binaries.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

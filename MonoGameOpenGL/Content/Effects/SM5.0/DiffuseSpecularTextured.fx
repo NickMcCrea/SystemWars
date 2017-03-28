@@ -6,13 +6,19 @@ float4x4 WorldInverseTranspose;
 float4 AmbientLightColor;
 float AmbientLightIntensity ;
 
+float4 DiffuseColor;
+float DiffuseColorIntensity;
+
+float TextureIntensity;
+
 float4 DiffuseLightDirection;
 float4 DiffuseLightColor;
 float DiffuseLightIntensity;
 
-float Shininess = 200;
-float4 SpecularLightColor = float4(1, 1, 1, 1);
-float SpecularLightIntensity = 1;
+float Shininess;
+float4 SpecularLightColor;
+float SpecularLightIntensity;
+
 float3 ViewVector;
 
 texture ModelTexture;
@@ -67,10 +73,10 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	float4 specular = SpecularLightIntensity * SpecularLightColor * max(pow(dotProduct, Shininess), 0) * length(input.Color);
 
-		float4 textureColor = tex2D(textureSampler, input.TextureCoordinate);
+		float4 textureColor = tex2D(textureSampler, input.TextureCoordinate) * TextureIntensity;
 		textureColor.a = 1;
 
-	return saturate(textureColor * (input.Color) + AmbientLightColor * AmbientLightIntensity + specular);
+	return saturate(textureColor * (input.Color ) + DiffuseColor  * DiffuseColorIntensity + AmbientLightColor * AmbientLightIntensity + specular);
 }
 
 technique Textured
