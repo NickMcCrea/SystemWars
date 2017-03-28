@@ -76,7 +76,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 		float4 textureColor = tex2D(textureSampler, input.TextureCoordinate) * TextureIntensity;
 		textureColor.a = 1;
 
-	return saturate(textureColor * (input.Color ) + DiffuseColor  * DiffuseColorIntensity + AmbientLightColor * AmbientLightIntensity + specular);
+	return saturate((textureColor + (DiffuseColor * DiffuseColorIntensity)) * (input.Color ) + AmbientLightColor * AmbientLightIntensity + specular);
 }
 
 technique Textured

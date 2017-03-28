@@ -57,7 +57,7 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             MaterialComponent orangeGloss = new MaterialComponent();
             orangeGloss.MaterialName = "OrangeGloss";
             orangeGloss.MatColor = Color.Orange;
-            orangeGloss.MatColorIntensity = 0.4f;
+            orangeGloss.MatColorIntensity = 1f;
             orangeGloss.SpecularColor = Color.White;
             orangeGloss.Shininess = 200;
             orangeGloss.SpecularIntensity = 1;
@@ -68,7 +68,7 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             MaterialComponent redGloss = new MaterialComponent();
             redGloss.MaterialName = "RedGloss";
             redGloss.MatColor = Color.Red;
-            redGloss.MatColorIntensity = 0.4f;
+            redGloss.MatColorIntensity = 2f;
             redGloss.SpecularColor = Color.White;
             redGloss.Shininess = 200;
             redGloss.SpecularIntensity = 1;
@@ -76,13 +76,26 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             redGloss.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(redGloss.MaterialName, redGloss);
 
+            MaterialComponent redMatt = new MaterialComponent();
+            redMatt.MaterialName = "RedMatt";
+            redMatt.MatColor = Color.Red;
+            redMatt.MatColorIntensity = 0.5f;
+            redMatt.SpecularColor = Color.White;
+            redMatt.Shininess = 0;
+            redMatt.SpecularIntensity = 0;
+            redMatt.TextureName = "";
+            redMatt.ShaderName = "DiffuseSpecularTextured";
+            matDictionary.Add(redMatt.MaterialName, redMatt);
+
             MaterialComponent crateMat = new MaterialComponent();
             crateMat.MaterialName = "WoodenCrate";
             crateMat.MatColor = Color.White;
+            crateMat.MatColorIntensity = 0;
             crateMat.SpecularColor = Color.White;
             crateMat.Shininess = 0;
             crateMat.SpecularIntensity = 0;
-            crateMat.TextureName = "";
+            crateMat.TextureName = "Textures/Crate";
+            crateMat.TextureIntensity = 10f;
             crateMat.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(crateMat.MaterialName, crateMat);
 

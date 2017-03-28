@@ -63,7 +63,7 @@ namespace MonoGameDirectX11
 
 
 
-            var crateObject = AddTestModel("Models/mario-sculpture", "OrangeGloss");
+            var crateObject = AddTestModel("Models/mario-sculpture", "RedMatt");
             crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
             crateObject.Transform.Scale = 0.1f;
 
@@ -74,6 +74,10 @@ namespace MonoGameDirectX11
             var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
             crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
             crateObject3.Transform.Scale = 0.1f;
+
+            var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
+            crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
+            crateObject4.Transform.Scale = 0.1f;
 
 
             //var marioObject = AddTestModel("Models/mario-sculpture", "Textures/marioD", "DiffuseSpecularTextured");
