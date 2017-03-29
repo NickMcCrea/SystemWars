@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.GameObject.Components;
 
 namespace MonoGameEngineCore.GameObject
 {
@@ -21,7 +22,7 @@ namespace MonoGameEngineCore.GameObject
         public static int drawCalls;
         public static int verts;
         public static int primitives;
-
+        public ShadowMapComponent shadowMapComponent;
 
         public void Initalise()
         {
@@ -30,6 +31,7 @@ namespace MonoGameEngineCore.GameObject
             drawableGameObjectComponents = new List<IDrawable>();
             updateableObjects = new List<IUpdateable>();
             lineEffect = new BasicEffect(SystemCore.GraphicsDevice);
+            shadowMapComponent = new ShadowMapComponent();
         }
 
         public GameObject AddShapeToScene(ProceduralShape shape)
@@ -180,6 +182,7 @@ namespace MonoGameEngineCore.GameObject
 
             drawableGameObjectComponents = drawableGameObjectComponents.OrderBy(x => x.DrawOrder).ToList();
 
+        
             for (int i = 0; i < drawableGameObjectComponents.Count; i++)
             {
                 var drawable = drawableGameObjectComponents[i];
@@ -189,6 +192,9 @@ namespace MonoGameEngineCore.GameObject
                     drawCalls++;
                 }
             }
+
+     
+         
 
         }
 
@@ -228,8 +234,6 @@ namespace MonoGameEngineCore.GameObject
         {
             return gameObjects.ContainsKey(id);
         }
-
-
 
         public void AddTestSphere(Vector3 vector3, float p)
         {

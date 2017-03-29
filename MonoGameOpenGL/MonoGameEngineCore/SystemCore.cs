@@ -20,6 +20,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
 using BloomPostprocess;
+using MonoGameEngineCore.GameObject.Components;
 
 namespace MonoGameEngineCore
 {
@@ -47,7 +48,6 @@ namespace MonoGameEngineCore
         public static ContentManager ContentManager { get; private set; }
         public static GUIManager GUIManager { get; private set; }
         public static EventManager EventManager { get; private set; }
-      
         
         public static Space PhysicsSimulation { get; private set; }
         public static GameObjectManager GameObjectManager { get; private set; }
@@ -63,6 +63,7 @@ namespace MonoGameEngineCore
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
+        public static ShadowMapComponent shadowMapComponent;
 
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
@@ -117,6 +118,8 @@ namespace MonoGameEngineCore
 
 
             EventManager = new EventManager();
+
+            shadowMapComponent = new ShadowMapComponent();
 
         }
 
@@ -211,16 +214,31 @@ namespace MonoGameEngineCore
                 }
             }
 
-          
+
+            shadowMapComponent.PreDraw(gameTime);
 
             for (int i = 0; i < gameSubSystems.Count; i++)
             {
                 if (gameSubSystems[i] is GUIManager)
                     continue;
+                if (gameSubSystems[i] is FPSCounter)
+                    continue;
+
+
                 gameSubSystems[i].Render(gameTime);
             }
 
-           
+            GraphicsDevice.SetRenderTarget(null);
+
+
+            for (int i = 0; i < gameSubSystems.Count; i++)
+            {
+                if (gameSubSystems[i] is GUIManager)
+                    continue;
+
+                gameSubSystems[i].Render(gameTime);
+            }
+
             DebugShapeRenderer.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection);
             GUIManager.Render(gameTime);
 

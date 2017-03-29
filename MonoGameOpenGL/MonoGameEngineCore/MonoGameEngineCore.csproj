@@ -73,6 +73,7 @@
     <Compile Include="GameObject\Components\RenderComponents\MaterialComponent.cs" />
     <Compile Include="GameObject\Components\RenderComponents\RenderGeometryComponent.cs" />
     <Compile Include="GameObject\Components\RenderComponents\RenderTextureComponent.cs" />
+    <Compile Include="GameObject\Components\RenderComponents\ShadowMapComponent.cs" />
     <Compile Include="GameObject\Components\RotatorComponent.cs" />
     <Compile Include="GameObject\Components\Controllers\ShipController.cs" />
     <Compile Include="GameObject\Components\RenderComponents\SkyDomeRenderer.cs" />

@@ -23,6 +23,9 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            Vector3 lightDir = new Vector3(0.5f, 0.5f, 0.5f);
+            lightDir.Normalize();
+            SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
 
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
@@ -61,28 +64,34 @@ namespace MonoGameDirectX11
             //GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 
-
-
+           
             var crateObject = AddTestModel("Models/mario-sculpture", "RedMatt");
             crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
             crateObject.Transform.Scale = 0.1f;
+
+
+            var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
+            crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
+            crateObject3.Transform.Scale = 0.1f;
 
             var crateObject2 = AddTestModel("Models/mario-sculpture", "RedGloss");
             crateObject2.Transform.SetPosition(new Vector3(10, 0, 0));
             crateObject2.Transform.Scale = 0.1f;
 
-            var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
-            crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
-            crateObject3.Transform.Scale = 0.1f;
 
             var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
             crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
             crateObject4.Transform.Scale = 0.1f;
 
 
-            //var marioObject = AddTestModel("Models/mario-sculpture", "Textures/marioD", "DiffuseSpecularTextured");
-            //marioObject.Transform.SetPosition(new Vector3(20, 5, 0));
-            //marioObject.Transform.Scale = 0.1f;
+            var groundShape = new ProceduralCuboid(10, 10, 0.5f);
+            groundShape.SetColor(Color.DarkOrange);
+            var gameObjectPlane = new GameObject();
+            gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
+            gameObjectPlane.AddComponent(new EffectRenderComponent(effect));
+            gameObjectPlane.Transform.SetPosition(new Vector3(0, -20, 0));
+            gameObjectPlane.Transform.Scale = 10f;
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
 
         }
 
@@ -148,6 +157,7 @@ namespace MonoGameDirectX11
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
+
             DebugShapeRenderer.VisualiseAxes(5f);
 
             base.Render(gameTime);

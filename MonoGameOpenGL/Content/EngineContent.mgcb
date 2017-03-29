@@ -304,3 +304,9 @@
 /processorParam:TextureFormat=Color
 /build:Textures/marioD.jpg
 
+#begin Effects/ShadowMap.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/ShadowMap.fx
+

@@ -95,7 +95,7 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             crateMat.Shininess = 0;
             crateMat.SpecularIntensity = 0;
             crateMat.TextureName = "Textures/Crate";
-            crateMat.TextureIntensity = 10f;
+            crateMat.TextureIntensity = 1f;
             crateMat.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(crateMat.MaterialName, crateMat);
 
@@ -104,8 +104,8 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             marioMat.MatColor = Color.White;
             marioMat.MatColorIntensity = 0f;
             marioMat.SpecularColor = Color.White;
-            marioMat.Shininess = 200;
-            marioMat.SpecularIntensity = 1;
+            marioMat.Shininess = 0;
+            marioMat.SpecularIntensity = 0;
             marioMat.TextureName = "Textures/marioD";
             marioMat.TextureIntensity = 10f;
             marioMat.ShaderName = "DiffuseSpecularTextured";
