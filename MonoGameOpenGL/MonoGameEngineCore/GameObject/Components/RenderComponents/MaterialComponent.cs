@@ -68,24 +68,38 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             MaterialComponent redGloss = new MaterialComponent();
             redGloss.MaterialName = "RedGloss";
             redGloss.MatColor = Color.Red;
-            redGloss.MatColorIntensity = 2f;
+            redGloss.MatColorIntensity = 1f;
             redGloss.SpecularColor = Color.White;
-            redGloss.Shininess = 200;
-            redGloss.SpecularIntensity = 1;
+            redGloss.Shininess = 0;
+            redGloss.SpecularIntensity = 0;
             redGloss.TextureName = "";
+            redGloss.TextureIntensity = 0;
             redGloss.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(redGloss.MaterialName, redGloss);
 
             MaterialComponent redMatt = new MaterialComponent();
             redMatt.MaterialName = "RedMatt";
             redMatt.MatColor = Color.Red;
-            redMatt.MatColorIntensity = 0.5f;
+            redMatt.MatColorIntensity = 1f;
             redMatt.SpecularColor = Color.White;
-            redMatt.Shininess = 0;
-            redMatt.SpecularIntensity = 0;
+            redMatt.Shininess = 200;
+            redMatt.SpecularIntensity = 1;
             redMatt.TextureName = "";
+            redMatt.TextureIntensity = 0;
             redMatt.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(redMatt.MaterialName, redMatt);
+        
+            MaterialComponent marioMat = new MaterialComponent();
+            marioMat.MaterialName = "Mario";
+            marioMat.MatColor = Color.White;
+            marioMat.MatColorIntensity = 0f;
+            marioMat.SpecularColor = Color.White;
+            marioMat.Shininess = 200;
+            marioMat.SpecularIntensity = 1;
+            marioMat.TextureName = "Textures/marioD";
+            marioMat.TextureIntensity = 5f;
+            marioMat.ShaderName = "DiffuseSpecularTextured";
+            matDictionary.Add(marioMat.MaterialName, marioMat);
 
             MaterialComponent crateMat = new MaterialComponent();
             crateMat.MaterialName = "WoodenCrate";
@@ -98,18 +112,6 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             crateMat.TextureIntensity = 1f;
             crateMat.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(crateMat.MaterialName, crateMat);
-
-            MaterialComponent marioMat = new MaterialComponent();
-            marioMat.MaterialName = "Mario";
-            marioMat.MatColor = Color.White;
-            marioMat.MatColorIntensity = 0f;
-            marioMat.SpecularColor = Color.White;
-            marioMat.Shininess = 0;
-            marioMat.SpecularIntensity = 0;
-            marioMat.TextureName = "Textures/marioD";
-            marioMat.TextureIntensity = 10f;
-            marioMat.ShaderName = "DiffuseSpecularTextured";
-            matDictionary.Add(marioMat.MaterialName, marioMat);
 
 
         }

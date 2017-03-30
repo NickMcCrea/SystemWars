@@ -64,24 +64,25 @@ namespace MonoGameDirectX11
             //GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
 
-           
-            var crateObject = AddTestModel("Models/mario-sculpture", "RedMatt");
-            crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
-            crateObject.Transform.Scale = 0.1f;
 
 
             var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
             crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
             crateObject3.Transform.Scale = 0.1f;
 
+            var crateObject = AddTestModel("Models/mario-sculpture", "RedMatt");
+            crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
+            crateObject.Transform.Scale = 0.1f;
+
+
             var crateObject2 = AddTestModel("Models/mario-sculpture", "RedGloss");
             crateObject2.Transform.SetPosition(new Vector3(10, 0, 0));
             crateObject2.Transform.Scale = 0.1f;
 
 
-            var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
-            crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
-            crateObject4.Transform.Scale = 0.1f;
+            //var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
+            //crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
+            //crateObject4.Transform.Scale = 0.1f;
 
 
             var groundShape = new ProceduralCuboid(10, 10, 0.5f);
