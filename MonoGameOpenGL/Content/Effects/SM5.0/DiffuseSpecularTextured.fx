@@ -33,7 +33,7 @@ sampler2D textureSampler = sampler_state {
 struct VertexShaderInput
 {
 	float4 Position : SV_POSITION;
-	float4 Normal : NORMAL0;
+	float3 Normal : NORMAL0;
 	float2 TextureCoordinate : TEXCOORD0;
 };
 
@@ -50,14 +50,15 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	VertexShaderOutput output;
 
 	float4 worldPosition = mul(input.Position, World);
-		float4 viewPosition = mul(worldPosition, View);
-		output.Position = mul(viewPosition, Projection);
+	float4 viewPosition = mul(worldPosition, View);
+	output.Position = mul(viewPosition, Projection);
 
-	float4 normal = normalize(mul(input.Normal, WorldInverseTranspose));
-		float lightIntensity = dot(normal, DiffuseLightDirection);
+	float3 normal = normalize(mul(input.Normal, World));
+	output.Normal = normal;
+
+	float lightIntensity = dot(normal, DiffuseLightDirection);
 	output.Color = saturate(DiffuseLightColor * DiffuseLightIntensity * lightIntensity);
 
-	output.Normal = normal;
 
 	output.TextureCoordinate = input.TextureCoordinate;
 	return output;
@@ -77,6 +78,8 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	textureColor.a = 1;
 
 	return saturate((textureColor + (DiffuseColor * DiffuseColorIntensity)) * (input.Color ) + AmbientLightColor * AmbientLightIntensity + specular);
+
+
 }
 
 technique Textured

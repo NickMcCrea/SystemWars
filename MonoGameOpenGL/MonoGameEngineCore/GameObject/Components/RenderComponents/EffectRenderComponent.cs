@@ -155,7 +155,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 effect.Parameters["WorldInverseTranspose"].SetValue(Matrix.Transpose(Matrix.Invert(transform.WorldMatrix)));
 
             if(ParameterExists("ViewVector"))
-                effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View).Forward);
+                effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View.Forward));
 
 
 
@@ -207,7 +207,7 @@ namespace MonoGameEngineCore.GameObject.Components
             if (ParameterExists("DiffuseLightColor"))
                 effect.Parameters["DiffuseLightColor"].SetValue(diffuseLight.LightColor.ToVector4());
             if (ParameterExists("DiffuseLightDirection"))
-                effect.Parameters["DiffuseLightDirection"].SetValue(diffuseLight.LightDirection);
+                effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(diffuseLight.LightDirection));
             if (ParameterExists("DiffuseLightIntensity"))
                 effect.Parameters["DiffuseLightIntensity"].SetValue(diffuseLight.LightIntensity);
 

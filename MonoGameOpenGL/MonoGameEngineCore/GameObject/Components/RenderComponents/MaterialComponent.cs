@@ -57,10 +57,10 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             MaterialComponent orangeGloss = new MaterialComponent();
             orangeGloss.MaterialName = "OrangeGloss";
             orangeGloss.MatColor = Color.Orange;
-            orangeGloss.MatColorIntensity = 1f;
+            orangeGloss.MatColorIntensity = 2f;
             orangeGloss.SpecularColor = Color.White;
             orangeGloss.Shininess = 200;
-            orangeGloss.SpecularIntensity = 1;
+            orangeGloss.SpecularIntensity = 2;
             orangeGloss.TextureName = "";
             orangeGloss.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(orangeGloss.MaterialName, orangeGloss);
@@ -70,8 +70,8 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             redGloss.MatColor = Color.Red;
             redGloss.MatColorIntensity = 1f;
             redGloss.SpecularColor = Color.White;
-            redGloss.Shininess = 0;
-            redGloss.SpecularIntensity = 0;
+            redGloss.Shininess = 200;
+            redGloss.SpecularIntensity = 2;
             redGloss.TextureName = "";
             redGloss.TextureIntensity = 0;
             redGloss.ShaderName = "DiffuseSpecularTextured";
@@ -82,8 +82,8 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             redMatt.MatColor = Color.Red;
             redMatt.MatColorIntensity = 1f;
             redMatt.SpecularColor = Color.White;
-            redMatt.Shininess = 200;
-            redMatt.SpecularIntensity = 1;
+            redMatt.Shininess = 0;
+            redMatt.SpecularIntensity = 0;
             redMatt.TextureName = "";
             redMatt.TextureIntensity = 0;
             redMatt.ShaderName = "DiffuseSpecularTextured";
@@ -94,10 +94,10 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             marioMat.MatColor = Color.White;
             marioMat.MatColorIntensity = 0f;
             marioMat.SpecularColor = Color.White;
-            marioMat.Shininess = 200;
-            marioMat.SpecularIntensity = 1;
+            marioMat.Shininess = 0;
+            marioMat.SpecularIntensity = 0;
             marioMat.TextureName = "Textures/marioD";
-            marioMat.TextureIntensity = 5f;
+            marioMat.TextureIntensity = 2f;
             marioMat.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(marioMat.MaterialName, marioMat);
 

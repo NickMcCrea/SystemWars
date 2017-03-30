@@ -23,10 +23,9 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            Vector3 lightDir = new Vector3(0.5f, 0.5f, 0.5f);
+            Vector3 lightDir = new Vector3(-0.5f, 0.5f, -0.5f);
             lightDir.Normalize();
             SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
-
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
 
@@ -43,13 +42,10 @@ namespace MonoGameDirectX11
             {
                 var gameObject = new GameObject();
                 gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
-
                 gameObject.AddComponent(new EffectRenderComponent(effect));
-                //gameObject.AddComponent(new BasicEffectRenderComponent(effect));
                 gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(Vector3.One * -100, Vector3.One * 100));
                 gameObject.AddComponent(new RotatorComponent(Vector3.Up));
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
-
                 gameObject.Transform.Scale = 5f;
                 gameObject.Transform.Velocity = RandomHelper.GetRandomVector3(-Vector3.One, Vector3.One) * 0.01f;
             }
@@ -57,28 +53,13 @@ namespace MonoGameDirectX11
 
             AddInputBindings();
 
-            //Model geoDesicModel = SystemCore.ContentManager.Load<Model>("Models/geodesic");
-            //ProceduralShape geodesicShape = ModelMeshParser.GetShapeFromModelNoUVs(geoDesicModel);
-            //geodesicShape.Scale(20f);
-            //geodesicShape.InsideOut();
-            //GameObject geoDesic = GameObjectFactory.CreateRenderableGameObjectFromShape(geodesicShape, EffectLoader.LoadSM5Effect("cockpitscreen"));
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(geoDesic);
-
-
-
-            var crateObject3 = AddTestModel("Models/mario-sculpture", "Mario");
-            crateObject3.Transform.SetPosition(new Vector3(20, 0, 0));
-            crateObject3.Transform.Scale = 0.1f;
-
-            var crateObject = AddTestModel("Models/mario-sculpture", "RedMatt");
-            crateObject.Transform.SetPosition(new Vector3(0, 0, 0));
-            crateObject.Transform.Scale = 0.1f;
-
-
-            var crateObject2 = AddTestModel("Models/mario-sculpture", "RedGloss");
-            crateObject2.Transform.SetPosition(new Vector3(10, 0, 0));
-            crateObject2.Transform.Scale = 0.1f;
-
+            AddTestMario("Mario", Vector3.Zero);
+            AddTestMario("Mario", new Vector3(10, 0, 0));
+            AddTestMario("RedGloss", new Vector3(20, 0, 0));
+            AddTestMario("RedMatt", new Vector3(-20, 0, 0));
+            AddTestMario("OrangeGloss", new Vector3(-10, 0, 0));
+            AddTestMario("WoodenCrate", new Vector3(0, 0, 10));
+            AddTestMario("Mario", new Vector3(0, 0, -10));
 
             //var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
             //crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
@@ -96,6 +77,13 @@ namespace MonoGameDirectX11
 
         }
 
+        private void AddTestMario(string material, Vector3 pos)
+        {
+            var crateObject3 = AddTestModel("Models/mario-sculpture", material);
+            crateObject3.Transform.SetPosition(pos);
+            crateObject3.Transform.Scale = 0.1f;
+        }
+
         private GameObject AddTestModel(string model, string materialName)
         {
             GameObject gameObject = new GameObject();
@@ -106,8 +94,6 @@ namespace MonoGameDirectX11
             return gameObject;
         }
 
-
-       
 
         private void AddInputBindings()
         {
