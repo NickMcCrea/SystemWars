@@ -61,9 +61,9 @@ namespace MonoGameDirectX11
             AddTestMario("WoodenCrate", new Vector3(0, 0, 10));
             AddTestMario("Mario", new Vector3(0, 0, -10));
 
-            //var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
-            //crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
-            //crateObject4.Transform.Scale = 0.1f;
+            var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
+            crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
+            crateObject4.Transform.Scale = 0.1f;
 
 
             var groundShape = new ProceduralCuboid(10, 10, 0.5f);
