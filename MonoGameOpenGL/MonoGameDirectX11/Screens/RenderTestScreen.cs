@@ -23,7 +23,7 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            Vector3 lightDir = new Vector3(-0.5f, 0.5f, -0.5f);
+            Vector3 lightDir = new Vector3(1, 0, 0);
             lightDir.Normalize();
             SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
@@ -38,13 +38,14 @@ namespace MonoGameDirectX11
 
 
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var gameObject = new GameObject();
                 gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
                 gameObject.AddComponent(new EffectRenderComponent(effect));
                 gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(Vector3.One * -100, Vector3.One * 100));
                 gameObject.AddComponent(new RotatorComponent(Vector3.Up));
+                gameObject.AddComponent(new ShadowRenderComponent());
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
                 gameObject.Transform.Scale = 5f;
                 gameObject.Transform.Velocity = RandomHelper.GetRandomVector3(-Vector3.One, Vector3.One) * 0.01f;
@@ -89,6 +90,7 @@ namespace MonoGameDirectX11
             GameObject gameObject = new GameObject();
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
+            gameObject.AddComponent(new ShadowRenderComponent());
             gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;

@@ -120,6 +120,9 @@ namespace MonoGameEngineCore.GUI
         public void Render(GameTime gameTime)
         {
             guiBatch.Begin();
+            
+            guiBatch.Draw(SystemCore.shadowMapComponent.ShadowMapTarget, new Rectangle(0, 0, 300, 300), Color.White);
+        
 
             foreach (BaseControl control in controls)
             {

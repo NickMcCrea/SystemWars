@@ -158,6 +158,11 @@ namespace MonoGameEngineCore.GameObject.Components
                 effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View.Forward));
 
 
+            if (ParameterExists("LightViewProj"))
+                effect.Parameters["LightViewProj"].SetValue(SystemCore.shadowMapComponent.LightViewProj);
+                
+
+
 
         }
         
@@ -176,7 +181,15 @@ namespace MonoGameEngineCore.GameObject.Components
             foreach (SceneLight light in SystemCore.ActiveScene.LightsInScene)
             {
                 if (light is DiffuseLight)
+                {
                     AddDiffuseLight(light as DiffuseLight);
+
+                   if (((DiffuseLight)light).IsShadowCasting)
+                    {
+                        if (ParameterExists("ShadowMap"))
+                            effect.Parameters["ShadowMap"].SetValue(SystemCore.shadowMapComponent.ShadowMapTarget);
+                    }
+                }
             }
 
         }

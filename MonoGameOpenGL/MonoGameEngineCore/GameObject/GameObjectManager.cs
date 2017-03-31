@@ -22,7 +22,6 @@ namespace MonoGameEngineCore.GameObject
         public static int drawCalls;
         public static int verts;
         public static int primitives;
-        public ShadowMapComponent shadowMapComponent;
 
         public void Initalise()
         {
@@ -31,7 +30,6 @@ namespace MonoGameEngineCore.GameObject
             drawableGameObjectComponents = new List<IDrawable>();
             updateableObjects = new List<IUpdateable>();
             lineEffect = new BasicEffect(SystemCore.GraphicsDevice);
-            shadowMapComponent = new ShadowMapComponent();
         }
 
         public GameObject AddShapeToScene(ProceduralShape shape)
@@ -180,16 +178,31 @@ namespace MonoGameEngineCore.GameObject
             SystemCore.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 
 
-            drawableGameObjectComponents = drawableGameObjectComponents.OrderBy(x => x.DrawOrder).ToList();
-
-        
-            for (int i = 0; i < drawableGameObjectComponents.Count; i++)
+            if (SystemCore.shadowMapComponent.ShadowPass)
             {
-                var drawable = drawableGameObjectComponents[i];
-                if (drawable.Visible)
+                foreach(GameObject o in gameObjects.Values)
                 {
-                    drawable.Draw(gameTime);
-                    drawCalls++;
+                    var shadowRenderer = o.GetComponent<ShadowRenderComponent>();
+                    if(shadowRenderer != null)
+                    {
+                        shadowRenderer.Draw(gameTime);
+                    }
+                }
+            }
+            else
+            {
+
+                drawableGameObjectComponents = drawableGameObjectComponents.OrderBy(x => x.DrawOrder).ToList();
+
+
+                for (int i = 0; i < drawableGameObjectComponents.Count; i++)
+                {
+                    var drawable = drawableGameObjectComponents[i];
+                    if (drawable.Visible)
+                    {
+                        drawable.Draw(gameTime);
+                        drawCalls++;
+                    }
                 }
             }
 

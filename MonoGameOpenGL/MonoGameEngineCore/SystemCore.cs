@@ -63,7 +63,7 @@ namespace MonoGameEngineCore
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
-        public static ShadowMapComponent shadowMapComponent;
+        public static ShadowMapRenderTarget shadowMapComponent;
 
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
@@ -119,7 +119,7 @@ namespace MonoGameEngineCore
 
             EventManager = new EventManager();
 
-            shadowMapComponent = new ShadowMapComponent();
+            shadowMapComponent = new ShadowMapRenderTarget();
 
         }
 
@@ -228,7 +228,8 @@ namespace MonoGameEngineCore
                 gameSubSystems[i].Render(gameTime);
             }
 
-            GraphicsDevice.SetRenderTarget(null);
+
+            shadowMapComponent.PostDraw(gameTime);
 
 
             for (int i = 0; i < gameSubSystems.Count; i++)
@@ -238,6 +239,7 @@ namespace MonoGameEngineCore
 
                 gameSubSystems[i].Render(gameTime);
             }
+            
 
             DebugShapeRenderer.Draw(gameTime, ActiveCamera.View, ActiveCamera.Projection);
             GUIManager.Render(gameTime);
