@@ -14,7 +14,7 @@ matrix LightWorldViewProjection;
 struct SMapVertexToPixel
 {
 	float4 Position : SV_POSITION;
-	float Depth : TEXCOORD0;
+	float2 Depth : TEXCOORD0;
 };
 
 struct SMapPixelToFrame
@@ -26,14 +26,14 @@ SMapVertexToPixel MainVS(float4 inPos : SV_POSITION)
 {
 	SMapVertexToPixel output = (SMapVertexToPixel)0;
 	output.Position = mul(inPos, LightWorldViewProjection);
-	output.Depth = output.Position.z / output.Position.w;
+	output.Depth = output.Position.zw;
 	return output;
 }
 
 SMapPixelToFrame MainPS(SMapVertexToPixel input) : COLOR
 {
 	SMapPixelToFrame output = (SMapPixelToFrame)0;
-	output.Color = (input.Depth, 0, 0, 0);
+	output.Color = (input.Depth.x/input.Depth.y, 0, 0, 0);
 	return output;
 }
 
