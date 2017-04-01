@@ -113,39 +113,39 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float4 textureColor = tex2D(textureSampler, input.TextureCoordinate) * TextureIntensity;
 	textureColor.a = 1;
 
-	/////SHADOW
- //   float NdotL = dot(normal, light);
-	//float4 lightingPosition = mul(input.WorldPos, LightViewProj);
- //   //Find the position in the shadow map for this pixel
- //   float2 ShadowTexCoord = mad(0.5f , lightingPosition.xy / lightingPosition.w , float2(0.5f, 0.5f));
- //   ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
-	//// Get the current depth stored in the shadow map
-	//float ourdepth = (lightingPosition.z / lightingPosition.w);
- //   float shadowContribution = CalcShadowTermPCF(ourdepth, NdotL, ShadowTexCoord);
-	/////SHADOW
-	
-	
-	//XNA VERSION
+	///SHADOW
+    float NdotL = dot(normal, light);
 	float4 lightingPosition = mul(input.WorldPos, LightViewProj);
-
-	// Find the position in the shadow map for this pixel
-	float2 ShadowTexCoord = 0.5 * lightingPosition.xy / lightingPosition.w + float2(0.5, 0.5);
-	ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
-
+    //Find the position in the shadow map for this pixel
+    float2 ShadowTexCoord = mad(0.5f , lightingPosition.xy / lightingPosition.w , float2(0.5f, 0.5f));
+    ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
 	// Get the current depth stored in the shadow map
-	float shadowdepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
+	float ourdepth = (lightingPosition.z / lightingPosition.w);
+    float shadowContribution = CalcShadowTermPCF(ourdepth, NdotL, ShadowTexCoord);
+	///SHADOW
+	
+	
+	////XNA VERSION
+	//float4 lightingPosition = mul(input.WorldPos, LightViewProj);
 
-	// Calculate the current pixel depth
-	// The bias is used to prevent folating point errors that occur when
-	// the pixel of the occluder is being drawn
-	float ourdepth = (lightingPosition.z / lightingPosition.w) - DepthBias;
+	//// Find the position in the shadow map for this pixel
+	//float2 ShadowTexCoord = 0.5 * lightingPosition.xy / lightingPosition.w + float2(0.5, 0.5);
+	//ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
 
-	float shadowContribution = 1;
-	// Check to see if this pixel is in front or behind the value in the shadow map
-	if (shadowdepth < ourdepth)
-	{
-		shadowContribution = 0.5f;
-	};
+	//// Get the current depth stored in the shadow map
+	//float shadowdepth = tex2D(ShadowMapSampler, ShadowTexCoord).r;
+
+	//// Calculate the current pixel depth
+	//// The bias is used to prevent folating point errors that occur when
+	//// the pixel of the occluder is being drawn
+	//float ourdepth = (lightingPosition.z / lightingPosition.w) - DepthBias;
+
+	//float shadowContribution = 1;
+	//// Check to see if this pixel is in front or behind the value in the shadow map
+	//if (shadowdepth < ourdepth)
+	//{
+	//	shadowContribution = 0.1f;
+	//};
 	//XNA VERSION
 
 

@@ -71,7 +71,7 @@ namespace MonoGameEngineCore.ScreenManagement
 
                 mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
 
-                input.CenterMouse();
+                //input.CenterMouse();
             }
 
 

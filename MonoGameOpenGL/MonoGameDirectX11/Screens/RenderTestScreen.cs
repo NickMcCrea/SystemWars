@@ -16,7 +16,7 @@ namespace MonoGameDirectX11
     public class RenderTestScreen : Screen
     {
         protected MouseFreeCamera mouseCamera;
-
+        bool releaseMouse = false;
         public RenderTestScreen()
             : base()
         {
@@ -38,7 +38,7 @@ namespace MonoGameDirectX11
 
 
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var gameObject = new GameObject();
                 gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
@@ -105,6 +105,9 @@ namespace MonoGameDirectX11
             input.AddKeyDownBinding("CameraLeft", Keys.Left);
             input.AddKeyDownBinding("CameraRight", Keys.Right);
 
+            var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
+            releaseMouseBinding.InputEventActivated += (x, y) => { releaseMouse = !releaseMouse; };
+
             var binding = input.AddKeyPressBinding("WireframeToggle", Keys.Space);
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
         }
@@ -122,9 +125,11 @@ namespace MonoGameDirectX11
                 if (input.EvaluateInputBinding("CameraRight"))
                     mouseCamera.MoveRight();
 
-
-                mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
-                input.CenterMouse();
+                if (!releaseMouse)
+                {
+                    mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
+                    input.CenterMouse();
+                }
             }
 
             List<GameObject> activeGameObjects = SystemCore.GetSubsystem<GameObjectManager>().GetAllObjects();
@@ -145,7 +150,8 @@ namespace MonoGameDirectX11
 
         public override void Render(GameTime gameTime)
         {
-            SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
+            if (!SystemCore.shadowMapComponent.ShadowPass)
+                SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
 
             DebugShapeRenderer.VisualiseAxes(5f);
 

@@ -1,10 +1,10 @@
 ﻿#if OPENGL
-	#define SV_POSITION POSITION
-	#define VS_SHADERMODEL vs_3_0
-	#define PS_SHADERMODEL ps_3_0
+#define SV_POSITION POSITION
+#define VS_SHADERMODEL vs_3_0
+#define PS_SHADERMODEL ps_3_0
 #else
-	#define VS_SHADERMODEL vs_4_0_level_9_1
-	#define PS_SHADERMODEL ps_4_0_level_9_1
+#define VS_SHADERMODEL vs_4_0_level_9_1
+#define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
 
@@ -14,7 +14,7 @@ matrix LightWorldViewProjection;
 struct SMapVertexToPixel
 {
 	float4 Position : SV_POSITION;
-	float2 Depth : TEXCOORD0;
+	float4 Position2d : TEXCOORD0;
 };
 
 struct SMapPixelToFrame
@@ -26,14 +26,14 @@ SMapVertexToPixel MainVS(float4 inPos : SV_POSITION)
 {
 	SMapVertexToPixel output = (SMapVertexToPixel)0;
 	output.Position = mul(inPos, LightWorldViewProjection);
-	output.Depth = output.Position.zw;
+	output.Position2d = output.Position;
 	return output;
 }
 
 SMapPixelToFrame MainPS(SMapVertexToPixel input) : COLOR
 {
 	SMapPixelToFrame output = (SMapPixelToFrame)0;
-	output.Color = (input.Depth.x/input.Depth.y, 0, 0, 0);
+	output.Color = input.Position2d.z / input.Position2d.w;
 	return output;
 }
 

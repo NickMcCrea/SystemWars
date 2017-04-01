@@ -59,7 +59,7 @@ namespace MonoGameEngineCore.Rendering
             : base(lightColor, intensity)
         {
             LightDirection = lightDirection;
-            
+            IsShadowCasting = true;
         }
         public Vector3 LightDirection { get; set; }
         public bool IsShadowCasting { get; set; }

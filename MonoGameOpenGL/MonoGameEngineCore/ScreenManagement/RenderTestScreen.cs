@@ -90,7 +90,7 @@ namespace MonoGameDirectX11
 
 
                 mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
-                input.CenterMouse();
+                //input.CenterMouse();
             }
 
             List<GameObject> activeGameObjects = SystemCore.GetSubsystem<GameObjectManager>().GetAllObjects();
