@@ -7,21 +7,21 @@ namespace MonoGameEngineCore.GameObject.Components
 {
     public class ShadowMapRenderTarget
     {
-          public RenderTarget2D ShadowMapTarget { get; set; }
+        public RenderTarget2D ShadowMapTarget { get; set; }
         public Matrix LightViewProj { get; set; }
         public bool ShadowPass { get; private set; }
 
         public ShadowMapRenderTarget()
         {
-            
-            ShadowMapTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 512, 512, false,
+
+            ShadowMapTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 2048, 2048, false,
                 SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
         }
 
 
         public void PreDraw(GameTime gameTime)
         {
-        
+
             if (SystemCore.ActiveScene.LightsInScene.Count == 0)
                 return;
 
@@ -29,12 +29,43 @@ namespace MonoGameEngineCore.GameObject.Components
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
-            Vector3 lightPos = new Vector3(100, 0, 0);
 
-            Matrix lightView = Matrix.CreateLookAt(lightPos, lightPos - light.LightDirection, Vector3.Up);
+            Matrix lightRotation = Matrix.CreateLookAt(Vector3.Zero, -light.LightDirection, Vector3.Up);
 
-            Matrix lightProjection = Matrix.CreateOrthographic(SystemCore.GraphicsDevice.Viewport.Width,
-                SystemCore.GraphicsDevice.Viewport.Height, SystemCore.ActiveCamera.NearZ, SystemCore.ActiveCamera.FarZ);
+
+            // Get the corners of the frustum
+            Vector3[] frustumCorners = new BoundingFrustum(SystemCore.ActiveCamera.View
+                * SystemCore.ActiveCamera.Projection).GetCorners();
+
+            // Transform the positions of the corners into the direction of the light
+            for (int i = 0; i < frustumCorners.Length; i++)
+            {
+                frustumCorners[i] = Vector3.Transform(frustumCorners[i], lightRotation);
+            }
+
+            // Find the smallest box around the points
+            BoundingBox lightBox = BoundingBox.CreateFromPoints(frustumCorners);
+
+            Vector3 boxSize = lightBox.Max - lightBox.Min;
+            Vector3 halfBoxSize = boxSize * 0.5f;
+
+            // The position of the light should be in the center of the back
+            // pannel of the box. 
+            Vector3 lightPosition = lightBox.Min + halfBoxSize;
+            lightPosition.Z = lightBox.Min.Z;
+
+            lightPosition = Vector3.Transform(lightPosition,
+                                              Matrix.Invert(lightRotation));
+
+            // Create the view matrix for the light
+            Matrix lightView = Matrix.CreateLookAt(lightPosition,
+                                                   lightPosition - light.LightDirection,
+                                                   Vector3.Up);
+
+            // Create the projection matrix for the light
+            // The projection is orthographic since we are using a directional light
+            Matrix lightProjection = Matrix.CreateOrthographic(boxSize.X, boxSize.Y,
+                                                               -boxSize.Z, boxSize.Z);
 
             LightViewProj = lightView * lightProjection;
 
@@ -47,6 +78,7 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             ShadowPass = false;
             SystemCore.GraphicsDevice.SetRenderTarget(null);
+
         }
 
     }
@@ -66,7 +98,7 @@ namespace MonoGameEngineCore.GameObject.Components
             Visible = true;
         }
 
-       
+
         public virtual void Draw(GameTime gameTime)
         {
             if (!Visible)

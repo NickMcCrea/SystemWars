@@ -23,7 +23,7 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            Vector3 lightDir = new Vector3(1, 0, 0);
+            Vector3 lightDir = new Vector3(1, 1, 1);
             lightDir.Normalize();
             SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
@@ -91,7 +91,7 @@ namespace MonoGameDirectX11
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
             gameObject.AddComponent(new ShadowRenderComponent());
-            gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            //gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
         }
