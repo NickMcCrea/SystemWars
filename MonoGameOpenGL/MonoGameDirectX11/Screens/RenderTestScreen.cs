@@ -38,7 +38,7 @@ namespace MonoGameDirectX11
 
 
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var gameObject = new GameObject();
                 gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
@@ -131,6 +131,10 @@ namespace MonoGameDirectX11
                     input.CenterMouse();
                 }
             }
+
+
+            DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
+            light.LightDirection = Vector3.Transform(light.LightDirection, Matrix.CreateRotationY(0.001f));
 
             List<GameObject> activeGameObjects = SystemCore.GetSubsystem<GameObjectManager>().GetAllObjects();
             BoundingBox testVolume = new BoundingBox(new Vector3(-100, -100, -100), new Vector3(100, 100, 100));

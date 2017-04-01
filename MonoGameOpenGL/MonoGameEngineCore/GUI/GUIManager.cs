@@ -121,7 +121,6 @@ namespace MonoGameEngineCore.GUI
         {
             guiBatch.Begin();
             
-            guiBatch.Draw(SystemCore.shadowMapComponent.ShadowMapTarget, new Rectangle(0, 0, 500, 500), Color.White);
         
 
             foreach (BaseControl control in controls)

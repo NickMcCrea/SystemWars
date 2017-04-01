@@ -100,7 +100,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
-	return saturate(diffuse + ambient) * shadowContribution;
+	return saturate(diffuse * shadowContribution + ambient);
 };
 
 technique Technique1
