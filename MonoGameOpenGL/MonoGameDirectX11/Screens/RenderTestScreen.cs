@@ -91,7 +91,7 @@ namespace MonoGameDirectX11
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
             gameObject.AddComponent(new ShadowRenderComponent());
-            //gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
         }
