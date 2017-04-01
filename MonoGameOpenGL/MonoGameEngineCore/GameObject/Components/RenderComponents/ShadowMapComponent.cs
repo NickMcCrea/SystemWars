@@ -24,13 +24,17 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (SystemCore.ActiveScene.LightsInScene.Count == 0)
                 return;
+         
+
+            SystemCore.GraphicsDevice.BlendState = BlendState.Opaque;
+            SystemCore.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             ShadowPass = true;
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
 
-            Matrix lightRotation = Matrix.CreateLookAt(Vector3.Zero, -light.LightDirection, Vector3.Up);
+            Matrix lightRotation = Matrix.CreateLookAt(Vector3.Zero, Vector3.Normalize(-light.LightDirection), Vector3.Up);
 
 
             // Get the corners of the frustum
@@ -71,6 +75,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
             SystemCore.GraphicsDevice.SetRenderTarget(ShadowMapTarget);
+
+            // Clear the render target to white or all 1's
+            // We set the clear to white since that represents the 
+            // furthest the object could be away
+            SystemCore.GraphicsDevice.Clear(Color.White);
 
         }
 
