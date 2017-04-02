@@ -27,7 +27,7 @@ namespace MonoGameDirectX11
 
             SystemCore.CursorVisible = false;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-
+            SystemCore.ActiveScene.SetDiffuseLightDir(0,new Vector3(1, 1, 1));
             colorScheme = SystemCore.ActiveColorScheme;
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
@@ -40,13 +40,14 @@ namespace MonoGameDirectX11
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
             //ground plane
-            var groundShape = new ProceduralCuboid(10,10,0.5f);
+            var groundShape = new ProceduralCuboid(100,100,0.5f);
             groundShape.SetColor(colorScheme.Color5);
             var gameObjectPlane = new GameObject();
             gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
             gameObjectPlane.AddComponent(new EffectRenderComponent(effect));
             var groundPhysicsComponent = new PhysicsComponent(false, true, PhysicsMeshType.box);
             gameObjectPlane.AddComponent(groundPhysicsComponent);
+
            
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
             groundPhysicsComponent.PhysicsEntity.IsAffectedByGravity = false;
@@ -67,6 +68,7 @@ namespace MonoGameDirectX11
             gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape),
                 BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
             gameObject.AddComponent(new EffectRenderComponent(effect));
+            gameObject.AddComponent(new ShadowCasterComponent());
             gameObject.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.box));
             gameObject.Transform.SetPosition(position);
             gameObject.GetComponent<PhysicsComponent>().Simulated = RandomHelper.CoinToss();

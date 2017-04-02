@@ -45,7 +45,7 @@ namespace MonoGameDirectX11
                 gameObject.AddComponent(new EffectRenderComponent(effect));
                 gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(Vector3.One * -100, Vector3.One * 100));
                 gameObject.AddComponent(new RotatorComponent(Vector3.Up));
-                gameObject.AddComponent(new ShadowRenderComponent());
+                gameObject.AddComponent(new ShadowCasterComponent());
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
                 gameObject.Transform.Scale = 5f;
                 gameObject.Transform.Velocity = RandomHelper.GetRandomVector3(-Vector3.One, Vector3.One) * 0.01f;
@@ -90,7 +90,7 @@ namespace MonoGameDirectX11
             GameObject gameObject = new GameObject();
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
-            gameObject.AddComponent(new ShadowRenderComponent());
+            gameObject.AddComponent(new ShadowCasterComponent());
             gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
@@ -154,7 +154,7 @@ namespace MonoGameDirectX11
 
         public override void Render(GameTime gameTime)
         {
-            if (!SystemCore.shadowMapComponent.ShadowPass)
+            if (!SystemCore.ShadowMapRenderer.ShadowPass)
                 SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
 
             DebugShapeRenderer.VisualiseAxes(5f);

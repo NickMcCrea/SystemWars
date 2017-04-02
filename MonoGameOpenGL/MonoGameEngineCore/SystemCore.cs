@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using BEPUphysics;
 using Events;
 using Microsoft.Xna.Framework;
@@ -19,7 +14,6 @@ using MonoGameEngineCore.Helper;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
-using BloomPostprocess;
 using MonoGameEngineCore.GameObject.Components;
 
 namespace MonoGameEngineCore
@@ -57,13 +51,14 @@ namespace MonoGameEngineCore
         public static bool Wireframe { get; set; }
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
+        public static ShadowMapRenderer ShadowMapRenderer { get; private set; }
+
         public static bool PhysicsOnBackgroundThread = false;
         private static Dictionary<string, ICamera> cameras;
         private static List<IGameSubSystem> gameSubSystems;
         private static List<IGameComponent> gameComponents;
         private static DateTime physicsLastUpdate = DateTime.Now;
         public static bool GameExiting;
-        public static ShadowMapRenderTarget shadowMapComponent;
 
 
         public static void Startup(Game game, ContentManager content, ScreenResolutionName screenRes, DepthFormat preferreDepthFormat, bool isFixedTimeStep, bool physicsOnBackgroundThread)
@@ -119,7 +114,7 @@ namespace MonoGameEngineCore
 
             EventManager = new EventManager();
 
-            shadowMapComponent = new ShadowMapRenderTarget();
+            ShadowMapRenderer = new ShadowMapRenderer();
 
         }
 
@@ -215,7 +210,7 @@ namespace MonoGameEngineCore
             }
 
 
-            shadowMapComponent.PreDraw(gameTime);
+            ShadowMapRenderer.PreDraw(gameTime);
 
             for (int i = 0; i < gameSubSystems.Count; i++)
             {
@@ -229,7 +224,7 @@ namespace MonoGameEngineCore
             }
 
 
-            shadowMapComponent.PostDraw(gameTime);
+            ShadowMapRenderer.PostDraw(gameTime);
 
 
             for (int i = 0; i < gameSubSystems.Count; i++)

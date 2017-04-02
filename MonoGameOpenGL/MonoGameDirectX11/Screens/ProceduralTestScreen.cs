@@ -21,51 +21,29 @@ namespace MonoGameDirectX11.Screens
             : base()
         {
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            SystemCore.ActiveScene.SetDiffuseLightDir(1,new Vector3(1, 1, 1));
-
-            //AddLine(new Vector3(5, 5, 0), new Vector3(-5, -5, 0), 0.1f);
-
-            //AddLine(Vector3.Zero, Vector3.Right * 5f, 0.1f);
-            //AddLine(Vector3.Zero, Vector3.Up * 5, 0.1f);
-            //AddLine(Vector3.Zero, Vector3.Left * 5f, 0.1f);
-            //AddLine(Vector3.Zero, Vector3.Down * 5, 0.1f);
-            //AddLine(Vector3.Zero, Vector3.Forward * 5f, 0.1f);
-            //AddLine(Vector3.Zero, Vector3.Backward * 5, 0.1f);
-
-            //SystemCore.GameObjectManager.AddTestSphere(Vector3.Up, 0.5f);
-            //SystemCore.GameObjectManager.AddTestUnitCube(new Vector3(0,0,0));
-
-
-            ProceduralPlane p = new ProceduralPlane();
-            GameObject plane = GameObjectFactory.CreateRenderableGameObjectFromShape(p, EffectLoader.LoadSM5Effect("flatshaded"));
-            
-
-            LineBatch l = new LineBatch(new Vector3(0.5f, 0, 0.5f), new Vector3(0.5f, 0, -0.5f), new Vector3(-0.5f, 0, -0.5f), new Vector3(-0.5f, 0, 0.5f), new Vector3(0.5f, 0, 0.5f));
-            GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
-
-            plane.AddChild(lineObject);
-            plane.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
-
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(plane);
-
-
-
-
-            //var capsuleCube = CompoundShapeBuilder.CapsuleCube();
-            //SystemCore.GameObjectManager.AddShapeToScene(capsuleCube);
-
-            
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
             mouseCamera.moveSpeed = 0.01f;
 
+
+            var cube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
+            cube.AddComponent(new ShadowCasterComponent());
+            cube.Transform.SetPosition(new Vector3(10, 5, 10));
+
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cube);
+
+            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100, 1, 3, 1, 1, 1);
+            GameObject heightMapObject = new GameObject();
+            ProceduralShape shape = new ProceduralShape(heightMap.GenerateVertexArray(), heightMap.GenerateIndices());
+            shape.SetColor(Color.OrangeRed);
+            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
+            EffectRenderComponent renderComponent = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
+            heightMapObject.AddComponent(renderGeom);
+            heightMapObject.AddComponent(renderComponent);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(heightMapObject);
+
         }
 
-        private static void AddLine(Vector3 start, Vector3 end, float thickness)
-        {
-            ProceduralShape line = CompoundShapeHelper.Capsule(start, end, thickness);
-            SystemCore.GameObjectManager.AddShapeToScene(line);
-        }
 
         public override void Update(GameTime gameTime)
         {
@@ -76,7 +54,7 @@ namespace MonoGameDirectX11.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.DarkGray);
 
-            //DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(Vector3.Zero, 1f), Color.Blue);
+
 
             base.Render(gameTime);
         }

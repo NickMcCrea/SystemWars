@@ -159,7 +159,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
             if (ParameterExists("LightViewProj"))
-                effect.Parameters["LightViewProj"].SetValue(SystemCore.shadowMapComponent.LightViewProj);
+                effect.Parameters["LightViewProj"].SetValue(SystemCore.ShadowMapRenderer.LightViewProj);
                 
 
 
@@ -187,7 +187,7 @@ namespace MonoGameEngineCore.GameObject.Components
                    if (((DiffuseLight)light).IsShadowCasting)
                     {
                         if (ParameterExists("ShadowMap"))
-                            effect.Parameters["ShadowMap"].SetValue(SystemCore.shadowMapComponent.ShadowMapTarget);
+                            effect.Parameters["ShadowMap"].SetValue(SystemCore.ShadowMapRenderer.ShadowMapTarget);
                     }
                 }
             }

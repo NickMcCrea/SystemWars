@@ -22,8 +22,7 @@ namespace MonoGameEngineCore.ScreenManagement
         {
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-
+          
             var basicEffect = new BasicEffect(SystemCore.GraphicsDevice);
             basicEffect.VertexColorEnabled = true;
             basicEffect.EnableDefaultLighting();

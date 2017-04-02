@@ -5,13 +5,13 @@ using MonoGameEngineCore.Rendering;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    public class ShadowMapRenderTarget
+    public class ShadowMapRenderer
     {
         public RenderTarget2D ShadowMapTarget { get; set; }
         public Matrix LightViewProj { get; set; }
         public bool ShadowPass { get; private set; }
 
-        public ShadowMapRenderTarget()
+        public ShadowMapRenderer()
         {
 
             ShadowMapTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 2048, 2048, false,
@@ -93,14 +93,14 @@ namespace MonoGameEngineCore.GameObject.Components
     }
 
 
-    public class ShadowRenderComponent : IComponent
+    public class ShadowCasterComponent : IComponent
     {
         public readonly Effect effect;
         public GameObject ParentObject { get; set; }
         public int DrawOrder { get; set; }
         public bool Visible { get; set; }
 
-        public ShadowRenderComponent()
+        public ShadowCasterComponent()
         {
             this.effect = EffectLoader.LoadEffect("ShadowMap");
 
@@ -113,7 +113,7 @@ namespace MonoGameEngineCore.GameObject.Components
             if (!Visible)
                 return;
 
-            Matrix lightViewProj = SystemCore.shadowMapComponent.LightViewProj;
+            Matrix lightViewProj = SystemCore.ShadowMapRenderer.LightViewProj;
             effect.Parameters["LightWorldViewProjection"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.WorldMatrix * lightViewProj);
 
 

@@ -178,11 +178,11 @@ namespace MonoGameEngineCore.GameObject
             SystemCore.GraphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
 
 
-            if (SystemCore.shadowMapComponent.ShadowPass)
+            if (SystemCore.ShadowMapRenderer.ShadowPass)
             {
                 foreach(GameObject o in gameObjects.Values)
                 {
-                    var shadowRenderer = o.GetComponent<ShadowRenderComponent>();
+                    var shadowRenderer = o.GetComponent<ShadowCasterComponent>();
                     if(shadowRenderer != null)
                     {
                         shadowRenderer.Draw(gameTime);
