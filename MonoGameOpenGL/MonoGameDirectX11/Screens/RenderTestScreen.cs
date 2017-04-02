@@ -9,6 +9,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
+using Particle3DSample;
 using System;
 using System.Collections.Generic;
 
@@ -18,11 +19,12 @@ namespace MonoGameDirectX11
     {
         protected MouseFreeCamera mouseCamera;
         bool releaseMouse = false;
+        GameObject crate;
 
         public RenderTestScreen()
             : base()
         {
-           
+
 
         }
 
@@ -44,8 +46,6 @@ namespace MonoGameDirectX11
             shape.SetColor(SystemCore.ActiveColorScheme.Color5);
 
 
-
-
             for (int i = 0; i < 10; i++)
             {
                 var gameObject = new GameObject();
@@ -54,9 +54,14 @@ namespace MonoGameDirectX11
                 gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(Vector3.One * -100, Vector3.One * 100));
                 gameObject.AddComponent(new RotatorComponent(Vector3.Up));
                 gameObject.AddComponent(new ShadowCasterComponent());
+
+
+
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
                 gameObject.Transform.Scale = 5f;
                 gameObject.Transform.Velocity = RandomHelper.GetRandomVector3(-Vector3.One, Vector3.One) * 0.01f;
+
+
             }
 
 
@@ -70,10 +75,10 @@ namespace MonoGameDirectX11
             AddTestMario("WoodenCrate", new Vector3(0, 0, 10));
             AddTestMario("Mario", new Vector3(0, 0, -10));
 
-            var crateObject4 = AddTestModel("Models/Crate", "WoodenCrate");
-            crateObject4.Transform.SetPosition(new Vector3(30, 0, 0));
-            crateObject4.Transform.Scale = 0.1f;
-
+            crate = AddTestModel("Models/Crate", "WoodenCrate");
+            crate.Transform.SetPosition(new Vector3(30, 0, 0));
+            crate.Transform.Scale = 0.01f;
+           
 
             var groundShape = new ProceduralCuboid(10, 10, 0.5f);
             groundShape.SetColor(Color.DarkOrange);
@@ -109,6 +114,7 @@ namespace MonoGameDirectX11
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
             gameObject.AddComponent(new ShadowCasterComponent());
             gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            gameObject.AddComponent(new SquareParticleSystem());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
         }
@@ -169,6 +175,10 @@ namespace MonoGameDirectX11
                 }
 
             }
+
+            var particleSystem = crate.GetComponent<SquareParticleSystem>();
+            if (particleSystem != null)
+                particleSystem.AddParticle(crate.Transform.WorldMatrix.Translation, Vector3.Up);
 
             base.Update(gameTime);
         }

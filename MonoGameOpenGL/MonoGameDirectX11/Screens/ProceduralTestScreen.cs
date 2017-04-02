@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -8,9 +7,6 @@ using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -54,14 +50,11 @@ namespace MonoGameDirectX11.Screens
        
         }
 
-
         public override void OnRemove()
         {
            
             base.OnRemove();
         }
-
-
 
         private static GameObject CreateCube()
         {
