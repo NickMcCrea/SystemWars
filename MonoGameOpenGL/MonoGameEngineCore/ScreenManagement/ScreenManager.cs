@@ -14,8 +14,9 @@ namespace MonoGameEngineCore.ScreenManagement
             gameScreens = new List<Screen>();
         }
 
-        public void AddScreen(Screen newScreen)
+        private void AddScreen(Screen newScreen)
         {
+            newScreen.OnInitialise();
             gameScreens.Add(newScreen);
         }
 
@@ -24,11 +25,12 @@ namespace MonoGameEngineCore.ScreenManagement
             if (activeScreen != null)
                 RemoveScreen(activeScreen);
 
+
             AddScreen(newScreen);
             SetActive(newScreen);
         }
 
-        public void RemoveScreen(Screen screenToRemove)
+        private void RemoveScreen(Screen screenToRemove)
         {
             screenToRemove.OnRemove();
             gameScreens.Remove(screenToRemove);
@@ -53,12 +55,12 @@ namespace MonoGameEngineCore.ScreenManagement
                 activeScreen.RenderSprites(gameTime);
         }
 
-        public void SetActive(Screen newActiveScreen)
+        private void SetActive(Screen newActiveScreen)
         {
             activeScreen = newActiveScreen;
         }
 
-        public void SetActive(Type screen)
+        private void SetActive(Type screen)
         {
             SetActive(gameScreens.Find(x => x.GetType() == screen));
         }

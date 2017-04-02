@@ -7,6 +7,7 @@ using MonoGameDirectX11.Screens;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
+using MonoGameEngineCore.ScreenManagement;
 
 namespace MonoGameDirectX11
 {
@@ -15,10 +16,19 @@ namespace MonoGameDirectX11
         public MainMenuScreen()
             : base()
         {
+            
+
+        }
+
+        public override void OnInitialise()
+        {
             SystemCore.CursorVisible = true;
 
             var typesInNameSpace =
-                Assembly.GetAssembly(this.GetType()).GetTypes().Where(t => typeof(Screen).IsAssignableFrom(t) && t != typeof(MainMenuScreen));
+                Assembly.GetAssembly(this.GetType()).GetTypes().Where(t => typeof(Screen).IsAssignableFrom(t) && t != typeof(MainMenuScreen) && t != typeof(TestScreen));
+
+
+         
 
             List<string> names = new List<string>();
 
@@ -26,6 +36,7 @@ namespace MonoGameDirectX11
             {
                 names.Add(type.Name);
             }
+
 
 
             SystemCore.GetSubsystem<GUIManager>()
@@ -43,17 +54,24 @@ namespace MonoGameDirectX11
             }
 
 
+            input.AddKeyPressBinding("Escape", Microsoft.Xna.Framework.Input.Keys.Escape).InputEventActivated += (x, y) => 
+            {
+                SystemCore.Game.Exit();
+            };
+
+            base.OnInitialise();
         }
 
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
-
+            SystemCore.GameObjectManager.ClearAllObjects();
+            input.ClearBindings();
             base.OnRemove();
         }
 
         public override void Update(GameTime gameTime)
-        {
+        { 
             base.Update(gameTime);
         }
 

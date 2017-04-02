@@ -44,9 +44,9 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="TestScreen.cs" />
     <Compile Include="Screens\ProceduralTestScreen.cs" />
     <Compile Include="Screens\RenderTestScreen.cs" />
-    <Compile Include="Screens\ShapeTester.cs" />
     <Compile Include="Screens\RenderTextureTest.cs" />
     <Compile Include="Screens\PhysicsTestScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />

@@ -90,11 +90,7 @@ namespace MonoGameEngineCore.GameObject
             return true;
         }
 
-        public void RemoveGameObjects(List<GameObject> objects)
-        {
-            for (int i = 0; i < gameObjects.Count;i++ )
-                RemoveObject(gameObjects[i]);
-        }
+      
 
         public List<GameObject> GetCollisions(GameObject objectUnderTest)
         {
@@ -209,6 +205,16 @@ namespace MonoGameEngineCore.GameObject
      
          
 
+        }
+
+        public void ClearAllObjects()
+        {
+
+            var objects = gameObjects.Values.ToList();
+
+            for (int i = 0; i < objects.Count; i++)
+                RemoveObject(objects[i]);
+               
         }
 
         public List<GameObject> GetAllObjects()

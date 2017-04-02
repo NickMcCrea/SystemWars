@@ -2,17 +2,25 @@
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
+using MonoGameEngineCore.ScreenManagement;
 
 namespace MonoGameDirectX11.Screens
 {
-    class UITestScreen : RenderTestScreen
+    class UITestScreen : TestScreen
     {
-        readonly Panel p;
+        Panel p;
 
         public UITestScreen()
             : base()
         {
          
+
+         
+        }
+
+        public override void OnInitialise()
+        {
+            base.OnInitialise();
 
             GUIManager guiManager = SystemCore.GetSubsystem<GUIManager>();
 
@@ -20,7 +28,7 @@ namespace MonoGameDirectX11.Screens
             p = new Panel(new Rectangle(0, 0, GUIManager.ScreenRatioX(0.1f), GUIManager.ScreenRatioY(0.1f)), GUITexture.Textures["blank"]);
             p.HighlightAlpha = 0.3f;
             p.MainColor = SystemCore.ActiveColorScheme.Color4;
-            p.Anchor(AnchorPoint.middle, GUIManager.ScreenPoint.midpoint, new Vector2(0,0));
+            p.Anchor(AnchorPoint.middle, GUIManager.ScreenPoint.midpoint, new Vector2(0, 0));
             guiManager.AddControl(p);
 
 
@@ -41,45 +49,50 @@ namespace MonoGameDirectX11.Screens
             l.TextColor = SystemCore.ActiveColorScheme.Color1;
             b.AttachLabel(l);
 
-          
-
-            ////bordered button
-            //Button c = new Button(new Rectangle(700, 10, 100, 40), GUITexture.Textures["blank"]);
-            //c.Alpha = 0.4f;
-            //c.MainColor = SystemCore.ActiveColorScheme.Color3;
-            //c.HighlightColor = SystemCore.ActiveColorScheme.Color4;
-            //c.Border = true;
-            //c.BorderColor = SystemCore.ActiveColorScheme.Color5;
-            //c.BorderThickness = 1;
-            //guiManager.AddControl(c);
 
 
-            //FadeTransition fadeTest = new FadeTransition(1, 0, 500, 5000);
-            //p.ApplyTransition(fadeTest);
+            //bordered button
+            Button c = new Button(new Rectangle(700, 10, 100, 40), GUITexture.Textures["blank"]);
+            c.MainAlpha = 0.4f;
+            c.MainColor = SystemCore.ActiveColorScheme.Color3;
+            c.HighlightColor = SystemCore.ActiveColorScheme.Color4;
+            c.Border = true;
+            c.BorderColor = SystemCore.ActiveColorScheme.Color5;
+            c.BorderThickness = 1;
+            guiManager.AddControl(c);
 
-            ////needs work
-            //ListBox listBox = new ListBox(new Rectangle(200, 200, 200, 200), GUITexture.Textures["blank"]);
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    listBox.AddItem(i.ToString());
-            //}
-            //guiManager.AddControl(listBox);
 
-            ////fucked
-            //ItemCarousel itemCarousel = new ItemCarousel(new Vector2(700,500),true,50,50);
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    itemCarousel.Add(GUITexture.Textures["blank"], i.ToString());
-            //}
-            //guiManager.AddControl(itemCarousel);
+            FadeTransition fadeTest = new FadeTransition(1, 0, 500, 5000);
+            p.ApplyTransition(fadeTest);
+
+            //needs work
+            ListBox listBox = new ListBox(new Rectangle(200, 200, 200, 200), GUITexture.Textures["blank"]);
+            for (int i = 0; i < 100; i++)
+            {
+                listBox.AddItem(i.ToString());
+            }
+            guiManager.AddControl(listBox);
+
+            //fucked
+            ItemCarousel itemCarousel = new ItemCarousel(new Vector2(700, 500), true, 50, 50);
+            for (int i = 0; i < 5; i++)
+            {
+                itemCarousel.Add(GUITexture.Textures["blank"], i.ToString());
+            }
+            guiManager.AddControl(itemCarousel);
 
 
 
 
             SetCameraMovement(false);
+            
         }
 
-     
+        public override void OnRemove()
+        {
+            base.OnRemove();
+        }
+
         public override void Update(GameTime gameTime)
         {
            
@@ -90,6 +103,7 @@ namespace MonoGameDirectX11.Screens
 
         public override void Render(GameTime gameTime)
         {
+            SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color1);
            
             base.Render(gameTime);
 

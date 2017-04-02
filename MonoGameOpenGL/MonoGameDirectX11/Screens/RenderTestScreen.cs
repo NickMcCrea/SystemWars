@@ -9,6 +9,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Rendering.Camera;
+using System;
 using System.Collections.Generic;
 
 namespace MonoGameDirectX11
@@ -17,8 +18,15 @@ namespace MonoGameDirectX11
     {
         protected MouseFreeCamera mouseCamera;
         bool releaseMouse = false;
+
         public RenderTestScreen()
             : base()
+        {
+           
+
+        }
+
+        public override void OnInitialise()
         {
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
@@ -76,6 +84,15 @@ namespace MonoGameDirectX11
             gameObjectPlane.Transform.Scale = 10f;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
 
+            base.OnInitialise();
+        }
+
+        public override void OnRemove()
+        {
+            SystemCore.GUIManager.ClearAllControls();
+            SystemCore.GameObjectManager.ClearAllObjects();
+            input.ClearBindings();
+            base.OnRemove();
         }
 
         private void AddTestMario(string material, Vector3 pos)
@@ -96,7 +113,6 @@ namespace MonoGameDirectX11
             return gameObject;
         }
 
-
         private void AddInputBindings()
         {
             input = SystemCore.GetSubsystem<InputManager>();
@@ -104,6 +120,8 @@ namespace MonoGameDirectX11
             input.AddKeyDownBinding("CameraBackward", Keys.Down);
             input.AddKeyDownBinding("CameraLeft", Keys.Left);
             input.AddKeyDownBinding("CameraRight", Keys.Right);
+
+            input.AddKeyPressBinding("MainMenu", Keys.Escape);
 
             var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
             releaseMouseBinding.InputEventActivated += (x, y) => { releaseMouse = !releaseMouse; };
@@ -131,6 +149,9 @@ namespace MonoGameDirectX11
                     input.CenterMouse();
                 }
             }
+
+            if (input.EvaluateInputBinding("MainMenu"))
+                SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;

@@ -28,6 +28,11 @@ namespace MonoGameEngineCore
             
         }
 
+        public virtual void OnInitialise()
+        {
+
+        }
+
         public virtual void Update(GameTime gameTime)
         {
 

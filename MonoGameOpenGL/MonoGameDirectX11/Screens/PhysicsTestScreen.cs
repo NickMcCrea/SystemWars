@@ -19,15 +19,21 @@ namespace MonoGameDirectX11
 {
     public class PhysicsTestScreen : Screen
     {
-        readonly MouseFreeCamera mouseCamera;
+        MouseFreeCamera mouseCamera;
         ColorScheme colorScheme;
+
         public PhysicsTestScreen()
             : base()
         {
 
+           
+        }
+
+        public override void OnInitialise()
+        {
             SystemCore.CursorVisible = false;
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0,new Vector3(1, 1, 1));
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
             colorScheme = SystemCore.ActiveColorScheme;
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
@@ -40,7 +46,7 @@ namespace MonoGameDirectX11
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 
             //ground plane
-            var groundShape = new ProceduralCuboid(100,100,0.5f);
+            var groundShape = new ProceduralCuboid(100, 100, 0.5f);
             groundShape.SetColor(colorScheme.Color5);
             var gameObjectPlane = new GameObject();
             gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
@@ -48,18 +54,25 @@ namespace MonoGameDirectX11
             var groundPhysicsComponent = new PhysicsComponent(false, true, PhysicsMeshType.box);
             gameObjectPlane.AddComponent(groundPhysicsComponent);
 
-           
+
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
             groundPhysicsComponent.PhysicsEntity.IsAffectedByGravity = false;
-        
+
 
             var shape = new ProceduralCube();
             shape.SetColor(colorScheme.Color4);
 
             for (int i = 0; i < 100; i++)
                 AddCube(shape, effect, RandomHelper.GetRandomVector3(new Vector3(-10, 2, -10), new Vector3(10, 20, 10)));
-         
+
             AddInputBindings();
+            base.OnInitialise();
+        }
+
+        public override void OnRemove()
+        {
+            
+            base.OnRemove();
         }
 
         private static void AddCube(ProceduralCube shape, Effect effect, Vector3 position)
@@ -83,12 +96,19 @@ namespace MonoGameDirectX11
             input.AddKeyDownBinding("CameraLeft", Keys.Left);
             input.AddKeyDownBinding("CameraRight", Keys.Right);
 
+            input.AddKeyPressBinding("MainMenu", Keys.Escape);
+
+
             var binding = input.AddKeyPressBinding("WireframeToggle", Keys.Space);
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
         }
 
         public override void Update(GameTime gameTime)
         {
+            if (input.EvaluateInputBinding("MainMenu"))
+                SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
+
+
             if (input.EvaluateInputBinding("CameraForward"))
                 mouseCamera.MoveForward();
             if (input.EvaluateInputBinding("CameraBackward"))
@@ -128,8 +148,6 @@ namespace MonoGameDirectX11
             base.Update(gameTime);
         }
 
-     
-
         public override void Render(GameTime gameTime)
         {
             SystemCore.GraphicsDevice.Clear(colorScheme.Color2);
@@ -138,6 +156,8 @@ namespace MonoGameDirectX11
 
 
         }
+
+       
 
     }
 }

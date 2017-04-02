@@ -16,7 +16,7 @@ using MonoGameEngineCore.Helper;
 
 namespace MonoGameDirectX11.Screens
 {
-    public class RenderTextureTest : MouseCamScreen
+    public class RenderTextureTest : TestScreen
     {
 
         RenderTarget2D renderTarget;
@@ -29,6 +29,13 @@ namespace MonoGameDirectX11.Screens
         public RenderTextureTest()
             : base()
         {
+          
+        }
+
+        public override void OnInitialise()
+        {
+            base.OnInitialise();
+
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             mouseCamera.moveSpeed = 0.01f;
 
@@ -65,6 +72,15 @@ namespace MonoGameDirectX11.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(secondCube);
 
             font = SystemCore.ContentManager.Load<SpriteFont>("Fonts/neuropolitical");
+
+
+          
+        }
+
+        public override void OnRemove()
+        {
+            SystemCore.RemoveCamera("renderTextureCamera");
+            base.OnRemove();
         }
 
         public override void Update(GameTime gameTime)

@@ -33,7 +33,7 @@ namespace MonoGameEngineCore
 
     public class SystemCore
     {
-        public static bool EscapeQuitsGame = true;
+        public static bool EscapeQuitsGame = false;
         public static Viewport Viewport { get; private set; }
         public static InputManager Input { get; private set; }
         public static ScreenManager ScreenManager { get; private set; }
@@ -261,6 +261,12 @@ namespace MonoGameEngineCore
         public static void AddCamera(string cameraName, ICamera camera)
         {
             cameras.Add(cameraName, camera);
+        }
+
+        public static void RemoveCamera(string cameraName)
+        {
+            if (cameras.ContainsKey(cameraName))
+                cameras.Remove(cameraName);
         }
 
         public static ICamera GetCamera(string cameraName)

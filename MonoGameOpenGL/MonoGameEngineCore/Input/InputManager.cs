@@ -150,6 +150,17 @@ namespace MonoGameEngineCore
                 InputEventActivated(this, null);
             }
         }
+
+        internal void ClearSubscribers()
+        {
+            if (InputEventActivated == null)
+                return;
+
+            foreach (Delegate d in InputEventActivated.GetInvocationList())
+            {
+                InputEventActivated -= (EventHandler)d;
+            }
+        }
     }
 
     public class InputManager : IGameSubSystem
@@ -167,7 +178,7 @@ namespace MonoGameEngineCore
         public Point MouseDelta { get; private set; }
         public Point MouseOffsetFromCenter { get; private set; }
         public int ScrollDelta { get; private set; }
-        public Point MousePosition
+         public Point MousePosition
         {
             get;
             private set;
@@ -193,11 +204,13 @@ namespace MonoGameEngineCore
             CalculateMouseDelta();
             MousePosition = currentMouseState.Position;
             EvaluateBindings(gameTime);
-          
+
         }
 
         private void EvaluateBindings(GameTime gametime)
         {
+
+
             foreach (string key in inputBindings.Keys)
             {
                 foreach (InputBinding binding in inputBindings[key])
@@ -276,6 +289,16 @@ namespace MonoGameEngineCore
                 currentMouseState.Position.Y - screenMidPoint.Y);
 
             ScrollDelta = currentMouseState.ScrollWheelValue - oldMouseState.ScrollWheelValue;
+        }
+  
+        public void ClearBindings()
+        {
+            foreach (List<InputBinding> bindingList in inputBindings.Values)
+                foreach (InputBinding b in bindingList)
+                    b.ClearSubscribers();
+
+            inputBindings.Clear();
+          
         }
 
         public Vector2 GetLeftStickState()

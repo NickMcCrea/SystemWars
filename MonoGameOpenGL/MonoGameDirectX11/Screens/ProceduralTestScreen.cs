@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -13,22 +14,32 @@ using System.Text;
 
 namespace MonoGameDirectX11.Screens
 {
-    class ProceduralTestScreen : MouseCamScreen
+    class ProceduralTestScreen : TestScreen
     {
-
-
+    
         public ProceduralTestScreen()
             : base()
         {
+           
+
+        }
+
+
+        public override void OnInitialise()
+        {
+            base.OnInitialise();
+
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
             mouseCamera.moveSpeed = 0.01f;
 
+
+
             for (int i = 0; i < 50; i++)
                 CreateCube();
 
-          
+
             var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100, 1, 3, 1, 1, 1);
             GameObject heightMapObject = new GameObject();
             ProceduralShape shape = new ProceduralShape(heightMap.GenerateVertexArray(), heightMap.GenerateIndices());
@@ -39,7 +50,18 @@ namespace MonoGameDirectX11.Screens
             heightMapObject.AddComponent(renderComponent);
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(heightMapObject);
 
+          
+       
         }
+
+
+        public override void OnRemove()
+        {
+           
+            base.OnRemove();
+        }
+
+
 
         private static GameObject CreateCube()
         {
@@ -53,6 +75,7 @@ namespace MonoGameDirectX11.Screens
 
         public override void Update(GameTime gameTime)
         {
+           
             base.Update(gameTime);
         }
 

@@ -10,24 +10,26 @@ using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering.Camera;
+using MonoGameDirectX11;
 
 namespace MonoGameEngineCore.ScreenManagement
 {
-    public class MouseCamScreen : Screen
+    public class TestScreen : Screen
     {
         protected MouseFreeCamera mouseCamera;
 
-        public MouseCamScreen()
+        public TestScreen()
             : base()
+        {
+           
+
+
+        }
+
+        public override void OnInitialise()
         {
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
-          
-            var basicEffect = new BasicEffect(SystemCore.GraphicsDevice);
-            basicEffect.VertexColorEnabled = true;
-            basicEffect.EnableDefaultLighting();
-            basicEffect.PreferPerPixelLighting = true;
-
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);
@@ -35,8 +37,15 @@ namespace MonoGameEngineCore.ScreenManagement
 
 
             AddInputBindings();
+            base.OnInitialise();
+        }
 
-
+        public override void OnRemove()
+        {
+            SystemCore.GUIManager.ClearAllControls();
+            SystemCore.GameObjectManager.ClearAllObjects();
+            input.ClearBindings();
+            base.OnRemove();
         }
 
         private void AddInputBindings()
@@ -48,6 +57,10 @@ namespace MonoGameEngineCore.ScreenManagement
             input.AddKeyDownBinding("CameraRight", Keys.Right);
             input.AddKeyDownBinding("SlowCamera", Keys.RightShift);
             var binding = input.AddKeyPressBinding("WireframeToggle", Keys.Space);
+
+            input.AddKeyPressBinding("MainMenu", Keys.Escape);
+
+
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
         }
 
@@ -73,6 +86,8 @@ namespace MonoGameEngineCore.ScreenManagement
                 //input.CenterMouse();
             }
 
+            if (input.EvaluateInputBinding("MainMenu"))
+                SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
             base.Update(gameTime);
         }
