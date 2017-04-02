@@ -25,13 +25,10 @@ namespace MonoGameDirectX11.Screens
 
             mouseCamera.moveSpeed = 0.01f;
 
+            for (int i = 0; i < 50; i++)
+                CreateCube();
 
-            var cube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
-            cube.AddComponent(new ShadowCasterComponent());
-            cube.Transform.SetPosition(new Vector3(10, 5, 10));
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cube);
-
+          
             var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100, 1, 3, 1, 1, 1);
             GameObject heightMapObject = new GameObject();
             ProceduralShape shape = new ProceduralShape(heightMap.GenerateVertexArray(), heightMap.GenerateIndices());
@@ -44,6 +41,15 @@ namespace MonoGameDirectX11.Screens
 
         }
 
+        private static GameObject CreateCube()
+        {
+            var cube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
+            cube.AddComponent(new ShadowCasterComponent());
+            cube.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            cube.Transform.SetPosition(new Vector3(RandomHelper.GetRandomFloat(5, 100), RandomHelper.GetRandomFloat(2, 10), RandomHelper.GetRandomFloat(5, 100)));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cube);
+            return cube;
+        }
 
         public override void Update(GameTime gameTime)
         {
