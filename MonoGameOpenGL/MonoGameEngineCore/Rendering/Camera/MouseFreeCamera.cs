@@ -120,8 +120,22 @@ namespace MonoGameEngineCore.Rendering.Camera
             Vector3 cameraFinalTarget = World.Translation + cameraRotatedTarget;
 
             Vector3 cameraRotatedUpVector = Vector3.Transform(cameraOriginalUpVector, cameraRotation);
-
+            World.Forward = cameraFinalTarget;
+            World.Up = cameraRotatedUpVector;
             View = Matrix.CreateLookAt(World.Translation, cameraFinalTarget, cameraRotatedUpVector);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="horizontalAngle">Angle away from Vector3.Forward</param>
+        /// <param name="verticalAngle">Angle from Vector3.up</param>
+        public void SetPositionAndLook(Vector3 pos, float horizontalAngle, float verticalAngle)
+        {
+            World.Translation = pos;
+            updownRot = verticalAngle;
+            leftrightRot = horizontalAngle;
         }
 
     }

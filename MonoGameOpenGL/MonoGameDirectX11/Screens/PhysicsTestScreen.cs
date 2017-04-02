@@ -71,7 +71,9 @@ namespace MonoGameDirectX11
 
         public override void OnRemove()
         {
-            
+            SystemCore.GUIManager.ClearAllControls();
+            SystemCore.GameObjectManager.ClearAllObjects();
+            input.ClearBindings();
             base.OnRemove();
         }
 
