@@ -130,7 +130,11 @@ namespace MonoGameDirectX11
             input.AddKeyPressBinding("MainMenu", Keys.Escape);
 
             var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
-            releaseMouseBinding.InputEventActivated += (x, y) => { releaseMouse = !releaseMouse; };
+            releaseMouseBinding.InputEventActivated += (x, y) => 
+            { 
+                releaseMouse= !releaseMouse;
+                SystemCore.CursorVisible = releaseMouse;
+            };
 
             var binding = input.AddKeyPressBinding("WireframeToggle", Keys.Space);
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };

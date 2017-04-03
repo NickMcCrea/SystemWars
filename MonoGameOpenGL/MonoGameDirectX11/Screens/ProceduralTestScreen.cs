@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -12,11 +14,11 @@ namespace MonoGameDirectX11.Screens
 {
     class ProceduralTestScreen : TestScreen
     {
-    
+
         public ProceduralTestScreen()
             : base()
         {
-           
+
 
         }
 
@@ -31,44 +33,68 @@ namespace MonoGameDirectX11.Screens
             mouseCamera.moveSpeed = 0.01f;
 
             mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
-       
+
             for (int i = 0; i < 50; i++)
-                CreateCube();
+                AddPhysicsCube();
 
 
             var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100, 1, 10, 1, 1, 1);
+            var vertexArray = heightMap.GenerateVertexArray();
+            var indexArray = heightMap.GenerateIndices();
             GameObject heightMapObject = new GameObject();
-            ProceduralShape shape = new ProceduralShape(heightMap.GenerateVertexArray(), heightMap.GenerateIndices());
+            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
             shape.SetColor(Color.OrangeRed);
             RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
             EffectRenderComponent renderComponent = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
             heightMapObject.AddComponent(renderGeom);
             heightMapObject.AddComponent(renderComponent);
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, heightMap.GetVertices(), heightMap.GetIndices().ToArray()));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(heightMapObject);
 
-          
-       
+            SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+
+
+        
+
+
+        }
+
+        private void AddPhysicsCube()
+        {
+            ProceduralCube shape = new ProceduralCube();
+            var gameObject = new GameObject();
+            gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape),
+                BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
+            gameObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            gameObject.AddComponent(new ShadowCasterComponent());
+            gameObject.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.box));
+            gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(10, 100));
+            SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
         }
 
         public override void OnRemove()
         {
-           
+
             base.OnRemove();
         }
 
-        private static GameObject CreateCube()
-        {
-            var cube = GameObjectFactory.CreateRenderableGameObjectFromShape(new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
-            cube.AddComponent(new ShadowCasterComponent());
-            cube.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
-            cube.Transform.SetPosition(new Vector3(RandomHelper.GetRandomFloat(5, 100), RandomHelper.GetRandomFloat(2, 10), RandomHelper.GetRandomFloat(5, 100)));
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cube);
-            return cube;
-        }
+      
 
         public override void Update(GameTime gameTime)
         {
-           
+
+            RayCastResult result;
+            if (input.MouseLeftPress())
+            {
+
+               
+
+                if (SystemCore.PhysicsSimulation.RayCast(input.GetBepuProjectedMouseRay(), out result))
+                {
+                    GameObject parent = result.HitObject.Tag as GameObject;
+                }
+            }
+
             base.Update(gameTime);
         }
 

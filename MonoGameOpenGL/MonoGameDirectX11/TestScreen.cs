@@ -17,7 +17,7 @@ namespace MonoGameEngineCore.ScreenManagement
     public class TestScreen : Screen
     {
         protected MouseFreeCamera mouseCamera;
-
+        protected bool releaseMouse;
         public TestScreen()
             : base()
         {
@@ -60,6 +60,12 @@ namespace MonoGameEngineCore.ScreenManagement
 
             input.AddKeyPressBinding("MainMenu", Keys.Escape);
 
+            var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
+            releaseMouseBinding.InputEventActivated += (x, y) => {
+                releaseMouse = !releaseMouse;
+                SystemCore.CursorVisible = releaseMouse;
+            };
+
 
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
         }
@@ -80,10 +86,11 @@ namespace MonoGameEngineCore.ScreenManagement
                 if (input.EvaluateInputBinding("CameraRight"))
                     mouseCamera.MoveRight();
 
-
-                mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
-
-                //input.CenterMouse();
+                if (!releaseMouse)
+                {
+                    mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
+                    input.CenterMouse();
+                }
             }
 
             if (input.EvaluateInputBinding("MainMenu"))

@@ -110,11 +110,14 @@ namespace MonoGameEngineCore.Procedural
         private float scale;
         public float[,] heights;
         public int size;
+        private List<Vector3> vertices;
+        private List<int> indiceList;
 
         public Heightmap(int size, float scale)
         {
             this.size = size;
-
+            vertices = new List<Vector3>();
+            indiceList = new List<int>();
             this.scale = scale;
             Initialize();
 
@@ -139,7 +142,6 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
-
         internal void SetData(IModule module, double sampleStep, float verticalScale, double xOffset, double yOffset)
         {
             for (int i = 0; i < size; i++)
@@ -163,6 +165,7 @@ namespace MonoGameEngineCore.Procedural
                 {
                     var vert = new VertexPositionColorTextureNormal();
                     vert.Position = new Vector3(i * scale + xOffset, (heights[i, j] * scale * 0.2f) + yOffset, j * scale + zOffset);
+                    vertices.Add(vert.Position);
                     vert.Color = Color.DarkOrange;
                     vert.Texture = new Vector2(i * 2f / heightMapSize * scale, j * 2f / heightMapSize * scale);
                     vert.Normal = Vector3.Up;
@@ -223,13 +226,30 @@ namespace MonoGameEngineCore.Procedural
                     indices[indicesIndex++] = (short)(start + 1);
                     indices[indicesIndex++] = (short)(start + 1 + heightMapSize);
                     indices[indicesIndex++] = (short)(start + heightMapSize);
+
+                    indiceList.Add((short)start);
+                    indiceList.Add((short)(start + 1));
+                    indiceList.Add((short)(start + heightMapSize));
+                    indiceList.Add((short)(start + 1));
+                    indiceList.Add((short)(start + 1 + heightMapSize));
+                    indiceList.Add((short)(start + heightMapSize));
+
                 }
             }
             return indices.Reverse().ToArray();
         }
 
-      
+        public List<Vector3> GetVertices()
+        {
+            return vertices;
+        }
 
+        public List<int> GetIndices()
+        {
+            return indiceList;
+        }
+
+       
     }
 
 
