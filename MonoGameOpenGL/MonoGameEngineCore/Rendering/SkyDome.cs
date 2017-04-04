@@ -62,4 +62,56 @@ namespace SystemWar
             
         }
     }
+
+    public class GradientSkyDome : IGameSubSystem
+    {
+        static GradientSkyDomeRenderer skyDomeRenderer;
+
+
+        public GradientSkyDome(Color apexColor, Color centerColor)
+        {
+            var skyDomeGameObject = GameObjectFactory.CreateGradientSkyDomeObject(100, 10);
+            skyDomeRenderer = skyDomeGameObject.GetComponent<GradientSkyDomeRenderer>();
+            skyDomeRenderer.ApexColor = apexColor;
+            skyDomeRenderer.CenterColor = centerColor;
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDomeGameObject);
+        }
+
+
+
+        public static void TransitionToColor(Color newColor, float transitionTime)
+        {
+
+        }
+
+        public static void SetSunDir(Vector3d cameraPosition)
+        {
+            Vector3 toSun = cameraPosition.ToVector3();
+            toSun.Normalize();
+       
+        }
+
+        public static void SetSunDir(Vector3 cameraPosition)
+        {
+            Vector3 toSun = cameraPosition - Vector3.Zero;
+            toSun.Normalize();
+           
+        }
+
+        public void Update(GameTime gameTime)
+        {
+
+
+        }
+
+        public void Render(GameTime gameTime)
+        {
+
+        }
+
+        public void Initalise()
+        {
+
+        }
+    }
 }

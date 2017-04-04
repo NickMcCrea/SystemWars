@@ -9,12 +9,13 @@ using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
 using System;
+using SystemWar;
 
 namespace MonoGameDirectX11.Screens
 {
     class ProceduralTestScreen : TestScreen
     {
-
+        GradientSkyDome skyDome;
         public ProceduralTestScreen()
             : base()
         {
@@ -32,9 +33,8 @@ namespace MonoGameDirectX11.Screens
 
 
 
-            //var skyDome = GameObjectFactory.CreateSkyDomeObject(Color.LightBlue, 10, 10);
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDome);
-
+            skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);
+          
        
 
             mouseCamera.moveSpeed = 0.01f;
@@ -108,8 +108,7 @@ namespace MonoGameDirectX11.Screens
 
         public override void Render(GameTime gameTime)
         {
-            SystemCore.GraphicsDevice.Clear(Color.DarkGray);
-
+            
 
 
             base.Render(gameTime);

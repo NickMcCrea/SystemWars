@@ -310,3 +310,9 @@
 /processorParam:DebugMode=Debug
 /build:Effects/ShadowMap.fx
 
+#begin Effects/SM5.0/SkyDome2.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/SM5.0/SkyDome2.fx
+

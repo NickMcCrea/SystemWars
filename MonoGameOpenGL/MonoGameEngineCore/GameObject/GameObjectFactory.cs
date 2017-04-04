@@ -75,6 +75,20 @@ namespace MonoGameEngineCore.GameObject
             return ob;
         }
 
+        public static GameObject CreateGradientSkyDomeObject(int complexity, float scale)
+        {
+            ProceduralSphere sphere = new ProceduralSphere(complexity, complexity);
+            sphere.Indices = sphere.Indices.Reverse().ToArray();
+
+            var ob = new GameObject();
+            ob.Name = "skydome";
+            ob.Transform.Scale = scale;
+          
+            ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(sphere), BufferBuilder.IndexBufferBuild(sphere), sphere.PrimitiveCount));
+            ob.AddComponent(new GradientSkyDomeRenderer(EffectLoader.LoadSM5Effect("skydome2")));
+
+            return ob;
+        }
         /// <summary>
         /// Has a physics component for collision, but will not be simulated.
         /// </summary>
