@@ -21,8 +21,15 @@ float SpecularLightIntensity;
 
 float3 ViewVector;
 
+float3 CameraPosition;
+float3 CameraDirection;
+
 const float DepthBias = 0.02;
 float2 ShadowMapSize = (2048,2048);
+float3 fogColor;
+float c;
+float b;
+bool FogEnabled;
 
 texture ModelTexture;
 sampler2D textureSampler = sampler_state {
@@ -78,6 +85,17 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	return output;
 }
 
+float3 ApplyFog(in float3 rgb, in float distance, in float3 cameraPosition, in float3 cameraDir)
+{
+	if(!FogEnabled)
+		return rgb;
+	
+	float fogAmount = c * exp(-cameraPosition.y * b) * (1.0-exp(-distance * cameraDir.y * b))/cameraDir.y;
+	
+	return lerp(rgb,fogColor,fogAmount);
+
+}
+
  float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coord)
     {
         float shadow_term = 0;
@@ -127,7 +145,12 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 
 	float4 finalColor = saturate((textureColor + (DiffuseColor * DiffuseColorIntensity)) * (input.Color)  + specular);
-	return finalColor * shadowContribution + (AmbientLightColor * AmbientLightIntensity);
+	finalColor = finalColor * shadowContribution + (AmbientLightColor * AmbientLightIntensity);
+	
+	float distanceFromCamera = length(CameraPosition - input.WorldPos);
+	float3 colorAfterFog = ApplyFog(finalColor.rgb,distanceFromCamera, CameraPosition, CameraDirection);
+	
+	return float4(colorAfterFog, finalColor.w);
 
 }
 

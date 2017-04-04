@@ -10,13 +10,23 @@ namespace MonoGameEngineCore.Rendering
     {
         public List<SceneLight> LightsInScene { get; set; }
         public AmbientLight AmbientLight { get; set; }
-        
+        public float FogC { get; set; }
+        public float FogB { get; set; }
+        public bool FogEnabled { get; set; }
+        public Color FogColor { get; set; }
+
         public Scene()
         {
             LightsInScene = new List<SceneLight>();
+
+            FogC = 0.5f;
+            FogB= 0.015f;
+            FogColor = new Color(0.5f, 0.6f, 0.7f);
+            FogEnabled = true;
+
         }
 
-     
+
 
         public void SetUpDefaultAmbientAndDiffuseLights()
         {

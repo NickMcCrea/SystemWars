@@ -1,4 +1,10 @@
-
+float3 CameraPosition;
+float3 CameraDirection;
+bool FogEnabled;
+float c;
+float b;
+float3 fogColor;
+	
 cbuffer cbPerObject 
 {
 	float4x4 World;
@@ -55,6 +61,18 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     return output;
 };
 
+
+float3 ApplyFog(in float3 rgb, in float distance, in float3 cameraPosition, in float3 cameraDir)
+{
+	if(!FogEnabled)
+		return rgb;
+	
+	float fogAmount = c * exp(-cameraPosition.y * b) * (1.0-exp(-distance * cameraDir.y * b))/cameraDir.y;
+
+	return lerp(rgb,fogColor,fogAmount);
+
+}
+
 float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coord)
 {
 	float shadow_term = 0;
@@ -100,7 +118,12 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
 	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
-	return saturate(diffuse * shadowContribution + ambient);
+	float4 finalColorBeforeFog = saturate(diffuse * shadowContribution + ambient);
+	
+	float distanceFromCamera = length(CameraPosition - input.PositionWorld);
+	float3 colorAfterFog = ApplyFog(finalColorBeforeFog.rgb,distanceFromCamera, CameraPosition, CameraDirection);
+	
+	return float4(colorAfterFog, finalColorBeforeFog.w);
 };
 
 technique Technique1

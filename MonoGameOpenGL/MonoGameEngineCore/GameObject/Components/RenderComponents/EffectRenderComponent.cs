@@ -160,12 +160,31 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (ParameterExists("LightViewProj"))
                 effect.Parameters["LightViewProj"].SetValue(SystemCore.ShadowMapRenderer.LightViewProj);
-                
+
+            if (ParameterExists("CameraDirection"))
+                effect.Parameters["CameraDirection"].SetValue(SystemCore.ActiveCamera.View.Forward);
+
+            if (ParameterExists("CameraPosition"))
+                effect.Parameters["CameraPosition"].SetValue(SystemCore.ActiveCamera.Position);
+
+
+            if (ParameterExists("FogEnabled"))
+                effect.Parameters["FogEnabled"].SetValue(SystemCore.ActiveScene.FogEnabled);
+            
+            if (ParameterExists("c"))
+                effect.Parameters["c"].SetValue(SystemCore.ActiveScene.FogC);
+
+            if (ParameterExists("b"))
+                effect.Parameters["b"].SetValue(SystemCore.ActiveScene.FogB);
+
+            if (ParameterExists("fogColor"))
+                effect.Parameters["fogColor"].SetValue(SystemCore.ActiveScene.FogColor.ToVector3());
+
 
 
 
         }
-        
+
         public virtual void AssignLightingParameters()
         {
             if (ParameterExists("AmbientLightColor"))

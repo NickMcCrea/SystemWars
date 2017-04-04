@@ -30,6 +30,13 @@ namespace MonoGameDirectX11.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
+
+
+            //var skyDome = GameObjectFactory.CreateSkyDomeObject(Color.LightBlue, 10, 10);
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDome);
+
+       
+
             mouseCamera.moveSpeed = 0.01f;
 
             mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
@@ -38,7 +45,7 @@ namespace MonoGameDirectX11.Screens
                 AddPhysicsCube();
 
 
-            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.1f), 100, 1, 10, 1, 1, 1);
+            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 1, 50, 1, 1, 1);
             var vertexArray = heightMap.GenerateVertexArray();
             var indexArray = heightMap.GenerateIndices();
             GameObject heightMapObject = new GameObject();
@@ -52,6 +59,7 @@ namespace MonoGameDirectX11.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(heightMapObject);
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+
 
 
         
