@@ -70,7 +70,7 @@ namespace SystemWar
 
         public GradientSkyDome(Color apexColor, Color centerColor)
         {
-            var skyDomeGameObject = GameObjectFactory.CreateGradientSkyDomeObject(100, 10);
+            var skyDomeGameObject = GameObjectFactory.CreateGradientSkyDomeObject(100);
             skyDomeRenderer = skyDomeGameObject.GetComponent<GradientSkyDomeRenderer>();
             skyDomeRenderer.ApexColor = apexColor;
             skyDomeRenderer.CenterColor = centerColor;

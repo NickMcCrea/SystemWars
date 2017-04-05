@@ -105,9 +105,14 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public virtual void AssignLightingParameters()
         {
-            //effect.Parameters["ApexColor"].SetValue(ApexColor.ToVector4());
-           // effect.Parameters["CenterColor"].SetValue(CenterColor.ToVector4());
+            if (ParameterExists("ApexColor"))
+                effect.Parameters["ApexColor"].SetValue(ApexColor.ToVector4());
 
+            if (ParameterExists("CenterColor"))
+                effect.Parameters["CenterColor"].SetValue(CenterColor.ToVector4());
+
+            if (ParameterExists("LightDirection"))
+                effect.Parameters["LightDirection"].SetValue(Vector3.Normalize(SystemCore.ActiveScene.GetDiffuseLight().LightDirection));
 
         }
 

@@ -9,7 +9,7 @@ cbuffer cbPerObject
 
 float4 ApexColor;
 float4 CenterColor;
-
+float3 LightDirection;
 
 struct VertexShaderInput
 {
@@ -49,6 +49,9 @@ the colors of a sunset are typically: yellow at the edge, then orange-red, then 
     height = input.PositionWorld.y;
 	eastwest = input.PositionWorld.x;
 
+	float sizeOfSphere= length(input.PositionWorld);
+	float3 lightPos = (normalize(LightDirection) * sizeOfSphere);
+	
     // The value ranges from -1.0f to +1.0f so change it to only positive values.
     if(height < 0.0)
     {
@@ -57,13 +60,18 @@ the colors of a sunset are typically: yellow at the edge, then orange-red, then 
 
     // Determine the gradient color by interpolating between the apex and center based on the height of the pixel in the sky //dome.
     altitudeColor = lerp(CenterColor, ApexColor, height);
-
+/*
 	float2 p = input.PositionWorld.xy;
 	float2 o = float2(0,0);
-	float c = 0.1/(length(p-o));
-	float4 col = float4(c, c, 0.4 + c, 1);
+	float c = 0.05/(length(p-o));
+	float4 col = float4(c, c, c, 0);
+	*/
 	
-    return col;
+	float dotAngle = acos(dot(input.PositionWorld, LightDirection));
+	float c = 0.05 / dotAngle;
+	float4 col = float4(c,c,c,0);
+	
+    return saturate(altitudeColor + col);
 	
 };
 
