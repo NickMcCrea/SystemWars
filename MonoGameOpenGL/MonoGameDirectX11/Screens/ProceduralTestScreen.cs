@@ -29,7 +29,7 @@ namespace MonoGameDirectX11.Screens
             base.OnInitialise();
 
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1,1,1));
 
 
 
