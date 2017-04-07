@@ -6,11 +6,11 @@ using MonoGameEngineCore.ScreenManagement;
 
 namespace MonoGameDirectX11.Screens
 {
-    class UITestScreen : TestScreen
+    class UITest : TestScreen
     {
         Panel p;
 
-        public UITestScreen()
+        public UITest()
             : base()
         {
          

@@ -13,10 +13,10 @@ using SystemWar;
 
 namespace MonoGameDirectX11.Screens
 {
-    class ProceduralTestScreen : TestScreen
+    class ProceduralTerrain : TestScreen
     {
         GradientSkyDome skyDome;
-        public ProceduralTestScreen()
+        public ProceduralTerrain()
             : base()
         {
 
@@ -85,8 +85,6 @@ namespace MonoGameDirectX11.Screens
 
             base.OnRemove();
         }
-
-      
 
         public override void Update(GameTime gameTime)
         {

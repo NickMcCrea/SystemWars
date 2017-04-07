@@ -17,12 +17,12 @@ using System.Diagnostics;
 
 namespace MonoGameDirectX11
 {
-    public class PhysicsTestScreen : Screen
+    public class PhysicsTest : Screen
     {
         MouseFreeCamera mouseCamera;
         ColorScheme colorScheme;
 
-        public PhysicsTestScreen()
+        public PhysicsTest()
             : base()
         {
 

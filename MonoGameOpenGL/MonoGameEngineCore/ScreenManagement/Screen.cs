@@ -21,11 +21,14 @@ namespace MonoGameEngineCore
             fpsLabel.TextColor = SystemCore.ActiveColorScheme.Color1;
             fpsLabel.Visible = false;
             SystemCore.GUIManager.AddControl((fpsLabel));
+            
         }
+
+        
 
         public virtual void OnRemove()
         {
-            
+
         }
 
         public virtual void OnInitialise()
@@ -43,7 +46,7 @@ namespace MonoGameEngineCore
         {
 
             fpsLabel.Text = fpsCounter.FPS.ToString();
-         
+
         }
 
         public virtual void RenderSprites(GameTime gameTime)
@@ -52,5 +55,5 @@ namespace MonoGameEngineCore
         }
     }
 
-   
+
 }

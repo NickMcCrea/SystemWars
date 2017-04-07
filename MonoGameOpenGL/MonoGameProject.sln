@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameEngineCore", "MonoGameEngineCore\MonoGameEngineCore.csproj", "{02D66F0B-5F5C-4F91-89AB-BAF35133A56F}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemWar", "SystemWar\SystemWar.csproj", "{3FEEB6A7-0793-4990-BC46-4C208273E9ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateProject", "TemplateProject\TemplateProject.csproj", "{62C53F6F-D838-4A7F-B6EB-2226F0D84315}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GridForgeResurrected", "GridForgeResurrected\GridForgeResurrected.csproj", "{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -230,51 +228,6 @@ Global
 		{62C53F6F-D838-4A7F-B6EB-2226F0D84315}.Windows8|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{62C53F6F-D838-4A7F-B6EB-2226F0D84315}.Windows8|Mixed Platforms.Build.0 = Release|Any CPU
 		{62C53F6F-D838-4A7F-B6EB-2226F0D84315}.Windows8|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Android|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Android|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Android|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Android|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Android|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.iOS|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.iOS|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.iOS|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.iOS|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.iOS|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Linux|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Linux|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Linux|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Linux|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Linux|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.OSX|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.OSX|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.OSX|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.OSX|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.OSX|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.PSM|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.PSM|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.PSM|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.PSM|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.PSM|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Release|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows|x86.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows8|Any CPU.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows8|Any CPU.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows8|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows8|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD6713A2-92C0-4ACC-9E3A-7D1E495E4CFF}.Windows8|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

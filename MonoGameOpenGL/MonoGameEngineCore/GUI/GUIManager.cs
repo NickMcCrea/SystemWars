@@ -261,7 +261,7 @@ namespace MonoGameEngineCore.GUI
             foreach (string label in labels)
             {
 
-                var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y) + buttonSpace, label,maxWidth,maxHeight, button1Col, button2Col, Color.Black);            
+                var button1 = AddDefaultLabelledButton(new Vector2(GUIManager.GetFractionOfWidth(0.25f), screenMidPoint.Y-100) + buttonSpace, label,maxWidth,maxHeight, button1Col, button2Col, Color.Black);            
                 button1.Name = label;
                 button1.MainAlpha = 0f;
                 button1.HighlightAlpha = 0.8f;

@@ -15,13 +15,13 @@ using System.Collections.Generic;
 
 namespace MonoGameDirectX11
 {
-    public class RenderTestScreen : Screen
+    public class RenderTest : Screen
     {
         protected MouseFreeCamera mouseCamera;
         bool releaseMouse = false;
         GameObject crate;
 
-        public RenderTestScreen()
+        public RenderTest()
             : base()
         {
 
