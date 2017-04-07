@@ -25,7 +25,10 @@ namespace SystemWar
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDomeGameObject);
         }
 
-       
+        public void OnRemove()
+        {
+
+        }
 
         public static void TransitionToColor(Color newColor, float transitionTime)
         {
@@ -77,7 +80,10 @@ namespace SystemWar
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(skyDomeGameObject);
         }
 
+        public void OnRemove()
+        {
 
+        }
 
         public static void TransitionToColor(Color newColor, float transitionTime)
         {

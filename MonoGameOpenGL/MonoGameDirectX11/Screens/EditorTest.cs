@@ -42,6 +42,7 @@ namespace GridForgeResurrected.Screens
             SystemCore.GUIManager.ClearAllControls();
             SystemCore.GameObjectManager.ClearAllObjects();
             input.ClearBindings();
+            SystemCore.RemoveSubsystem(modelEditor);
             base.OnRemove();
         }
 

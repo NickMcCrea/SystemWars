@@ -14,6 +14,11 @@ namespace MonoGameEngineCore.ScreenManagement
             gameScreens = new List<Screen>();
         }
 
+        public void OnRemove()
+        {
+
+        }
+
         private void AddScreen(Screen newScreen)
         {
             newScreen.OnInitialise();

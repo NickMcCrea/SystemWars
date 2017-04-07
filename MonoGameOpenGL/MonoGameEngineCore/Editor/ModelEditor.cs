@@ -69,6 +69,11 @@ namespace MonoGameEngineCore.Editor
 
         private GameObject.GameObject mouseCursor;
 
+        public void OnRemove()
+        {
+
+        }
+
         public void Initalise()
         {
             currentVertices = new List<Vector3>();

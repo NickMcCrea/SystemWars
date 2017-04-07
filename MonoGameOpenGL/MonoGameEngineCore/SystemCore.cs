@@ -15,12 +15,14 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.ScreenManagement;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.Editor;
 
 namespace MonoGameEngineCore
 {
     public interface IGameSubSystem
     {
         void Initalise();
+        void OnRemove();
         void Update(GameTime gameTime);
         void Render(GameTime gameTime);
     }
@@ -38,6 +40,7 @@ namespace MonoGameEngineCore
         public static InputManager Input { get; private set; }
         public static ScreenManager ScreenManager { get; private set; }
         public static GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+
         public static GraphicsDevice GraphicsDevice { get; private set; }
         public static ContentManager ContentManager { get; private set; }
         public static GUIManager GUIManager { get; private set; }
@@ -123,6 +126,14 @@ namespace MonoGameEngineCore
             newSystem.Initalise();
             gameSubSystems.Add(newSystem);
         }
+
+
+        public static void RemoveSubsystem(IGameSubSystem system)
+        {
+            system.OnRemove();
+            gameSubSystems.Remove(system);
+        }
+
 
         public static void AddNewGameComponent(IGameComponent newComponent)
         {

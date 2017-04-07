@@ -32,6 +32,11 @@ namespace MonoGameEngineCore.GameObject
             lineEffect = new BasicEffect(SystemCore.GraphicsDevice);
         }
 
+        public void OnRemove()
+        {
+
+        }
+
         public GameObject AddShapeToScene(ProceduralShape shape)
         {
             GameObject o = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));

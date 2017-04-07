@@ -54,6 +54,11 @@ namespace MonoGameEngineCore.Audio
             
         }
 
+        public void OnRemove()
+        {
+
+        }
+
         public void Render(GameTime gameTime)
         {
             

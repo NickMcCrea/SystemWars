@@ -87,6 +87,8 @@ namespace GridForgeResurrected.Screens
             SystemCore.GUIManager.ClearAllControls();
             SystemCore.GameObjectManager.ClearAllObjects();
             input.ClearBindings();
+            CollisionRules.DefaultCollisionRule = CollisionRule.Normal;
+
             base.OnRemove();
         }
 

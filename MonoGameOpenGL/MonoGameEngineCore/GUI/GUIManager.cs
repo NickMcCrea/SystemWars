@@ -45,6 +45,11 @@ namespace MonoGameEngineCore.GUI
 
         }
 
+        public void OnRemove()
+        {
+
+        }
+
         public void Initalise()
         {
             guiBatch = new SpriteBatch(SystemCore.GraphicsDevice);

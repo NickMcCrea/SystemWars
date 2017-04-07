@@ -198,6 +198,11 @@ namespace MonoGameEngineCore
 
         }
 
+        public void OnRemove()
+        {
+
+        }
+
         public void Update(GameTime gameTime)
         {
             RefreshInputStates();
