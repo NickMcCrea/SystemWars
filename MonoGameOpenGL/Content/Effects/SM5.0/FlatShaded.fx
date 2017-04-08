@@ -120,6 +120,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
 	float4 finalColorBeforeFog = saturate(diffuse * shadowContribution + ambient);
 	
+	
 	float distanceFromCamera = length(CameraPosition - input.PositionWorld);
 	float3 colorAfterFog = ApplyFog(finalColorBeforeFog.rgb,distanceFromCamera, CameraPosition, CameraDirection);
 	

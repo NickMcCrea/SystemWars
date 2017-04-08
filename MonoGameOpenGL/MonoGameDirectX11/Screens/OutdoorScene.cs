@@ -13,10 +13,10 @@ using SystemWar;
 
 namespace MonoGameDirectX11.Screens
 {
-    class ProceduralTerrain : TestScreen
+    class OutdoorScene : TestScreen
     {
         GradientSkyDome skyDome;
-        public ProceduralTerrain()
+        public OutdoorScene()
             : base()
         {
 
@@ -31,6 +31,7 @@ namespace MonoGameDirectX11.Screens
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1,1,1));
 
+            SystemCore.ActiveScene.FogEnabled = true;
 
 
             skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);

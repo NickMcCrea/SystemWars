@@ -37,7 +37,7 @@ namespace MonoGameDirectX11
             lightDir.Normalize();
             SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
-
+            SystemCore.ActiveScene.FogEnabled = false;
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);

@@ -35,6 +35,7 @@ namespace MonoGameDirectX11
             SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
             colorScheme = SystemCore.ActiveColorScheme;
+            SystemCore.ActiveScene.FogEnabled = false;
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
 

@@ -55,7 +55,7 @@
     <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="TestScreen.cs" />
-    <Compile Include="Screens\ProceduralTestScreen.cs" />
+    <Compile Include="Screens\OutdoorScene.cs" />
     <Compile Include="Screens\RenderTestScreen.cs" />
     <Compile Include="Screens\RenderTextureTest.cs" />
     <Compile Include="Screens\PhysicsTestScreen.cs" />

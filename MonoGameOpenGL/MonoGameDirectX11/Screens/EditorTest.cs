@@ -32,6 +32,7 @@ namespace GridForgeResurrected.Screens
         public override void OnInitialise()
         {
             modelEditor = new SimpleModelEditor(10);
+            SystemCore.ActiveScene.FogEnabled = false;
 
             SystemCore.AddNewUpdateRenderSubsystem(modelEditor);
             base.OnInitialise();
