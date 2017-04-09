@@ -41,6 +41,24 @@ float Point1Intensity;
 float Point1FallOffDistance;
 float Point1FullPowerDistance;
 
+float3 Point2Position;
+float4 Point2Color;
+float Point2Intensity;
+float Point2FallOffDistance;
+float Point2FullPowerDistance;
+
+float3 Point3Position;
+float4 Point3Color;
+float Point3Intensity;
+float Point3FallOffDistance;
+float Point3FullPowerDistance;
+
+float3 Point4Position;
+float4 Point4Color;
+float Point4Intensity;
+float Point4FallOffDistance;
+float Point4FullPowerDistance;
+
 float4x4 LightViewProj;
 Texture2D ShadowMap;
 const float DepthBias = 0.02;
@@ -77,6 +95,15 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     return output;
 };
 
+
+float4 GetPointLightContrbution(float3 lightPos, float3 worldPos, float3 normal, float4 color, float fallOffStart, float fallOffEnd, float intensity)
+{
+	 float pointLight1Distance = length(worldPos - lightPos);
+    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - fallOffStart) / fallOffEnd);
+    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
+    float pointLight1Intensity = dot(normal, normalize((lightPos - worldPos)));
+    return saturate(color * pointLight1Intensity * pointLight1Attenuation * intensity);
+}
 
 float3 ApplyFog(in float3 rgb, in float distance, in float3 cameraPosition, in float3 cameraDir)
 {
@@ -144,13 +171,13 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 diffuseFill = lightIntensity2 * Diffuse2LightColor * Diffuse2LightIntensity;
     float4 diffuseBack = lightIntensity3 * Diffuse3LightColor * Diffuse3LightIntensity;
 
-    float pointLight1Distance = length(input.PositionWorld - Point1Position);
-    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - Point1FullPowerDistance) / Point1FallOffDistance);
-    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
-    float pointLight1Intensity = dot(normal, normalize((Point1Position - input.PositionWorld)));
-    float4 pointLight1 = saturate(Point1Color * pointLight1Intensity * pointLight1Attenuation * Point1Intensity);
+     float4 pointLight1 = GetPointLightContrbution(Point1Position, input.PositionWorld, normal, Point1Color, Point1FullPowerDistance, Point1FallOffDistance, Point1Intensity);
+	float4 pointLight2 = GetPointLightContrbution(Point2Position, input.PositionWorld,normal, Point2Color, Point2FullPowerDistance, Point2FallOffDistance, Point2Intensity);
+float4 pointLight3 = GetPointLightContrbution(Point3Position, input.PositionWorld, normal, Point3Color, Point3FullPowerDistance, Point3FallOffDistance, Point3Intensity);
+float4 pointLight4 = GetPointLightContrbution(Point4Position, input.PositionWorld, normal, Point4Color, Point4FullPowerDistance, Point4FallOffDistance, Point4Intensity);
 
-    float4 diffuseFinal = saturate(diffuseKey + diffuseFill + diffuseBack + pointLight1);
+
+    float4 diffuseFinal = saturate(diffuseKey + diffuseFill + diffuseBack + pointLight1 + pointLight2 + pointLight3 + pointLight4);
 
 	float4 diffuse = diffuseFinal * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;

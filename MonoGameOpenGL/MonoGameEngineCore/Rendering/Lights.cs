@@ -40,9 +40,10 @@ namespace MonoGameEngineCore.Rendering
 
         }
 
-        public void AddPointLight(Vector3 pos, Color col, float fallOffStart, float fallOffEnd, float intensity)
+        public void AddPointLight(Vector3 pos, Color col, float fallOffStart, float fallOffEnd, float intensity, PointLightNumber num)
         {
             PointLight p = new PointLight(pos, col, fallOffStart, fallOffEnd, intensity);
+            p.Number = num;
             LightsInScene.Add(p);
         }
 
@@ -104,17 +105,28 @@ namespace MonoGameEngineCore.Rendering
         Back
     }
 
+    public enum PointLightNumber
+    {
+        One,
+        Two,
+        Three,
+        Four
+    }
+
+
     public class PointLight : SceneLight
     {
         public Vector3 Position { get; set; }
         public float FallOffStart { get; set; }
         public float FallOffEnd { get; set; }
-
+        public PointLightNumber Number { get; set; }
         public PointLight(Vector3 position, Color color, float fallOffStart, float fallOffEnd, float intensity) : base(color, intensity)
         {
             Position = position;
             FallOffStart = fallOffStart;
             FallOffEnd = fallOffEnd;
+            Number = PointLightNumber.One;
+
         }
     }
 

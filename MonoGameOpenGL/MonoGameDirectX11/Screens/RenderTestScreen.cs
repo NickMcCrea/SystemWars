@@ -33,11 +33,16 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
 
-            //SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
-            //SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
-            SystemCore.ActiveScene.AddPointLight(new Vector3(30, 0, 0), new Color(0.1f,0.5f,0.1f,1), 10f, 200f, 1f);
-            //SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
-            //SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
+            SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
+            SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
+
+            float lightDistance = 50f;
+            SystemCore.ActiveScene.AddPointLight(new Vector3(lightDistance, 0, 0), new Color(0.1f,0.5f,0.1f,1), 10f, 20, 1f, PointLightNumber.One);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(-lightDistance, 0, 0), Color.Red, 10f, 50, 1f, PointLightNumber.Two);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, -lightDistance), Color.White, 10f, 50f, 1f, PointLightNumber.Three);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, lightDistance), Color.Red, 10f, 20f, 1f, PointLightNumber.Four);
+            SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
+            SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
 
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
             SystemCore.ActiveScene.FogEnabled = false;
