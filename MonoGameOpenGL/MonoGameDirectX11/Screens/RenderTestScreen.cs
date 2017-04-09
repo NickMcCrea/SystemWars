@@ -34,13 +34,15 @@ namespace MonoGameDirectX11
             fpsLabel.Visible = true;
 
             SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
-            SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
+           // SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
 
-            float lightDistance = 50f;
-            SystemCore.ActiveScene.AddPointLight(new Vector3(lightDistance, 0, 0), new Color(0.1f,0.5f,0.1f,1), 10f, 20, 1f, PointLightNumber.One);
-            SystemCore.ActiveScene.AddPointLight(new Vector3(-lightDistance, 0, 0), Color.Red, 10f, 50, 1f, PointLightNumber.Two);
-            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, -lightDistance), Color.White, 10f, 50f, 1f, PointLightNumber.Three);
-            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, lightDistance), Color.Red, 10f, 20f, 1f, PointLightNumber.Four);
+            float lightDistance = 80f;
+            float fadeStart = 50;
+            float fadeEnd = 100;
+            SystemCore.ActiveScene.AddPointLight(new Vector3(lightDistance, 0, 0), new Color(0.1f,0.5f,0.1f,1), fadeStart, fadeEnd, 1f, PointLightNumber.One);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(-lightDistance, 0, 0), Color.Blue, fadeStart, fadeEnd, 1f, PointLightNumber.Two);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, -lightDistance), Color.White, fadeStart, fadeEnd, 1f, PointLightNumber.Three);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, lightDistance), Color.Red, fadeStart, fadeEnd, 1f, PointLightNumber.Four);
             SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
             SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
 
@@ -52,7 +54,7 @@ namespace MonoGameDirectX11
             SystemCore.SetActiveCamera(mouseCamera);
 
             var shape = new ProceduralSphere(20, 20);
-            shape.SetColor(SystemCore.ActiveColorScheme.Color5);
+            shape.SetColor(Color.LightGray);
 
 
             for (int i = 0; i < 10; i++)
@@ -77,20 +79,18 @@ namespace MonoGameDirectX11
             AddInputBindings();
 
             AddTestMario("Mario", Vector3.Zero);
-            AddTestMario("Mario", new Vector3(10, 0, 0));
             AddTestMario("RedGloss", new Vector3(20, 0, 0));
             AddTestMario("RedMatt", new Vector3(-20, 0, 0));
-            AddTestMario("OrangeGloss", new Vector3(-10, 0, 0));
-            AddTestMario("WoodenCrate", new Vector3(0, 0, 10));
-            AddTestMario("Mario", new Vector3(0, 0, -10));
+            AddTestMario("OrangeGloss", new Vector3(0, 0, -20));
+            AddTestMario("WoodenCrate", new Vector3(0, 0, 20));
 
             crate = AddTestModel("Models/Crate", "WoodenCrate");
-            crate.Transform.SetPosition(new Vector3(30, 0, 0));
+            crate.Transform.SetPosition(new Vector3(100, 0,50));
             crate.Transform.Scale = 0.01f;
            
 
             var groundShape = new ProceduralCuboid(10, 10, 0.5f);
-            groundShape.SetColor(Color.DarkOrange);
+            groundShape.SetColor(Color.LightGray);
             var gameObjectPlane = new GameObject();
             gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
             gameObjectPlane.AddComponent(new EffectRenderComponent(effect));
@@ -105,6 +105,7 @@ namespace MonoGameDirectX11
         {
             SystemCore.GUIManager.ClearAllControls();
             SystemCore.GameObjectManager.ClearAllObjects();
+            SystemCore.ActiveScene.ClearLights();
             input.ClearBindings();
             base.OnRemove();
         }
@@ -199,7 +200,7 @@ namespace MonoGameDirectX11
         public override void Render(GameTime gameTime)
         {
             if (!SystemCore.ShadowMapRenderer.ShadowPass)
-                SystemCore.GraphicsDevice.Clear(SystemCore.ActiveColorScheme.Color2);
+                SystemCore.GraphicsDevice.Clear(Color.Black);
 
             DebugShapeRenderer.VisualiseAxes(5f);
 

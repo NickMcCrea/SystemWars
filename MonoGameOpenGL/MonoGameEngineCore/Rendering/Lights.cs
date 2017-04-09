@@ -84,6 +84,11 @@ namespace MonoGameEngineCore.Rendering
                 ((DiffuseLight)LightsInScene[index]).LightDirection = lightDir;
 
         }
+
+        public void ClearLights()
+        {
+            LightsInScene.Clear();
+        }
     }
 
     public abstract class SceneLight
