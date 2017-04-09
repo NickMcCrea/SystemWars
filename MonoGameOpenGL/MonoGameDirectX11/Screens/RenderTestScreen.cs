@@ -34,22 +34,22 @@ namespace MonoGameDirectX11
             fpsLabel.Visible = true;
 
             SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
-           // SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
+            SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
+            SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
+            SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
 
             float lightDistance = 80f;
             float fadeStart = 50;
             float fadeEnd = 100;
-            SystemCore.ActiveScene.AddPointLight(new Vector3(lightDistance, 0, 0), new Color(0.1f,0.5f,0.1f,1), fadeStart, fadeEnd, 1f, PointLightNumber.One);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(lightDistance, 0, 0), new Color(0.1f, 0.5f, 0.1f, 1), fadeStart, fadeEnd, 1f, PointLightNumber.One);
             SystemCore.ActiveScene.AddPointLight(new Vector3(-lightDistance, 0, 0), Color.Blue, fadeStart, fadeEnd, 1f, PointLightNumber.Two);
             SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, -lightDistance), Color.White, fadeStart, fadeEnd, 1f, PointLightNumber.Three);
             SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, lightDistance), Color.Red, fadeStart, fadeEnd, 1f, PointLightNumber.Four);
-            SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
-            SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
 
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
             SystemCore.ActiveScene.FogEnabled = false;
 
-  
+
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);
 
@@ -85,9 +85,9 @@ namespace MonoGameDirectX11
             AddTestMario("WoodenCrate", new Vector3(0, 0, 20));
 
             crate = AddTestModel("Models/Crate", "WoodenCrate");
-            crate.Transform.SetPosition(new Vector3(100, 0,50));
+            crate.Transform.SetPosition(new Vector3(100, 0, 50));
             crate.Transform.Scale = 0.01f;
-           
+
 
             var groundShape = new ProceduralCuboid(10, 10, 0.5f);
             groundShape.SetColor(Color.LightGray);
@@ -140,9 +140,9 @@ namespace MonoGameDirectX11
             input.AddKeyPressBinding("MainMenu", Keys.Escape);
 
             var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
-            releaseMouseBinding.InputEventActivated += (x, y) => 
-            { 
-                releaseMouse= !releaseMouse;
+            releaseMouseBinding.InputEventActivated += (x, y) =>
+            {
+                releaseMouse = !releaseMouse;
                 SystemCore.CursorVisible = releaseMouse;
             };
 
