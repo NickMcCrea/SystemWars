@@ -33,6 +33,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
             DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
+            if (light == null)
+                return;
 
             Matrix lightRotation = Matrix.CreateLookAt(Vector3.Zero, Vector3.Normalize(-light.LightDirection), Vector3.Up);
 

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore.Camera;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.GameObject.Components.RenderComponents;
+using System;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
@@ -187,12 +188,15 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public virtual void AssignLightingParameters()
         {
-            if (ParameterExists("AmbientLightColor"))
-                effect.Parameters["AmbientLightColor"].SetValue(SystemCore.ActiveScene.AmbientLight.LightColor.ToVector4());
+            if (SystemCore.ActiveScene.AmbientLight != null)
+            {
+                if (ParameterExists("AmbientLightColor"))
+                    effect.Parameters["AmbientLightColor"].SetValue(SystemCore.ActiveScene.AmbientLight.LightColor.ToVector4());
 
-            if (ParameterExists("AmbientLightIntensity"))
-                effect.Parameters["AmbientLightIntensity"].SetValue(SystemCore.ActiveScene.AmbientLight.LightIntensity);
+                if (ParameterExists("AmbientLightIntensity"))
+                    effect.Parameters["AmbientLightIntensity"].SetValue(SystemCore.ActiveScene.AmbientLight.LightIntensity);
 
+            }
 
             if (ParameterExists("ColorSaturation"))
                 effect.Parameters["ColorSaturation"].SetValue(ColorSaturation);
@@ -202,7 +206,6 @@ namespace MonoGameEngineCore.GameObject.Components
                 if (light is DiffuseLight)
                 {
                     var diffLight = light as DiffuseLight;
-
                     AddDiffuseLight(diffLight);
 
                     if (diffLight.DiffuseType == DiffuseLightType.Key)
@@ -218,7 +221,27 @@ namespace MonoGameEngineCore.GameObject.Components
 
                     }
                 }
+
+                if(light is PointLight)
+                {
+                    AddPointLight(light as PointLight);
+                }
             }
+
+        }
+
+        private void AddPointLight(PointLight light)
+        {
+            if (ParameterExists("Point1Position"))
+                effect.Parameters["Point1Position"].SetValue(light.Position);
+            if (ParameterExists("Point1Color"))
+                effect.Parameters["Point1Color"].SetValue(light.LightColor.ToVector4());
+            if (ParameterExists("Point1FallOffDistance"))
+                effect.Parameters["Point1FallOffDistance"].SetValue(light.FallOffEnd);
+            if (ParameterExists("Point1FullPowerDistance"))
+                effect.Parameters["Point1FullPowerDistance"].SetValue(light.FallOffStart);
+            if (ParameterExists("Point1Intensity"))
+                effect.Parameters["Point1Intensity"].SetValue(light.LightIntensity);
 
         }
 

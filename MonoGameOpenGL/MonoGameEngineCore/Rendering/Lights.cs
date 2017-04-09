@@ -20,7 +20,7 @@ namespace MonoGameEngineCore.Rendering
             LightsInScene = new List<SceneLight>();
 
             FogC = 0.5f;
-            FogB= 0.015f;
+            FogB = 0.015f;
             FogColor = new Color(0.5f, 0.6f, 0.7f);
             FogEnabled = true;
 
@@ -33,11 +33,17 @@ namespace MonoGameEngineCore.Rendering
             LightsInScene.Clear();
 
             AmbientLight = new AmbientLight(Color.White, 0.2f);
-            Vector3 lightDir = new Vector3(1,0,0f);
+            Vector3 lightDir = new Vector3(1, 0, 0f);
             lightDir.Normalize();
             LightsInScene.Add(new DiffuseLight(lightDir, Color.White, 0.5f));
 
-       
+
+        }
+
+        public void AddPointLight(Vector3 pos, Color col, float fallOffStart, float fallOffEnd, float intensity)
+        {
+            PointLight p = new PointLight(pos, col, fallOffStart, fallOffEnd, intensity);
+            LightsInScene.Add(p);
         }
 
         public void AddKeyLight(Vector3 dir, Color color, float intensity, bool shadowCasting)
@@ -67,7 +73,7 @@ namespace MonoGameEngineCore.Rendering
 
         public DiffuseLight GetKeyLight()
         {
-            return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight) 
+            return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight)
             && ((DiffuseLight)x).DiffuseType == DiffuseLightType.Key) as DiffuseLight;
         }
 
@@ -79,7 +85,7 @@ namespace MonoGameEngineCore.Rendering
         }
     }
 
-    public abstract class SceneLight 
+    public abstract class SceneLight
     {
         public Color LightColor { get; set; }
         public float LightIntensity { get; set; }
@@ -90,7 +96,7 @@ namespace MonoGameEngineCore.Rendering
             LightIntensity = intensity;
         }
     }
-    
+
     public enum DiffuseLightType
     {
         Key,
@@ -98,9 +104,23 @@ namespace MonoGameEngineCore.Rendering
         Back
     }
 
+    public class PointLight : SceneLight
+    {
+        public Vector3 Position { get; set; }
+        public float FallOffStart { get; set; }
+        public float FallOffEnd { get; set; }
+
+        public PointLight(Vector3 position, Color color, float fallOffStart, float fallOffEnd, float intensity) : base(color, intensity)
+        {
+            Position = position;
+            FallOffStart = fallOffStart;
+            FallOffEnd = fallOffEnd;
+        }
+    }
+
     public class DiffuseLight : SceneLight
     {
-        
+
 
         public DiffuseLight(Vector3 lightDirection, Color lightColor, float intensity)
             : base(lightColor, intensity)
@@ -116,7 +136,7 @@ namespace MonoGameEngineCore.Rendering
 
 
     }
-    
+
     public class AmbientLight : SceneLight
     {
         public AmbientLight(Color lightColor, float intensity)

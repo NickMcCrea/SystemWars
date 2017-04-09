@@ -23,6 +23,12 @@ float4 Diffuse3LightDirection;
 float4 Diffuse3LightColor;
 float Diffuse3LightIntensity;
 
+float3 Point1Position;
+float4 Point1Color;
+float Point1Intensity;
+float Point1FallOffDistance;
+float Point1FullPowerDistance;
+
 float Shininess;
 float4 SpecularLightColor;
 float SpecularLightIntensity;
@@ -69,7 +75,6 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
     float4 Position : SV_POSITION;
-    float4 Color : COLOR0;
     float3 Normal : TEXCOORD0;
     float2 TextureCoordinate : TEXCOORD1;
     float4 WorldPos : COLOR1;
@@ -121,27 +126,40 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Normal = normalize(mul(input.Normal, World));;
     output.TextureCoordinate = input.TextureCoordinate;
 
-    float lightIntensity = dot(output.Normal, DiffuseLightDirection);
-    float lightIntensity2 = dot(output.Normal, Diffuse2LightDirection);
-    float lightIntensity3 = dot(output.Normal, Diffuse3LightDirection);
 
-    float4 keyLight = saturate(DiffuseLightColor * DiffuseLightIntensity * lightIntensity);
-    float4 fillLight = saturate(Diffuse2LightColor * Diffuse2LightIntensity * lightIntensity2);
-    float4 backLight = saturate(Diffuse3LightColor * Diffuse3LightIntensity * lightIntensity3);
-    output.Color = saturate(keyLight + fillLight + backLight);
-
+   
     return output;
 }
 
 float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
+
+    float lightIntensity = dot(input.Normal, DiffuseLightDirection);
+    float lightIntensity2 = dot(input.Normal, Diffuse2LightDirection);
+    float lightIntensity3 = dot(input.Normal, Diffuse3LightDirection);
+
+    float4 keyLight = saturate(DiffuseLightColor * DiffuseLightIntensity * lightIntensity);
+    float4 fillLight = saturate(Diffuse2LightColor * Diffuse2LightIntensity * lightIntensity2);
+    float4 backLight = saturate(Diffuse3LightColor * Diffuse3LightIntensity * lightIntensity3);
+
+
+    float pointLight1Distance = length(input.WorldPos - Point1Position);
+    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - Point1FullPowerDistance) / Point1FallOffDistance);
+    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
+    float pointLight1Intensity = dot(input.Normal, normalize((Point1Position - input.WorldPos)));
+    float4 pointLight1 = saturate(Point1Color * pointLight1Intensity * pointLight1Attenuation * Point1Intensity);
+
+
+    float4 diffColor = saturate(keyLight + fillLight + backLight + pointLight1);
+
+
     float3 light = normalize(DiffuseLightDirection);
     float3 normal = normalize(input.Normal);
     float3 r = normalize(2 * dot(light, normal) * normal - light);
     float3 v = normalize(mul(normalize(ViewVector), World));
     float dotProduct = dot(r, v);
 
-    float4 specular = SpecularLightIntensity * SpecularLightColor * max(pow(dotProduct, Shininess), 0) * length(input.Color);
+    float4 specular = SpecularLightIntensity * SpecularLightColor * max(pow(dotProduct, Shininess), 0) * length(diffColor);
     float4 textureColor = tex2D(textureSampler, input.TextureCoordinate) * TextureIntensity;
     textureColor.a = 1;
 
@@ -163,7 +181,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	
 
 
-    float4 finalColor = saturate((textureColor + (DiffuseColor * DiffuseColorIntensity)) * (input.Color) + specular);
+    float4 finalColor = saturate((textureColor + (DiffuseColor * DiffuseColorIntensity)) * (diffColor) + specular);
     finalColor = finalColor * shadowContribution + (AmbientLightColor * AmbientLightIntensity);
 	
     float distanceFromCamera = length(CameraPosition - input.WorldPos);

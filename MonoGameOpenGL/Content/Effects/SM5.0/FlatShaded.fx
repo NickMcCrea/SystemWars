@@ -35,6 +35,12 @@ float4 Diffuse3LightDirection;
 float4 Diffuse3LightColor;
 float Diffuse3LightIntensity;
 
+float3 Point1Position;
+float4 Point1Color;
+float Point1Intensity;
+float Point1FallOffDistance;
+float Point1FullPowerDistance;
+
 float4x4 LightViewProj;
 Texture2D ShadowMap;
 const float DepthBias = 0.02;
@@ -115,6 +121,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float lightIntensity2 = dot(normal, Diffuse2LightDirection);
     float lightIntensity3 = dot(normal, Diffuse3LightDirection);
 
+
+   
+
     float shadowContribution = 1;
 
 	///SHADOW
@@ -134,7 +143,14 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 diffuseKey = lightIntensity * DiffuseLightColor * DiffuseLightIntensity;
     float4 diffuseFill = lightIntensity2 * Diffuse2LightColor * Diffuse2LightIntensity;
     float4 diffuseBack = lightIntensity3 * Diffuse3LightColor * Diffuse3LightIntensity;
-    float4 diffuseFinal = saturate(diffuseKey + diffuseFill + diffuseBack);
+
+    float pointLight1Distance = length(input.PositionWorld - Point1Position);
+    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - Point1FullPowerDistance) / Point1FallOffDistance);
+    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
+    float pointLight1Intensity = dot(normal, normalize((Point1Position - input.PositionWorld)));
+    float4 pointLight1 = saturate(Point1Color * pointLight1Intensity * pointLight1Attenuation * Point1Intensity);
+
+    float4 diffuseFinal = saturate(diffuseKey + diffuseFill + diffuseBack + pointLight1);
 
 	float4 diffuse = diffuseFinal * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
