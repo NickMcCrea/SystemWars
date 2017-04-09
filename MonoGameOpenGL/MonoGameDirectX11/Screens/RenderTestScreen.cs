@@ -32,13 +32,16 @@ namespace MonoGameDirectX11
         {
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            Vector3 lightDir = new Vector3(1, 1, 1);
-            lightDir.Normalize();
-            SystemCore.ActiveScene.GetDiffuseLight().LightDirection = lightDir;
+
+            SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
+            SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
+            SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
+            SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
+
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
             SystemCore.ActiveScene.FogEnabled = false;
 
+  
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);
 
@@ -113,7 +116,7 @@ namespace MonoGameDirectX11
             gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>(model)));
             MaterialFactory.ApplyMaterialComponent(gameObject, materialName);
             gameObject.AddComponent(new ShadowCasterComponent());
-            gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            //gameObject.AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             gameObject.AddComponent(new SquareParticleSystem());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
             return gameObject;
@@ -164,8 +167,8 @@ namespace MonoGameDirectX11
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
 
-            DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
-            light.LightDirection = Vector3.Transform(light.LightDirection, Matrix.CreateRotationY(0.001f));
+            //DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
+            //light.LightDirection = Vector3.Transform(light.LightDirection, Matrix.CreateRotationY(0.001f));
 
             List<GameObject> activeGameObjects = SystemCore.GetSubsystem<GameObjectManager>().GetAllObjects();
             BoundingBox testVolume = new BoundingBox(new Vector3(-100, -100, -100), new Vector3(100, 100, 100));

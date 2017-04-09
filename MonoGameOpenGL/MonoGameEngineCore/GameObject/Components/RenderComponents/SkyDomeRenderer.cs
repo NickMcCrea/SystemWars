@@ -112,7 +112,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 effect.Parameters["CenterColor"].SetValue(CenterColor.ToVector4());
 
             if (ParameterExists("LightDirection"))
-                effect.Parameters["LightDirection"].SetValue(Vector3.Normalize(SystemCore.ActiveScene.GetDiffuseLight().LightDirection));
+                effect.Parameters["LightDirection"].SetValue(Vector3.Normalize(SystemCore.ActiveScene.GetKeyLight().LightDirection));
 
         }
 

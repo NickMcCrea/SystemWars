@@ -35,14 +35,40 @@ namespace MonoGameEngineCore.Rendering
             AmbientLight = new AmbientLight(Color.White, 0.2f);
             Vector3 lightDir = new Vector3(1,0,0f);
             lightDir.Normalize();
-            LightsInScene.Add(new DiffuseLight(lightDir, Color.White, 1f));
+            LightsInScene.Add(new DiffuseLight(lightDir, Color.White, 0.5f));
 
        
         }
 
-        public DiffuseLight GetDiffuseLight()
+        public void AddKeyLight(Vector3 dir, Color color, float intensity, bool shadowCasting)
         {
-            return LightsInScene[0] as DiffuseLight;
+            DiffuseLight key = new DiffuseLight(dir, color, intensity);
+            key.DiffuseType = DiffuseLightType.Key;
+            key.IsShadowCasting = shadowCasting;
+            LightsInScene.Add(key);
+        }
+
+        public void AddFillLight(Vector3 dir, Color color, float intensity)
+        {
+            DiffuseLight fill = new DiffuseLight(dir, color, intensity);
+            fill.DiffuseType = DiffuseLightType.Fill;
+            fill.IsShadowCasting = false;
+            LightsInScene.Add(fill);
+        }
+
+        public void AddBackLight(Vector3 dir, Color color, float intensity)
+        {
+            DiffuseLight back = new DiffuseLight(dir, color, intensity);
+            back.DiffuseType = DiffuseLightType.Back;
+            back.IsShadowCasting = false;
+            LightsInScene.Add(back);
+        }
+
+
+        public DiffuseLight GetKeyLight()
+        {
+            return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight) 
+            && ((DiffuseLight)x).DiffuseType == DiffuseLightType.Key) as DiffuseLight;
         }
 
         public void SetDiffuseLightDir(int index, Vector3 lightDir)
@@ -65,16 +91,28 @@ namespace MonoGameEngineCore.Rendering
         }
     }
     
+    public enum DiffuseLightType
+    {
+        Key,
+        Fill,
+        Back
+    }
+
     public class DiffuseLight : SceneLight
     {
+        
+
         public DiffuseLight(Vector3 lightDirection, Color lightColor, float intensity)
             : base(lightColor, intensity)
         {
             LightDirection = lightDirection;
             IsShadowCasting = true;
+            DiffuseType = DiffuseLightType.Key;
+
         }
         public Vector3 LightDirection { get; set; }
         public bool IsShadowCasting { get; set; }
+        public DiffuseLightType DiffuseType { get; set; }
 
 
     }

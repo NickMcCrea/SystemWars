@@ -1,6 +1,7 @@
 float3 CameraPosition;
 float3 CameraDirection;
 bool FogEnabled;
+bool ShadowsEnabled;
 float c;
 float b;
 float3 fogColor;
@@ -25,6 +26,15 @@ cbuffer cbDiffuse
 	float4 DiffuseLightDirection;
 	float DiffuseLightIntensity;
 }
+
+float4 Diffuse2LightDirection;
+float4 Diffuse2LightColor;
+float Diffuse2LightIntensity;
+
+float4 Diffuse3LightDirection;
+float4 Diffuse3LightColor;
+float Diffuse3LightIntensity;
+
 float4x4 LightViewProj;
 Texture2D ShadowMap;
 const float DepthBias = 0.02;
@@ -102,21 +112,31 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float3 normal = cross(ddy(input.PositionWorld.xyz), ddx(input.PositionWorld.xyz));
 	normal = normalize(normal);
 	float lightIntensity = dot(normal, DiffuseLightDirection);
+    float lightIntensity2 = dot(normal, Diffuse2LightDirection);
+    float lightIntensity3 = dot(normal, Diffuse3LightDirection);
+
+    float shadowContribution = 1;
 
 	///SHADOW
-	float NdotL = lightIntensity;
-	float4 lightingPosition = mul(input.PositionWorld, LightViewProj);
+    if (ShadowsEnabled)
+    {
+        float NdotL = lightIntensity;
+        float4 lightingPosition = mul(input.PositionWorld, LightViewProj);
 		//Find the position in the shadow map for this pixel
-		float2 ShadowTexCoord = mad(0.5f, lightingPosition.xy / lightingPosition.w, float2(0.5f, 0.5f));
-		ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
+        float2 ShadowTexCoord = mad(0.5f, lightingPosition.xy / lightingPosition.w, float2(0.5f, 0.5f));
+        ShadowTexCoord.y = 1.0f - ShadowTexCoord.y;
 	// Get the current depth stored in the shadow map
-	float ourdepth = (lightingPosition.z / lightingPosition.w);
-	float shadowContribution = CalcShadowTermPCF(ourdepth, NdotL, ShadowTexCoord);
+        float ourdepth = (lightingPosition.z / lightingPosition.w);
+        shadowContribution = CalcShadowTermPCF(ourdepth, NdotL, ShadowTexCoord);
+    }
 	///SHADOW
 
+    float4 diffuseKey = lightIntensity * DiffuseLightColor * DiffuseLightIntensity;
+    float4 diffuseFill = lightIntensity2 * Diffuse2LightColor * Diffuse2LightIntensity;
+    float4 diffuseBack = lightIntensity3 * Diffuse3LightColor * Diffuse3LightIntensity;
+    float4 diffuseFinal = saturate(diffuseKey + diffuseFill + diffuseBack);
 
-
-	float4 diffuse = lightIntensity * DiffuseLightColor * DiffuseLightIntensity * (input.Color * ColorSaturation);
+	float4 diffuse = diffuseFinal * (input.Color * ColorSaturation);
 	float4 ambient = AmbientLightColor * AmbientLightIntensity;
 	float4 finalColorBeforeFog = saturate(diffuse * shadowContribution + ambient);
 	

@@ -7,7 +7,7 @@ using MonoGameEngineCore.GameObject.Components.RenderComponents;
 
 namespace MonoGameEngineCore.GameObject.Components
 {
-    
+
 
     public class EffectRenderComponent : IComponent, IDrawable
     {
@@ -23,7 +23,7 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             this.effect = effect;
             Visible = true;
-           //default to main active camera in scene. But overridable via property.
+            //default to main active camera in scene. But overridable via property.
             Camera = "main";
         }
 
@@ -45,7 +45,7 @@ namespace MonoGameEngineCore.GameObject.Components
             //check it has a texture
 
             var material = ParentObject.GetComponent<MaterialComponent>();
-            if(material != null)
+            if (material != null)
             {
                 if (!string.IsNullOrEmpty(material.TextureName))
                 {
@@ -151,10 +151,10 @@ namespace MonoGameEngineCore.GameObject.Components
             if (ParameterExists("ViewInvert"))
                 effect.Parameters["ViewInvert"].SetValue(Matrix.Invert(SystemCore.GetCamera(Camera).View));
 
-            if(ParameterExists("WorldInverseTranspose"))
+            if (ParameterExists("WorldInverseTranspose"))
                 effect.Parameters["WorldInverseTranspose"].SetValue(Matrix.Transpose(Matrix.Invert(transform.WorldMatrix)));
 
-            if(ParameterExists("ViewVector"))
+            if (ParameterExists("ViewVector"))
                 effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View.Forward));
 
 
@@ -170,7 +170,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (ParameterExists("FogEnabled"))
                 effect.Parameters["FogEnabled"].SetValue(SystemCore.ActiveScene.FogEnabled);
-            
+
             if (ParameterExists("c"))
                 effect.Parameters["c"].SetValue(SystemCore.ActiveScene.FogC);
 
@@ -201,12 +201,21 @@ namespace MonoGameEngineCore.GameObject.Components
             {
                 if (light is DiffuseLight)
                 {
-                    AddDiffuseLight(light as DiffuseLight);
+                    var diffLight = light as DiffuseLight;
 
-                   if (((DiffuseLight)light).IsShadowCasting)
+                    AddDiffuseLight(diffLight);
+
+                    if (diffLight.DiffuseType == DiffuseLightType.Key)
                     {
-                        if (ParameterExists("ShadowMap"))
-                            effect.Parameters["ShadowMap"].SetValue(SystemCore.ShadowMapRenderer.ShadowMapTarget);
+                        if (diffLight.IsShadowCasting)
+                        {
+                            if (ParameterExists("ShadowMap"))
+                                effect.Parameters["ShadowMap"].SetValue(SystemCore.ShadowMapRenderer.ShadowMapTarget);
+                        }
+
+                        if (ParameterExists("ShadowsEnabled"))
+                            effect.Parameters["ShadowsEnabled"].SetValue(diffLight.IsShadowCasting);
+
                     }
                 }
             }
@@ -217,10 +226,10 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             MaterialComponent mat = ParentObject.GetComponent<MaterialComponent>();
 
-            if(ParameterExists("Shininess"))
+            if (ParameterExists("Shininess"))
                 effect.Parameters["Shininess"].SetValue(mat.Shininess);
 
-            if(ParameterExists("SpecularLightColor"))
+            if (ParameterExists("SpecularLightColor"))
                 effect.Parameters["SpecularLightColor"].SetValue(mat.SpecularColor.ToVector4());
 
             if (ParameterExists("SpecularLightIntensity"))
@@ -236,13 +245,33 @@ namespace MonoGameEngineCore.GameObject.Components
 
         private void AddDiffuseLight(DiffuseLight diffuseLight)
         {
-            if (ParameterExists("DiffuseLightColor"))
-                effect.Parameters["DiffuseLightColor"].SetValue(diffuseLight.LightColor.ToVector4());
-            if (ParameterExists("DiffuseLightDirection"))
-                effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(diffuseLight.LightDirection));
-            if (ParameterExists("DiffuseLightIntensity"))
-                effect.Parameters["DiffuseLightIntensity"].SetValue(diffuseLight.LightIntensity);
-
+            if (diffuseLight.DiffuseType == DiffuseLightType.Key)
+            {
+                if (ParameterExists("DiffuseLightColor"))
+                    effect.Parameters["DiffuseLightColor"].SetValue(diffuseLight.LightColor.ToVector4());
+                if (ParameterExists("DiffuseLightDirection"))
+                    effect.Parameters["DiffuseLightDirection"].SetValue(Vector3.Normalize(diffuseLight.LightDirection));
+                if (ParameterExists("DiffuseLightIntensity"))
+                    effect.Parameters["DiffuseLightIntensity"].SetValue(diffuseLight.LightIntensity);
+            }
+            if (diffuseLight.DiffuseType == DiffuseLightType.Fill)
+            {
+                if (ParameterExists("Diffuse2LightColor"))
+                    effect.Parameters["Diffuse2LightColor"].SetValue(diffuseLight.LightColor.ToVector4());
+                if (ParameterExists("Diffuse2LightDirection"))
+                    effect.Parameters["Diffuse2LightDirection"].SetValue(Vector3.Normalize(diffuseLight.LightDirection));
+                if (ParameterExists("Diffuse2LightIntensity"))
+                    effect.Parameters["Diffuse2LightIntensity"].SetValue(diffuseLight.LightIntensity);
+            }
+            if (diffuseLight.DiffuseType == DiffuseLightType.Back)
+            {
+                if (ParameterExists("Diffuse3LightColor"))
+                    effect.Parameters["Diffuse3LightColor"].SetValue(diffuseLight.LightColor.ToVector4());
+                if (ParameterExists("Diffuse3LightDirection"))
+                    effect.Parameters["Diffuse3LightDirection"].SetValue(Matrix.Invert(SystemCore.ActiveCamera.View).Forward);
+                if (ParameterExists("Diffuse3LightIntensity"))
+                    effect.Parameters["Diffuse3LightIntensity"].SetValue(diffuseLight.LightIntensity);
+            }
         }
 
         protected bool ParameterExists(string parameter)
@@ -255,7 +284,7 @@ namespace MonoGameEngineCore.GameObject.Components
             return false;
         }
 
-       
+
 
         public event System.EventHandler<System.EventArgs> VisibleChanged;
         public event System.EventHandler<System.EventArgs> DrawOrderChanged;
