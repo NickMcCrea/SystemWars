@@ -112,9 +112,9 @@ namespace MonoGameDirectX11
 
         private void AddTestMario(string material, Vector3 pos)
         {
-            var crateObject3 = AddTestModel("Models/mario-sculpture", material);
-            crateObject3.Transform.SetPosition(pos);
-            crateObject3.Transform.Scale = 0.1f;
+            var gameObject = AddTestModel("Models/mario-sculpture", material);
+            gameObject.Transform.SetPosition(pos);
+            gameObject.Transform.Scale = 0.1f;
         }
 
         private GameObject AddTestModel(string model, string materialName)
