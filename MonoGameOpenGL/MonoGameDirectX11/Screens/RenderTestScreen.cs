@@ -33,10 +33,9 @@ namespace MonoGameDirectX11
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
 
-            SystemCore.ActiveScene.AmbientLight = new AmbientLight(Color.White, 0.1f);
-            SystemCore.ActiveScene.AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
-            SystemCore.ActiveScene.AddBackLight(Vector3.One, Color.White, 0.4f);
-            SystemCore.ActiveScene.AddFillLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.2f);
+            SystemCore.ActiveScene.SetUpAmbientAndFullLightingRig();
+
+
 
             float lightDistance = 80f;
             float fadeStart = 50;

@@ -28,15 +28,15 @@ namespace MonoGameDirectX11.Screens
         {
             base.OnInitialise();
 
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1,1,1));
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
             SystemCore.ActiveScene.FogEnabled = true;
 
 
             skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);
-          
-       
+
+
 
             mouseCamera.moveSpeed = 0.01f;
 
@@ -45,27 +45,32 @@ namespace MonoGameDirectX11.Screens
             for (int i = 0; i < 50; i++)
                 AddPhysicsCube();
 
-
-            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 1, 50, 1, 1, 1);
-            var vertexArray = heightMap.GenerateVertexArray();
-            var indexArray = heightMap.GenerateIndices();
-            GameObject heightMapObject = new GameObject();
-            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
-            shape.SetColor(Color.OrangeRed);
-            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
-            EffectRenderComponent renderComponent = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
-            heightMapObject.AddComponent(renderGeom);
-            heightMapObject.AddComponent(renderComponent);
-            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, heightMap.GetVertices(), heightMap.GetIndices().ToArray()));
+            GameObject heightMapObject = CreateHeightMapGameObject();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(heightMapObject);
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
 
 
 
-        
 
 
+
+        }
+
+        private static GameObject CreateHeightMapGameObject()
+        {
+            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 1, 50, 1, 1, 1);
+            var vertexArray = heightMap.GenerateVertexArray();
+            var indexArray = heightMap.GenerateIndices();
+            GameObject heightMapObject = new GameObject();
+            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
+            shape.SetColor(Color.MonoGameOrange);
+            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
+            EffectRenderComponent renderComponent = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
+            heightMapObject.AddComponent(renderGeom);
+            heightMapObject.AddComponent(renderComponent);
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, heightMap.GetVertices(), heightMap.GetIndices().ToArray()));
+            return heightMapObject;
         }
 
         private void AddPhysicsCube()
@@ -93,9 +98,6 @@ namespace MonoGameDirectX11.Screens
             RayCastResult result;
             if (input.MouseLeftPress())
             {
-
-               
-
                 if (SystemCore.PhysicsSimulation.RayCast(input.GetBepuProjectedMouseRay(), out result))
                 {
                     GameObject parent = result.HitObject.Tag as GameObject;

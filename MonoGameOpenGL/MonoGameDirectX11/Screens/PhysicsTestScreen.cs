@@ -32,7 +32,7 @@ namespace MonoGameDirectX11
         public override void OnInitialise()
         {
             SystemCore.CursorVisible = false;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
             colorScheme = SystemCore.ActiveColorScheme;
             SystemCore.ActiveScene.FogEnabled = false;

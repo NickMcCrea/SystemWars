@@ -42,7 +42,7 @@ namespace GridForgeResurrected.Screens
         public override void OnInitialise()
         {
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
 
             float arenaSize = 40f;
