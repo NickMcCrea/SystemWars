@@ -34,7 +34,7 @@ namespace SystemWar.Screens
             : base()
         {
 
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
 
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.Black));
 

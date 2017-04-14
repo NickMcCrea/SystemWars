@@ -36,7 +36,7 @@ namespace MonoGameDirectX11.Screens
         {
             base.OnInitialise();
 
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
             mouseCamera.moveSpeed = 0.01f;
 
             ProceduralCube cube = new ProceduralCube();

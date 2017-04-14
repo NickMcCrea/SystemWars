@@ -77,7 +77,14 @@ namespace MonoGameEngineCore.Editor
         public void Initalise()
         {
             currentVertices = new List<Vector3>();
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+
+            SystemCore.ActiveScene.SetUpAmbientAndFullLightingRig();
+
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 15, 0), Color.White, 20, 20, 1, PointLightNumber.One);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, -15, 0), Color.White, 20, 20, 1, PointLightNumber.Two);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, 15), Color.White, 20, 20, 1, PointLightNumber.Three);
+            SystemCore.ActiveScene.AddPointLight(new Vector3(0, 0, -15), Color.White, 20, 20, 1, PointLightNumber.Four);
+
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.LightGray, Color.Gray, Color.DarkBlue));
 
             shapeBuilder = new ProceduralShapeBuilder();

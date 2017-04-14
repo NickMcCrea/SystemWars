@@ -21,7 +21,7 @@ namespace MonoGameDirectX11
         {
             SystemCore.CursorVisible = false;
             fpsLabel.Visible = true;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
 
             var effect = EffectLoader.LoadSM5Effect("FlatShaded");
 

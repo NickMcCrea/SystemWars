@@ -29,6 +29,24 @@ float Point1Intensity;
 float Point1FallOffDistance;
 float Point1FullPowerDistance;
 
+float3 Point2Position;
+float4 Point2Color;
+float Point2Intensity;
+float Point2FallOffDistance;
+float Point2FullPowerDistance;
+
+float3 Point3Position;
+float4 Point3Color;
+float Point3Intensity;
+float Point3FallOffDistance;
+float Point3FullPowerDistance;
+
+float3 Point4Position;
+float4 Point4Color;
+float Point4Intensity;
+float Point4FallOffDistance;
+float Point4FullPowerDistance;
+
 float Shininess;
 float4 SpecularLightColor;
 float SpecularLightIntensity;
@@ -91,6 +109,15 @@ float3 ApplyFog(in float3 rgb, in float distance, in float3 cameraPosition, in f
 
 }
 
+float4 GetPointLightContrbution(float3 lightPos, float3 worldPos, float3 normal, float4 color, float fallOffStart, float fallOffEnd, float intensity)
+{
+	 float pointLight1Distance = length(worldPos - lightPos);
+    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - fallOffStart) / fallOffEnd);
+    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
+    float pointLight1Intensity = dot(normal, normalize((lightPos - worldPos)));
+    return saturate(color * pointLight1Intensity * pointLight1Attenuation * intensity);
+}
+
 float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coord)
 {
     float shadow_term = 0;
@@ -143,14 +170,14 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 backLight = saturate(Diffuse3LightColor * Diffuse3LightIntensity * lightIntensity3);
 
 
-    float pointLight1Distance = length(input.WorldPos - Point1Position);
-    float pointLight1Attenuation = 1 - saturate((pointLight1Distance - Point1FullPowerDistance) / Point1FallOffDistance);
-    pointLight1Attenuation = pow(pointLight1Attenuation, 2);
-    float pointLight1Intensity = dot(input.Normal, normalize((Point1Position - input.WorldPos)));
-    float4 pointLight1 = saturate(Point1Color * pointLight1Intensity * pointLight1Attenuation * Point1Intensity);
+   //float4 GetPointLightContrbution(float3 lightPos, float3 worldPos, float3 normal, float4 color, float fallOffStart, float fallOffEnd, float intensity)
+    float4 pointLight1 = GetPointLightContrbution(Point1Position, input.WorldPos, input.Normal, Point1Color, Point1FullPowerDistance, Point1FallOffDistance, Point1Intensity);
+	float4 pointLight2 = GetPointLightContrbution(Point2Position, input.WorldPos, input.Normal, Point2Color, Point2FullPowerDistance, Point2FallOffDistance, Point2Intensity);
+float4 pointLight3 = GetPointLightContrbution(Point3Position, input.WorldPos, input.Normal, Point3Color, Point3FullPowerDistance, Point3FallOffDistance, Point3Intensity);
+float4 pointLight4 = GetPointLightContrbution(Point4Position, input.WorldPos, input.Normal, Point4Color, Point4FullPowerDistance, Point4FallOffDistance, Point4Intensity);
 
 
-    float4 diffColor = saturate(keyLight + fillLight + backLight + pointLight1);
+    float4 diffColor = saturate(keyLight + fillLight + backLight + pointLight1 + pointLight2 + pointLight3 + pointLight4);
 
 
     float3 light = normalize(DiffuseLightDirection);

@@ -39,7 +39,7 @@ namespace GridForgeResurrected.Screens
             startPos = new Vector3(0, planetSize * 1.25f, 0);
 
             CollisionRules.DefaultCollisionRule = CollisionRule.NoSolver;
-            SystemCore.ActiveScene.SetUpDefaultAmbientAndDiffuseLights();
+            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
 
 
             SystemCore.AddNewUpdateRenderSubsystem(new SkyDome(Color.Black, Color.Black, Color.Black));

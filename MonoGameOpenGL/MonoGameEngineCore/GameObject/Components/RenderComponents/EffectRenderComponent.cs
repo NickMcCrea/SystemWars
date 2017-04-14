@@ -222,7 +222,7 @@ namespace MonoGameEngineCore.GameObject.Components
                     }
                 }
 
-                if(light is PointLight)
+                if (light is PointLight)
                 {
                     AddPointLight(light as PointLight);
                 }
@@ -232,16 +232,58 @@ namespace MonoGameEngineCore.GameObject.Components
 
         private void AddPointLight(PointLight light)
         {
-            if (ParameterExists("Point1Position"))
-                effect.Parameters["Point1Position"].SetValue(light.Position);
-            if (ParameterExists("Point1Color"))
-                effect.Parameters["Point1Color"].SetValue(light.LightColor.ToVector4());
-            if (ParameterExists("Point1FallOffDistance"))
-                effect.Parameters["Point1FallOffDistance"].SetValue(light.FallOffEnd);
-            if (ParameterExists("Point1FullPowerDistance"))
-                effect.Parameters["Point1FullPowerDistance"].SetValue(light.FallOffStart);
-            if (ParameterExists("Point1Intensity"))
-                effect.Parameters["Point1Intensity"].SetValue(light.LightIntensity);
+            if (light.Number == PointLightNumber.One)
+            {
+                if (ParameterExists("Point1Position"))
+                    effect.Parameters["Point1Position"].SetValue(light.Position);
+                if (ParameterExists("Point1Color"))
+                    effect.Parameters["Point1Color"].SetValue(light.LightColor.ToVector4());
+                if (ParameterExists("Point1FallOffDistance"))
+                    effect.Parameters["Point1FallOffDistance"].SetValue(light.FallOffEnd);
+                if (ParameterExists("Point1FullPowerDistance"))
+                    effect.Parameters["Point1FullPowerDistance"].SetValue(light.FallOffStart);
+                if (ParameterExists("Point1Intensity"))
+                    effect.Parameters["Point1Intensity"].SetValue(light.LightIntensity);
+            }
+            if (light.Number == PointLightNumber.Two)
+            {
+                if (ParameterExists("Point2Position"))
+                    effect.Parameters["Point2Position"].SetValue(light.Position);
+                if (ParameterExists("Point2Color"))
+                    effect.Parameters["Point2Color"].SetValue(light.LightColor.ToVector4());
+                if (ParameterExists("Point2FallOffDistance"))
+                    effect.Parameters["Point2FallOffDistance"].SetValue(light.FallOffEnd);
+                if (ParameterExists("Point2FullPowerDistance"))
+                    effect.Parameters["Point2FullPowerDistance"].SetValue(light.FallOffStart);
+                if (ParameterExists("Point2Intensity"))
+                    effect.Parameters["Point2Intensity"].SetValue(light.LightIntensity);
+            }
+            if (light.Number == PointLightNumber.Three)
+            {
+                if (ParameterExists("Point3Position"))
+                    effect.Parameters["Point3Position"].SetValue(light.Position);
+                if (ParameterExists("Point3Color"))
+                    effect.Parameters["Point3Color"].SetValue(light.LightColor.ToVector4());
+                if (ParameterExists("Point3FallOffDistance"))
+                    effect.Parameters["Point3FallOffDistance"].SetValue(light.FallOffEnd);
+                if (ParameterExists("Point3FullPowerDistance"))
+                    effect.Parameters["Point3FullPowerDistance"].SetValue(light.FallOffStart);
+                if (ParameterExists("Point3Intensity"))
+                    effect.Parameters["Point3Intensity"].SetValue(light.LightIntensity);
+            }
+            if (light.Number == PointLightNumber.Four)
+            {
+                if (ParameterExists("Point4Position"))
+                    effect.Parameters["Point4Position"].SetValue(light.Position);
+                if (ParameterExists("Point4Color"))
+                    effect.Parameters["Point4Color"].SetValue(light.LightColor.ToVector4());
+                if (ParameterExists("Point4FallOffDistance"))
+                    effect.Parameters["Point4FallOffDistance"].SetValue(light.FallOffEnd);
+                if (ParameterExists("Point4FullPowerDistance"))
+                    effect.Parameters["Point4FullPowerDistance"].SetValue(light.FallOffStart);
+                if (ParameterExists("Point4Intensity"))
+                    effect.Parameters["Point4Intensity"].SetValue(light.LightIntensity);
+            }
 
         }
 
