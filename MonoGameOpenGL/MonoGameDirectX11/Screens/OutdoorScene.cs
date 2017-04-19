@@ -75,17 +75,7 @@ namespace MonoGameDirectX11.Screens
         private static GameObject CreateHeightMapGameObject()
         {
             var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.003f), 100, 1, 50, 1, 1, 1);
-            var vertexArray = heightMap.GenerateVertexArray();
-            var indexArray = heightMap.GenerateIndices();
-            GameObject heightMapObject = new GameObject();
-            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
-            shape.SetColor(Color.MonoGameOrange);
-            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
-            EffectRenderComponent renderComponent = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
-            heightMapObject.AddComponent(renderGeom);
-            heightMapObject.AddComponent(renderComponent);
-            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, heightMap.GetVertices(), heightMap.GetIndices().ToArray()));
-            return heightMapObject;
+            return heightMap.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
         }
 
         private void SetupVehicle()

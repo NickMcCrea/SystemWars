@@ -7,7 +7,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Rendering;
-
+using MonoGameEngineCore.GameObject.Components;
 
 namespace MonoGameEngineCore.Procedural
 {
@@ -247,6 +247,22 @@ namespace MonoGameEngineCore.Procedural
         public List<int> GetIndices()
         {
             return indiceList;
+        }
+
+
+        public GameObject.GameObject CreateRenderableHeightMap(Color color, Effect effect)
+        {
+            var vertexArray = GenerateVertexArray();
+            var indexArray = GenerateIndices();
+            GameObject.GameObject heightMapObject = new GameObject.GameObject();
+            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
+            shape.SetColor(color);
+            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
+            EffectRenderComponent renderComponent = new EffectRenderComponent(effect);
+            heightMapObject.AddComponent(renderGeom);
+            heightMapObject.AddComponent(renderComponent);
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray()));
+            return heightMapObject;
         }
 
        

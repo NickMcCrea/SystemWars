@@ -39,6 +39,9 @@ namespace MonoGameEngineCore.GameObject.Components
             AssignMatrixParameters();
             AssignLightingParameters();
             AssignMaterialParameters();
+
+            if (ParameterExists("time"))
+                effect.Parameters["time"].SetValue((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         private void AssignTextureParameters()

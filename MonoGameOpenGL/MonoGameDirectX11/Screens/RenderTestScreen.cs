@@ -97,6 +97,12 @@ namespace MonoGameDirectX11
             gameObjectPlane.Transform.Scale = 10f;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
 
+
+            Heightmap heightMap = new Heightmap(100, 1);
+            var seaObject = heightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
+            seaObject.Transform.SetPosition(new Vector3(100, 0, 0));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
+
             base.OnInitialise();
         }
 
