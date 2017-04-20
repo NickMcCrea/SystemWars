@@ -1,30 +1,19 @@
 ﻿#include "Common.fx"
 
-float4x4 World;
-float4x4 View;
-float4x4 Projection;
 float4x4 WorldInverseTranspose;
 float4x4 LightViewProj;
-float4 AmbientLightColor;
-float AmbientLightIntensity;
 
 float4 DiffuseColor;
 float DiffuseColorIntensity;
 
-float TextureIntensity;
-
-
-
 float Shininess;
 float4 SpecularLightColor;
 float SpecularLightIntensity;
+
 float3 ViewVector;
 
-float3 CameraPosition;
-float3 CameraDirection;
 
-
-
+float TextureIntensity;
 texture ModelTexture;
 sampler2D textureSampler = sampler_state
 {
@@ -52,11 +41,6 @@ struct VertexShaderOutput
 };
 
 
-
-
-
-
-
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output;
@@ -69,8 +53,6 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Normal = normalize(mul(input.Normal, World));;
     output.TextureCoordinate = input.TextureCoordinate;
 
-
-   
     return output;
 }
 
@@ -86,7 +68,6 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     float4 backLight = saturate(Diffuse3LightColor * Diffuse3LightIntensity * lightIntensity3);
 
 
-   //float4 GetPointLightContrbution(float3 lightPos, float3 worldPos, float3 normal, float4 color, float fallOffStart, float fallOffEnd, float intensity)
     float4 pointLight1 = GetPointLightContrbution(Point1Position, input.WorldPos, input.Normal, Point1Color, Point1FullPowerDistance, Point1FallOffDistance, Point1Intensity);
 	float4 pointLight2 = GetPointLightContrbution(Point2Position, input.WorldPos, input.Normal, Point2Color, Point2FullPowerDistance, Point2FallOffDistance, Point2Intensity);
 float4 pointLight3 = GetPointLightContrbution(Point3Position, input.WorldPos, input.Normal, Point3Color, Point3FullPowerDistance, Point3FallOffDistance, Point3Intensity);

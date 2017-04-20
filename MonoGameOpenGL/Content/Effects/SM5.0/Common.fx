@@ -1,3 +1,16 @@
+float4x4 World;
+float4x4 View;
+float4x4 Projection;
+
+float  time;
+
+float3 CameraPosition;
+float3 CameraDirection;
+
+float ColorSaturation;
+float4 AmbientLightColor;
+float AmbientLightIntensity;
+
 float4 DiffuseLightDirection;
 float4 DiffuseLightColor;
 float DiffuseLightIntensity;

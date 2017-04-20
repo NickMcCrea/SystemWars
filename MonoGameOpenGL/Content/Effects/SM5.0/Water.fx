@@ -1,24 +1,6 @@
 #include "Common.fx"
 
-float3 CameraPosition;
-float3 CameraDirection;
-float  time;
-
-cbuffer cbPerObject 
-{
-	float4x4 World;
-	float4x4 View;
-	float4x4 Projection;
-	float4x4 WorldViewProjection;
-};
-cbuffer cbAmbient
-{
-	float ColorSaturation;
-	float4 AmbientLightColor;
-	float AmbientLightIntensity;
-}
-
-
+float4x4 WorldViewProjection;
 float4x4 LightViewProj;
 
 
