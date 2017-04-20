@@ -66,15 +66,20 @@ namespace MonoGameDirectX11.Screens
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
 
+            Heightmap heightMap = new Heightmap(100, 1);
+            var seaObject = heightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
+            seaObject.Transform.SetPosition(new Vector3(0, 10, 0));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
 
-
-            SetupVehicle();
+            //SetupVehicle();
 
         }
 
+      
+
         private static GameObject CreateHeightMapGameObject()
         {
-            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.003f), 100, 1, 50, 1, 1, 1);
+            var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 1, 100, 1, 1, 1);
             return heightMap.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
         }
 
@@ -154,6 +159,9 @@ namespace MonoGameDirectX11.Screens
             }
 
             SystemCore.PhysicsSimulation.Add(testVehicle);
+
+
+        
         }
 
         private void AddPhysicsCube()
@@ -198,77 +206,79 @@ namespace MonoGameDirectX11.Screens
 
         private void UpdateVehicle(float dt)
         {
+            if (vehicleObject != null)
+            {
+                vehicleObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Body.WorldTransform);
 
-            vehicleObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Body.WorldTransform);
+                wheel1.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Wheels[0].Shape.WorldTransform);
 
-            wheel1.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Wheels[0].Shape.WorldTransform);
-
-            if (input.IsKeyDown(Keys.E))
-            {
-                //Drive
-                testVehicle.Wheels[1].DrivingMotor.TargetSpeed = ForwardSpeed;
-                testVehicle.Wheels[3].DrivingMotor.TargetSpeed = ForwardSpeed;
-            }
-            else if (input.IsKeyDown(Keys.D))
-            {
-                //Reverse
-                testVehicle.Wheels[1].DrivingMotor.TargetSpeed = BackwardSpeed;
-                testVehicle.Wheels[3].DrivingMotor.TargetSpeed = BackwardSpeed;
-            }
-            else
-            {
-                //Idle
-                testVehicle.Wheels[1].DrivingMotor.TargetSpeed = 0;
-                testVehicle.Wheels[3].DrivingMotor.TargetSpeed = 0;
-            }
-            if (input.IsKeyDown(Keys.Space))
-            {
-                //Brake
-                foreach (Wheel wheel in testVehicle.Wheels)
+                if (input.IsKeyDown(Keys.E))
                 {
-                    wheel.Brake.IsBraking = true;
+                    //Drive
+                    testVehicle.Wheels[1].DrivingMotor.TargetSpeed = ForwardSpeed;
+                    testVehicle.Wheels[3].DrivingMotor.TargetSpeed = ForwardSpeed;
                 }
-            }
-            else
-            {
-                //Release brake
-                foreach (Wheel wheel in testVehicle.Wheels)
+                else if (input.IsKeyDown(Keys.D))
                 {
-                    wheel.Brake.IsBraking = false;
-                }
-            }
-            //Use smooth steering; while held down, move towards maximum.
-            //When not pressing any buttons, smoothly return to facing forward.
-            float angle;
-            bool steered = false;
-            if (input.IsKeyDown(Keys.S))
-            {
-                steered = true;
-                angle = Math.Max(testVehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * dt, -MaximumTurnAngle);
-                testVehicle.Wheels[1].Shape.SteeringAngle = angle;
-                testVehicle.Wheels[3].Shape.SteeringAngle = angle;
-            }
-            if (input.IsKeyDown(Keys.F))
-            {
-                steered = true;
-                angle = Math.Min(testVehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * dt, MaximumTurnAngle);
-                testVehicle.Wheels[1].Shape.SteeringAngle = angle;
-                testVehicle.Wheels[3].Shape.SteeringAngle = angle;
-            }
-            if (!steered)
-            {
-                //Neither key was pressed, so de-steer.
-                if (testVehicle.Wheels[1].Shape.SteeringAngle > 0)
-                {
-                    angle = Math.Max(testVehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * dt, 0);
-                    testVehicle.Wheels[1].Shape.SteeringAngle = angle;
-                    testVehicle.Wheels[3].Shape.SteeringAngle = angle;
+                    //Reverse
+                    testVehicle.Wheels[1].DrivingMotor.TargetSpeed = BackwardSpeed;
+                    testVehicle.Wheels[3].DrivingMotor.TargetSpeed = BackwardSpeed;
                 }
                 else
                 {
-                    angle = Math.Min(testVehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * dt, 0);
+                    //Idle
+                    testVehicle.Wheels[1].DrivingMotor.TargetSpeed = 0;
+                    testVehicle.Wheels[3].DrivingMotor.TargetSpeed = 0;
+                }
+                if (input.IsKeyDown(Keys.Space))
+                {
+                    //Brake
+                    foreach (Wheel wheel in testVehicle.Wheels)
+                    {
+                        wheel.Brake.IsBraking = true;
+                    }
+                }
+                else
+                {
+                    //Release brake
+                    foreach (Wheel wheel in testVehicle.Wheels)
+                    {
+                        wheel.Brake.IsBraking = false;
+                    }
+                }
+                //Use smooth steering; while held down, move towards maximum.
+                //When not pressing any buttons, smoothly return to facing forward.
+                float angle;
+                bool steered = false;
+                if (input.IsKeyDown(Keys.S))
+                {
+                    steered = true;
+                    angle = Math.Max(testVehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * dt, -MaximumTurnAngle);
                     testVehicle.Wheels[1].Shape.SteeringAngle = angle;
                     testVehicle.Wheels[3].Shape.SteeringAngle = angle;
+                }
+                if (input.IsKeyDown(Keys.F))
+                {
+                    steered = true;
+                    angle = Math.Min(testVehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * dt, MaximumTurnAngle);
+                    testVehicle.Wheels[1].Shape.SteeringAngle = angle;
+                    testVehicle.Wheels[3].Shape.SteeringAngle = angle;
+                }
+                if (!steered)
+                {
+                    //Neither key was pressed, so de-steer.
+                    if (testVehicle.Wheels[1].Shape.SteeringAngle > 0)
+                    {
+                        angle = Math.Max(testVehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * dt, 0);
+                        testVehicle.Wheels[1].Shape.SteeringAngle = angle;
+                        testVehicle.Wheels[3].Shape.SteeringAngle = angle;
+                    }
+                    else
+                    {
+                        angle = Math.Min(testVehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * dt, 0);
+                        testVehicle.Wheels[1].Shape.SteeringAngle = angle;
+                        testVehicle.Wheels[3].Shape.SteeringAngle = angle;
+                    }
                 }
             }
         }

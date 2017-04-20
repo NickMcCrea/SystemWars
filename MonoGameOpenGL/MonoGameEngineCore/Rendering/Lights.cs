@@ -43,7 +43,7 @@ namespace MonoGameEngineCore.Rendering
         public void SetUpAmbientAndFullLightingRig()
         {
             AmbientLight = new AmbientLight(Color.White, 0.1f);
-            AddKeyLight(Vector3.Normalize(new Vector3(0, 1, 1)), Color.White, 0.5f, true);
+            AddKeyLight(Vector3.Normalize(new Vector3(1, 1, 1)), Color.White, 0.5f, true);
             AddBackLight(Vector3.One, Color.White, 0.4f);
             AddFillLight(Vector3.Normalize(new Vector3(1, 1, 0)), Color.White, 0.2f);
         }
