@@ -1,20 +1,20 @@
 ﻿using MonoGameEngineCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using SystemWar;
 using MonoGameEngineCore.Rendering.Camera;
 using Microsoft.Xna.Framework.Input;
+using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Procedural;
+using MonoGameEngineCore.GameObject;
+using MonoGameEngineCore.Helper;
 
 namespace CarrierStrike.Screens
 {
     class TestIslandScreen : Screen
     {
         protected MouseFreeCamera mouseCamera;
-        bool releaseMouse = false;
+        bool releaseMouse;
 
         public TestIslandScreen() : base()
         {
@@ -23,6 +23,7 @@ namespace CarrierStrike.Screens
 
         public override void OnInitialise()
         {
+            SystemCore.CursorVisible = false;
 
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
@@ -30,17 +31,18 @@ namespace CarrierStrike.Screens
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
             SystemCore.SetActiveCamera(mouseCamera);
-            mouseCamera.moveSpeed = 0.01f;
+            mouseCamera.moveSpeed = 0.1f;
             mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
 
             AddInputBindings();
 
             SetUpSkyDome();
 
-            SetUpIsland();
+            SetUpGameWorld(100, 2, 2);
 
             base.OnInitialise();
         }
+
 
         private void AddInputBindings()
         {
@@ -64,9 +66,30 @@ namespace CarrierStrike.Screens
         }
 
 
-        private void SetUpIsland()
+        private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
         {
+            var noiseModule = NoiseGenerator.ParameterisedFastPlanet(100, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000));
 
+
+            for (int i = 0; i < widthInTerrainPatches; i++)
+                for (int j = 0; j < heightInTerrainPatches; j++)
+                {
+                    int xsampleOffset = i * (patchSize -1);
+                    int zsampleOffset = j * (patchSize-1);
+
+                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 30,  xsampleOffset,zsampleOffset, 1);
+                    var hmObj = hm.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
+                    hmObj.Transform.SetPosition(new Vector3(xsampleOffset-1, 0, zsampleOffset-1));
+                    SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);
+                }
+
+
+      
+
+            Heightmap seaHeightMap = new Heightmap(100, 1);
+            var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
+            seaObject.Transform.SetPosition(new Vector3(0, 5, 0));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
         }
 
         private void SetUpSkyDome()

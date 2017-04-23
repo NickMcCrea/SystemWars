@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using MonoGameDirectX11;
+﻿using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
-using MonoGameEngineCore.ScreenManagement;
 using CarrierStrike.Screens;
 
 namespace CarrierStrike
@@ -18,8 +12,14 @@ namespace CarrierStrike
             : base()
         {
 
-            string screenOne = "Test Island";
            
+
+        }
+
+        public override void OnInitialise()
+        {
+            string screenOne = "Test Island";
+
 
             SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Carrier Strike Menu", SystemCore.ActiveColorScheme, screenOne);
             SystemCore.CursorVisible = true;
@@ -30,18 +30,25 @@ namespace CarrierStrike
                 SystemCore.ScreenManager.AddAndSetActive(new TestIslandScreen());
             };
 
-       
-
+            input.AddKeyPressBinding("Escape", Microsoft.Xna.Framework.Input.Keys.Escape).InputEventActivated += (x, y) =>
+            {
+                SystemCore.Game.Exit();
+            };
+            base.OnInitialise();
         }
 
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
+            SystemCore.GameObjectManager.ClearAllObjects();
+            input.ClearBindings();
 
             base.OnRemove();
         }
 
         public override void Update(GameTime gameTime)
+
+
         {
             base.Update(gameTime);
         }
