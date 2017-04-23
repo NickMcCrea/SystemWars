@@ -8,6 +8,7 @@ using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.ScreenManagement;
+using CarrierStrike.Screens;
 
 namespace CarrierStrike
 {
@@ -17,33 +18,19 @@ namespace CarrierStrike
             : base()
         {
 
-            string screenOne = "One";
-            string screenTwo = "Two";
-            string screenThree = "Three";
+            string screenOne = "Test Island";
+           
 
-
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Carrier Strike Menu", SystemCore.ActiveColorScheme, screenOne);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
             b.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new TestIslandScreen());
             };
 
-            Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
-            a.OnClick += (sender, args) =>
-            {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
-            };
-
-            Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
-            c.OnClick += (sender, args) =>
-            {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
-            };
-
-
+       
 
         }
 
