@@ -95,6 +95,17 @@ namespace MonoGameEngineCore.Procedural
 
         }
       
+
+        public static IModule Island(float radius, int seed=1000)
+        {
+            FastRidgedMultifractal fastPlanetLowlands = new FastRidgedMultifractal(seed);
+            fastPlanetLowlands.Frequency = 0.02f;
+
+            DistanceBasedBias distBias = new DistanceBasedBias(fastPlanetLowlands, 100, 100, 70, 0.05f);
+
+            return distBias;
+        }
+
         public static IModule ParameterisedFastPlanet(float planetRadius, Dictionary<string,PlanetParameters> parameters, int seed=1000)
         {
             

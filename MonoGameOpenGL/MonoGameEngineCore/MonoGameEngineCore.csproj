@@ -119,6 +119,7 @@
     <Compile Include="Particles\ParticleSystem.cs" />
     <Compile Include="Particles\ParticleVertex.cs" />
     <Compile Include="Procedural\BufferBuilder.cs" />
+    <Compile Include="Procedural\LibNoise\Modifiers\IslandModifier.cs" />
     <Compile Include="Procedural\NoiseGenerator.cs" />
     <Compile Include="Procedural\Shapes\ProceduralShapes.cs" />
     <Compile Include="Rendering\Atmosphere.cs" />

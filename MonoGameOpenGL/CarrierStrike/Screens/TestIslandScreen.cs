@@ -68,7 +68,7 @@ namespace CarrierStrike.Screens
 
         private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
         {
-            var noiseModule = NoiseGenerator.ParameterisedFastPlanet(100, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000));
+            var noiseModule = NoiseGenerator.Island(59, RandomHelper.GetRandomInt(1000));
 
 
             for (int i = 0; i < widthInTerrainPatches; i++)
@@ -77,7 +77,7 @@ namespace CarrierStrike.Screens
                     int xsampleOffset = i * (patchSize -1);
                     int zsampleOffset = j * (patchSize-1);
 
-                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 30,  xsampleOffset,zsampleOffset, 1);
+                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40,  xsampleOffset,zsampleOffset, 1);
                     var hmObj = hm.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
                     hmObj.Transform.SetPosition(new Vector3(xsampleOffset-1, 0, zsampleOffset-1));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);

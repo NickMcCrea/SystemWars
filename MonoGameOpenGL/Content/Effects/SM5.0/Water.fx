@@ -48,10 +48,10 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	float Q2 = 0.3;
 	float2 D2 = float2(1, 0);
 
-	float3 P1 = GetWavePoint(P0,A1,L1,W1,Q1,D1, time/1234);
-	float3 P2 = GetWavePoint(P0,A2,L2,W2,Q2,D2,time/1873);
-	float3 P3 = GetWavePoint(P0,0.3,30,W1,Q1, float2(-0.25,-0.75), time/2345);
-	float3 P4 = GetWavePoint(P0,0.4,30,W1,Q1, float2(-0.45,0.212), time/2345);
+	float3 P1 = GetWavePoint(P0,0.01,50,W1,Q1,D1, time/1234);
+	float3 P2 = GetWavePoint(P0,0.02,50,W2,Q2,D2,time/1873);
+	float3 P3 = GetWavePoint(P0,0.03,30,W1,Q1, float2(-0.25,-0.75), time/2345);
+	float3 P4 = GetWavePoint(P0,0.04,30,W1,Q1, float2(-0.45,0.212), time/2345);
 	
 	input.Position.xyz = P1 + P2 + P3 + P4;
 	
