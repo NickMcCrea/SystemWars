@@ -86,7 +86,7 @@ namespace CarrierStrike.Screens
 
       
 
-            Heightmap seaHeightMap = new Heightmap(100, 1);
+            Heightmap seaHeightMap = new Heightmap(50, 1);
             var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
             seaObject.Transform.SetPosition(new Vector3(0, 5, 0));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
