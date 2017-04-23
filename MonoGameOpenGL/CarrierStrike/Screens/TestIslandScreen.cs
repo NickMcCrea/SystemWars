@@ -38,7 +38,7 @@ namespace CarrierStrike.Screens
 
             SetUpSkyDome();
 
-            SetUpGameWorld(100, 2, 2);
+            SetUpGameWorld(100, 1, 1);
 
             base.OnInitialise();
         }
@@ -68,7 +68,7 @@ namespace CarrierStrike.Screens
 
         private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
         {
-            var noiseModule = NoiseGenerator.Island(59, RandomHelper.GetRandomInt(1000));
+            var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches)/2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
 
 
             for (int i = 0; i < widthInTerrainPatches; i++)
@@ -86,9 +86,10 @@ namespace CarrierStrike.Screens
 
       
 
-            Heightmap seaHeightMap = new Heightmap(50, 1);
-            var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
-            seaObject.Transform.SetPosition(new Vector3(0, 5, 0));
+            Heightmap seaHeightMap = new Heightmap(patchSize/4 * widthInTerrainPatches, 1);
+            var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
+            seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
+            seaObject.Transform.Scale = 10;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
         }
 

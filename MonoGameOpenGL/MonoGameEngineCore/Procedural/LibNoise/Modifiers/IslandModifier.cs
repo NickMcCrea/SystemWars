@@ -26,7 +26,7 @@ using System;
 namespace LibNoise.Modifiers
 {
     /// <summary>
-    /// Module that biases the output of a source module by adding a given value to the output.
+    /// Module that applies a distance based bias to the output.s
     /// </summary>
     public class DistanceBasedBias
         : IModule
@@ -50,7 +50,7 @@ namespace LibNoise.Modifiers
         /// </summary>
         /// <param name="sourceModule">The module from which to retrieve noise.</param>
         /// <param name="bias">The value to add to the output.</param>
-        public DistanceBasedBias(IModule sourceModule, double x, double y, double dist, double bias)
+        public DistanceBasedBias(IModule sourceModule, double x, double y, double biasStartDistance, double bias)
         {
             if (sourceModule == null)
                 throw new ArgumentNullException("A source module must be provided.");
@@ -59,7 +59,7 @@ namespace LibNoise.Modifiers
             Bias = bias;
             xPoint = x;
             yPoint = y;
-            distance = dist;
+            distance = biasStartDistance;
         }
 
         /// <summary>

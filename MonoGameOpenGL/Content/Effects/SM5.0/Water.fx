@@ -119,7 +119,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 	float distanceFromCamera = length(CameraPosition - input.PositionWorld);
 	float3 colorAfterFog = ApplyFog(finalColorBeforeFog.rgb,distanceFromCamera, CameraPosition, CameraDirection);
 	
-	return float4(colorAfterFog, 0.8);
+	return float4(colorAfterFog, 1);
 };
 
 technique Technique1
