@@ -78,6 +78,7 @@ namespace MonoGameEngineCore.GameObject.Components
         }
     }
 
+   
     public class TranslatorComponent : IComponent, IUpdateable
     {
         public GameObject ParentObject { get; set; }

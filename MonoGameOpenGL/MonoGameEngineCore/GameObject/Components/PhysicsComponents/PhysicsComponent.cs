@@ -6,6 +6,7 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
+using XNAMatrix = Microsoft.Xna.Framework.Matrix;
 using Matrix = BEPUutilities.Matrix;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
@@ -114,8 +115,12 @@ namespace MonoGameEngineCore.GameObject.Components
             if (!SystemCore.PhysicsOnBackgroundThread)
             {
                 if (Simulated)
-                    ParentObject.Transform.WorldMatrix =
-                        MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
+                {
+
+                   
+                    ParentObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
+                    
+                }
                 else
                 {
                     PhysicsEntity.WorldTransform =

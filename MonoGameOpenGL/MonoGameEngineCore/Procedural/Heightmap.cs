@@ -265,7 +265,21 @@ namespace MonoGameEngineCore.Procedural
             return heightMapObject;
         }
 
-       
+        public GameObject.GameObject CreateTranslatedRenderableHeightMap(Color color, Effect effect, Vector3 translation)
+        {
+            var vertexArray = GenerateVertexArray(translation.X, translation.Y, translation.Z);
+            var indexArray = GenerateIndices();
+            GameObject.GameObject heightMapObject = new GameObject.GameObject();
+            ProceduralShape shape = new ProceduralShape(vertexArray, indexArray);
+            shape.SetColor(color);
+            RenderGeometryComponent renderGeom = new RenderGeometryComponent(shape);
+            EffectRenderComponent renderComponent = new EffectRenderComponent(effect);
+            heightMapObject.AddComponent(renderGeom);
+            heightMapObject.AddComponent(renderComponent);
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray()));
+            return heightMapObject;
+        }
+
     }
 
 

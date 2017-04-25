@@ -36,7 +36,10 @@ namespace MonoGameEngineCore.GameObject.Components
             WorldMatrix.Translation = pos;
 
             foreach (GameObject child in ParentObject.Children)
-                child.Transform.Rotate(axis, amount);
+            {
+                child.Transform.RotateAround(axis, pos, amount);
+
+            }
         }
 
         public void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
@@ -69,15 +72,19 @@ namespace MonoGameEngineCore.GameObject.Components
             }
             else
             {
+                Vector3 oldPos = WorldMatrix.Translation;
                 WorldMatrix.Translation = position;
 
                 if(ParentObject.ContainsComponent<PhysicsComponent>())
                     ParentObject.GetComponent<PhysicsComponent>().SetPosition(position);
 
                 foreach (GameObject child in ParentObject.Children)
-                    child.Transform.WorldMatrix.Translation = position;
+                {
+                    Vector3 offset = child.Transform.WorldMatrix.Translation - oldPos;
+                    child.Transform.WorldMatrix.Translation = position + offset;
+                }
 
-
+          
 
             }
         }
