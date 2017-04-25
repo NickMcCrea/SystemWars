@@ -8,6 +8,7 @@ using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Helper;
+using CarrierStrike.Gameplay;
 
 namespace CarrierStrike.Screens
 {
@@ -38,7 +39,18 @@ namespace CarrierStrike.Screens
 
             SetUpSkyDome();
 
-            SetUpGameWorld(100, 1, 1);
+            SetUpGameWorld(100, 2, 2);
+
+            Chopper chopper = new Chopper();
+            chopper.Transform.SetPosition(new Vector3(100, 50, 100));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
+
+            Carrier carrier = new Carrier();
+            carrier.Transform.SetPosition(new Vector3(50, 0, 50));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(carrier);
+
+            SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -0.81f, 0);
+
 
             base.OnInitialise();
         }
@@ -78,8 +90,7 @@ namespace CarrierStrike.Screens
                     int zsampleOffset = j * (patchSize-1);
 
                     var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40,  xsampleOffset,zsampleOffset, 1);
-                    var hmObj = hm.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
-                    hmObj.Transform.SetPosition(new Vector3(xsampleOffset-1, 0, zsampleOffset-1));
+                    var hmObj = hm.CreateTranslatedRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(xsampleOffset - 1, 0, zsampleOffset - 1));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);
                 }
 
