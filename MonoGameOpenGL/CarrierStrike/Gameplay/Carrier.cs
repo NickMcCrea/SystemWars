@@ -26,11 +26,11 @@ namespace CarrierStrike.Gameplay
             RenderGeometryComponent renderGeom = new RenderGeometryComponent(body);
             EffectRenderComponent effectComp = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
             ShadowCasterComponent shadowComp = new ShadowCasterComponent();
-            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.box));
-            AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
+            AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.box));
             AddComponent(renderGeom);
             AddComponent(effectComp);
             AddComponent(shadowComp);
+
        
 
             var conTower = new ProceduralCuboid(0.25f, 0.25f, 0.35f);

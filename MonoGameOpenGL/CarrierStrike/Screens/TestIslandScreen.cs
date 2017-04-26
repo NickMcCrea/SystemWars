@@ -9,6 +9,9 @@ using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Helper;
 using CarrierStrike.Gameplay;
+using MonoGameEngineCore.GameObject.Components;
+using BEPUphysics.UpdateableSystems;
+using System.Collections.Generic;
 
 namespace CarrierStrike.Screens
 {
@@ -42,15 +45,39 @@ namespace CarrierStrike.Screens
             SetUpGameWorld(100, 2, 2);
 
             Chopper chopper = new Chopper();
-            chopper.Transform.SetPosition(new Vector3(100, 10, 100));
+            chopper.Transform.SetPosition(new Vector3(60, 10, 60));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
 
             Carrier carrier = new Carrier();
-            carrier.Transform.SetPosition(new Vector3(50, 0, 50));
+            carrier.Transform.SetPosition(new Vector3(50, 10, 50));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(carrier);
+            
+
+            carrier.GetComponent<PhysicsComponent>().PhysicsEntity.IsAffectedByGravity = true;
+            carrier.GetComponent<PhysicsComponent>().PhysicsEntity.Mass = 100;
+           
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -0.81f, 0);
 
+            var tris = new List<BEPUutilities.Vector3[]>();
+            float basinWidth = 200;
+            float basinLength = 200;
+            float waterHeight = 5;
+
+            //Remember, the triangles composing the surface need to be coplanar with the surface.  In this case, this means they have the same height.
+            tris.Add(new[]
+                         {
+                             new BEPUutilities.Vector3(-basinWidth / 2, 0, -basinLength / 2), new BEPUutilities.Vector3(basinWidth / 2, 0, -basinLength / 2),
+                             new BEPUutilities.Vector3(-basinWidth / 2, waterHeight, basinLength / 2)
+                         });
+            tris.Add(new[]
+                         {
+                             new BEPUutilities.Vector3(-basinWidth / 2, 0, basinLength / 2), new BEPUutilities.Vector3(basinWidth / 2, 0, -basinLength / 2),
+                             new BEPUutilities.Vector3(basinWidth / 2, 0, basinLength / 2)
+                         });
+            var fluid = new FluidVolume(BEPUutilities.Vector3.Up, -0.81f, tris, 10, 0.8f, 0.8f, 0.8f);
+
+            SystemCore.PhysicsSimulation.Add(fluid);
 
             base.OnInitialise();
         }
