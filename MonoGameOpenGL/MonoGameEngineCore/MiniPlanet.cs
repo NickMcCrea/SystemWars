@@ -320,7 +320,7 @@ namespace GridForgeResurrected.Screens
                 piece.Transform.SetPosition(position);
             }
             if (atmosphere != null)
-                atmosphere.Transform.WorldMatrix.Translation = position;
+                atmosphere.Transform.AbsoluteTransform.Translation = position;
             CurrentCenterPosition = position;
         }
 
@@ -339,7 +339,7 @@ namespace GridForgeResurrected.Screens
             foreach (GameObject gameObject in planetPieces)
             {
                 gameObject.Transform.RotateAround(axis, point, p);
-                posAverage += gameObject.Transform.WorldMatrix.Translation;
+                posAverage += gameObject.Transform.AbsoluteTransform.Translation;
             }
             posAverage /= 6;
             CurrentCenterPosition = posAverage;

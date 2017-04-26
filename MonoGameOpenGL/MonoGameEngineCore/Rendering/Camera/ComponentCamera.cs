@@ -82,12 +82,12 @@ namespace MonoGameEngineCore.Rendering.Camera
         public void Update(GameTime gameTime)
         {
             if (HighPrecisionMode)
-                World = Matrix.CreateWorld(Vector3.Zero, ParentObject.Transform.WorldMatrix.Forward,
-                    ParentObject.Transform.WorldMatrix.Up);
+                World = Matrix.CreateWorld(Vector3.Zero, ParentObject.Transform.AbsoluteTransform.Forward,
+                    ParentObject.Transform.AbsoluteTransform.Up);
             else
             {
-                World = Matrix.CreateWorld(ParentObject.Transform.WorldMatrix.Translation, ParentObject.Transform.WorldMatrix.Forward,
-                   ParentObject.Transform.WorldMatrix.Up);
+                World = Matrix.CreateWorld(ParentObject.Transform.AbsoluteTransform.Translation, ParentObject.Transform.AbsoluteTransform.Forward,
+                   ParentObject.Transform.AbsoluteTransform.Up);
             }
             View = Matrix.Invert(World);
         }

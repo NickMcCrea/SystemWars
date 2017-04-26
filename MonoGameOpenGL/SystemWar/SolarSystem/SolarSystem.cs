@@ -44,7 +44,7 @@ namespace SystemWar
                 if (largeScalePositionComponent != null)
                 {
                     var renderPosition = GetRenderPosition(cameraPosition, largeScalePositionComponent.Position);
-                    o.Transform.WorldMatrix.Translation = renderPosition;
+                    o.Transform.AbsoluteTransform.Translation = renderPosition;
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace SystemWar
         internal void Update(GameTime gameTime)
         {
            
-            ((DiffuseLight)SystemCore.ActiveScene.LightsInScene[0]).LightDirection = Vector3.Normalize(Sun.Transform.WorldMatrix.Translation);
+            ((DiffuseLight)SystemCore.ActiveScene.LightsInScene[0]).LightDirection = Vector3.Normalize(Sun.Transform.AbsoluteTransform.Translation);
 
             List<GameObject> planets = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Planet);
 

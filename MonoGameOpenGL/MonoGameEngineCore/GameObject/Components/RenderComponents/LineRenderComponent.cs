@@ -36,7 +36,7 @@ namespace MonoGameEngineCore.GameObject.Components
             var transform = ParentObject.GetComponent<TransformComponent>();
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
 
-            effect.World = Matrix.CreateScale(ParentObject.Transform.Scale)  * transform.WorldMatrix;
+            effect.World = Matrix.CreateScale(ParentObject.Transform.Scale)  * transform.AbsoluteTransform;
             effect.View = SystemCore.ActiveCamera.View;
             effect.Projection = SystemCore.ActiveCamera.Projection;
 

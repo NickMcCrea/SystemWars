@@ -27,10 +27,8 @@ namespace MonoGameEngineCore.GameObject
 
             if (shape is LineBatch)
                 ob.AddComponent(new LineRenderComponent(effect as BasicEffect));
-            else if (effect is BasicEffect)
-                ob.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
-            else
-                ob.AddComponent(new EffectRenderComponent(effect));
+
+            ob.AddComponent(new EffectRenderComponent(effect));
 
 
             return ob;
@@ -82,7 +80,7 @@ namespace MonoGameEngineCore.GameObject
 
             var ob = new GameObject();
             ob.Name = "skydome";
-          
+
             ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(sphere), BufferBuilder.IndexBufferBuild(sphere), sphere.PrimitiveCount));
             ob.AddComponent(new GradientSkyDomeRenderer(EffectLoader.LoadSM5Effect("skydome2")));
 
@@ -116,6 +114,6 @@ namespace MonoGameEngineCore.GameObject
             return ob;
         }
 
-        
+
     }
 }

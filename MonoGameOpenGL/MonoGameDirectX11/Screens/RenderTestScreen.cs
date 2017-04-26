@@ -188,16 +188,16 @@ namespace MonoGameDirectX11
             foreach (GameObject activeGameObject in activeGameObjects)
             {
 
-                if (testVolume.Contains(activeGameObject.Transform.WorldMatrix.Translation) == ContainmentType.Disjoint)
+                if (testVolume.Contains(activeGameObject.Transform.AbsoluteTransform.Translation) == ContainmentType.Disjoint)
                 {
-                    activeGameObject.Transform.SetPosition(-activeGameObject.Transform.WorldMatrix.Translation);
+                    activeGameObject.Transform.SetPosition(-activeGameObject.Transform.AbsoluteTransform.Translation);
                 }
 
             }
 
             var particleSystem = crate.GetComponent<SquareParticleSystem>();
             if (particleSystem != null)
-                particleSystem.AddParticle(crate.Transform.WorldMatrix.Translation, Vector3.Up);
+                particleSystem.AddParticle(crate.Transform.AbsoluteTransform.Translation, Vector3.Up);
 
             base.Update(gameTime);
         }

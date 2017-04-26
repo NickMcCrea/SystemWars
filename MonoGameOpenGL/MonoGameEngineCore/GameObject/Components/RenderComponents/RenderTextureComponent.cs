@@ -75,12 +75,12 @@ namespace MonoGameEngineCore.GameObject.Components
         public virtual void AssignMatrixParameters()
         {
             var transform = ParentObject.GetComponent<TransformComponent>();
-            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix;
+            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * transform.AbsoluteTransform;
             worldViewProj *= SystemCore.GetCamera(Camera).View;
             worldViewProj *= SystemCore.GetCamera(Camera).Projection;
 
             if (ParameterExists("World"))
-                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix);
+                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * transform.AbsoluteTransform);
 
             if (ParameterExists("View"))
                 effect.Parameters["View"].SetValue(SystemCore.GetCamera(Camera).View);

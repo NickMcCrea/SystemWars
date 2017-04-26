@@ -7,9 +7,10 @@ namespace MonoGameEngineCore.GameObject
 
     public class GameObject
     {
+        public GameObject ParentGameObject;
         public List<GameObject> Children = new List<GameObject>();
         protected static int nextId;
-        public Vector3 Position { get { return Transform.WorldMatrix.Translation; } set { Transform.SetPosition(value); } }
+        public Vector3 Position { get { return Transform.AbsoluteTransform.Translation; } set { Transform.SetPosition(value); } }
         public int ID { get; set; }
         protected List<IComponent> components;
         public TransformComponent Transform { get; private set; }
@@ -77,14 +78,20 @@ namespace MonoGameEngineCore.GameObject
         {
 
             if (!Children.Contains(child))
+            {
                 Children.Add(child);
+                child.ParentGameObject = this;
+            }
         }
 
         public void RemoveChild(GameObject child)
         {
 
             if (Children.Contains(child))
+            {
                 Children.Remove(child);
+                child.ParentGameObject = null;
+            }
         }
 
         public void RemoveComponent(IComponent component)

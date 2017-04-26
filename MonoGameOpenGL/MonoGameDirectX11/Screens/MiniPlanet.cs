@@ -63,7 +63,7 @@ namespace GridForgeResurrected.Screens
                     EffectLoader.LoadSM5Effect("flatshaded"));
 
                 testShip.Transform.Rotate(Vector3.Up, -MathHelper.PiOver2);
-                testShip.Transform.WorldMatrix.Translation = new Vector3(100, 0, 0);
+                testShip.Transform.AbsoluteTransform.Translation = new Vector3(100, 0, 0);
                 //testShip.AddComponent(new RotatorComponent(Vector3.Right, 0.001f));
 
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(testShip);
@@ -122,9 +122,9 @@ namespace GridForgeResurrected.Screens
             foreach (MiniPlanet miniPlanet in planets)
             {
                 float distanceFromSurface =
-                 (cameraGameObject.Transform.WorldMatrix.Translation - miniPlanet.CurrentCenterPosition).Length();
+                 (cameraGameObject.Transform.AbsoluteTransform.Translation - miniPlanet.CurrentCenterPosition).Length();
 
-                miniPlanet.Update(gameTime, distanceFromSurface, cameraGameObject.Transform.WorldMatrix.Translation);
+                miniPlanet.Update(gameTime, distanceFromSurface, cameraGameObject.Transform.AbsoluteTransform.Translation);
             }
 
 
@@ -198,7 +198,7 @@ namespace GridForgeResurrected.Screens
         {
             SystemCore.GraphicsDevice.Clear(Color.Gray);
 
-            DebugText.Write(cameraGameObject.Transform.WorldMatrix.Translation.ToString());
+            DebugText.Write(cameraGameObject.Transform.AbsoluteTransform.Translation.ToString());
 
             DebugShapeRenderer.VisualiseAxes(5f);
 

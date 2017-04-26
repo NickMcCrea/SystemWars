@@ -37,7 +37,7 @@ namespace GridForgeResurrected
                 playerObject = SystemCore.GameObjectManager.GetObject("player");
             }
 
-            Vector3 toPlayer = playerObject.Transform.WorldMatrix.Translation - ParentObject.Transform.WorldMatrix.Translation;
+            Vector3 toPlayer = playerObject.Transform.AbsoluteTransform.Translation - ParentObject.Transform.AbsoluteTransform.Translation;
 
             //look where we're heading.
             if (toPlayer != Vector3.Zero)

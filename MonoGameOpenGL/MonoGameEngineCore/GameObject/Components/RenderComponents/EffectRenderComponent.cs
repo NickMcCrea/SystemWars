@@ -133,12 +133,12 @@ namespace MonoGameEngineCore.GameObject.Components
         public virtual void AssignMatrixParameters()
         {
             var transform = ParentObject.GetComponent<TransformComponent>();
-            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix;
+            Matrix worldViewProj = Matrix.CreateScale(ParentObject.Transform.Scale) * transform.AbsoluteTransform;
             worldViewProj *= SystemCore.GetCamera(Camera).View;
             worldViewProj *= SystemCore.GetCamera(Camera).Projection;
 
             if (ParameterExists("World"))
-                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * transform.WorldMatrix);
+                effect.Parameters["World"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * transform.AbsoluteTransform);
 
             if (ParameterExists("View"))
                 effect.Parameters["View"].SetValue(SystemCore.GetCamera(Camera).View);
@@ -156,7 +156,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 effect.Parameters["ViewInvert"].SetValue(Matrix.Invert(SystemCore.GetCamera(Camera).View));
 
             if (ParameterExists("WorldInverseTranspose"))
-                effect.Parameters["WorldInverseTranspose"].SetValue(Matrix.Transpose(Matrix.Invert(transform.WorldMatrix)));
+                effect.Parameters["WorldInverseTranspose"].SetValue(Matrix.Transpose(Matrix.Invert(transform.AbsoluteTransform)));
 
             if (ParameterExists("ViewVector"))
                 effect.Parameters["ViewVector"].SetValue((SystemCore.GetCamera(Camera).View.Forward));

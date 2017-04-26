@@ -58,7 +58,7 @@ namespace MonoGameEngineCore.GameObject.Components
             ship.SetThrust(thrustInput);
 
             if(inputManager.IsKeyDown(Keys.LeftShift))
-                ship.Transform.Translate(ship.Transform.WorldMatrix.Forward * 100f);
+                ship.Transform.HighPrecisionTranslate(ship.Transform.AbsoluteTransform.Forward * 100f);
 
             float horizontal = 0;
             float vertical = 0;

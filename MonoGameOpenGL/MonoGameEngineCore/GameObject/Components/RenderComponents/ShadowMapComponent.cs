@@ -116,7 +116,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 return;
 
             Matrix lightViewProj = SystemCore.ShadowMapRenderer.LightViewProj;
-            effect.Parameters["LightWorldViewProjection"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.WorldMatrix * lightViewProj);
+            effect.Parameters["LightWorldViewProjection"].SetValue(Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.AbsoluteTransform * lightViewProj);
 
 
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();

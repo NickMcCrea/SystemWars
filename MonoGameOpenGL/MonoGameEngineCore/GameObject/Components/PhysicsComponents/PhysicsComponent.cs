@@ -66,13 +66,13 @@ namespace MonoGameEngineCore.GameObject.Components
             if (!SystemCore.PhysicsOnBackgroundThread)
             {
                 PhysicsEntity.WorldTransform =
-                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
                 SystemCore.PhysicsSimulation.Add(PhysicsEntity);
             }
             else
             {
                 PhysicsEntity.BufferedStates.States.WorldTransform =
-                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                    MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
                 SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(PhysicsEntity);
             }
 
@@ -85,7 +85,7 @@ namespace MonoGameEngineCore.GameObject.Components
             List<Vector3> verts = geometry.GetVertices();
             BoundingSphere sphere = BoundingSphere.CreateFromPoints(verts);
 
-            PhysicsEntity = new Sphere(MonoMathHelper.Translate(ParentObject.Transform.WorldMatrix.Translation),
+            PhysicsEntity = new Sphere(MonoMathHelper.Translate(ParentObject.Transform.AbsoluteTransform.Translation),
                 sphere.Radius, 1);
             PhysicsEntity.Tag = ParentObject;
         }
@@ -99,9 +99,9 @@ namespace MonoGameEngineCore.GameObject.Components
             float height = testBox.Max.Y - testBox.Min.Y;
             float depth = testBox.Max.Z - testBox.Min.Z;
 
-            PhysicsEntity = new Box(new BEPUutilities.Vector3(ParentObject.Transform.WorldMatrix.Translation.X,
-                ParentObject.Transform.WorldMatrix.Translation.X,
-                ParentObject.Transform.WorldMatrix.Translation.X), width, height, depth, 1);
+            PhysicsEntity = new Box(new BEPUutilities.Vector3(ParentObject.Transform.AbsoluteTransform.Translation.X,
+                ParentObject.Transform.AbsoluteTransform.Translation.X,
+                ParentObject.Transform.AbsoluteTransform.Translation.X), width, height, depth, 1);
 
             
         }
@@ -118,24 +118,24 @@ namespace MonoGameEngineCore.GameObject.Components
                 {
 
                    
-                    ParentObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
+                    ParentObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.WorldTransform);
                     
                 }
                 else
                 {
                     PhysicsEntity.WorldTransform =
-                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
                 }
             }
             else
             {
                 if (Simulated)
-                    ParentObject.Transform.WorldMatrix =
+                    ParentObject.Transform.AbsoluteTransform =
                         MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsEntity.BufferedStates.States.WorldTransform);
                 else
                 {
                     PhysicsEntity.BufferedStates.States.WorldTransform =
-                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                        MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
                 }
             }
         }
@@ -177,7 +177,7 @@ namespace MonoGameEngineCore.GameObject.Components
                 return;
             
             PhysicsEntity.WorldTransform =
-                MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.WorldMatrix);
+                MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
         }
 
         public void Dispose()

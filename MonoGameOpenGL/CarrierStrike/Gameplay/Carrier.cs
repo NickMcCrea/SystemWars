@@ -26,7 +26,8 @@ namespace CarrierStrike.Gameplay
             RenderGeometryComponent renderGeom = new RenderGeometryComponent(body);
             EffectRenderComponent effectComp = new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded"));
             ShadowCasterComponent shadowComp = new ShadowCasterComponent();
-
+            AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.box));
+            AddComponent(new RotatorComponent(Vector3.Up, 0.001f));
             AddComponent(renderGeom);
             AddComponent(effectComp);
             AddComponent(shadowComp);
@@ -35,10 +36,10 @@ namespace CarrierStrike.Gameplay
             var conTower = new ProceduralCuboid(0.25f, 0.25f, 0.35f);
             conTower.SetColor(carrierColor);
             GameObject conT = GameObjectFactory.CreateRenderableGameObjectFromShape(conTower, EffectLoader.LoadSM5Effect("flatshaded"));
-            conT.Transform.SetPosition(new Vector3(0.8f, 0.8f, 0));
+            conT.Transform.RelativeTransform.Translation = new Vector3(0.8f, 0.8f, 0);
             conT.AddComponent(new ShadowCasterComponent());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(conT);
-            Children.Add(conT);
+            AddChild(conT);
 
         }
 

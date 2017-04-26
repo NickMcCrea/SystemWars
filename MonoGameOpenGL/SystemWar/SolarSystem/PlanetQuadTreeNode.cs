@@ -175,14 +175,10 @@ namespace MonoGameEngineCore.Procedural
             meshCollider = new MobileMeshColliderComponent(this, spherePatch.GetVertices(), spherePatch.GetIndicesAsInt().ToArray());
             AddComponent(meshCollider);
 
-            if (this.effect is BasicEffect)
-                this.AddComponent(new BasicEffectRenderComponent(effect as BasicEffect));
-            else
-            {
-                renderComponent = new EffectRenderComponent(effect);
-                renderComponent.DrawOrder = Planet.DrawOrder;
-                this.AddComponent(renderComponent);
-            }
+            renderComponent = new EffectRenderComponent(effect);
+            renderComponent.DrawOrder = Planet.DrawOrder;
+            this.AddComponent(renderComponent);
+
 
 
             SetHighPrecisionPosition(this);
@@ -598,18 +594,18 @@ namespace MonoGameEngineCore.Procedural
 
         public Vector3 GetSurfaceMidPoint()
         {
-            return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.Transform.WorldMatrix);
+            return Vector3.Transform(Vector3.Normalize(mid1) * sphereSize, Planet.Transform.AbsoluteTransform);
         }
 
         public void Update()
         {
 
 
-            Transform.WorldMatrix = Planet.Transform.WorldMatrix;
+            Transform.AbsoluteTransform = Planet.Transform.AbsoluteTransform;
 
             //midpoint of the patch, transformed to the right scale and location
             boundingSphere.Center = Vector3.Transform(Vector3.Normalize(mid1) * sphereSize,
-                Planet.Transform.WorldMatrix);
+                Planet.Transform.AbsoluteTransform);
 
 
             this.GetComponent<EffectRenderComponent>().DrawOrder = Planet.DrawOrder;

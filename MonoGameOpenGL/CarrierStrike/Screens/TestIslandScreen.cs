@@ -42,7 +42,7 @@ namespace CarrierStrike.Screens
             SetUpGameWorld(100, 2, 2);
 
             Chopper chopper = new Chopper();
-            chopper.Transform.SetPosition(new Vector3(100, 50, 100));
+            chopper.Transform.SetPosition(new Vector3(100, 10, 100));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
 
             Carrier carrier = new Carrier();

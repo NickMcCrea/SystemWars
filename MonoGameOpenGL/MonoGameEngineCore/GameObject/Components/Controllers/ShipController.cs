@@ -76,7 +76,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
 
 
-            Vector3 mainThrustVelocity = (ParentObject.Transform.WorldMatrix.Forward * mainThrust * gameTime.ElapsedGameTime.Milliseconds);
+            Vector3 mainThrustVelocity = (ParentObject.Transform.AbsoluteTransform.Forward * mainThrust * gameTime.ElapsedGameTime.Milliseconds);
             velocity += mainThrustVelocity * thrustRate;
 
             ParentObject.Transform.Translate(velocity);
@@ -91,9 +91,9 @@ namespace MonoGameEngineCore.GameObject.Components
             pitch +=  leftStickVertical * gameTime.ElapsedGameTime.Milliseconds * turnRate;
             roll += leftStickHorizontal * gameTime.ElapsedGameTime.Milliseconds * turnRate;
            
-            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left, pitch);
-            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Forward, roll);
-            ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Up, yaw);
+            ParentObject.Transform.Rotate(ParentObject.Transform.AbsoluteTransform.Left, pitch);
+            ParentObject.Transform.Rotate(ParentObject.Transform.AbsoluteTransform.Forward, roll);
+            ParentObject.Transform.Rotate(ParentObject.Transform.AbsoluteTransform.Up, yaw);
 
           
             pitch *= bleedRate;

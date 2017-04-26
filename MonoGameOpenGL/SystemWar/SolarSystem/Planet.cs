@@ -96,7 +96,7 @@ namespace MonoGameEngineCore.Procedural
             Position = new HighPrecisionPosition();
             AddComponent(Position);
 
-            Transform.SetPosition(position);
+            Transform.SetHighPrecisionPosition(position);
 
             splitDistance = radius * 4;
 
@@ -391,7 +391,7 @@ namespace MonoGameEngineCore.Procedural
             if (mid1 == Vector3.Zero)
                 mid1.Z = min.Z;
 
-            Vector3 surfaceMidPoint = Vector3.Transform(Vector3.Normalize(mid1) * radius, Transform.WorldMatrix);
+            Vector3 surfaceMidPoint = Vector3.Transform(Vector3.Normalize(mid1) * radius, Transform.AbsoluteTransform);
             return surfaceMidPoint.Length();
         }
 
@@ -407,10 +407,10 @@ namespace MonoGameEngineCore.Procedural
                 atmosphere.GetComponent<HighPrecisionPosition>().Position = planetCenter;
 
                 atmosphere.Update(SolarSystem.GetSun().LightDirection, Vector3.Zero,
-                    (Vector3.Zero - Transform.WorldMatrix.Translation).Length());
+                    (Vector3.Zero - Transform.AbsoluteTransform.Translation).Length());
 
-                atmosphericScatteringHelper.Update((Vector3.Zero - Transform.WorldMatrix.Translation).Length(),
-                SolarSystem.GetSun().LightDirection, Vector3.Zero - Transform.WorldMatrix.Translation);
+                atmosphericScatteringHelper.Update((Vector3.Zero - Transform.AbsoluteTransform.Translation).Length(),
+                SolarSystem.GetSun().LightDirection, Vector3.Zero - Transform.AbsoluteTransform.Translation);
 
           
             }
@@ -424,7 +424,7 @@ namespace MonoGameEngineCore.Procedural
             }
 
 
-            Vector3 toCenterOfPlanet = Transform.WorldMatrix.Translation;
+            Vector3 toCenterOfPlanet = Transform.AbsoluteTransform.Translation;
             float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
             float surfaceDistance = distanceToCenterOfPlanet - radius;
             float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
@@ -516,7 +516,7 @@ namespace MonoGameEngineCore.Procedural
             foreach (NeighbourTracker.Connection conn in connections)
             {
                 DebugShapeRenderer.AddLine(node.GetSurfaceMidPoint(),
-                    Vector3.Transform(Vector3.Normalize(conn.node.keyPoint) * radius, Transform.WorldMatrix), Color.Blue);
+                    Vector3.Transform(Vector3.Normalize(conn.node.keyPoint) * radius, Transform.AbsoluteTransform), Color.Blue);
             }
         }
 
@@ -574,7 +574,7 @@ namespace MonoGameEngineCore.Procedural
             orbitAngle += orbitSpeed;
 
             //move us in the direction of the orbit.
-            Transform.SetPosition(newPos);
+            Transform.SetHighPrecisionPosition(newPos);
         }
 
         private void RemoveStaleNodes()

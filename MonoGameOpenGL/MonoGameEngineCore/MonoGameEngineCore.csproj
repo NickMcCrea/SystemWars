@@ -61,7 +61,6 @@
     <Compile Include="Editor\ModelEditor.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="GameObject\Components\Controllers\TopDownController.cs" />
-    <Compile Include="GameObject\Components\RenderComponents\BasicEffectRenderComponent.cs" />
     <Compile Include="GameObject\Components\RenderComponents\EffectRenderComponent.cs" />
     <Compile Include="GameObject\Components\Controllers\GamePadController.cs" />
     <Compile Include="GameObject\Components\LargeScalePosition.cs" />

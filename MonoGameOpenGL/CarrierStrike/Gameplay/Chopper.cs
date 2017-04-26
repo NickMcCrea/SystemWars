@@ -32,15 +32,15 @@ namespace CarrierStrike.Gameplay
             AddComponent(renderGeom);
             AddComponent(effectComp);
             AddComponent(shadowComp);
-          
-            //var rotorCuboid = new ProceduralCuboid(0.03f, 0.6f, 0.03f);
-            //rotorCuboid.SetColor(chopperColor);
-            //GameObject rotor = GameObjectFactory.CreateRenderableGameObjectFromShape(rotorCuboid, EffectLoader.LoadSM5Effect("flatshaded"));
-            //rotor.Transform.SetPosition(new Vector3(0, 0.2f, 0));
-            ////rotor.AddComponent(new RotatorComponent(Vector3.Up, 0.1f));
-            //rotor.AddComponent(new ShadowCasterComponent());
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(rotor);
-            //Children.Add(rotor);
+
+            var rotorCuboid = new ProceduralCuboid(0.03f, 0.6f, 0.03f);
+            rotorCuboid.SetColor(chopperColor);
+            GameObject rotor = GameObjectFactory.CreateRenderableGameObjectFromShape(rotorCuboid, EffectLoader.LoadSM5Effect("flatshaded"));
+            rotor.Transform.RelativeTransform.Translation = new Vector3(0, 0.2f, 0);
+            rotor.AddComponent(new RotatorComponent(Vector3.Up, 0.1f));
+            rotor.AddComponent(new ShadowCasterComponent());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(rotor);
+            AddChild(rotor);
 
         }
 

@@ -34,8 +34,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
             for (int i = 0; i < renderData.Length; i++)
             {
-                Vector3 transformedPosition = Vector3.Transform(renderData[i].Position, Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.WorldMatrix);
-                Vector3 transformedNormal = Vector3.Transform(renderData[i].Normal, Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.WorldMatrix);
+                Vector3 transformedPosition = Vector3.Transform(renderData[i].Position, Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.AbsoluteTransform);
+                Vector3 transformedNormal = Vector3.Transform(renderData[i].Normal, Matrix.CreateScale(ParentObject.Transform.Scale) * ParentObject.Transform.AbsoluteTransform);
                 DebugShapeRenderer.AddLine(transformedPosition, transformedPosition + transformedNormal * 0.1f, Color.Red);
             }
         }

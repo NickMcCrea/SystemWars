@@ -109,7 +109,7 @@ namespace SystemWar.Screens
             {
                
                 ship.GetComponent<HighPrecisionPosition>().Position =
-                    earth.GetComponent<HighPrecisionPosition>().Position + earth.Transform.WorldMatrix.Left * shipDistanceOnFirstPlacement;
+                    earth.GetComponent<HighPrecisionPosition>().Position + earth.Transform.AbsoluteTransform.Left * shipDistanceOnFirstPlacement;
  
                 ship.Transform.SetLookAndUp(SolarSystem.GetRenderPosition(ship.HighPrecisionPositionComponent.Position, earth.GetComponent<HighPrecisionPosition>().Position), Vector3.Up);
 

@@ -47,15 +47,15 @@ namespace SystemWar
         {
          
 
-            Vector3 forwardPointOnSurface = planet.Transform.WorldMatrix.Forward;
+            Vector3 forwardPointOnSurface = planet.Transform.AbsoluteTransform.Forward;
 
             Vector3 rotateLatitude = Vector3.Transform(forwardPointOnSurface,
-                Matrix.CreateFromAxisAngle(planet.Transform.WorldMatrix.Right, MathHelper.ToRadians(Latitude)));
+                Matrix.CreateFromAxisAngle(planet.Transform.AbsoluteTransform.Right, MathHelper.ToRadians(Latitude)));
 
             Vector3 rotateLongAndLat = Vector3.Transform(rotateLatitude,
-                Matrix.CreateFromAxisAngle(planet.Transform.WorldMatrix.Up, MathHelper.ToRadians(Longitude)));
+                Matrix.CreateFromAxisAngle(planet.Transform.AbsoluteTransform.Up, MathHelper.ToRadians(Longitude)));
 
-            return planet.Transform.WorldMatrix.Translation +  rotateLongAndLat*(planet.radius + Altitude);
+            return planet.Transform.AbsoluteTransform.Translation +  rotateLongAndLat*(planet.radius + Altitude);
         }
 
         

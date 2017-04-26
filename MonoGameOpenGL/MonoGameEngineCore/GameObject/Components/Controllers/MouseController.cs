@@ -47,7 +47,7 @@ namespace MonoGameEngineCore.GameObject.Components
                     (float)-mouseMovement.X * rotationSpeed);
 
             if (mouseMovement.Y != 0)
-                ParentObject.Transform.Rotate(ParentObject.Transform.WorldMatrix.Left,
+                ParentObject.Transform.Rotate(ParentObject.Transform.AbsoluteTransform.Left,
                     (float) mouseMovement.Y*rotationSpeed);
 
             if (inputManager.IsKeyDown(Keys.RightShift))
@@ -58,19 +58,19 @@ namespace MonoGameEngineCore.GameObject.Components
 
             if (inputManager.IsKeyDown(Keys.Left))
             {
-                ParentObject.Transform.Translate(ParentObject.Transform.WorldMatrix.Left * moveSpeed);
+                ParentObject.Transform.Translate(ParentObject.Transform.AbsoluteTransform.Left * moveSpeed);
             }
             if (inputManager.IsKeyDown(Keys.Right))
             {
-                ParentObject.Transform.Translate(-ParentObject.Transform.WorldMatrix.Left * moveSpeed);
+                ParentObject.Transform.Translate(-ParentObject.Transform.AbsoluteTransform.Left * moveSpeed);
             }
             if (inputManager.IsKeyDown(Keys.Up))
             {
-                ParentObject.Transform.Translate(ParentObject.Transform.WorldMatrix.Forward * moveSpeed);
+                ParentObject.Transform.Translate(ParentObject.Transform.AbsoluteTransform.Forward * moveSpeed);
             }
             if (inputManager.IsKeyDown(Keys.Down))
             {
-                ParentObject.Transform.Translate(ParentObject.Transform.WorldMatrix.Backward * moveSpeed);
+                ParentObject.Transform.Translate(ParentObject.Transform.AbsoluteTransform.Backward * moveSpeed);
             }
 
 

@@ -246,7 +246,7 @@ namespace MonoGameEngineCore.Rendering
             atmosphereEffect.Parameters["fCameraHeight"].SetValue(heightAboveSurface);
             atmosphereEffect.Parameters["fCameraHeight2"].SetValue(heightAboveSurface * heightAboveSurface);
             atmosphereEffect.Parameters["v3LightPos"].SetValue(lightDir);
-            atmosphereEffect.Parameters["v3CameraPos"].SetValue(cameraPos - Transform.WorldMatrix.Translation);
+            atmosphereEffect.Parameters["v3CameraPos"].SetValue(cameraPos - Transform.AbsoluteTransform.Translation);
         }
     }
 }

@@ -78,7 +78,7 @@ namespace GridForgeResurrected.Game
 
             if (SystemCore.Input.MouseLeftPress())
             {
-                Projectile p = new Projectile(Transform.WorldMatrix.Translation, -Transform.WorldMatrix.Forward*0.3f);
+                Projectile p = new Projectile(Transform.AbsoluteTransform.Translation, -Transform.AbsoluteTransform.Forward*0.3f);
                 projectiles.Add(p);
             }
 

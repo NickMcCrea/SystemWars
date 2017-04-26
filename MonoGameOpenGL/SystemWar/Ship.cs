@@ -141,8 +141,8 @@ namespace SystemWar
             if (Landed)
                 return;
 
-            Vector3 vec = Transform.WorldMatrix.Left * leftRight;
-            Vector3 vec3 = Transform.WorldMatrix.Up * upDown;
+            Vector3 vec = Transform.AbsoluteTransform.Left * leftRight;
+            Vector3 vec3 = Transform.AbsoluteTransform.Up * upDown;
             vec += vec3;
             lateralThrust += vec * lateralFactor;
 
@@ -170,7 +170,7 @@ namespace SystemWar
                 Vector3 realWorldPos = SolarSystem.GetRenderPosition(HighPrecisionPositionComponent.Position, CurrentPlanet.Position.Position);
                 realWorldPos.Normalize();
 
-                float downAngle = Vector3.Dot(Transform.WorldMatrix.Forward, realWorldPos);
+                float downAngle = Vector3.Dot(Transform.AbsoluteTransform.Forward, realWorldPos);
 
                 //increase max velocity as the nose points down, and vice versa.
                 float velAdjustForGravity = MonoMathHelper.MapFloatRange(0, 2, 0.5f, 2f, downAngle + 1);
@@ -199,7 +199,7 @@ namespace SystemWar
 
             if (currentMainThrust > 0)
             {
-                Vector3 velChange = (maxVelToUse * currentMainThrust * Transform.WorldMatrix.Forward) / mass;
+                Vector3 velChange = (maxVelToUse * currentMainThrust * Transform.AbsoluteTransform.Forward) / mass;
                 velChange *= (100 - (mainThrustBleed * 100));
                 velocity += velChange;
             }
@@ -214,22 +214,22 @@ namespace SystemWar
             }
 
             if (currentSuperThrust > 0)
-                velocity += (currentSuperThrust) * superThrustVelocity * Transform.WorldMatrix.Forward;
+                velocity += (currentSuperThrust) * superThrustVelocity * Transform.AbsoluteTransform.Forward;
 
 
 
             movementAppliedLastFrame = velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Transform.Translate(movementAppliedLastFrame);
+            Transform.HighPrecisionTranslate(movementAppliedLastFrame);
 
 
             if (rollThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Forward,
+                Transform.Rotate(Transform.AbsoluteTransform.Forward,
                     rollThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (pitchThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Left,
+                Transform.Rotate(Transform.AbsoluteTransform.Left,
                     pitchThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
             if (yawThrust != 0)
-                Transform.Rotate(Transform.WorldMatrix.Up,
+                Transform.Rotate(Transform.AbsoluteTransform.Up,
                     yawThrust * (float)gameTime.ElapsedGameTime.TotalSeconds * 100);
 
 
@@ -247,7 +247,7 @@ namespace SystemWar
             rollThrust *= orientationThrustBleed;
 
             if (!LookMode)
-                shipCameraObject.Transform.WorldMatrix = Transform.WorldMatrix;
+                shipCameraObject.Transform.AbsoluteTransform = Transform.AbsoluteTransform;
 
 
         }
@@ -283,7 +283,7 @@ namespace SystemWar
                         {
                             Vector3 velNormal = Vector3.Normalize(velocity);
                             float angle = MonoMathHelper.GetAngleBetweenVectors(velNormal,
-                                Transform.WorldMatrix.Down);
+                                Transform.AbsoluteTransform.Down);
                             float speed = velocity.Length();
 
 
@@ -294,7 +294,7 @@ namespace SystemWar
                                 if (angle < MathHelper.ToRadians(20))
                                 {
                                     //the angle of the slope we've hit is sufficiently shallow
-                                    Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
+                                    Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.AbsoluteTransform.Translation - Transform.AbsoluteTransform.Translation));
 
                                     if (MonoMathHelper.GetAngleBetweenVectors(slopeNormal, planetUp) <
                                         MathHelper.ToDegrees(20))
@@ -302,14 +302,14 @@ namespace SystemWar
                                     else
                                     {
                                         //too steep to land on
-                                        Transform.Translate(removeVector.ToXNAVector());
+                                        Transform.HighPrecisionTranslate(removeVector.ToXNAVector());
                                         //Stop();
                                     }
 
                                 }
                                 else //not moving down
                                 {
-                                    Transform.Translate(removeVector.ToXNAVector());
+                                    Transform.HighPrecisionTranslate(removeVector.ToXNAVector());
                                     //Stop();
                                 }
 
@@ -317,7 +317,7 @@ namespace SystemWar
                             else //too fast
                             {
                                 //explode!
-                                Transform.Translate(removeVector.ToXNAVector());
+                                Transform.HighPrecisionTranslate(removeVector.ToXNAVector());
                                 //Stop();
                             }
                         }
@@ -358,9 +358,9 @@ namespace SystemWar
             //pitch and roll until the ship up vector matches the input vector.
             if (!float.IsNaN(up.X))
             {
-                float angle = Vector3.Dot(Transform.WorldMatrix.Left, up);
+                float angle = Vector3.Dot(Transform.AbsoluteTransform.Left, up);
                 desiredRollThrust += angle / 50f;
-                angle = Vector3.Dot(Transform.WorldMatrix.Forward, up);
+                angle = Vector3.Dot(Transform.AbsoluteTransform.Forward, up);
                 desiredPitchThrust -= angle / 50;
 
                 if (desiredPitchThrust > maxPitch)
@@ -379,8 +379,8 @@ namespace SystemWar
         public void RealignShipToPlanetUp()
         {
             //we want to un-roll the ship to up.
-            Vector3 shipUp = Transform.WorldMatrix.Left;
-            Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.WorldMatrix.Translation - Transform.WorldMatrix.Translation));
+            Vector3 shipUp = Transform.AbsoluteTransform.Left;
+            Vector3 planetUp = Vector3.Normalize((CurrentPlanet.Transform.AbsoluteTransform.Translation - Transform.AbsoluteTransform.Translation));
 
             if (!float.IsNaN(planetUp.X))
             {

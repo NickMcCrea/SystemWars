@@ -208,9 +208,9 @@ namespace MonoGameDirectX11.Screens
         {
             if (vehicleObject != null)
             {
-                vehicleObject.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Body.WorldTransform);
+                vehicleObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Body.WorldTransform);
 
-                wheel1.Transform.WorldMatrix = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Wheels[0].Shape.WorldTransform);
+                wheel1.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(testVehicle.Wheels[0].Shape.WorldTransform);
 
                 if (input.IsKeyDown(Keys.E))
                 {

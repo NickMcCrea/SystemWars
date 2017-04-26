@@ -50,8 +50,8 @@ namespace MonoGameEngineCore.GameObject.Components.Controllers
             if (inputManager.GetMouseImpact(out result))
             {
                 Vector3 point = result.HitData.Location.ToXNAVector();
-                point.Y = ParentObject.Transform.WorldMatrix.Translation.Y; //keeps the rotation clean
-                Vector3 lookAt = ParentObject.Transform.WorldMatrix.Translation - point;
+                point.Y = ParentObject.Transform.AbsoluteTransform.Translation.Y; //keeps the rotation clean
+                Vector3 lookAt = ParentObject.Transform.AbsoluteTransform.Translation - point;
                 lookAt.Normalize();
                 ParentObject.Transform.SetLookAndUp(lookAt, Vector3.Up);
             }

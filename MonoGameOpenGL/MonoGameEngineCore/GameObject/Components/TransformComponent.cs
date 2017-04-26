@@ -5,16 +5,18 @@ namespace MonoGameEngineCore.GameObject.Components
 {
     public class TransformComponent : IComponent, IUpdateable
     {
-        public Matrix WorldMatrix;
+        public Matrix AbsoluteTransform;
+        public Matrix RelativeTransform;
         public Vector3 Velocity;
         public float Scale { get; set; }
         public GameObject ParentObject { get; set; }
-        private bool highPrecisionmode = false;
+
         private HighPrecisionPosition highPrecisionPosition;
 
         public TransformComponent()
         {
-            WorldMatrix = Matrix.Identity;
+            AbsoluteTransform = Matrix.Identity;
+            RelativeTransform = Matrix.Identity;
             Scale = 1f;
             Enabled = true;
         }
@@ -24,86 +26,58 @@ namespace MonoGameEngineCore.GameObject.Components
             //if a high precisionposition component is detected, the transform will assume a coordinate system where the camera 
             //is always centered at zero, and transformations will behave accordingly.
             highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
-            if (highPrecisionPosition != null)
-                highPrecisionmode = true;
+           
         }
 
         public void Rotate(Vector3 axis, float amount)
         {
-            Vector3 pos = WorldMatrix.Translation;
-            WorldMatrix.Translation = Vector3.Zero;
-            WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
-            WorldMatrix.Translation = pos;
-
-            foreach (GameObject child in ParentObject.Children)
+            if (ParentObject.ParentGameObject == null)
             {
-                child.Transform.RotateAround(axis, pos, amount);
-
+                Vector3 pos = AbsoluteTransform.Translation;
+                AbsoluteTransform.Translation = Vector3.Zero;
+                AbsoluteTransform = AbsoluteTransform *= Matrix.CreateFromAxisAngle(axis, amount);
+                AbsoluteTransform.Translation = pos;
             }
+            else
+            {
+                Vector3 pos = RelativeTransform.Translation;
+                RelativeTransform.Translation = Vector3.Zero;
+                RelativeTransform = RelativeTransform *= Matrix.CreateFromAxisAngle(axis, amount);
+                RelativeTransform.Translation = pos;
+            }
+
+
         }
 
         public void RotateAround(Vector3 axis, Vector3 OrbitPoint, float amount)
         {
 
-            WorldMatrix.Translation -= OrbitPoint;
-            WorldMatrix = WorldMatrix *= Matrix.CreateFromAxisAngle(axis, amount);
-            WorldMatrix.Translation += OrbitPoint;
-
-            foreach (GameObject child in ParentObject.Children)
-                child.Transform.RotateAround(axis, OrbitPoint, amount);
-        }
+            AbsoluteTransform.Translation -= OrbitPoint;
+            AbsoluteTransform = AbsoluteTransform *= Matrix.CreateFromAxisAngle(axis, amount);
+            AbsoluteTransform.Translation += OrbitPoint;
 
 
-        public void SetPosition(Vector3d position)
-        {
-            if (highPrecisionPosition == null)
-                highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
-
-            highPrecisionPosition.Position = position;
-
-         
         }
 
         public void SetPosition(Vector3 position)
         {
-            if (highPrecisionmode)
-            {
-                highPrecisionPosition.Position = new Vector3d(position);
-            }
-            else
-            {
-                Vector3 oldPos = WorldMatrix.Translation;
-                WorldMatrix.Translation = position;
 
-                if(ParentObject.ContainsComponent<PhysicsComponent>())
-                    ParentObject.GetComponent<PhysicsComponent>().SetPosition(position);
+            Vector3 oldPos = AbsoluteTransform.Translation;
+            AbsoluteTransform.Translation = position;
 
-                foreach (GameObject child in ParentObject.Children)
-                {
-                    Vector3 offset = child.Transform.WorldMatrix.Translation - oldPos;
-                    child.Transform.WorldMatrix.Translation = position + offset;
-                }
+            if (ParentObject.ContainsComponent<PhysicsComponent>())
+                ParentObject.GetComponent<PhysicsComponent>().SetPosition(position);
 
-          
-
-            }
         }
 
         public void Translate(Vector3 translation)
         {
-            if (highPrecisionmode)
-            {
-                highPrecisionPosition.Position += translation;
-            }
-            else
-            {
-                WorldMatrix.Translation += translation;
-                foreach (GameObject child in ParentObject.Children)
-                    child.Transform.WorldMatrix.Translation += translation;
 
-                if (ParentObject.ContainsComponent<PhysicsComponent>())
-                    ParentObject.GetComponent<PhysicsComponent>().SetPosition(WorldMatrix.Translation);
-            }
+            AbsoluteTransform.Translation += translation;
+
+            if (ParentObject.ContainsComponent<PhysicsComponent>())
+                ParentObject.GetComponent<PhysicsComponent>().SetPosition(AbsoluteTransform.Translation);
+
 
         }
 
@@ -117,9 +91,15 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             if (Enabled)
             {
-                Vector3 currentPos = WorldMatrix.Translation;
+                Vector3 currentPos = AbsoluteTransform.Translation;
                 currentPos += Velocity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                WorldMatrix.Translation = currentPos;
+                AbsoluteTransform.Translation = currentPos;
+
+
+                if(ParentObject.ParentGameObject != null)
+                {
+                    AbsoluteTransform = RelativeTransform * ParentObject.ParentGameObject.Transform.AbsoluteTransform;
+                }
             }
         }
 
@@ -127,25 +107,50 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public void MoveUp(float movementAmount)
         {
-            Vector3 pos = WorldMatrix.Translation;
+            Vector3 pos = AbsoluteTransform.Translation;
             pos.Y += movementAmount;
-            WorldMatrix.Translation = pos;
+            AbsoluteTransform.Translation = pos;
         }
 
         public void MoveDown(float movementAmount)
         {
-            Vector3 pos = WorldMatrix.Translation;
+            Vector3 pos = AbsoluteTransform.Translation;
             pos.Y -= movementAmount;
-            WorldMatrix.Translation = pos;
+            AbsoluteTransform.Translation = pos;
         }
-
-
 
         public void SetLookAndUp(Vector3 lookAt, Vector3 up)
         {
-            Vector3 pos = WorldMatrix.Translation;
-            WorldMatrix = Matrix.CreateWorld(pos, lookAt, up);
-            
+            Vector3 pos = AbsoluteTransform.Translation;
+            AbsoluteTransform = Matrix.CreateWorld(pos, lookAt, up);
+
+        }
+
+        public void SetHighPrecisionPosition(Vector3d position)
+        {
+            if (highPrecisionPosition == null)
+                highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
+
+            highPrecisionPosition.Position = position;
+
+
+        }
+
+        public void SetHighPrecisionPosition(Vector3 position)
+        {
+            if (highPrecisionPosition == null)
+                highPrecisionPosition = ParentObject.GetComponent<HighPrecisionPosition>();
+
+            highPrecisionPosition.Position = new Vector3d(position);
+
+
+        }
+
+        public void HighPrecisionTranslate(Vector3 translation)
+        {
+
+            highPrecisionPosition.Position += translation;
+
         }
     }
 }

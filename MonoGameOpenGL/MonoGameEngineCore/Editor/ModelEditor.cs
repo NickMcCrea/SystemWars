@@ -480,11 +480,11 @@ namespace MonoGameEngineCore.Editor
                 cameraGameObject.Transform.RotateAround(Vector3.Up, Vector3.Zero, xChange/speedFactor);
 
                 float yChange = SystemCore.Input.MouseDelta.Y;
-                cameraGameObject.Transform.RotateAround(cameraGameObject.Transform.WorldMatrix.Right, Vector3.Zero,
+                cameraGameObject.Transform.RotateAround(cameraGameObject.Transform.AbsoluteTransform.Right, Vector3.Zero,
                     yChange/speedFactor);
             }
 
-            Vector3 position = cameraGameObject.Transform.WorldMatrix.Translation;
+            Vector3 position = cameraGameObject.Transform.AbsoluteTransform.Translation;
             float distanceFromOrigin = position.Length();
             float newDistance = distanceFromOrigin - SystemCore.Input.ScrollDelta/speedFactor;
             Vector3 newPosition = Vector3.Normalize(position)*newDistance;

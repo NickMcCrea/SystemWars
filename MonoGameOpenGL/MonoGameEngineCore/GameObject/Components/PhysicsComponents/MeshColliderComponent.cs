@@ -52,10 +52,10 @@ namespace MonoGameEngineCore.GameObject.Components
         public void Update(GameTime gameTime)
         {
             if (!SystemCore.PhysicsOnBackgroundThread)
-                mobileMesh.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
+                mobileMesh.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.AbsoluteTransform);
             else
             {
-                mobileMesh.BufferedStates.States.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.WorldMatrix);
+                mobileMesh.BufferedStates.States.WorldTransform = MathConverter.Convert(Microsoft.Xna.Framework.Matrix.CreateTranslation(offset)) * MathConverter.Convert(ParentObject.Transform.AbsoluteTransform);
             }
         }
 
