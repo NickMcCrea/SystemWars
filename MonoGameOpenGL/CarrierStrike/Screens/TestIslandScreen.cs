@@ -18,6 +18,10 @@ namespace CarrierStrike.Screens
     class TestIslandScreen : Screen
     {
         protected MouseFreeCamera mouseCamera;
+        GameObject cameraObject;
+        Chopper chopper;
+        Carrier carrier;
+
         bool releaseMouse;
 
         public TestIslandScreen() : base()
@@ -38,28 +42,50 @@ namespace CarrierStrike.Screens
             mouseCamera.moveSpeed = 0.1f;
             mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
 
+            cameraObject = new GameObject();
+            cameraObject.AddComponent(new ComponentCamera());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
+            SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
+
             AddInputBindings();
 
             SetUpSkyDome();
 
             SetUpGameWorld(100, 2, 2);
 
-            Chopper chopper = new Chopper();
+            chopper = new Chopper();
             chopper.Transform.SetPosition(new Vector3(50, 10, 50));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
 
-            Carrier carrier = new Carrier();
+            carrier = new Carrier();
             carrier.Transform.SetPosition(new Vector3(50, 0, 50));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(carrier);
-            
+
 
             carrier.GetComponent<PhysicsComponent>().PhysicsEntity.IsAffectedByGravity = false;
             carrier.GetComponent<PhysicsComponent>().PhysicsEntity.Mass = 100;
-           
+
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -1f, 0);
 
+              //Take the cross product of your forward vector with your global(0, 1, 0) up vector. 
+            //This gives you a right vector. Cross the right vector with the forward vector to get a up vector that "points up" but is 
+            //perpendicular to the forward and right vectors. Normalize all the vectors. You'll get problems if your forward vector is (0,1,0), 
+            //but that shouldn't happen with a chase cam I guess.
+
+            OrientCamera(chopper);
 
             base.OnInitialise();
+        }
+
+        private void OrientCamera(Chopper chopper)
+        {
+            cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + new Vector3(10, 10, 10));
+
+            Vector3 forward = chopper.Transform.AbsoluteTransform.Translation - cameraObject.Transform.AbsoluteTransform.Translation;
+            forward.Normalize();
+            Vector3 right = Vector3.Cross(forward, Vector3.Up);
+            Vector3 newUp = Vector3.Cross(right, forward);
+            cameraObject.Transform.SetLookAndUp(forward, newUp);
         }
 
         private void AddInputBindings()
@@ -85,24 +111,24 @@ namespace CarrierStrike.Screens
 
         private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
         {
-            var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches)/2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
+            var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches) / 2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
 
 
             for (int i = 0; i < widthInTerrainPatches; i++)
                 for (int j = 0; j < heightInTerrainPatches; j++)
                 {
-                    int xsampleOffset = i * (patchSize -1);
-                    int zsampleOffset = j * (patchSize-1);
+                    int xsampleOffset = i * (patchSize - 1);
+                    int zsampleOffset = j * (patchSize - 1);
 
-                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40,  xsampleOffset,zsampleOffset, 1);
+                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40, xsampleOffset, zsampleOffset, 1);
                     var hmObj = hm.CreateTranslatedRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(xsampleOffset - 1, 0, zsampleOffset - 1));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);
                 }
 
 
-      
 
-            Heightmap seaHeightMap = new Heightmap(patchSize/4 * widthInTerrainPatches, 1);
+
+            Heightmap seaHeightMap = new Heightmap(patchSize / 4 * widthInTerrainPatches, 1);
             var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
             seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
             seaObject.Transform.Scale = 10;
@@ -149,6 +175,13 @@ namespace CarrierStrike.Screens
 
             if (input.EvaluateInputBinding("MainMenu"))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
+
+            var chopper = SystemCore.GameObjectManager.GetObject("chopper");
+            if (chopper != null)
+            {
+                OrientCamera(chopper as Chopper);
+            }
+
             base.Update(gameTime);
         }
 

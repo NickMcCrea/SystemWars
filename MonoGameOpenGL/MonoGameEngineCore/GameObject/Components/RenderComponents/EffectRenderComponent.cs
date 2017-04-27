@@ -34,6 +34,11 @@ namespace MonoGameEngineCore.GameObject.Components
             AssignTextureParameters();
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public virtual void PreDraw(GameTime gameTime)
         {
             AssignMatrixParameters();

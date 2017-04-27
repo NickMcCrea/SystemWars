@@ -27,6 +27,10 @@ namespace MonoGameEngineCore.GameObject.Components
             effect.FogEnd = 1000;
             Visible = true;
         }
+        public void PostInitialise()
+        {
+
+        }
 
         public void Draw(GameTime gameTime)
         {

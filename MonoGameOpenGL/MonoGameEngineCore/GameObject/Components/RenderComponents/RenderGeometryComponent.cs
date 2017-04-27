@@ -26,6 +26,11 @@ namespace MonoGameEngineCore.GameObject.Components
             
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Initialise()
         {
             
@@ -54,7 +59,10 @@ namespace MonoGameEngineCore.GameObject.Components
             this.PrimitiveCount = shape.PrimitiveCount;
         }
 
- 
+        public void PostInitialise()
+        {
+
+        }
 
         public void Initialise()
         {

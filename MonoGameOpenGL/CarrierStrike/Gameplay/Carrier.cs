@@ -74,6 +74,11 @@ namespace CarrierStrike.Gameplay
             Enabled = true;
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Update(GameTime gameTime)
         {
         }

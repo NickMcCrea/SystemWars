@@ -25,6 +25,11 @@ namespace MonoGameEngineCore.GameObject.Components
             BorderColor = Color.White;
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public virtual void PreDraw(GameTime gameTime)
         {
             AssignMatrixParameters();        

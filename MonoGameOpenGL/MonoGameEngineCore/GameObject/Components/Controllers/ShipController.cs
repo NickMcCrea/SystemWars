@@ -18,7 +18,10 @@ namespace MonoGameEngineCore.GameObject.Components
             set;
         }
 
+        public void PostInitialise()
+        {
 
+        }
 
         public ShipController()
         {

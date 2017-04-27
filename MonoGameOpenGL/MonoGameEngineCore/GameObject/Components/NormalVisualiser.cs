@@ -56,6 +56,10 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public event EventHandler<EventArgs> VisibleChanged;
 
+        public void PostInitialise()
+        {
+
+        }
 
         public void Initialise()
         {

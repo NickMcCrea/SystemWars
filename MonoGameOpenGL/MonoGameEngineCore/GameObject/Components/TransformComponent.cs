@@ -29,6 +29,11 @@ namespace MonoGameEngineCore.GameObject.Components
            
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Rotate(Vector3 axis, float amount)
         {
             if (ParentObject.ParentGameObject == null)

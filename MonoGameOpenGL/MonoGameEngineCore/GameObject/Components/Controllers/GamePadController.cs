@@ -69,6 +69,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
         }
 
+        public void PostInitialise()
+        {
+            
+        }
+
         public int UpdateOrder
         {
             get;

@@ -47,6 +47,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Initialise()
         {
             if (PhysicsEntity == null)

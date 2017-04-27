@@ -11,6 +11,11 @@ namespace MonoGameEngineCore.GameObject
     {
         GameObject ParentObject { get; set; }
         void Initialise();
+
+        /// <summary>
+        /// All other components will have been initalised at this point, so will exist.
+        /// </summary>
+        void PostInitialise(); 
         
     }
 }

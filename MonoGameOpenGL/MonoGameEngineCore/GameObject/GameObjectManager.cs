@@ -63,6 +63,11 @@ namespace MonoGameEngineCore.GameObject
                 component.Initialise();
             }
 
+            foreach (IComponent component in componentList)
+            {
+                component.PostInitialise();
+            }
+
             FindUpdatableComponents(componentList);
             FindRenderableComponents(componentList);
 
@@ -227,6 +232,9 @@ namespace MonoGameEngineCore.GameObject
         {
             return gameObjects.Values.ToList();
         }
+
+    
+
 
         public GameObject GetObject(string name)
         {

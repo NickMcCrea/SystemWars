@@ -40,6 +40,11 @@ namespace MonoGameEngineCore.GameObject.Components
         {
 
         }
+
+        public void PostInitialise()
+        {
+
+        }
     }
 
     public class RotatorComponent : IComponent, IUpdateable
@@ -59,6 +64,11 @@ namespace MonoGameEngineCore.GameObject.Components
             : this(axis)
         {
             RotationSpeed = rotationSpeed;
+        }
+
+        public void PostInitialise()
+        {
+
         }
 
         public void Update(GameTime gameTime)
@@ -97,6 +107,11 @@ namespace MonoGameEngineCore.GameObject.Components
             : this(direction)
         {
             Speed = rotationSpeed;
+        }
+
+        public void PostInitialise()
+        {
+
         }
 
         public void Update(GameTime gameTime)

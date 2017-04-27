@@ -35,9 +35,13 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
            
         }
 
+        public void PostInitialise()
+        {
 
-        
-        
+        }
+
+
+
     }
 
     public static class MaterialFactory

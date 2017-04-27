@@ -42,6 +42,11 @@ namespace MonoGameEngineCore.GameObject.Components
             Enabled = true;
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public bool Enabled { get; set; }
 
         public event EventHandler<EventArgs> EnabledChanged;

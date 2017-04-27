@@ -14,6 +14,11 @@ namespace MonoGameEngineCore.GameObject.Components.Controllers
         private float speed = 0.003f;
         private float bleed = 0.95f;
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Initialise()
         {
             this.Enabled = true;

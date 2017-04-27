@@ -109,6 +109,11 @@ namespace MonoGameEngineCore.GameObject.Components
             Visible = true;
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
 
         public virtual void Draw(GameTime gameTime)
         {

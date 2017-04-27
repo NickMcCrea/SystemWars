@@ -17,6 +17,11 @@ namespace MonoGameEngineCore.GameObject.Components
             Enabled = true;
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public void Update(GameTime gameTime)
         {
 

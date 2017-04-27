@@ -30,6 +30,11 @@ namespace MonoGameEngineCore.GameObject.Components
 
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
         public virtual void PreDraw(GameTime gameTime)
         {
             AssignMatrixParameters();
@@ -152,6 +157,11 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             this.effect = effect;
             Visible = true;
+
+        }
+
+        public void PostInitialise()
+        {
 
         }
 

@@ -50,6 +50,7 @@ namespace MonoGameEngineCore.GameObject
         {
             AddComponent(component);
             component.Initialise();
+            component.PostInitialise();
             SystemCore.GameObjectManager.AddComponent(component);
         }
 
@@ -112,6 +113,10 @@ namespace MonoGameEngineCore.GameObject
             foreach (IComponent component in componentList)
             {
                 component.Initialise();
+            }
+            foreach (IComponent component in componentList)
+            {
+                component.PostInitialise();
             }
         }
     }

@@ -185,6 +185,11 @@ namespace Particle3DSample
             LoadContent();
         }
 
+        public void PostInitialise()
+        {
+
+        }
+
 
         /// <summary>
         /// Derived particle system classes should override this method

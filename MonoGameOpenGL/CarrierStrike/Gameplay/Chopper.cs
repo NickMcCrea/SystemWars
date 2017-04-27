@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics.Constraints.SingleEntity;
+using BEPUphysics.Entities;
+using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
@@ -14,7 +16,7 @@ namespace CarrierStrike.Gameplay
 {
     class Chopper : GameObject
     {
-        public Chopper() : base()
+        public Chopper() : base("chopper")
         {
 
             Color chopperColor = Color.Red;
@@ -45,21 +47,23 @@ namespace CarrierStrike.Gameplay
         }
 
 
-        
+
 
 
     }
 
     class ChopperController : IComponent, IUpdateable
     {
+        PhysicsComponent physicsEntity;
+        InputManager input;
         public bool Enabled
         {
-            get;set;
+            get; set;
         }
 
         public GameObject ParentObject
         {
-            get;set;
+            get; set;
         }
 
         public int UpdateOrder
@@ -73,10 +77,57 @@ namespace CarrierStrike.Gameplay
         public void Initialise()
         {
             Enabled = true;
+            physicsEntity = ParentObject.GetComponent<PhysicsComponent>();
+            input = SystemCore.Input;
+            AddInputBindings();
+
+        }
+
+        public void PostInitialise()
+        {
+            physicsEntity.PhysicsEntity.IsAffectedByGravity = false;
+            physicsEntity.PhysicsEntity.LinearDamping = 0.8f;
+            physicsEntity.PhysicsEntity.AngularDamping = 0.8f;
+
+            //SingleEntityAngularMotor mot = new SingleEntityAngularMotor(physicsEntity.PhysicsEntity);
+
+        }
+
+
+
+        private void AddInputBindings()
+        {
+            input.AddKeyDownBinding("Left", Microsoft.Xna.Framework.Input.Keys.J);
+            input.AddKeyDownBinding("Right", Microsoft.Xna.Framework.Input.Keys.L);
+            input.AddKeyDownBinding("Forward", Microsoft.Xna.Framework.Input.Keys.I);
+            input.AddKeyDownBinding("Back", Microsoft.Xna.Framework.Input.Keys.K);
+
+
         }
 
         public void Update(GameTime gameTime)
         {
+
+            if (input.EvaluateInputBinding("Left"))
+            {
+                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Left * 0.1f;
+                // physicsEntity.PhysicsEntity.AngularVelocity -= BEPUutilities.Vector3.Forward * 0.1f;
+            }
+
+            if (input.EvaluateInputBinding("Right"))
+            {
+                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Right * 0.1f;
+                // physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Forward * 0.1f;
+            }
+            if (input.EvaluateInputBinding("Forward"))
+            {
+                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Forward * 0.1f;
+            }
+
+            if (input.EvaluateInputBinding("Back"))
+            {
+                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Backward * 0.1f;
+            }
         }
     }
 }
