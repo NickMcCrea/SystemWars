@@ -17,7 +17,7 @@ namespace CarrierStrike.Screens
 {
     class TestIslandScreen : Screen
     {
-        protected MouseFreeCamera mouseCamera;
+        MouseFreeCamera mouseCamera;
         GameObject cameraObject;
         Chopper chopper;
         Carrier carrier;

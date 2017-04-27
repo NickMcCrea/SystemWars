@@ -117,6 +117,7 @@
     <Compile Include="Particles\ParticleSettings.cs" />
     <Compile Include="Particles\ParticleSystem.cs" />
     <Compile Include="Particles\ParticleVertex.cs" />
+    <Compile Include="Physics\UprightSpring.cs" />
     <Compile Include="Procedural\BufferBuilder.cs" />
     <Compile Include="Procedural\LibNoise\Modifiers\IslandModifier.cs" />
     <Compile Include="Procedural\NoiseGenerator.cs" />

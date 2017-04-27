@@ -1,5 +1,6 @@
 ﻿using BEPUphysics.Constraints.SingleEntity;
 using BEPUphysics.Entities;
+using BEPUphysicsDemos.SampleCode;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
@@ -89,7 +90,8 @@ namespace CarrierStrike.Gameplay
             physicsEntity.PhysicsEntity.LinearDamping = 0.8f;
             physicsEntity.PhysicsEntity.AngularDamping = 0.8f;
 
-            //SingleEntityAngularMotor mot = new SingleEntityAngularMotor(physicsEntity.PhysicsEntity);
+            UprightSpring uprightSpringConstraint = new UprightSpring(physicsEntity.PhysicsEntity, BEPUutilities.Vector3.Up, 0.1f, 100, 0.4f);
+            SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
 
         }
 
@@ -107,26 +109,34 @@ namespace CarrierStrike.Gameplay
 
         public void Update(GameTime gameTime)
         {
+            var currentLeft = physicsEntity.PhysicsEntity.WorldTransform.Left;
+            var currentForward = physicsEntity.PhysicsEntity.WorldTransform.Forward;
+            currentLeft.Y = 0;
+            currentForward.Y = 0;
+            float tiltForce = 0.01f;
+            float lateralForce = 0.1f;
 
             if (input.EvaluateInputBinding("Left"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Left * 0.1f;
-                // physicsEntity.PhysicsEntity.AngularVelocity -= BEPUutilities.Vector3.Forward * 0.1f;
+                physicsEntity.PhysicsEntity.LinearVelocity += currentLeft * lateralForce;
+                physicsEntity.PhysicsEntity.AngularVelocity -= currentForward * tiltForce;
             }
 
             if (input.EvaluateInputBinding("Right"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Right * 0.1f;
-                // physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Forward * 0.1f;
+                physicsEntity.PhysicsEntity.LinearVelocity -= currentLeft * lateralForce;
+                physicsEntity.PhysicsEntity.AngularVelocity += currentForward * tiltForce;
             }
             if (input.EvaluateInputBinding("Forward"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Forward * 0.1f;
+                physicsEntity.PhysicsEntity.LinearVelocity += currentForward * 0.1f;
+                physicsEntity.PhysicsEntity.AngularVelocity += currentLeft * tiltForce;
             }
 
             if (input.EvaluateInputBinding("Back"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Backward * 0.1f;
+                physicsEntity.PhysicsEntity.LinearVelocity -= currentForward * lateralForce;
+                physicsEntity.PhysicsEntity.AngularVelocity -= currentLeft * tiltForce;
             }
         }
     }
