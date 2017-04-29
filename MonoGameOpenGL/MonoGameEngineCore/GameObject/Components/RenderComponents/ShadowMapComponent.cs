@@ -10,7 +10,7 @@ namespace MonoGameEngineCore.GameObject.Components
         public RenderTarget2D ShadowMapTarget { get; set; }
         public Matrix LightViewProj { get; set; }
         public bool ShadowPass { get; private set; }
-
+     
         public ShadowMapRenderer()
         {
 
@@ -64,7 +64,7 @@ namespace MonoGameEngineCore.GameObject.Components
                                               Matrix.Invert(lightRotation));
 
             // Create the view matrix for the light
-            Matrix lightView = Matrix.CreateLookAt(lightPosition,
+            var lightView = Matrix.CreateLookAt(lightPosition,
                                                    lightPosition - light.LightDirection,
                                                    Vector3.Up);
 
@@ -74,6 +74,8 @@ namespace MonoGameEngineCore.GameObject.Components
                                                                -boxSize.Z, boxSize.Z);
 
             LightViewProj = lightView * lightProjection;
+
+         
 
 
             SystemCore.GraphicsDevice.SetRenderTarget(ShadowMapTarget);

@@ -99,12 +99,13 @@ namespace CarrierStrike.Gameplay
 
         private void AddInputBindings()
         {
-            input.AddKeyDownBinding("Left", Microsoft.Xna.Framework.Input.Keys.J);
-            input.AddKeyDownBinding("Right", Microsoft.Xna.Framework.Input.Keys.L);
-            input.AddKeyDownBinding("Forward", Microsoft.Xna.Framework.Input.Keys.I);
-            input.AddKeyDownBinding("Back", Microsoft.Xna.Framework.Input.Keys.K);
+            input.AddKeyDownBinding("Left", Microsoft.Xna.Framework.Input.Keys.A);
+            input.AddKeyDownBinding("Right", Microsoft.Xna.Framework.Input.Keys.D);
+            input.AddKeyDownBinding("Forward", Microsoft.Xna.Framework.Input.Keys.W);
+            input.AddKeyDownBinding("Back", Microsoft.Xna.Framework.Input.Keys.S);
 
-
+            input.AddKeyDownBinding("LeftRotate", Microsoft.Xna.Framework.Input.Keys.O);
+            input.AddKeyDownBinding("RightRotate", Microsoft.Xna.Framework.Input.Keys.P);
         }
 
         public void Update(GameTime gameTime)
@@ -115,16 +116,17 @@ namespace CarrierStrike.Gameplay
             currentForward.Y = 0;
             float tiltForce = 0.01f;
             float lateralForce = 0.1f;
+            float rotateForce = 0.1f;
 
             if (input.EvaluateInputBinding("Left"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity += currentLeft * lateralForce;
+                physicsEntity.PhysicsEntity.LinearVelocity += currentLeft * lateralForce / 2;
                 physicsEntity.PhysicsEntity.AngularVelocity -= currentForward * tiltForce;
             }
 
             if (input.EvaluateInputBinding("Right"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity -= currentLeft * lateralForce;
+                physicsEntity.PhysicsEntity.LinearVelocity -= currentLeft * lateralForce / 2;
                 physicsEntity.PhysicsEntity.AngularVelocity += currentForward * tiltForce;
             }
             if (input.EvaluateInputBinding("Forward"))
@@ -135,8 +137,19 @@ namespace CarrierStrike.Gameplay
 
             if (input.EvaluateInputBinding("Back"))
             {
-                physicsEntity.PhysicsEntity.LinearVelocity -= currentForward * lateralForce;
+                physicsEntity.PhysicsEntity.LinearVelocity -= currentForward * lateralForce / 2;
                 physicsEntity.PhysicsEntity.AngularVelocity -= currentLeft * tiltForce;
+            }
+
+            if (input.EvaluateInputBinding("LeftRotate"))
+            {
+                physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Up * rotateForce;
+            }
+
+            if (input.EvaluateInputBinding("RightRotate"))
+            {
+
+                physicsEntity.PhysicsEntity.AngularVelocity -= BEPUutilities.Vector3.Up * rotateForce;
             }
         }
     }

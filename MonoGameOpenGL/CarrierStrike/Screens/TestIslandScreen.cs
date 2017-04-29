@@ -17,11 +17,12 @@ namespace CarrierStrike.Screens
 {
     class TestIslandScreen : Screen
     {
+        
         MouseFreeCamera mouseCamera;
         GameObject cameraObject;
         Chopper chopper;
         Carrier carrier;
-
+        Vector3 cameraOffset;
         bool releaseMouse;
 
         public TestIslandScreen() : base()
@@ -46,6 +47,8 @@ namespace CarrierStrike.Screens
             cameraObject.AddComponent(new ComponentCamera());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
+            cameraOffset = new Vector3(10, 10, 10);
+            
 
             AddInputBindings();
 
@@ -54,7 +57,7 @@ namespace CarrierStrike.Screens
             SetUpGameWorld(100, 2, 2);
 
             chopper = new Chopper();
-            chopper.Transform.SetPosition(new Vector3(50, 10, 50));
+            chopper.Transform.SetPosition(new Vector3(50, 5, 50));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
 
             carrier = new Carrier();
@@ -67,11 +70,10 @@ namespace CarrierStrike.Screens
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -1f, 0);
 
-              //Take the cross product of your forward vector with your global(0, 1, 0) up vector. 
+            //Take the cross product of your forward vector with your global(0, 1, 0) up vector. 
             //This gives you a right vector. Cross the right vector with the forward vector to get a up vector that "points up" but is 
             //perpendicular to the forward and right vectors. Normalize all the vectors. You'll get problems if your forward vector is (0,1,0), 
             //but that shouldn't happen with a chase cam I guess.
-
             OrientCamera(chopper);
 
             base.OnInitialise();
@@ -79,8 +81,7 @@ namespace CarrierStrike.Screens
 
         private void OrientCamera(Chopper chopper)
         {
-            cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + new Vector3(10, 10, 10));
-
+            cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + cameraOffset);
             Vector3 forward = chopper.Transform.AbsoluteTransform.Translation - cameraObject.Transform.AbsoluteTransform.Translation;
             forward.Normalize();
             Vector3 right = Vector3.Cross(forward, Vector3.Up);
@@ -95,8 +96,12 @@ namespace CarrierStrike.Screens
             input.AddKeyDownBinding("CameraBackward", Keys.Down);
             input.AddKeyDownBinding("CameraLeft", Keys.Left);
             input.AddKeyDownBinding("CameraRight", Keys.Right);
+            input.AddKeyPressBinding("CameraRotateLeft", Keys.N);
+            input.AddKeyPressBinding("CameraRotateRight", Keys.M);
 
             input.AddKeyPressBinding("MainMenu", Keys.Escape);
+
+            input.AddKeyPressBinding("SwitchCamera", Keys.Enter);
 
             var releaseMouseBinding = input.AddKeyPressBinding("MouseRelease", Keys.M);
             releaseMouseBinding.InputEventActivated += (x, y) =>
@@ -165,6 +170,7 @@ namespace CarrierStrike.Screens
                     mouseCamera.MoveLeft();
                 if (input.EvaluateInputBinding("CameraRight"))
                     mouseCamera.MoveRight();
+             
 
                 if (!releaseMouse)
                 {
@@ -173,14 +179,35 @@ namespace CarrierStrike.Screens
                 }
             }
 
+            if (input.EvaluateInputBinding("SwitchCamera"))
+            {
+                if (SystemCore.ActiveCamera is ComponentCamera)
+                    SystemCore.SetActiveCamera(mouseCamera);
+                else
+                    SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
+            }
+
             if (input.EvaluateInputBinding("MainMenu"))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
+
+            if (input.EvaluateInputBinding("CameraRotateLeft"))
+            {
+                //take the camera offset and rotate it 90 degrees
+                cameraOffset = Vector3.Transform(cameraOffset, Matrix.CreateRotationY(MathHelper.PiOver2));
+            }
+            if (input.EvaluateInputBinding("CameraRotateRight"))
+            {
+                cameraOffset = Vector3.Transform(cameraOffset, Matrix.CreateRotationY(-MathHelper.PiOver2));
+            }
+
 
             var chopper = SystemCore.GameObjectManager.GetObject("chopper");
             if (chopper != null)
             {
                 OrientCamera(chopper as Chopper);
             }
+
+          
 
             base.Update(gameTime);
         }
