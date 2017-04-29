@@ -12,7 +12,7 @@ namespace CarrierStrike
             : base()
         {
 
-           
+
 
         }
 
@@ -47,9 +47,10 @@ namespace CarrierStrike
         }
 
         public override void Update(GameTime gameTime)
-
-
         {
+            if (input.GamePadButtonPress(Microsoft.Xna.Framework.Input.Buttons.Start))
+                SystemCore.ScreenManager.AddAndSetActive(new TestIslandScreen());
+
             base.Update(gameTime);
         }
 

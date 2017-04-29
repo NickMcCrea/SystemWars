@@ -52,13 +52,14 @@ namespace CarrierStrike.Screens
 
             AddInputBindings();
 
-            SetUpSkyDome();
+            
 
             SetUpGameWorld(100, 2, 2);
 
             chopper = new Chopper();
-            chopper.Transform.SetPosition(new Vector3(50, 5, 50));
+            chopper.Transform.SetPosition(new Vector3(50, 0.5f, 50));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
+            chopper.Transform.Rotate(Vector3.Up, MathHelper.Pi);
 
             carrier = new Carrier();
             carrier.Transform.SetPosition(new Vector3(50, 0, 50));
@@ -70,10 +71,7 @@ namespace CarrierStrike.Screens
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -1f, 0);
 
-            //Take the cross product of your forward vector with your global(0, 1, 0) up vector. 
-            //This gives you a right vector. Cross the right vector with the forward vector to get a up vector that "points up" but is 
-            //perpendicular to the forward and right vectors. Normalize all the vectors. You'll get problems if your forward vector is (0,1,0), 
-            //but that shouldn't happen with a chase cam I guess.
+       
             OrientCamera(chopper);
 
             base.OnInitialise();
@@ -112,10 +110,15 @@ namespace CarrierStrike.Screens
 
             var binding = input.AddKeyPressBinding("WireframeToggle", Keys.Space);
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
+
+
+            
         }
 
         private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
         {
+            var skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);
+
             var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches) / 2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
 
 
@@ -139,13 +142,7 @@ namespace CarrierStrike.Screens
             seaObject.Transform.Scale = 10;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
 
-
-         
-        }
-
-        private void SetUpSkyDome()
-        {
-            var skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);
+        
 
         }
 
@@ -162,24 +159,7 @@ namespace CarrierStrike.Screens
         {
             if (!SystemCore.CursorVisible)
             {
-
-                mouseCamera.Slow = input.EvaluateInputBinding("SlowCamera");
-
-                if (input.EvaluateInputBinding("CameraForward"))
-                    mouseCamera.MoveForward();
-                if (input.EvaluateInputBinding("CameraBackward"))
-                    mouseCamera.MoveBackward();
-                if (input.EvaluateInputBinding("CameraLeft"))
-                    mouseCamera.MoveLeft();
-                if (input.EvaluateInputBinding("CameraRight"))
-                    mouseCamera.MoveRight();
-             
-
-                if (!releaseMouse)
-                {
-                    mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
-                    input.CenterMouse();
-                }
+                EvaluateMouseCamControls(gameTime);
             }
 
             if (input.EvaluateInputBinding("SwitchCamera"))
@@ -193,26 +173,51 @@ namespace CarrierStrike.Screens
             if (input.EvaluateInputBinding("MainMenu"))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
-            if (input.EvaluateInputBinding("CameraRotateLeft"))
+            EvaluateCamera();
+
+
+
+
+            base.Update(gameTime);
+        }
+
+        private void EvaluateCamera()
+        {
+            if (input.EvaluateInputBinding("CameraRotateLeft") || input.GamePadButtonPress(Buttons.LeftShoulder))
             {
                 //take the camera offset and rotate it 90 degrees
                 cameraOffset = Vector3.Transform(cameraOffset, Matrix.CreateRotationY(MathHelper.PiOver2));
             }
-            if (input.EvaluateInputBinding("CameraRotateRight"))
+            if (input.EvaluateInputBinding("CameraRotateRight") || input.GamePadButtonPress(Buttons.RightShoulder))
             {
                 cameraOffset = Vector3.Transform(cameraOffset, Matrix.CreateRotationY(-MathHelper.PiOver2));
             }
-
 
             var chopper = SystemCore.GameObjectManager.GetObject("chopper");
             if (chopper != null)
             {
                 OrientCamera(chopper as Chopper);
             }
+        }
 
-          
+        private void EvaluateMouseCamControls(GameTime gameTime)
+        {
+            mouseCamera.Slow = input.EvaluateInputBinding("SlowCamera");
+            if (input.EvaluateInputBinding("CameraForward"))
+                mouseCamera.MoveForward();
+            if (input.EvaluateInputBinding("CameraBackward"))
+                mouseCamera.MoveBackward();
+            if (input.EvaluateInputBinding("CameraLeft"))
+                mouseCamera.MoveLeft();
+            if (input.EvaluateInputBinding("CameraRight"))
+                mouseCamera.MoveRight();
 
-            base.Update(gameTime);
+
+            if (!releaseMouse)
+            {
+                mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
+                input.CenterMouse();
+            }
         }
 
         public override void Render(GameTime gameTime)

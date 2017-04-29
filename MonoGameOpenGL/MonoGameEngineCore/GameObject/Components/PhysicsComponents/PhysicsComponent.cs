@@ -84,6 +84,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
         }
 
+      
+
         private void GenerateSphereCollider()
         {
             RenderGeometryComponent geometry = ParentObject.GetComponent<RenderGeometryComponent>();

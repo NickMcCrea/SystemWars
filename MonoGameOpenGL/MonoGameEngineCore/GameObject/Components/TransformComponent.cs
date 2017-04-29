@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics.Entities;
+using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
 
 namespace MonoGameEngineCore.GameObject.Components
@@ -51,6 +52,11 @@ namespace MonoGameEngineCore.GameObject.Components
                 RelativeTransform.Translation = pos;
             }
 
+            if (ParentObject.ContainsComponent<PhysicsComponent>())
+            {
+                Entity physicsentity = ParentObject.GetComponent<PhysicsComponent>().PhysicsEntity;
+                physicsentity.WorldTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
+            }
 
         }
 
@@ -60,6 +66,12 @@ namespace MonoGameEngineCore.GameObject.Components
             AbsoluteTransform.Translation -= OrbitPoint;
             AbsoluteTransform = AbsoluteTransform *= Matrix.CreateFromAxisAngle(axis, amount);
             AbsoluteTransform.Translation += OrbitPoint;
+
+            if (ParentObject.ContainsComponent<PhysicsComponent>())
+            {
+                Entity physicsentity = ParentObject.GetComponent<PhysicsComponent>().PhysicsEntity;
+                physicsentity.WorldTransform = MonoMathHelper.GenerateBepuMatrixFromMono(ParentObject.Transform.AbsoluteTransform);
+            }
 
 
         }

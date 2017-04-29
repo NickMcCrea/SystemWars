@@ -71,6 +71,9 @@ namespace CarrierStrike.Gameplay
         {
             get;
         }
+        float tiltForce = 0.01f;
+        float lateralForce = 0.1f;
+        float rotateForce = 0.1f;
 
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
@@ -106,6 +109,11 @@ namespace CarrierStrike.Gameplay
 
             input.AddKeyDownBinding("LeftRotate", Microsoft.Xna.Framework.Input.Keys.O);
             input.AddKeyDownBinding("RightRotate", Microsoft.Xna.Framework.Input.Keys.P);
+
+
+            input.AddKeyDownBinding("Descend", Microsoft.Xna.Framework.Input.Keys.L);
+            input.AddKeyDownBinding("Ascend", Microsoft.Xna.Framework.Input.Keys.OemComma);
+
         }
 
         public void Update(GameTime gameTime)
@@ -114,9 +122,7 @@ namespace CarrierStrike.Gameplay
             var currentForward = physicsEntity.PhysicsEntity.WorldTransform.Forward;
             currentLeft.Y = 0;
             currentForward.Y = 0;
-            float tiltForce = 0.01f;
-            float lateralForce = 0.1f;
-            float rotateForce = 0.1f;
+         
 
             if (input.EvaluateInputBinding("Left"))
             {
@@ -143,14 +149,65 @@ namespace CarrierStrike.Gameplay
 
             if (input.EvaluateInputBinding("LeftRotate"))
             {
-                physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Up * rotateForce;
+                LeftRotate();
             }
 
             if (input.EvaluateInputBinding("RightRotate"))
             {
-
-                physicsEntity.PhysicsEntity.AngularVelocity -= BEPUutilities.Vector3.Up * rotateForce;
+                RightRotate();
             }
+
+            if (input.EvaluateInputBinding("Descend"))
+            {
+                Descend();
+            }
+
+            if (input.EvaluateInputBinding("Ascend"))
+            {
+                Ascend();
+            }
+
+            Vector2 leftStick = input.GetLeftStickState();
+            float forwardBack = leftStick.Y;
+            float leftRight = leftStick.X;
+
+            Vector2 rightStick = input.GetRightStickState();
+            
+
+            physicsEntity.PhysicsEntity.LinearVelocity += currentForward * (forwardBack * lateralForce);
+            physicsEntity.PhysicsEntity.LinearVelocity -= currentLeft * (leftRight * lateralForce / 2);
+            physicsEntity.PhysicsEntity.AngularVelocity += currentForward * (leftRight * tiltForce);
+            physicsEntity.PhysicsEntity.AngularVelocity += currentLeft * (forwardBack * tiltForce);
+
+            if (rightStick.X > 0.1)
+                RightRotate();
+            if (rightStick.X < -0.1)
+                LeftRotate();
+            if (rightStick.Y > 0.1)
+                Descend();
+            if (rightStick.Y < -0.1)
+                Ascend();
+
+        }
+
+        private void RightRotate()
+        {
+            physicsEntity.PhysicsEntity.AngularVelocity -= BEPUutilities.Vector3.Up * rotateForce;
+        }
+
+        private void LeftRotate()
+        {
+            physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Up * rotateForce;
+        }
+
+        private void Ascend()
+        {
+            physicsEntity.PhysicsEntity.LinearVelocity -= BEPUutilities.Vector3.Up * lateralForce / 2;
+        }
+
+        private void Descend()
+        {
+            physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Up * lateralForce / 2;
         }
     }
 }
