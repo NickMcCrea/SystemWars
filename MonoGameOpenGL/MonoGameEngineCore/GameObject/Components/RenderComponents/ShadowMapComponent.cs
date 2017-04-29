@@ -14,7 +14,7 @@ namespace MonoGameEngineCore.GameObject.Components
         public ShadowMapRenderer()
         {
 
-            ShadowMapTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 2048, 2048, false,
+            ShadowMapTarget = new RenderTarget2D(SystemCore.GraphicsDevice, 4096, 4096, false,
                 SurfaceFormat.Single, DepthFormat.Depth24, 0, RenderTargetUsage.PlatformContents);
         }
 

@@ -81,11 +81,10 @@ float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coor
 {
     float shadow_term = 0;
 
-       //float2 v_lerps = frac(ShadowMapSize * shadow_coord);
-
+     
     float variableBias = clamp(0.001 * tan(acos(ndotl)), 0, DepthBias);
 
-    	//safe to assume it's a square
+    //safe to assume it's a square
     float size = 1 / ShadowMapSize.x;
     	
     float samples[4];
@@ -95,8 +94,7 @@ float CalcShadowTermPCF(float light_space_depth, float ndotl, float2 shadow_coor
     samples[3] = (light_space_depth - variableBias < ShadowMap.Sample(ShadowMapSampler, shadow_coord + float2(size, size)).r);
 
     shadow_term = (samples[0] + samples[1] + samples[2] + samples[3]) / 4.0;
-    	//shadow_term = lerp(lerp(samples[0],samples[1],v_lerps.x),lerp(samples[2],samples[3],v_lerps.x),v_lerps.y);
-
+    	
     return shadow_term;
 }
 

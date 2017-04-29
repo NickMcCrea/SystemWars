@@ -35,7 +35,7 @@ namespace CarrierStrike.Screens
             SystemCore.CursorVisible = false;
 
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(1, 1, 1));
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f,1,0.01f));
             SystemCore.ActiveScene.FogEnabled = true;
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
@@ -44,10 +44,10 @@ namespace CarrierStrike.Screens
             mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
 
             cameraObject = new GameObject();
-            cameraObject.AddComponent(new ComponentCamera());
+            cameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.25f, 100.0f, false));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
-            cameraOffset = new Vector3(10, 10, 10);
+            cameraOffset = new Vector3(-10, 10, -10);
             
 
             AddInputBindings();
@@ -138,6 +138,9 @@ namespace CarrierStrike.Screens
             seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
             seaObject.Transform.Scale = 10;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
+
+
+         
         }
 
         private void SetUpSkyDome()

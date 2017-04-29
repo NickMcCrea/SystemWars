@@ -66,10 +66,10 @@ namespace MonoGameDirectX11.Screens
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
 
-            Heightmap heightMap = new Heightmap(100, 1);
-            var seaObject = heightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
-            seaObject.Transform.SetPosition(new Vector3(0, 10, 0));
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
+            //Heightmap heightMap = new Heightmap(100, 1);
+            //var seaObject = heightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("water"));
+            //seaObject.Transform.SetPosition(new Vector3(0, 10, 0));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
 
             //SetupVehicle();
 
