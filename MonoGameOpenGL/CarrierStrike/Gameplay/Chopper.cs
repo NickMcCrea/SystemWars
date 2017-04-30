@@ -17,6 +17,8 @@ namespace CarrierStrike.Gameplay
 {
     class Chopper : GameObject
     {
+        
+
         public Chopper() : base("chopper")
         {
 

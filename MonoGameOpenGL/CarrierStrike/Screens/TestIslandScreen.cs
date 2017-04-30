@@ -76,17 +76,7 @@ namespace CarrierStrike.Screens
 
             base.OnInitialise();
         }
-
-        private void OrientCamera(Chopper chopper)
-        {
-            cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + cameraOffset);
-            Vector3 forward = chopper.Transform.AbsoluteTransform.Translation - cameraObject.Transform.AbsoluteTransform.Translation;
-            forward.Normalize();
-            Vector3 right = Vector3.Cross(forward, Vector3.Up);
-            Vector3 newUp = Vector3.Cross(right, forward);
-            cameraObject.Transform.SetLookAndUp(forward, newUp);
-        }
-
+ 
         private void AddInputBindings()
         {
             input = SystemCore.GetSubsystem<InputManager>();
@@ -212,6 +202,23 @@ namespace CarrierStrike.Screens
             {
                 OrientCamera(chopper as Chopper);
             }
+        }
+
+        private void OrientCamera(Chopper chopper)
+        {
+            Vector3 behindChopper = chopper.Transform.AbsoluteTransform.Backward;
+            behindChopper.Y = 0;
+            behindChopper *= 10f;
+            behindChopper += new Vector3(0, 10, 0);
+
+            cameraOffset = behindChopper;
+
+            cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + cameraOffset);
+            Vector3 forward = chopper.Transform.AbsoluteTransform.Translation - cameraObject.Transform.AbsoluteTransform.Translation;
+            forward.Normalize();
+            Vector3 right = Vector3.Cross(forward, Vector3.Up);
+            Vector3 newUp = Vector3.Cross(right, forward);
+            cameraObject.Transform.SetLookAndUp(forward, newUp);
         }
 
         private void EvaluateMouseCamControls(GameTime gameTime)
