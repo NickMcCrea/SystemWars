@@ -125,10 +125,28 @@ namespace CarrierStrike.Screens
 
             int widthInTerrainPatches = 1;
             int heightInTerrainPatches = 1;
+        
+            CreateIsland(patchSize, widthInTerrainPatches, heightInTerrainPatches, Vector3.Zero);
+            CreateIsland(patchSize, widthInTerrainPatches, heightInTerrainPatches, new Vector3(100, 0, 100));
+            CreateIsland(patchSize, widthInTerrainPatches, heightInTerrainPatches, new Vector3(130, 0, 0));
+            CreateIsland(patchSize, widthInTerrainPatches, heightInTerrainPatches, new Vector3(0, 0, 170));
 
-            var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches) / 2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
 
-            Vector3 islandPatchOrigin = Vector3.Zero;
+            //temporary water
+            Heightmap seaHeightMap = new Heightmap(patchSize / 4 * widthInTerrainPatches, 1);
+            var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
+            seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
+            seaObject.Transform.Scale = 20;
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
+
+
+
+        }
+
+        private static void CreateIsland(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches, Vector3 islandPatchOrigin)
+        {
+            var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches) / 2 + islandPatchOrigin.X, (patchSize * widthInTerrainPatches) / 2 + islandPatchOrigin.Z, 25, 0.08f, RandomHelper.GetRandomInt(1000));
+
 
             for (int i = 0; i < widthInTerrainPatches; i++)
                 for (int j = 0; j < heightInTerrainPatches; j++)
@@ -140,18 +158,6 @@ namespace CarrierStrike.Screens
                     var hmObj = hm.CreateTranslatedRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(xsampleOffset + islandPatchOrigin.X - 1, 0, zsampleOffset + islandPatchOrigin.Z - 1));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);
                 }
-
-
-
-            //temporary water
-            //Heightmap seaHeightMap = new Heightmap(patchSize / 4 * widthInTerrainPatches, 1);
-            //var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
-            //seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
-            //seaObject.Transform.Scale = 10;
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
-
-
-
         }
 
         public override void OnRemove()
