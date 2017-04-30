@@ -17,7 +17,7 @@ namespace CarrierStrike.Screens
 {
     class TestIslandScreen : Screen
     {
-        
+
         MouseFreeCamera mouseCamera;
         GameObject cameraObject;
         Chopper chopper;
@@ -35,7 +35,7 @@ namespace CarrierStrike.Screens
             SystemCore.CursorVisible = false;
 
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f,1,0.01f));
+            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f, 1, 0.01f));
             SystemCore.ActiveScene.FogEnabled = true;
 
             mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0));
@@ -48,21 +48,21 @@ namespace CarrierStrike.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraOffset = new Vector3(-10, 10, -10);
-            
+
 
             AddInputBindings();
 
-            
 
-            SetUpGameWorld(100, 2, 2);
+
+            SetUpGameWorld();
 
             chopper = new Chopper();
-            chopper.Transform.SetPosition(new Vector3(50, 0.5f, 50));
+            chopper.Transform.SetPosition(new Vector3(10, 0.5f, 10));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(chopper);
             chopper.Transform.Rotate(Vector3.Up, MathHelper.Pi);
 
             carrier = new Carrier();
-            carrier.Transform.SetPosition(new Vector3(50, 0, 50));
+            carrier.Transform.SetPosition(new Vector3(10, 0, 10));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(carrier);
 
 
@@ -71,7 +71,7 @@ namespace CarrierStrike.Screens
 
             SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -1f, 0);
 
-       
+
             OrientCamera(chopper);
 
             base.OnInitialise();
@@ -112,15 +112,23 @@ namespace CarrierStrike.Screens
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
 
 
-            
+
         }
 
-        private void SetUpGameWorld(int patchSize, int widthInTerrainPatches, int heightInTerrainPatches)
+        private void SetUpGameWorld()
         {
+            //Sky dome first (depth buffer will be disabled on draw for this)
             var skyDome = new GradientSkyDome(Color.MediumBlue, Color.LightCyan);
+
+            int patchSize = 100;
+
+
+            int widthInTerrainPatches = 1;
+            int heightInTerrainPatches = 1;
 
             var noiseModule = NoiseGenerator.Island((patchSize * widthInTerrainPatches) / 2, (patchSize * widthInTerrainPatches) / 2, 25, 0.08f, RandomHelper.GetRandomInt(1000));
 
+            Vector3 islandPatchOrigin = Vector3.Zero;
 
             for (int i = 0; i < widthInTerrainPatches; i++)
                 for (int j = 0; j < heightInTerrainPatches; j++)
@@ -128,21 +136,21 @@ namespace CarrierStrike.Screens
                     int xsampleOffset = i * (patchSize - 1);
                     int zsampleOffset = j * (patchSize - 1);
 
-                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40, xsampleOffset, zsampleOffset, 1);
-                    var hmObj = hm.CreateTranslatedRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(xsampleOffset - 1, 0, zsampleOffset - 1));
+                    var hm = NoiseGenerator.CreateHeightMap(noiseModule, patchSize, 1, 40, xsampleOffset + islandPatchOrigin.X, zsampleOffset + islandPatchOrigin.Z, 1);
+                    var hmObj = hm.CreateTranslatedRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(xsampleOffset + islandPatchOrigin.X - 1, 0, zsampleOffset + islandPatchOrigin.Z - 1));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(hmObj);
                 }
 
 
 
+            //temporary water
+            //Heightmap seaHeightMap = new Heightmap(patchSize / 4 * widthInTerrainPatches, 1);
+            //var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
+            //seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
+            //seaObject.Transform.Scale = 10;
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
 
-            Heightmap seaHeightMap = new Heightmap(patchSize / 4 * widthInTerrainPatches, 1);
-            var seaObject = seaHeightMap.CreateRenderableHeightMap(Color.Blue, EffectLoader.LoadSM5Effect("flatshaded"));
-            seaObject.Transform.SetPosition(new Vector3(-50, 0, -50));
-            seaObject.Transform.Scale = 10;
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(seaObject);
 
-        
 
         }
 

@@ -99,7 +99,7 @@ namespace MonoGameEngineCore.Procedural
         public static IModule Island(float centerPointX, float centerPointY, float fallOffStart, float falloffBias, int seed=1000)
         {
             FastRidgedMultifractal fastPlanetLowlands = new FastRidgedMultifractal(seed);
-            fastPlanetLowlands.Frequency = 0.02f;
+            fastPlanetLowlands.Frequency = 0.04f;
 
             DistanceBasedBias distBias = new DistanceBasedBias(fastPlanetLowlands, centerPointX, centerPointY, fallOffStart, falloffBias);
 
