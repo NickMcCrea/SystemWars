@@ -47,7 +47,7 @@ namespace CarrierStrike.Screens
             cameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.25f, 100.0f, false));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
-            cameraOffset = new Vector3(-10, 10, -10);
+            cameraOffset = new Vector3(0, 10, -10);
 
 
             AddInputBindings();
@@ -197,6 +197,15 @@ namespace CarrierStrike.Screens
                 cameraOffset = Vector3.Transform(cameraOffset, Matrix.CreateRotationY(-MathHelper.PiOver2));
             }
 
+            var rightStick = input.GetRightStickState();
+            if(rightStick.Y < 0)
+            {
+                cameraOffset *= 1.01f;
+            }
+            if (rightStick.Y > 0)
+                cameraOffset /= 1.01f;
+
+
             var chopper = SystemCore.GameObjectManager.GetObject("chopper");
             if (chopper != null)
             {
@@ -211,7 +220,7 @@ namespace CarrierStrike.Screens
             behindChopper *= 10f;
             behindChopper += new Vector3(0, 10, 0);
 
-            cameraOffset = behindChopper;
+            //cameraOffset = behindChopper;
 
             cameraObject.Transform.SetPosition(chopper.Transform.AbsoluteTransform.Translation + cameraOffset);
             Vector3 forward = chopper.Transform.AbsoluteTransform.Translation - cameraObject.Transform.AbsoluteTransform.Translation;

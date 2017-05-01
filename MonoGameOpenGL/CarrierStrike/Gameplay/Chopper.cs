@@ -1,10 +1,12 @@
-﻿using BEPUphysics.Constraints.SingleEntity;
+﻿using BEPUphysics;
+using BEPUphysics.Constraints.SingleEntity;
 using BEPUphysics.Entities;
 using BEPUphysicsDemos.SampleCode;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using System;
@@ -63,6 +65,13 @@ namespace CarrierStrike.Gameplay
         {
             get; set;
         }
+        private ControlScheme currentControlScheme = ControlScheme.B;
+
+        private enum ControlScheme
+        {
+            A,
+            B
+        }
 
         public GameObject ParentObject
         {
@@ -100,8 +109,6 @@ namespace CarrierStrike.Gameplay
 
         }
 
-
-
         private void AddInputBindings()
         {
             input.AddKeyDownBinding("Left", Microsoft.Xna.Framework.Input.Keys.A);
@@ -120,11 +127,89 @@ namespace CarrierStrike.Gameplay
 
         public void Update(GameTime gameTime)
         {
+
+
+            if (currentControlScheme == ControlScheme.A)
+            {
+                ControlSchemeA();
+            }
+            if (currentControlScheme == ControlScheme.B)
+            {
+                ControlSchemeB();
+            }
+
+            RayCastResult result;
+            Vector3 pos = ParentObject.Transform.AbsoluteTransform.Translation;
+            pos += new Vector3(0, -2, 0);
+            BEPUutilities.Vector3 chopperPos = new BEPUutilities.Vector3(pos.X, pos.Y, pos.Z);
+            
+
+            BEPUutilities.Ray r = new BEPUutilities.Ray(chopperPos, BEPUutilities.Vector3.Down);
+            if (SystemCore.PhysicsSimulation.RayCast(r, out result))
+            {
+                if (result.HitObject.Tag is Chopper)
+                {
+                   
+                }
+                else
+                {
+                    float distance = result.HitData.T;
+                    if (distance < 5)
+                        Descend();
+                    else
+                        Ascend();
+                }
+            }
+
+        }
+
+
+        private void ControlSchemeB()
+        {
+            var currentLeft = physicsEntity.PhysicsEntity.WorldTransform.Left;
+            var currentForward = physicsEntity.PhysicsEntity.WorldTransform.Forward;
+            var cameraForward = Matrix.Invert(SystemCore.ActiveCamera.View).Forward;
+
+            cameraForward.Y = 0;
+
+            currentLeft.Y = 0;
+            currentForward.Y = 0;
+
+            Vector2 leftStick = input.GetLeftStickState();
+            leftStick.X = -leftStick.X;
+            Vector2 rightStick = input.GetRightStickState();
+
+            
+
+            Vector2 current2DForwardVec = new Vector2(currentForward.X, currentForward.Z);
+            Vector2 current2DLeftVec = new Vector2(currentLeft.X, currentLeft.Z);
+            Vector2 current2DCameraVec = new Vector2(cameraForward.X, cameraForward.Z);
+
+
+            //move forward with a speed that varies in proportion to how "forward" we're pointing the stick
+            float angle = (float)Math.Atan2(current2DForwardVec.Y - leftStick.Y, current2DForwardVec.X - leftStick.X);
+            physicsEntity.PhysicsEntity.LinearVelocity += currentForward * (leftStick.Length() * (lateralForce * 2));
+            var speedFactor = (float)Math.PI * 2 - angle;
+            DebugText.Write(speedFactor.ToString());
+
+            float dot = Vector2.Dot(current2DLeftVec, Vector2.Normalize(leftStick));
+
+      
+            if (dot > 0)
+                LeftRotate();
+            if (dot < -0f)
+                RightRotate();
+
+
+
+        }
+
+        private void ControlSchemeA()
+        {
             var currentLeft = physicsEntity.PhysicsEntity.WorldTransform.Left;
             var currentForward = physicsEntity.PhysicsEntity.WorldTransform.Forward;
             currentLeft.Y = 0;
             currentForward.Y = 0;
-         
 
             if (input.EvaluateInputBinding("Left"))
             {
@@ -174,7 +259,7 @@ namespace CarrierStrike.Gameplay
             float leftRight = leftStick.X;
 
             Vector2 rightStick = input.GetRightStickState();
-            
+
 
             physicsEntity.PhysicsEntity.LinearVelocity += currentForward * (forwardBack * lateralForce);
             physicsEntity.PhysicsEntity.LinearVelocity -= currentLeft * (leftRight * lateralForce / 2);
@@ -189,7 +274,6 @@ namespace CarrierStrike.Gameplay
                 Descend();
             if (rightStick.Y < -0.1)
                 Ascend();
-
         }
 
         private void RightRotate()
