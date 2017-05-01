@@ -155,9 +155,9 @@ namespace CarrierStrike.Gameplay
                 {
                     float distance = result.HitData.T;
                     if (distance < 5)
-                        Descend();
+                        Ascend(lateralForce/2);
                     else
-                        Ascend();
+                        Descend(lateralForce/2);
                 }
             }
 
@@ -179,7 +179,14 @@ namespace CarrierStrike.Gameplay
             leftStick.X = -leftStick.X;
             Vector2 rightStick = input.GetRightStickState();
 
-            
+            if (input.EvaluateInputBinding("Left"))
+                leftStick.X = 1;
+            if (input.EvaluateInputBinding("Right"))
+                leftStick.X = -1;
+            if (input.EvaluateInputBinding("Forward"))
+                leftStick.Y = 1;
+            if (input.EvaluateInputBinding("Back"))
+                leftStick.Y = -1;
 
             Vector2 current2DForwardVec = new Vector2(currentForward.X, currentForward.Z);
             Vector2 current2DLeftVec = new Vector2(currentLeft.X, currentLeft.Z);
@@ -189,9 +196,9 @@ namespace CarrierStrike.Gameplay
             //move forward with a speed that varies in proportion to how "forward" we're pointing the stick
             float angle = (float)Math.Atan2(current2DForwardVec.Y - leftStick.Y, current2DForwardVec.X - leftStick.X);
             physicsEntity.PhysicsEntity.LinearVelocity += currentForward * (leftStick.Length() * (lateralForce * 2));
+            
             var speedFactor = (float)Math.PI * 2 - angle;
-            DebugText.Write(speedFactor.ToString());
-
+         
             float dot = Vector2.Dot(current2DLeftVec, Vector2.Normalize(leftStick));
 
       
@@ -246,12 +253,12 @@ namespace CarrierStrike.Gameplay
 
             if (input.EvaluateInputBinding("Descend"))
             {
-                Descend();
+                Descend(lateralForce / 2);
             }
 
             if (input.EvaluateInputBinding("Ascend"))
             {
-                Ascend();
+                Ascend(lateralForce / 2);
             }
 
             Vector2 leftStick = input.GetLeftStickState();
@@ -271,9 +278,9 @@ namespace CarrierStrike.Gameplay
             if (rightStick.X < -0.1)
                 LeftRotate();
             if (rightStick.Y > 0.1)
-                Descend();
+                Descend(lateralForce / 2);
             if (rightStick.Y < -0.1)
-                Ascend();
+                Ascend(lateralForce / 2);
         }
 
         private void RightRotate()
@@ -286,14 +293,14 @@ namespace CarrierStrike.Gameplay
             physicsEntity.PhysicsEntity.AngularVelocity += BEPUutilities.Vector3.Up * rotateForce;
         }
 
-        private void Ascend()
+        private void Descend(float force)
         {
-            physicsEntity.PhysicsEntity.LinearVelocity -= BEPUutilities.Vector3.Up * lateralForce / 2;
+            physicsEntity.PhysicsEntity.LinearVelocity -= BEPUutilities.Vector3.Up * force;
         }
 
-        private void Descend()
+        private void Ascend(float force)
         {
-            physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Up * lateralForce / 2;
+            physicsEntity.PhysicsEntity.LinearVelocity += BEPUutilities.Vector3.Up * force;
         }
     }
 }
