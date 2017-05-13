@@ -1,0 +1,24 @@
+﻿- Figure out Carrier stuff
+	- How to move it
+
+
+What's the game here?
+
+
+Could prototype something simpler?
+	- Rescue Chopper!
+
+Time based rescue challenge. Crazy taxi style.
+	- Allows us to hone chopper controls, get fun physics. Do some UI.
+	- Go for polish
+	- You're a little chopper based on a ship off shore. 
+	- You have to scoot around the island(s) doing the following:
+		- Rescuing people (in the sea, on top of mountains etc)
+		- Take them back to either your ship, or a local point of safety.
+
+	- Winching supplies.
+		- Some people need stuff. Stuff is lying about. Find and deliver it
+	
+	- Chopper has limited capacity.
+
+
