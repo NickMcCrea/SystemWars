@@ -62,7 +62,7 @@ namespace CarrierStrike.Screens
             chopper.Transform.Rotate(Vector3.Up, MathHelper.Pi);
 
             carrier = new Carrier();
-            carrier.Transform.SetPosition(new Vector3(10, 0, 10));
+            carrier.Transform.SetPosition(new Vector3(5, 1, 5));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(carrier);
 
 

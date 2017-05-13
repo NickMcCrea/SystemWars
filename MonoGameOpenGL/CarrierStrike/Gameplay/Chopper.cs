@@ -138,13 +138,14 @@ namespace CarrierStrike.Gameplay
                 ControlSchemeB();
             }
 
+
             RayCastResult result;
             Vector3 pos = ParentObject.Transform.AbsoluteTransform.Translation;
             pos += new Vector3(0, -2, 0);
             BEPUutilities.Vector3 chopperPos = new BEPUutilities.Vector3(pos.X, pos.Y, pos.Z);
-            
-
             BEPUutilities.Ray r = new BEPUutilities.Ray(chopperPos, BEPUutilities.Vector3.Down);
+
+
             if (SystemCore.PhysicsSimulation.RayCast(r, out result))
             {
                 if (result.HitObject.Tag is Chopper)
@@ -153,11 +154,11 @@ namespace CarrierStrike.Gameplay
                 }
                 else
                 {
-                    float distance = result.HitData.T;
-                    if (distance < 5)
-                        Ascend(lateralForce/2);
-                    else
-                        Descend(lateralForce/2);
+                    //float distance = result.HitData.T;
+                    //if (distance < 5)
+                    //    Ascend(lateralForce/2);
+                    //else
+                    //    Descend(lateralForce/2);
                 }
             }
 
@@ -187,6 +188,16 @@ namespace CarrierStrike.Gameplay
                 leftStick.Y = 1;
             if (input.EvaluateInputBinding("Back"))
                 leftStick.Y = -1;
+
+            if (input.EvaluateInputBinding("Descend"))
+            {
+                Ascend(lateralForce);
+            }
+
+            if (input.EvaluateInputBinding("Ascend"))
+            {
+                Descend(lateralForce);
+            }
 
             Vector2 current2DForwardVec = new Vector2(currentForward.X, currentForward.Z);
             Vector2 current2DLeftVec = new Vector2(currentLeft.X, currentLeft.Z);
