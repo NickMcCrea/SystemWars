@@ -159,7 +159,6 @@ namespace GridForgeResurrected.Screens
 
             LineBatch l = new LineBatch(new Vector3(-arenaSize, 0.1f, -arenaSize), new Vector3(-arenaSize, 0.1f, arenaSize), new Vector3(arenaSize, 0.1f, arenaSize), new Vector3(arenaSize, 0.1f, -arenaSize), new Vector3(-arenaSize, 0.1f, -arenaSize));
             GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
-
             arenaObject.AddChild(lineObject);
 
 

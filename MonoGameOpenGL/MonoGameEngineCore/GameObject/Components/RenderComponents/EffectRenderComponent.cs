@@ -299,6 +299,9 @@ namespace MonoGameEngineCore.GameObject.Components
         {
             MaterialComponent mat = ParentObject.GetComponent<MaterialComponent>();
 
+            if (mat == null)
+                return;
+
             if (ParameterExists("Shininess"))
                 effect.Parameters["Shininess"].SetValue(mat.Shininess);
 
