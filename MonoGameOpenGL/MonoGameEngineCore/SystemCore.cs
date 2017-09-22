@@ -47,7 +47,7 @@ namespace MonoGameEngineCore
         public static EventManager EventManager { get; private set; }
         
         public static Space PhysicsSimulation { get; private set; }
-        public static GameObjectManager GameObjectManager { get; private set; }
+        public static GameObjectManager GameObjectManager { get; set; }
         public static AudioManager AudioManager { get; private set; }
         public static ColorScheme ActiveColorScheme { get; set; }
         public static Game Game { get; private set; }

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="75824463-603a-4108-9ee3-bd5ba3fcc8af" name="NickMcCrea@NICKMCCREA-PC 2017-08-18 22:29:00" runUser="NickMcCrea-PC\NickMcCrea" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2017-08-18T22:29:00.5133282+01:00" queuing="2017-08-18T22:29:00.5153288+01:00" start="2017-08-18T22:29:00.5203157+01:00" finish="2017-08-18T22:29:00.5623454+01:00" />
+  <TestSettings name="default" id="38620731-b479-479b-be5a-da33d4e3b041">
+    <Execution>
+      <TestTypeSpecific />
+    </Execution>
+    <Deployment runDeploymentRoot="NickMcCrea_NICKMCCREA-PC 2017-08-18 22_29_00" />
+    <Properties />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d403ddd7-16a0-4923-ae2b-1ed5a8d84b21" testId="882decb6-2900-c0c8-76f9-1d416fcba4cf" testName="ConstructedGameObjectHasTransform" computerName="NICKMCCREA-PC" duration="00:00:00.0109740" startTime="2017-08-18T22:28:59.6056090+01:00" endTime="2017-08-18T22:29:00.0208209+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d403ddd7-16a0-4923-ae2b-1ed5a8d84b21" />
+    <UnitTestResult executionId="60715e3d-c09a-46a1-ac0d-003500cd0219" testId="62f5a6ba-9adb-68c0-e83a-bab732dc7760" testName="TransformInComponentsList" computerName="NICKMCCREA-PC" duration="00:00:00.0003214" startTime="2017-08-18T22:29:00.0288266+01:00" endTime="2017-08-18T22:29:00.0288266+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60715e3d-c09a-46a1-ac0d-003500cd0219" />
+    <UnitTestResult executionId="dc91f339-820c-4475-a2a3-49e3ee864110" testId="b6605a69-7a45-fb8e-892c-eafdc4ab4b53" testName="ComponentAddedToObjectSuccessfully" computerName="NICKMCCREA-PC" duration="00:00:00.3453506" startTime="2017-08-18T22:29:00.0288266+01:00" endTime="2017-08-18T22:29:00.3752308+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc91f339-820c-4475-a2a3-49e3ee864110" />
+    <UnitTestResult executionId="17bad2f1-eceb-4339-bc05-c0e325b762e9" testId="153bc8f8-364e-158b-11e0-ed3dfc701b40" testName="GameObjectHasId" computerName="NICKMCCREA-PC" duration="00:00:00.0005949" startTime="2017-08-18T22:29:00.3752308+01:00" endTime="2017-08-18T22:29:00.3752308+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="17bad2f1-eceb-4339-bc05-c0e325b762e9" />
+    <UnitTestResult executionId="e8b19d12-6747-4dcc-9c0e-148a83aee6a8" testId="5d4ef95b-57a9-ab48-bf94-723a70d4480f" testName="GameObjectsHaveSequentialIds" computerName="NICKMCCREA-PC" duration="00:00:00.0003888" startTime="2017-08-18T22:29:00.3752308+01:00" endTime="2017-08-18T22:29:00.3762412+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8b19d12-6747-4dcc-9c0e-148a83aee6a8" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="ConstructedGameObjectHasTransform" storage="e:\github\systemwars\systemwars\monogameopengl\testsmonogameenginecore\bin\debug\testsmonogameenginecore.dll" id="882decb6-2900-c0c8-76f9-1d416fcba4cf">
+      <Execution id="d403ddd7-16a0-4923-ae2b-1ed5a8d84b21" />
+      <TestMethod codeBase="E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\TestsMonoGameEngineCore\bin\Debug\TestsMonoGameEngineCore.dll" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter" className="TestsMonoGameEngineCore.GameObjectTests" name="ConstructedGameObjectHasTransform" />
+    </UnitTest>
+    <UnitTest name="TransformInComponentsList" storage="e:\github\systemwars\systemwars\monogameopengl\testsmonogameenginecore\bin\debug\testsmonogameenginecore.dll" id="62f5a6ba-9adb-68c0-e83a-bab732dc7760">
+      <Execution id="60715e3d-c09a-46a1-ac0d-003500cd0219" />
+      <TestMethod codeBase="E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\TestsMonoGameEngineCore\bin\Debug\TestsMonoGameEngineCore.dll" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter" className="TestsMonoGameEngineCore.GameObjectTests" name="TransformInComponentsList" />
+    </UnitTest>
+    <UnitTest name="ComponentAddedToObjectSuccessfully" storage="e:\github\systemwars\systemwars\monogameopengl\testsmonogameenginecore\bin\debug\testsmonogameenginecore.dll" id="b6605a69-7a45-fb8e-892c-eafdc4ab4b53">
+      <Execution id="dc91f339-820c-4475-a2a3-49e3ee864110" />
+      <TestMethod codeBase="E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\TestsMonoGameEngineCore\bin\Debug\TestsMonoGameEngineCore.dll" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter" className="TestsMonoGameEngineCore.GameObjectTests" name="ComponentAddedToObjectSuccessfully" />
+    </UnitTest>
+    <UnitTest name="GameObjectHasId" storage="e:\github\systemwars\systemwars\monogameopengl\testsmonogameenginecore\bin\debug\testsmonogameenginecore.dll" id="153bc8f8-364e-158b-11e0-ed3dfc701b40">
+      <Execution id="17bad2f1-eceb-4339-bc05-c0e325b762e9" />
+      <TestMethod codeBase="E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\TestsMonoGameEngineCore\bin\Debug\TestsMonoGameEngineCore.dll" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter" className="TestsMonoGameEngineCore.GameObjectTests" name="GameObjectHasId" />
+    </UnitTest>
+    <UnitTest name="GameObjectsHaveSequentialIds" storage="e:\github\systemwars\systemwars\monogameopengl\testsmonogameenginecore\bin\debug\testsmonogameenginecore.dll" id="5d4ef95b-57a9-ab48-bf94-723a70d4480f">
+      <Execution id="e8b19d12-6747-4dcc-9c0e-148a83aee6a8" />
+      <TestMethod codeBase="E:\GitHub\SystemWars\SystemWars\MonoGameOpenGL\TestsMonoGameEngineCore\bin\Debug\TestsMonoGameEngineCore.dll" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter" className="TestsMonoGameEngineCore.GameObjectTests" name="GameObjectsHaveSequentialIds" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="882decb6-2900-c0c8-76f9-1d416fcba4cf" executionId="d403ddd7-16a0-4923-ae2b-1ed5a8d84b21" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="62f5a6ba-9adb-68c0-e83a-bab732dc7760" executionId="60715e3d-c09a-46a1-ac0d-003500cd0219" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b6605a69-7a45-fb8e-892c-eafdc4ab4b53" executionId="dc91f339-820c-4475-a2a3-49e3ee864110" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="153bc8f8-364e-158b-11e0-ed3dfc701b40" executionId="17bad2f1-eceb-4339-bc05-c0e325b762e9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5d4ef95b-57a9-ab48-bf94-723a70d4480f" executionId="e8b19d12-6747-4dcc-9c0e-148a83aee6a8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="5" executed="5" passed="5" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>
