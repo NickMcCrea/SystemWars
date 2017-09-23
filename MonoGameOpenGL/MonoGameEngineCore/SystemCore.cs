@@ -45,7 +45,7 @@ namespace MonoGameEngineCore
         public static ContentManager ContentManager { get; private set; }
         public static GUIManager GUIManager { get; private set; }
         public static EventManager EventManager { get; private set; }
-        
+
         public static Space PhysicsSimulation { get; private set; }
         public static GameObjectManager GameObjectManager { get; set; }
         public static AudioManager AudioManager { get; private set; }
@@ -55,6 +55,8 @@ namespace MonoGameEngineCore
         public static bool CursorVisible { get; set; }
         public static Scene ActiveScene { get; set; }
         public static ShadowMapRenderer ShadowMapRenderer { get; private set; }
+
+        public static Viewport ViewPort { get { return SystemCore.GraphicsDevice.Viewport; } }
 
         public static bool PhysicsOnBackgroundThread = false;
         private static Dictionary<string, ICamera> cameras;

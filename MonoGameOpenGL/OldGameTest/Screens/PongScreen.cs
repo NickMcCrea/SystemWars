@@ -22,7 +22,7 @@ namespace OldGameTest.Screens
         public PongScreen() : base()
         {
 
-           
+
 
         }
 
@@ -30,14 +30,12 @@ namespace OldGameTest.Screens
         {
             SystemCore.CursorVisible = false;
 
-            SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
-            SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0, -1, 0));
-
-            camera = new DummyOrthographicCamera(50, 50, 0.1f, 100f);
-            camera.World = Matrix.CreateWorld(new Vector3(0, 20, 0), new Vector3(0,-1,0), new Vector3(0,0,1));
+            SystemCore.ActiveScene.AddKeyLight(Vector3.Up, Color.White, 1f, false);
+            camera = new DummyOrthographicCamera(SystemCore.Viewport.Width/10, SystemCore.Viewport.Height/10, 0.3f, 50f);
+            camera.World = Matrix.CreateWorld(new Vector3(0, 20, 0), new Vector3(0, -1, 0), new Vector3(0, 0, 1));
             camera.View = Matrix.Invert(camera.World);
-            //   camera.SetPositionAndLookDir(new Vector3(0, 10, 0), Vector3.Zero);
-
+            SystemCore.SetActiveCamera(camera);
+         
 
             var cube = new ProceduralCube();
             cube.SetColor(Color.White);
@@ -62,7 +60,7 @@ namespace OldGameTest.Screens
 
         public override void Render(GameTime gameTime)
         {
-           // SystemCore.GraphicsDevice.Clear(Color.Black);
+            SystemCore.GraphicsDevice.Clear(Color.Black);
             base.Render(gameTime);
         }
 
