@@ -58,6 +58,7 @@
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screens\PongScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\EngineContent.mgcb">

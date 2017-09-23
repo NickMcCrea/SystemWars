@@ -8,6 +8,7 @@ using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.ScreenManagement;
+using OldGameTest.Screens;
 
 namespace OldGameTest
 {
@@ -17,7 +18,7 @@ namespace OldGameTest
             : base()
         {
 
-            string screenOne = "One";
+            string screenOne = "Pong";
             string screenTwo = "Two";
             string screenThree = "Three";
 
@@ -28,7 +29,7 @@ namespace OldGameTest
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
             b.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new PongScreen());
             };
 
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
