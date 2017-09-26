@@ -52,6 +52,7 @@
     <Compile Include="Game\SimpleEnemy.cs" />
     <Compile Include="Game\SimpleEnemyAIController.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />
+    <Compile Include="Screens\DoomWadViewer.cs" />
     <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="TestScreen.cs" />
@@ -72,6 +73,9 @@
     <Reference Include="BEPUutilities, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\BepuLatest\BEPUutilities.dll</HintPath>
+    </Reference>
+    <Reference Include="MarcelJoachimKloubert.DWAD">
+      <HintPath>..\Assemblies\MarcelJoachimKloubert.DWAD.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>

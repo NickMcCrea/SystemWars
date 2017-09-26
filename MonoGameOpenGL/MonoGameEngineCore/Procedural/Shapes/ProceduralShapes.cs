@@ -1200,7 +1200,7 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < linePoints.Length; i++)
             {
-                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.White, Vector2.Zero, Vector3.Zero);
+                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.Red, Vector2.Zero, Vector3.Zero);
 
                 if (i < linePoints.Length - 1)
                 {
@@ -1214,6 +1214,8 @@ namespace MonoGameEngineCore.Procedural
 
             PrimitiveCount = linePoints.Length - 1;
         }
+
+     
     }
    
 
