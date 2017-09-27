@@ -9,6 +9,7 @@ using MarcelJoachimKloubert.DWAD.WADs.Lumps.Linedefs;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Rendering.Camera;
+using System;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -16,7 +17,7 @@ namespace MonoGameDirectX11.Screens
     {
         GameObject cameraObject;
         private IWADFile currentFile;
-        string filePath = "C:\\Users\\NickMcCrea\\Downloads\\Doom1.WAD";
+        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
         float scale = 50f;
         float offsetX = 0;
         float offsetY = 0;
@@ -29,7 +30,7 @@ namespace MonoGameDirectX11.Screens
 
         public override void OnInitialise()
         {
-            SystemCore.CursorVisible = false;
+            SystemCore.CursorVisible = true;
             
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
 
