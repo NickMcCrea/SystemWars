@@ -52,7 +52,7 @@
     <Compile Include="Game\SimpleEnemy.cs" />
     <Compile Include="Game\SimpleEnemyAIController.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />
-    <Compile Include="Screens\DoomWadViewer.cs" />
+    <Compile Include="Screens\RestfulDoomBot.cs" />
     <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="TestScreen.cs" />
@@ -74,11 +74,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\BepuLatest\BEPUutilities.dll</HintPath>
     </Reference>
+    <Reference Include="Json, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c6752e45808247c2, processorArchitecture=MSIL">
+      <HintPath>..\packages\JSON.1.0.1\lib\net40\Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MarcelJoachimKloubert.DWAD">
       <HintPath>..\Assemblies\MarcelJoachimKloubert.DWAD.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
