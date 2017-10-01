@@ -55,11 +55,13 @@ namespace MonoGameDirectX11.Screens
         float offsetY = 0;
         string restHost = "http://192.168.1.77";
         int restPort = 6001;
-        float playerUpdateFrequency = 100;
+        float playerUpdateFrequency = 200;
         float worldUpdateFrequency = 1000;
+        float hitVectorUpdateFrequency = 200;
         DateTime timeOfLastPlayerUpdate = DateTime.Now;
         DateTime timeOfLastWorldUpdate = DateTime.Now;
-
+        DateTime timeOfLastHitVectorUpdate = DateTime.Now;
+        DoomAPIHandler apiHandler;
         GameObject playerObj;
         RestClient restClient;
         RestRequest playerRequest;
@@ -104,28 +106,30 @@ namespace MonoGameDirectX11.Screens
 
             playerRequest = new RestRequest("player");
             worldRequest = new RestRequest("world/objects");
-
             worldObjects = new Dictionary<int, GameObject>();
 
-            RequestPlayerDetails();
 
-            RequestAllWorldObects();
 
+            apiHandler = new DoomAPIHandler(restClient);
 
             base.OnInitialise();
         }
 
         private void RequestAllWorldObects()
         {
+            timeOfLastWorldUpdate = DateTime.Now;
+            apiHandler.EnqueueRequest(false, "worldObjects", worldRequest);
 
+        }
+
+        private void ResponseWorldObjects(IRestResponse response)
+        {
 
             foreach (GameObject worldObject in worldObjects.Values)
                 SystemCore.GameObjectManager.RemoveObject(worldObject);
 
             worldObjects.Clear();
 
-
-            var response = restClient.Execute(worldRequest);
             IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
             UpdateWorldObjects(jsonValues);
 
@@ -133,17 +137,25 @@ namespace MonoGameDirectX11.Screens
 
         private void RequestPlayerDetails()
         {
-
-            var response = restClient.Execute(playerRequest);
-            IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
-            UpdatePlayer(jsonValues);
-            RequestHitVectorData();
-
+            timeOfLastPlayerUpdate = DateTime.Now;
+            apiHandler.EnqueueRequest(false, "playerDetails", playerRequest);
 
         }
 
+        private void ResponsePlayerDetails(IRestResponse response)
+        {
+            IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
+            UpdatePlayer(jsonValues);
+
+        }
+
+        int requestVec = 0;
         private void RequestHitVectorData()
         {
+            if (playerObj == null)
+                return;
+
+
             DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
 
             Vector3 forwardVec = playerObj.Transform.AbsoluteTransform.Translation
@@ -157,23 +169,52 @@ namespace MonoGameDirectX11.Screens
             leftVec *= scale;
             rightVec *= scale;
 
-            //forward hit vector
+
             string paramString = "id=" + playerObj.ID + "&x=" + forwardVec.X + "&y=" + forwardVec.Z;
-            var hitTestResponse = restClient.Execute(new RestRequest("world/movetest?" + paramString));
-            var content = Json.JsonParser.FromJson(hitTestResponse.Content);
-            playerDoomComponent.ForwardHitVector = (bool)content["result"];
-
-            //left
             string paramStringLeft = "id=" + playerObj.ID + "&x=" + leftVec.X + "&y=" + leftVec.Z;
-            var hitTestResponseLeft = restClient.Execute(new RestRequest("world/movetest?" + paramStringLeft));
-            var contentLeft = Json.JsonParser.FromJson(hitTestResponseLeft.Content);
-            playerDoomComponent.LeftHitVector = (bool)contentLeft["result"];
-
-            //right
             string paramStringRight = "id=" + playerObj.ID + "&x=" + rightVec.X + "&y=" + rightVec.Z;
-            var hitTestResponseRight = restClient.Execute(new RestRequest("world/movetest?" + paramStringRight));
-            var contentRight = Json.JsonParser.FromJson(hitTestResponseRight.Content);
-            playerDoomComponent.RightHightVector = (bool)contentRight["result"];
+
+            if (requestVec == 0)
+            {
+                apiHandler.EnqueueRequest(false, "leftHitVec", new RestRequest("world/movetest?" + paramStringLeft));
+                requestVec++;
+            }
+            if (requestVec == 1)
+            {
+                apiHandler.EnqueueRequest(false, "rightHitVec", new RestRequest("world/movetest?" + paramStringRight));
+                requestVec++;
+            }
+            if (requestVec == 2)
+            {
+                apiHandler.EnqueueRequest(false, "forwardHitVec", new RestRequest("world/movetest?" + paramString));
+                requestVec = 0;
+                timeOfLastHitVectorUpdate = DateTime.Now;
+            }
+  
+
+        }
+
+        private void ResponseHitVector(RestResponse response, string vec)
+        {
+
+            DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
+
+            if (vec == "leftHitVec")
+            {
+                var content = Json.JsonParser.FromJson(response.Content);
+                playerDoomComponent.LeftHitVector = (bool)content["result"];
+            }
+            if (vec == "forwardHitVec")
+            {
+                var content = Json.JsonParser.FromJson(response.Content);
+                playerDoomComponent.ForwardHitVector = (bool)content["result"];
+            }
+            if (vec == "rightHitVec")
+            {
+                var content = Json.JsonParser.FromJson(response.Content);
+                playerDoomComponent.RightHightVector = (bool)content["result"];
+            }
+
         }
 
         private void UpdateWorldObjects(IDictionary<string, object> jsonValues)
@@ -197,7 +238,7 @@ namespace MonoGameDirectX11.Screens
 
             }
 
-            timeOfLastWorldUpdate = DateTime.Now;
+
         }
 
         private void CreateLocalWorldObject(double id, string type, out GameObject worldObject, out DoomComponent component)
@@ -290,7 +331,7 @@ namespace MonoGameDirectX11.Screens
 
             playerObj.Transform.SetLookAndUp(headingVector, Vector3.Up);
 
-            timeOfLastPlayerUpdate = DateTime.Now;
+
         }
 
         public override void OnRemove()
@@ -320,6 +361,7 @@ namespace MonoGameDirectX11.Screens
 
             TimeSpan timeSincePlayerUpdate = DateTime.Now - timeOfLastPlayerUpdate;
             TimeSpan timeSinceWorldUpdate = DateTime.Now - timeOfLastWorldUpdate;
+            TimeSpan timeSinceHitVectorUpdate = DateTime.Now - timeOfLastHitVectorUpdate;
 
             if (timeSincePlayerUpdate.TotalMilliseconds > playerUpdateFrequency)
                 RequestPlayerDetails();
@@ -327,7 +369,37 @@ namespace MonoGameDirectX11.Screens
             if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
                 RequestAllWorldObects();
 
+            if (timeSinceHitVectorUpdate.TotalMilliseconds > hitVectorUpdateFrequency)
+                RequestHitVectorData();
+
+            apiHandler.Update();
+
+            HandleResponses();
+
             base.Update(gameTime);
+        }
+
+        private void HandleResponses()
+        {
+
+            var response = apiHandler.GetNextResponse();
+
+            if (response != null)
+            {
+
+                RestRequest originalRequest = response.Request as RestRequest;
+                string requestString = originalRequest.UserState as string;
+
+                if (requestString == "worldObjects")
+                    ResponseWorldObjects(response);
+
+                if (requestString == "playerDetails")
+                    ResponsePlayerDetails(response);
+
+                if (requestString.Contains("HitVec"))
+                    ResponseHitVector(response, requestString);
+
+            }
         }
 
         public override void Render(GameTime gameTime)
@@ -391,26 +463,74 @@ namespace MonoGameDirectX11.Screens
 
     class DoomAPIHandler
     {
+        private static object _listLock = new object();
         private RestClient client;
-        public List<IRestResponse> completedResponses;
+        private Queue<RestResponse> completedResponses;
+        private LinkedList<RestRequest> unsentRequests;
+
+
         private bool inFlight = false;
 
-        public  DoomAPIHandler(RestClient client)
+        public DoomAPIHandler(RestClient client)
         {
             this.client = client;
-            completedResponses = new List<IRestResponse>();
+            completedResponses = new Queue<RestResponse>();
+            unsentRequests = new LinkedList<RestRequest>();
         }
 
-        public void EnqueueRequest(IRestRequest request)
+
+        public void EnqueueRequest(bool priority, string tag, RestRequest request)
         {
-            if (inFlight)
-                return;
+            request.UserState = tag;
 
-            client.ExecuteAsync(request, response =>
-            {
-                completedResponses.Add(response);
-            });
+            //Only allow one request at a time, otherwise the doom client segfaults
+
+            if (priority)
+                unsentRequests.AddFirst(request);
+            else
+                unsentRequests.AddLast(request);
+
+
+
+
+
         }
+
+        public void Update()
+        {
+            //send anything unsent, if we have no outstanding requests
+            if (!inFlight)
+            {
+                if (unsentRequests.Count == 0)
+                    return;
+
+                //get the first
+                RestRequest unsentRequest = unsentRequests.First.Value;
+                unsentRequests.RemoveFirst();
+
+                inFlight = true;
+                client.ExecuteAsync(unsentRequest, response =>
+                {
+                    lock (_listLock)
+                    {
+                        completedResponses.Enqueue(response as RestResponse);
+                        inFlight = false;
+                    }
+                });
+            }
+        }
+
+        public RestResponse GetNextResponse()
+        {
+            lock (_listLock)
+            {
+                if (completedResponses.Count > 0)
+                    return completedResponses.Dequeue();
+            }
+
+            return null;
+        }
+
 
     }
 }
