@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GUI;
 
-namespace NicksLib.Rendering
+namespace NickMathHelper.Rendering
 {
     public class GUITransitionManager
     {

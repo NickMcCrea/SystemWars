@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameEngineCore;
-using NicksLib.Rendering;
+using NickMathHelper.Rendering;
 
 namespace MonoGameEngineCore.GUI.Controls
 {

@@ -6,7 +6,7 @@ using MonoGameEngineCore;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.GUI.Controls;
 using Microsoft.Xna.Framework;
-using NicksLib.Rendering;
+using NickMathHelper.Rendering;
 
 namespace MonoGameEngineCore.GUI
 {

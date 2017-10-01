@@ -26,7 +26,10 @@ namespace MonoGameDirectX11.Screens
             public double Health { get; set; }
             public double Angle { get; set; }
             public double Distance { get; set; }
-
+            public bool ForwardHitVector { get; set; }
+            public bool LeftHitVector { get; set; }
+            public bool RightHightVector { get; set; }
+            public float HitVectorSize { get; set; }
             public GameObject ParentObject
             {
                 get; set;
@@ -61,6 +64,7 @@ namespace MonoGameDirectX11.Screens
         RestClient restClient;
         RestRequest playerRequest;
         RestRequest worldRequest;
+
         double playerAngle;
 
         Dictionary<int, GameObject> worldObjects;
@@ -103,49 +107,97 @@ namespace MonoGameDirectX11.Screens
 
             worldObjects = new Dictionary<int, GameObject>();
 
-            RefreshPlayerDetails();
+            RequestPlayerDetails();
 
-            //RefreshAllWorldObects();
+            RequestAllWorldObects();
 
 
             base.OnInitialise();
         }
 
-        private void RefreshAllWorldObects()
+        private void RequestAllWorldObects()
         {
-            restClient.ExecuteAsync(worldRequest, response =>
+
+
+            foreach (GameObject worldObject in worldObjects.Values)
+                SystemCore.GameObjectManager.RemoveObject(worldObject);
+
+            worldObjects.Clear();
+
+
+            var response = restClient.Execute(worldRequest);
+            IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
+            UpdateWorldObjects(jsonValues);
+
+        }
+
+        private void RequestPlayerDetails()
+        {
+
+            var response = restClient.Execute(playerRequest);
+            IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
+            UpdatePlayer(jsonValues);
+            RequestHitVectorData();
+
+
+        }
+
+        private void RequestHitVectorData()
+        {
+            DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
+
+            Vector3 forwardVec = playerObj.Transform.AbsoluteTransform.Translation
+                + playerObj.Transform.AbsoluteTransform.Forward * playerDoomComponent.HitVectorSize;
+
+            Vector3 rightVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, MathHelper.PiOver4);
+            Vector3 leftVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, -MathHelper.PiOver4);
+
+
+            forwardVec *= scale;
+            leftVec *= scale;
+            rightVec *= scale;
+
+            //forward hit vector
+            string paramString = "id=" + playerObj.ID + "&x=" + forwardVec.X + "&y=" + forwardVec.Z;
+            var hitTestResponse = restClient.Execute(new RestRequest("world/movetest?" + paramString));
+            var content = Json.JsonParser.FromJson(hitTestResponse.Content);
+            playerDoomComponent.ForwardHitVector = (bool)content["result"];
+
+            //left
+            string paramStringLeft = "id=" + playerObj.ID + "&x=" + leftVec.X + "&y=" + leftVec.Z;
+            var hitTestResponseLeft = restClient.Execute(new RestRequest("world/movetest?" + paramStringLeft));
+            var contentLeft = Json.JsonParser.FromJson(hitTestResponseLeft.Content);
+            playerDoomComponent.LeftHitVector = (bool)contentLeft["result"];
+
+            //right
+            string paramStringRight = "id=" + playerObj.ID + "&x=" + rightVec.X + "&y=" + rightVec.Z;
+            var hitTestResponseRight = restClient.Execute(new RestRequest("world/movetest?" + paramStringRight));
+            var contentRight = Json.JsonParser.FromJson(hitTestResponseRight.Content);
+            playerDoomComponent.RightHightVector = (bool)contentRight["result"];
+        }
+
+        private void UpdateWorldObjects(IDictionary<string, object> jsonValues)
+        {
+            List<object> objectList = jsonValues["array0"] as List<object>;
+
+            foreach (object o in objectList)
             {
-                foreach (GameObject worldObject in worldObjects.Values)
-                    SystemCore.GameObjectManager.RemoveObject(worldObject);
+                double id, angle, health, distance, x, y;
+                string type;
 
-                worldObjects.Clear();
+                ParseObjectData(o, out id, out type, out angle, out health, out distance, out x, out y);
 
+                GameObject worldObject;
+                DoomComponent component;
 
+                CreateLocalWorldObject(id, type, out worldObject, out component);
 
-                IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
-                List<object> objectList = jsonValues["array0"] as List<object>;
-
-
-                foreach (object o in objectList)
-                {
-                    double id, angle, health, distance, x, y;
-                    string type;
-
-                    ParseObjectData(o, out id, out type, out angle, out health, out distance, out x, out y);
-
-                    GameObject worldObject;
-                    DoomComponent component;
-
-                    CreateLocalWorldObject(id, type, out worldObject, out component);
-
-                    UpdateObject(worldObject, angle, x, y, type, health, distance);
+                UpdateObject(worldObject, angle, x, y, type, health, distance);
 
 
-                }
+            }
 
-                timeOfLastWorldUpdate = DateTime.Now;
-
-            });
+            timeOfLastWorldUpdate = DateTime.Now;
         }
 
         private void CreateLocalWorldObject(double id, string type, out GameObject worldObject, out DoomComponent component)
@@ -200,52 +252,45 @@ namespace MonoGameDirectX11.Screens
 
         }
 
-        private void RefreshPlayerDetails()
+        private void UpdatePlayer(IDictionary<string, object> jsonValues)
         {
-            restClient.ExecuteAsync(playerRequest, response =>
+            //in doom, 0 degrees is East. Increased value turns us counter clockwise, so north is 90, west 180 etc
+            playerAngle = (double)jsonValues["angle"];
+
+
+
+            IDictionary<string, object> pos = jsonValues["position"] as IDictionary<string, object>;
+            double x = (double)pos["x"];
+            double y = (double)pos["y"];
+
+            //create if first time
+            if (playerObj == null)
             {
+                playerObj = GameObjectFactory.CreateRenderableGameObjectFromShape(
+                        new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
 
-                IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
-
-
-
-                //in doom, 0 degrees is East. Increased value turns us counter clockwise, so north is 90, west 180 etc
-                playerAngle = (double)jsonValues["angle"];
-
-
-
-                IDictionary<string, object> pos = jsonValues["position"] as IDictionary<string, object>;
-                double x = (double)pos["x"];
-                double y = (double)pos["y"];
-
-                //create if first time
-                if (playerObj == null)
-                {
-                    playerObj = GameObjectFactory.CreateRenderableGameObjectFromShape(
-                            new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
-
-                    var id = (double)jsonValues["id"];
-                    playerObj.ID = (int)id;
-                    DoomComponent component = new DoomComponent();
-                    component.DoomType = "Player";
-                    playerObj.AddComponent(component);
+                var id = (double)jsonValues["id"];
+                playerObj.ID = (int)id;
+                DoomComponent component = new DoomComponent();
+                component.DoomType = "Player";
+                component.HitVectorSize = 2f;
+                playerObj.AddComponent(component);
 
 
-                    SystemCore.GameObjectManager.AddAndInitialiseGameObject(playerObj);
+                SystemCore.GameObjectManager.AddAndInitialiseGameObject(playerObj);
 
-                }
+            }
 
-                //remember to scale it appropriately. In doom, Z is up, but here it's Y, so swap those coords
-                playerObj.Transform.SetPosition(new Vector3((float)x / scale, 0, (float)y / scale));
+            //remember to scale it appropriately. In doom, Z is up, but here it's Y, so swap those coords
+            playerObj.Transform.SetPosition(new Vector3((float)x / scale, 0, (float)y / scale));
 
-                //turn us to face the appopriate angle
-                float playerAngleInRadians = MathHelper.ToRadians((float)playerAngle);
-                Vector3 headingVector = new Vector3((float)Math.Cos(playerAngleInRadians), 0, (float)Math.Sin(playerAngleInRadians));
+            //turn us to face the appopriate angle
+            float playerAngleInRadians = MathHelper.ToRadians((float)playerAngle);
+            Vector3 headingVector = new Vector3((float)Math.Cos(playerAngleInRadians), 0, (float)Math.Sin(playerAngleInRadians));
 
-                playerObj.Transform.SetLookAndUp(headingVector, Vector3.Up);
+            playerObj.Transform.SetLookAndUp(headingVector, Vector3.Up);
 
-                timeOfLastPlayerUpdate = DateTime.Now;
-            });
+            timeOfLastPlayerUpdate = DateTime.Now;
         }
 
         public override void OnRemove()
@@ -277,10 +322,10 @@ namespace MonoGameDirectX11.Screens
             TimeSpan timeSinceWorldUpdate = DateTime.Now - timeOfLastWorldUpdate;
 
             if (timeSincePlayerUpdate.TotalMilliseconds > playerUpdateFrequency)
-                RefreshPlayerDetails();
+                RequestPlayerDetails();
 
-            //if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
-            //    RefreshAllWorldObects();
+            if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
+                RequestAllWorldObects();
 
             base.Update(gameTime);
         }
@@ -307,7 +352,31 @@ namespace MonoGameDirectX11.Screens
 
             if (playerObj != null)
             {
-                DebugShapeRenderer.AddLine(playerObj.Transform.AbsoluteTransform.Translation, playerObj.Transform.AbsoluteTransform.Translation + playerObj.Transform.AbsoluteTransform.Forward, Color.Red);
+                DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
+
+                Color forwardColor = Color.Red;
+                Color leftColor = Color.Red;
+                Color rightColor = Color.Red;
+
+                if (playerDoomComponent.ForwardHitVector)
+                    forwardColor = Color.Blue;
+                if (playerDoomComponent.LeftHitVector)
+                    leftColor = Color.Blue;
+                if (playerDoomComponent.RightHightVector)
+                    rightColor = Color.Blue;
+
+
+                Vector3 pos = playerObj.Transform.AbsoluteTransform.Translation;
+                Vector3 forwardVec = playerObj.Transform.AbsoluteTransform.Translation + playerObj.Transform.AbsoluteTransform.Forward * playerDoomComponent.HitVectorSize;
+                Vector3 rightVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, MathHelper.PiOver4);
+                Vector3 leftVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, -MathHelper.PiOver4);
+
+                DebugShapeRenderer.AddLine(pos, forwardVec, forwardColor);
+                DebugShapeRenderer.AddLine(pos, leftVec, leftColor);
+                DebugShapeRenderer.AddLine(pos, rightVec, rightColor);
+
+
+
                 DebugText.Write(playerObj.Transform.AbsoluteTransform.Translation.ToString());
                 DebugText.Write(playerAngle.ToString());
             }
@@ -317,6 +386,31 @@ namespace MonoGameDirectX11.Screens
 
 
 
+
+    }
+
+    class DoomAPIHandler
+    {
+        private RestClient client;
+        public List<IRestResponse> completedResponses;
+        private bool inFlight = false;
+
+        public  DoomAPIHandler(RestClient client)
+        {
+            this.client = client;
+            completedResponses = new List<IRestResponse>();
+        }
+
+        public void EnqueueRequest(IRestRequest request)
+        {
+            if (inFlight)
+                return;
+
+            client.ExecuteAsync(request, response =>
+            {
+                completedResponses.Add(response);
+            });
+        }
 
     }
 }
