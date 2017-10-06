@@ -13,62 +13,30 @@ using System;
 using System.Net;
 using RestSharp;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.DoomLib;
 
 namespace MonoGameDirectX11.Screens
 {
     class RestfulDoomBot : Screen
     {
 
-        class DoomComponent : IComponent
-        {
-
-            public string DoomType { get; set; }
-            public double Health { get; set; }
-            public double Angle { get; set; }
-            public double Distance { get; set; }
-            public bool ForwardHitVector { get; set; }
-            public bool LeftHitVector { get; set; }
-            public bool RightHightVector { get; set; }
-            public float HitVectorSize { get; set; }
-            public GameObject ParentObject
-            {
-                get; set;
-            }
-
-            public void Initialise()
-            {
-
-            }
-
-            public void PostInitialise()
-            {
-
-            }
-        }
-
-
         GameObject cameraObject;
         private IWADFile currentFile;
         string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
         float scale = 50f;
         float offsetX = 0;
-        float offsetY = 0;
-        string restHost = "http://192.168.1.77";
-        int restPort = 6001;
-        float playerUpdateFrequency = 200;
-        float worldUpdateFrequency = 1000;
-        float hitVectorUpdateFrequency = 200;
+        float offsetY = 0;   
+        float playerUpdateFrequency = 500;
+        float worldUpdateFrequency = 3000;
+        float hitVectorUpdateFrequency = 500;
         DateTime timeOfLastPlayerUpdate = DateTime.Now;
         DateTime timeOfLastWorldUpdate = DateTime.Now;
         DateTime timeOfLastHitVectorUpdate = DateTime.Now;
         DoomAPIHandler apiHandler;
         GameObject playerObj;
-        RestClient restClient;
-        RestRequest playerRequest;
-        RestRequest worldRequest;
-
+        string restHost = "http://192.168.1.77";
+        int restPort = 6001;
         double playerAngle;
-
         Dictionary<int, GameObject> worldObjects;
 
         public RestfulDoomBot()
@@ -100,28 +68,13 @@ namespace MonoGameDirectX11.Screens
             }
 
 
-
-            restClient = new RestClient(restHost + ":" + restPort + "/api/");
-
-
-            playerRequest = new RestRequest("player");
-            worldRequest = new RestRequest("world/objects");
             worldObjects = new Dictionary<int, GameObject>();
-
-
-
-            apiHandler = new DoomAPIHandler(restClient);
+            apiHandler = new DoomAPIHandler(restHost, restPort);
 
             base.OnInitialise();
         }
 
-        private void RequestAllWorldObects()
-        {
-            timeOfLastWorldUpdate = DateTime.Now;
-            apiHandler.EnqueueRequest(false, "worldObjects", worldRequest);
-
-        }
-
+      
         private void ResponseWorldObjects(IRestResponse response)
         {
 
@@ -135,13 +88,7 @@ namespace MonoGameDirectX11.Screens
 
         }
 
-        private void RequestPlayerDetails()
-        {
-            timeOfLastPlayerUpdate = DateTime.Now;
-            apiHandler.EnqueueRequest(false, "playerDetails", playerRequest);
-
-        }
-
+       
         private void ResponsePlayerDetails(IRestResponse response)
         {
             IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
@@ -227,6 +174,9 @@ namespace MonoGameDirectX11.Screens
                 string type;
 
                 ParseObjectData(o, out id, out type, out angle, out health, out distance, out x, out y);
+
+                if (id == 0)
+                    continue;
 
                 GameObject worldObject;
                 DoomComponent component;
@@ -359,15 +309,25 @@ namespace MonoGameDirectX11.Screens
                 cameraObject.Transform.Translate(new Vector3(cameraSpeed, 0, 0));
 
 
-            TimeSpan timeSincePlayerUpdate = DateTime.Now - timeOfLastPlayerUpdate;
+            if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
+                apiHandler.MovePlayerForward(10);
+
+
+                TimeSpan timeSincePlayerUpdate = DateTime.Now - timeOfLastPlayerUpdate;
             TimeSpan timeSinceWorldUpdate = DateTime.Now - timeOfLastWorldUpdate;
             TimeSpan timeSinceHitVectorUpdate = DateTime.Now - timeOfLastHitVectorUpdate;
 
             if (timeSincePlayerUpdate.TotalMilliseconds > playerUpdateFrequency)
-                RequestPlayerDetails();
+            {
+                timeOfLastPlayerUpdate = DateTime.Now;
+                apiHandler.RequestPlayerDetails();
+            }
 
             if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
-                RequestAllWorldObects();
+            {
+                timeOfLastWorldUpdate = DateTime.Now;
+                apiHandler.RequestAllWorldDetails();
+            }
 
             if (timeSinceHitVectorUpdate.TotalMilliseconds > hitVectorUpdateFrequency)
                 RequestHitVectorData();
@@ -456,81 +416,7 @@ namespace MonoGameDirectX11.Screens
             base.Render(gameTime);
         }
 
-
-
-
     }
 
-    class DoomAPIHandler
-    {
-        private static object _listLock = new object();
-        private RestClient client;
-        private Queue<RestResponse> completedResponses;
-        private LinkedList<RestRequest> unsentRequests;
 
-
-        private bool inFlight = false;
-
-        public DoomAPIHandler(RestClient client)
-        {
-            this.client = client;
-            completedResponses = new Queue<RestResponse>();
-            unsentRequests = new LinkedList<RestRequest>();
-        }
-
-
-        public void EnqueueRequest(bool priority, string tag, RestRequest request)
-        {
-            request.UserState = tag;
-
-            //Only allow one request at a time, otherwise the doom client segfaults
-
-            if (priority)
-                unsentRequests.AddFirst(request);
-            else
-                unsentRequests.AddLast(request);
-
-
-
-
-
-        }
-
-        public void Update()
-        {
-            //send anything unsent, if we have no outstanding requests
-            if (!inFlight)
-            {
-                if (unsentRequests.Count == 0)
-                    return;
-
-                //get the first
-                RestRequest unsentRequest = unsentRequests.First.Value;
-                unsentRequests.RemoveFirst();
-
-                inFlight = true;
-                client.ExecuteAsync(unsentRequest, response =>
-                {
-                    lock (_listLock)
-                    {
-                        completedResponses.Enqueue(response as RestResponse);
-                        inFlight = false;
-                    }
-                });
-            }
-        }
-
-        public RestResponse GetNextResponse()
-        {
-            lock (_listLock)
-            {
-                if (completedResponses.Count > 0)
-                    return completedResponses.Dequeue();
-            }
-
-            return null;
-        }
-
-
-    }
 }
