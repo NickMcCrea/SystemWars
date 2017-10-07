@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
 using MarcelJoachimKloubert.DWAD;
 using System.IO;
-using MarcelJoachimKloubert.DWAD.WADs.Lumps.Linedefs;
+
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Rendering.Camera;
@@ -14,6 +14,7 @@ using System.Net;
 using RestSharp;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.DoomLib;
+using Kaitai;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -21,8 +22,8 @@ namespace MonoGameDirectX11.Screens
     {
 
         GameObject cameraObject;
-        private IWADFile currentFile;
-        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
+        DoomWad doomWad;
+        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\doom1New.WAD";
         float scale = 50f;
         float offsetX = 0;
         float offsetY = 0;   
@@ -64,7 +65,10 @@ namespace MonoGameDirectX11.Screens
             var file = new FileInfo(filePath);
             using (var fs = file.OpenRead())
             {
-                currentFile = WADFileFactory.FromStream(fs).FirstOrDefault();
+
+                var doomWad = DoomWad.FromFile(filePath);
+             
+
             }
 
 
@@ -367,19 +371,19 @@ namespace MonoGameDirectX11.Screens
             SystemCore.GraphicsDevice.Clear(Color.Black);
             DebugShapeRenderer.VisualiseAxes(5f);
 
-            foreach (var lump in currentFile.EnumerateLumps().OfType<ILinedefsLump>())
-            {
-                foreach (var linedef in lump.EnumerateLinedefs())
-                {
-                    var p1 = new Vector3((linedef.Start.X) / scale + offsetX, 0,
-                                       (linedef.Start.Y) / scale + offsetY);
+            //foreach (var lump in currentFile.EnumerateLumps().OfType<ILinedefsLump>())
+            //{
+            //    foreach (var linedef in lump.EnumerateLinedefs())
+            //    {
+            //        var p1 = new Vector3((linedef.Start.X) / scale + offsetX, 0,
+            //                           (linedef.Start.Y) / scale + offsetY);
 
-                    var p2 = new Vector3((linedef.End.X) / scale + offsetX, 0,
-                                       (linedef.End.Y) / scale + offsetY);
+            //        var p2 = new Vector3((linedef.End.X) / scale + offsetX, 0,
+            //                           (linedef.End.Y) / scale + offsetY);
 
-                    DebugShapeRenderer.AddLine(p1, p2, Color.Orange);
-                }
-            }
+            //        DebugShapeRenderer.AddLine(p1, p2, Color.Orange);
+            //    }
+            //}
 
 
             if (playerObj != null)
