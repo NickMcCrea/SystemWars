@@ -20,13 +20,13 @@ namespace MonoGameDirectX11.Screens
 {
     class RestfulDoomBot : Screen
     {
-
+        bool connectToServer = false;
         GameObject cameraObject;
         DoomWad doomWad;
-        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\doom1New.WAD";
+        string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
         float scale = 50f;
         float offsetX = 0;
-        float offsetY = 0;   
+        float offsetY = 0;
         float playerUpdateFrequency = 500;
         float worldUpdateFrequency = 3000;
         float hitVectorUpdateFrequency = 500;
@@ -39,6 +39,13 @@ namespace MonoGameDirectX11.Screens
         int restPort = 6001;
         double playerAngle;
         Dictionary<int, GameObject> worldObjects;
+        DoomWad.Linedefs lineDefs;
+        DoomWad.Things things;
+        DoomWad.Sectors sectors;
+        DoomWad.Blockmap blockMap;
+        DoomWad.Vertexes vertices;
+        DoomWad.Sidedefs sideDefs;
+
 
         public RestfulDoomBot()
         {
@@ -67,8 +74,35 @@ namespace MonoGameDirectX11.Screens
             {
 
                 var doomWad = DoomWad.FromFile(filePath);
-             
 
+                string desiredLevel = "E1M1";
+
+                int levelMarker = doomWad.Index.FindIndex(x => x.Name.Contains(desiredLevel));
+                for (int i = levelMarker + 1; i < doomWad.NumIndexEntries; i++)
+                {
+                    var currentIndex = doomWad.Index[i];
+
+                    if (currentIndex.Name.Contains("E1M2"))
+                        break;
+
+                    if (currentIndex.Name == ("SECTORS\0"))
+                        sectors = currentIndex.Contents as DoomWad.Sectors;
+
+                    if (currentIndex.Name.Contains("BLOCKMAP"))
+                        blockMap = currentIndex.Contents as DoomWad.Blockmap;
+
+                    if (currentIndex.Name.Contains("SIDEDEF"))
+                        sideDefs = currentIndex.Contents as DoomWad.Sidedefs;
+
+                    if (currentIndex.Name.Contains("VERTEX"))
+                        vertices = currentIndex.Contents as DoomWad.Vertexes;
+
+                    if (currentIndex.Name.Contains("THING"))
+                        things = currentIndex.Contents as DoomWad.Things;
+
+                    if (currentIndex.Name.Contains("LINEDEF"))
+                        lineDefs = currentIndex.Contents as DoomWad.Linedefs;
+                }
             }
 
 
@@ -78,7 +112,7 @@ namespace MonoGameDirectX11.Screens
             base.OnInitialise();
         }
 
-      
+
         private void ResponseWorldObjects(IRestResponse response)
         {
 
@@ -92,7 +126,7 @@ namespace MonoGameDirectX11.Screens
 
         }
 
-       
+
         private void ResponsePlayerDetails(IRestResponse response)
         {
             IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(response.Content);
@@ -141,7 +175,7 @@ namespace MonoGameDirectX11.Screens
                 requestVec = 0;
                 timeOfLastHitVectorUpdate = DateTime.Now;
             }
-  
+
 
         }
 
@@ -316,29 +350,32 @@ namespace MonoGameDirectX11.Screens
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
                 apiHandler.MovePlayerForward(10);
 
+            if (connectToServer)
+            {
 
                 TimeSpan timeSincePlayerUpdate = DateTime.Now - timeOfLastPlayerUpdate;
-            TimeSpan timeSinceWorldUpdate = DateTime.Now - timeOfLastWorldUpdate;
-            TimeSpan timeSinceHitVectorUpdate = DateTime.Now - timeOfLastHitVectorUpdate;
+                TimeSpan timeSinceWorldUpdate = DateTime.Now - timeOfLastWorldUpdate;
+                TimeSpan timeSinceHitVectorUpdate = DateTime.Now - timeOfLastHitVectorUpdate;
 
-            if (timeSincePlayerUpdate.TotalMilliseconds > playerUpdateFrequency)
-            {
-                timeOfLastPlayerUpdate = DateTime.Now;
-                apiHandler.RequestPlayerDetails();
+                if (timeSincePlayerUpdate.TotalMilliseconds > playerUpdateFrequency)
+                {
+                    timeOfLastPlayerUpdate = DateTime.Now;
+                    apiHandler.RequestPlayerDetails();
+                }
+
+                if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
+                {
+                    timeOfLastWorldUpdate = DateTime.Now;
+                    apiHandler.RequestAllWorldDetails();
+                }
+
+                if (timeSinceHitVectorUpdate.TotalMilliseconds > hitVectorUpdateFrequency)
+                    RequestHitVectorData();
+
+                apiHandler.Update();
+
+                HandleResponses();
             }
-
-            if (timeSinceWorldUpdate.TotalMilliseconds > worldUpdateFrequency)
-            {
-                timeOfLastWorldUpdate = DateTime.Now;
-                apiHandler.RequestAllWorldDetails();
-            }
-
-            if (timeSinceHitVectorUpdate.TotalMilliseconds > hitVectorUpdateFrequency)
-                RequestHitVectorData();
-
-            apiHandler.Update();
-
-            HandleResponses();
 
             base.Update(gameTime);
         }
@@ -371,20 +408,9 @@ namespace MonoGameDirectX11.Screens
             SystemCore.GraphicsDevice.Clear(Color.Black);
             DebugShapeRenderer.VisualiseAxes(5f);
 
-            //foreach (var lump in currentFile.EnumerateLumps().OfType<ILinedefsLump>())
-            //{
-            //    foreach (var linedef in lump.EnumerateLinedefs())
-            //    {
-            //        var p1 = new Vector3((linedef.Start.X) / scale + offsetX, 0,
-            //                           (linedef.Start.Y) / scale + offsetY);
+            RenderLineDefs();
 
-            //        var p2 = new Vector3((linedef.End.X) / scale + offsetX, 0,
-            //                           (linedef.End.Y) / scale + offsetY);
-
-            //        DebugShapeRenderer.AddLine(p1, p2, Color.Orange);
-            //    }
-            //}
-
+        
 
             if (playerObj != null)
             {
@@ -420,6 +446,33 @@ namespace MonoGameDirectX11.Screens
             base.Render(gameTime);
         }
 
+        private void RenderLineDefs()
+        {
+            foreach (DoomWad.Linedef lineDef in lineDefs.Entries)
+            {
+                DoomWad.Sector sector = sectors.Entries[lineDef.SectorTag];
+
+                //DoomWad.Sidedef sideDefLeft = sideDefs.Entries[lineDef.SidedefLeftIdx];
+                //DoomWad.Sidedef sideDefRight = sideDefs.Entries[lineDef.SidedefRightIdx];
+
+                if (sector.FloorZ < 0)
+                    continue;
+
+                DoomWad.Vertex start = vertices.Entries[lineDef.VertexStartIdx];
+                DoomWad.Vertex end = vertices.Entries[lineDef.VertexEndIdx];
+
+                
+
+                var p1 = new Vector3((start.X) / scale + offsetX, 0,
+                                      (start.Y) / scale + offsetY);
+
+                var p2 = new Vector3((end.X) / scale + offsetX, 0,
+                                   (end.Y) / scale + offsetY);
+
+                DebugShapeRenderer.AddLine(p1, p2, Color.Orange);
+
+            }
+        }
     }
 
 
