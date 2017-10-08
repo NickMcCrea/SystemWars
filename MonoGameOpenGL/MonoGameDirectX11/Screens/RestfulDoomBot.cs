@@ -461,8 +461,16 @@ namespace MonoGameDirectX11.Screens
                 cameraObject.Transform.Translate(new Vector3(cameraSpeed, 0, 0));
 
 
-           // if (input.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Space))
+            if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
                 floodFiller.Step();
+
+            if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Enter))
+                floodFiller.pause = !floodFiller.pause;
+
+
+            floodFiller.Update();
+
+
             //apiHandler.MovePlayerForward(10);
 
             if (connectToServer)
@@ -567,7 +575,15 @@ namespace MonoGameDirectX11.Screens
         {
             foreach (DoomFloodFill.DoomPoint vec in floodFiller.positions)
             {
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.position, 0.2f), Color.Orange);
+                Color colorOfSphere = Color.Orange;
+
+                if (vec == floodFiller.next)
+                    colorOfSphere = Color.Blue;
+
+                if (floodFiller.justAdded.Contains(vec))
+                    colorOfSphere = Color.Red;
+
+                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.position, 0.2f), colorOfSphere);
             }
 
             foreach (DoomFloodFill.DoomLink vec in floodFiller.links)
@@ -606,12 +622,18 @@ namespace MonoGameDirectX11.Screens
 
     public class DoomFloodFill
     {
+        public bool pause = true;
         public class DoomPoint
         {
             public Vector3 position;
             public bool done;
 
+
+
         }
+
+
+
         public class DoomLink
         {
             public DoomPoint A;
@@ -631,7 +653,9 @@ namespace MonoGameDirectX11.Screens
         public List<DoomPoint> positions;
         public List<DoomLink> links;
         private List<RestfulDoomBot.DoomLine> levelLineGeometry;
-          public Queue<DoomPoint> positionsToSearch = new Queue<DoomPoint>();
+        public Queue<DoomPoint> positionsToSearch = new Queue<DoomPoint>();
+        public DoomPoint next;
+        public List<DoomPoint> justAdded = new List<DoomPoint>();
 
         public DoomFloodFill(List<RestfulDoomBot.DoomLine> levelLines, Vector3 startPoint)
         {
@@ -639,6 +663,8 @@ namespace MonoGameDirectX11.Screens
             links = new List<DoomLink>();
             levelLineGeometry = levelLines;
             AddPoint(startPoint);
+
+
         }
 
         private void AddPoint(Vector3 vec)
@@ -655,14 +681,26 @@ namespace MonoGameDirectX11.Screens
             links.Add(d);
         }
 
+        public void Update()
+        {
+            if (pause)
+                return;
+
+            Step();
+        }
+
         public void Step()
         {
+
+            justAdded.Clear();
+
             if (positionsToSearch.Count == 0)
                 return;
 
             DoomPoint current = positionsToSearch.Dequeue();
 
-            
+            if (positionsToSearch.Count > 0)
+                next = positionsToSearch.Peek();
 
             //search north, south east and west, then intersect each line with the map.
             DoomPoint north = GeneratePoint(current, new Vector3(stepSize, 0, 0));
@@ -678,7 +716,7 @@ namespace MonoGameDirectX11.Screens
             ConnectIfNotIntersect(current, west);
 
             current.done = true;
-          
+
 
         }
 
@@ -701,8 +739,6 @@ namespace MonoGameDirectX11.Screens
         private void ConnectIfNotIntersect(DoomPoint current, DoomPoint adjacent)
         {
 
-            
-
 
             bool exists = false;
             var newLink = new DoomLink() { A = current, B = adjacent };
@@ -712,7 +748,7 @@ namespace MonoGameDirectX11.Screens
                     return;
             }
 
-           
+
 
 
             bool intersect = false;
@@ -732,13 +768,23 @@ namespace MonoGameDirectX11.Screens
             //add a link, add the new position, and add to the queue for future search
             if (!intersect)
             {
-               
-               links.Add(newLink);
 
+                links.Add(newLink);
                 if (!adjacent.done)
                 {
-                    positions.Add(adjacent);
-                    positionsToSearch.Enqueue(adjacent);
+                    //add the point if it doesn't already exist
+                    DoomPoint test = positions.Find(x => MonoMathHelper.AlmostEquals(x.position, adjacent.position, 0.01f));
+                    if (test == null)
+                    {
+                        positions.Add(adjacent);
+                        positionsToSearch.Enqueue(adjacent);
+                        justAdded.Add(adjacent);
+                    }
+                    else
+                    {
+                        return;
+                    }
+
                 }
             }
 
@@ -747,7 +793,7 @@ namespace MonoGameDirectX11.Screens
 
         }
 
-       
+
     }
 
 
