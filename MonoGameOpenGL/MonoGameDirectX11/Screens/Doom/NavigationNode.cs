@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using System.Xml.Serialization;
+using MonoGameDirectX11.Screens;
 
 namespace NickLib.Pathfinding
 {
-    public class NavigationNode
+    public class NavigationNode : IPartitionItem
     {
      
         public List<NavigationNode> Neighbours { get; set; }
+        public string Type { get { return "NavigationNode"; } }
         public bool done;
         public NavigationNode()
         {

@@ -15,6 +15,7 @@ using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.DoomLib;
 using Kaitai;
 using NickLib.Pathfinding;
+using BEPUphysics;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -26,7 +27,7 @@ namespace MonoGameDirectX11.Screens
         string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
         float scale = 50f;
         float offsetX = 0;
-        float offsetY = 0;
+        float offsetZ = 0;
         float playerUpdateFrequency = 500;
         float worldUpdateFrequency = 3000;
         float hitVectorUpdateFrequency = 500;
@@ -51,11 +52,16 @@ namespace MonoGameDirectX11.Screens
         private Vector3 mouseLeftPoint, mouseRightPoint;
         private List<NavigationNode> path;
 
-        public struct DoomLine
+        public struct DoomLine : IPartitionItem
         {
             public Vector3 start;
             public Vector3 end;
             public Color color;
+            public string Type { get { return "DoomLine"; } }
+            public Vector3 MidPoint()
+            {
+                return (start + end) / 2;
+            }
 
         }
         private DoomFloodFill floodFiller;
@@ -90,14 +96,14 @@ namespace MonoGameDirectX11.Screens
 
                 var doomWad = DoomWad.FromFile(filePath);
 
-                string desiredLevel = "E1M1";
+                string desiredLevel = "E1M8";
 
                 int levelMarker = doomWad.Index.FindIndex(x => x.Name.Contains(desiredLevel));
                 for (int i = levelMarker + 1; i < doomWad.NumIndexEntries; i++)
                 {
                     var currentIndex = doomWad.Index[i];
 
-                    if (currentIndex.Name.Contains("E1M2"))
+                    if (currentIndex.Name.Contains("E1M9"))
                         break;
 
                     if (currentIndex.Name == ("SECTORS\0"))
@@ -182,10 +188,10 @@ namespace MonoGameDirectX11.Screens
 
 
                 var p1 = new Vector3((start.X) / scale + offsetX, 0,
-                                      (start.Y) / scale + offsetY);
+                                      (start.Y) / scale + offsetZ);
 
                 var p2 = new Vector3((end.X) / scale + offsetX, 0,
-                                   (end.Y) / scale + offsetY);
+                                   (end.Y) / scale + offsetZ);
 
                 if (sideDefLeft == null)
                     levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
@@ -205,7 +211,7 @@ namespace MonoGameDirectX11.Screens
 
         private Vector3 ConvertPosition(float x, float y)
         {
-            return new Vector3(x / scale + offsetX, 0, y / scale + offsetY);
+            return new Vector3(x / scale + offsetX, 0, y / scale + offsetZ);
         }
 
         private void FloodFillLevel()
@@ -215,7 +221,7 @@ namespace MonoGameDirectX11.Screens
             Vector3 pos = ConvertPosition(playerStartThing.X, playerStartThing.Y);
 
 
-            floodFiller = new DoomFloodFill(levelLines, pos);
+            floodFiller = new DoomFloodFill(levelLines, pos, vertices, scale, offsetX, offsetZ);
 
         }
 
@@ -474,12 +480,12 @@ namespace MonoGameDirectX11.Screens
 
             if (input.MouseLeftPress())
             {
-              
+
                 Plane p = new Plane(Vector3.Down, 0);
                 Ray ray = input.GetProjectedMouseRay();
                 float? result;
                 ray.Intersects(ref p, out result);
-                if(result.HasValue)
+                if (result.HasValue)
                 {
                     mouseLeftPoint = ray.Position + ray.Direction * result.Value;
                     FindPath();
@@ -488,7 +494,7 @@ namespace MonoGameDirectX11.Screens
             }
             if (input.MouseRightPress())
             {
-                
+
                 Plane p = new Plane(Vector3.Down, 0);
                 Ray ray = input.GetProjectedMouseRay();
                 float? result;
@@ -542,6 +548,11 @@ namespace MonoGameDirectX11.Screens
         {
             NavigationNode a = floodFiller.FindNearestPoint(mouseLeftPoint);
             NavigationNode b = floodFiller.FindNearestPoint(mouseRightPoint);
+
+            if (a == null || b == null)
+                return;
+
+
             bool success;
             path = aStar.FindPath(a, b, out success);
         }
@@ -580,6 +591,8 @@ namespace MonoGameDirectX11.Screens
 
             RenderPath();
 
+            //RenderPartition();
+
             if (playerObj != null)
             {
                 DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
@@ -616,6 +629,19 @@ namespace MonoGameDirectX11.Screens
             base.Render(gameTime);
         }
 
+        private void RenderPartition()
+        {
+            foreach (Bucket b in floodFiller.partition.buckets)
+            {
+
+                DebugShapeRenderer.AddLine(b.bottomLeft, b.topLeft, Color.Aqua);
+                DebugShapeRenderer.AddLine(b.topLeft, b.topRight, Color.Aqua);
+                DebugShapeRenderer.AddLine(b.topRight, b.bottomRight, Color.Aqua);
+                DebugShapeRenderer.AddLine(b.bottomRight, b.bottomLeft, Color.Aqua);
+
+            }
+        }
+
         private void RenderPath()
         {
             if (path == null)
@@ -623,7 +649,7 @@ namespace MonoGameDirectX11.Screens
             if (path.Count == 0)
                 return;
 
-            for(int i= 0; i < path.Count-1; i++)
+            for (int i = 0; i < path.Count - 1; i++)
             {
                 DebugShapeRenderer.AddLine(path[i].WorldPosition, path[i + 1].WorldPosition, Color.Purple);
 
@@ -642,12 +668,13 @@ namespace MonoGameDirectX11.Screens
                 if (floodFiller.justAdded.Contains(vec))
                     colorOfSphere = Color.Red;
 
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.WorldPosition, 0.2f), colorOfSphere);
+                if (!vec.done)
+                    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.WorldPosition, 0.2f), colorOfSphere);
 
-                //foreach(NavigationNode neighbour in vec.Neighbours)
-                //{
-                //    DebugShapeRenderer.AddLine(vec.WorldPosition, neighbour.WorldPosition, Color.Green);
-                //}
+                foreach (NavigationNode neighbour in vec.Neighbours)
+                {
+                    DebugShapeRenderer.AddLine(vec.WorldPosition, neighbour.WorldPosition, Color.Green);
+                }
             }
 
 
@@ -685,8 +712,8 @@ namespace MonoGameDirectX11.Screens
     {
         public bool pause = true;
 
+        public BucketPartition partition;
 
-       
         float stepSize = 1f;
         public List<NavigationNode> positions;
         private List<RestfulDoomBot.DoomLine> levelLineGeometry;
@@ -694,22 +721,40 @@ namespace MonoGameDirectX11.Screens
         public NavigationNode next;
         public List<NavigationNode> justAdded = new List<NavigationNode>();
 
-        public DoomFloodFill(List<RestfulDoomBot.DoomLine> levelLines, Vector3 startPoint)
+        public DoomFloodFill(List<RestfulDoomBot.DoomLine> levelLines, Vector3 startPoint, DoomWad.Vertexes vertexes, float scale, float xOffset, float zOffset)
         {
             positions = new List<NavigationNode>();
             levelLineGeometry = levelLines;
-            AddPoint(startPoint);
 
 
-        }
+            float startX = vertexes.Entries.Min(x => x.X - 10) / scale + xOffset;
+            float startZ = vertexes.Entries.Min(x => x.Y - 10) / scale + zOffset;
 
-        private void AddPoint(Vector3 vec)
-        {
-            NavigationNode p = new NavigationNode() { WorldPosition = vec };
+            float maxX = vertexes.Entries.Max(x => x.X - 10) / scale + xOffset;
+            float maxZ = vertexes.Entries.Max(x => x.Y - 10) / scale + zOffset;
+
+            float width = maxX - startX;
+            float height = maxZ - startZ;
+
+            int bucketSize = 5;
+            int numofBucketsX = (int)width / bucketSize + 2;
+            int numofBucketsZ = (int)height / bucketSize + 2;
+
+            partition = new BucketPartition(startX-1, startZ-1, bucketSize, numofBucketsX, numofBucketsZ);
+
+            NavigationNode p = new NavigationNode() { WorldPosition = startPoint };
+            p.Navigable = true;
             positions.Add(p);
             positionsToSearch.Enqueue(p);
 
+            partition.AddNavigationNode(p);
+
+            foreach (RestfulDoomBot.DoomLine l in levelLines)
+                partition.AddDoomLine(l);
+
         }
+
+
 
         public void ConnectPoints(NavigationNode a, NavigationNode b)
         {
@@ -784,22 +829,11 @@ namespace MonoGameDirectX11.Screens
 
 
 
-            bool intersect = false;
-            foreach (RestfulDoomBot.DoomLine line in levelLineGeometry)
-            {
-                Vector2 intersectPoint;
-                if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), current.WorldPosition.ToVector2XZ(), adjacent.WorldPosition.ToVector2XZ(), out intersectPoint))
-                {
-                    intersect = true;
-                    break;
-                }
 
-
-            }
 
             //if there's no intersection, , and there isn't a link already, 
             //add a link, add the new position, and add to the queue for future search
-            if (!intersect)
+            if (!partition.IntersectsALevelSegment(current.WorldPosition, adjacent.WorldPosition))
             {
 
                 ConnectPoints(current, adjacent);
@@ -813,7 +847,7 @@ namespace MonoGameDirectX11.Screens
                         positions.Add(adjacent);
                         positionsToSearch.Enqueue(adjacent);
                         justAdded.Add(adjacent);
-
+                        partition.AddNavigationNode(adjacent);
                     }
                     else
                     {
@@ -830,35 +864,152 @@ namespace MonoGameDirectX11.Screens
 
         internal NavigationNode FindNearestPoint(Vector3 mouseLeftPoint)
         {
+            return partition.GetNearestNode(mouseLeftPoint);
 
-            NavigationNode closest = null;
-            float distance = float.MaxValue;
-
-            foreach(NavigationNode node in positions)
-            {
-                float d = (node.WorldPosition - mouseLeftPoint).Length();
-
-                if (d < distance)
-                {
-                    closest = node;
-                    distance = d;
-                }
-            }
-            return closest;
         }
     }
 
 
+
     public interface IPartitionItem
     {
-        Vector3 position { get; }
+        string Type { get; }
     }
 
-    public class GridPartition
+    public class Bucket
     {
+        public Vector3 bottomLeft;
+        public Vector3 topRight;
+        public Vector3 topLeft;
+        public Vector3 bottomRight;
+        public List<IPartitionItem> itemsInBucket;
 
-        public void AddItem(IPartitionItem item)
+        public Bucket(Vector3 min, Vector3 max)
         {
+            bottomLeft = min;
+            topRight = max;
+            topLeft = new Vector3(bottomLeft.X, 0, topRight.Z);
+            bottomRight = new Vector3(topRight.X, 0, bottomLeft.Z);
+
+            itemsInBucket = new List<IPartitionItem>();
+        }
+
+        public bool PointIn(Vector3 point)
+        {
+            if (point.X >= bottomLeft.X)
+                if (point.X <= topRight.X)
+                    if (point.Z >= bottomLeft.Z)
+                        if (point.Z <= topRight.Z)
+                            return true;
+
+            return false;
+        }
+
+        public bool LineIntersects(Vector3 a, Vector3 b)
+        {
+
+
+            if (MonoMathHelper.LineIntersection(a.ToVector2XZ(), b.ToVector2XZ(), topLeft.ToVector2XZ(), topRight.ToVector2XZ()))
+                return true;
+            if (MonoMathHelper.LineIntersection(a.ToVector2XZ(), b.ToVector2XZ(), topLeft.ToVector2XZ(), bottomLeft.ToVector2XZ()))
+                return true;
+            if (MonoMathHelper.LineIntersection(a.ToVector2XZ(), b.ToVector2XZ(), bottomLeft.ToVector2XZ(), bottomRight.ToVector2XZ()))
+                return true;
+            if (MonoMathHelper.LineIntersection(a.ToVector2XZ(), b.ToVector2XZ(), bottomRight.ToVector2XZ(), topRight.ToVector2XZ()))
+                return true;
+
+            return false;
+
+        }
+    }
+
+    public class BucketPartition
+    {
+        public List<Bucket> buckets;
+
+
+
+        public BucketPartition(float startX, float startZ, float bucketSize, int numofBucketsX, int numofBucketsZ)
+        {
+            buckets = new List<Bucket>();
+
+
+
+
+            for (float x = startX; x < (startX + (numofBucketsX * bucketSize)); x += bucketSize)
+            {
+                for (float z = startZ; z < (startZ + (numofBucketsZ * bucketSize)); z += bucketSize)
+                {
+                    buckets.Add(new Bucket(new Vector3(x, 0, z), new Vector3(x + bucketSize, 0, z + bucketSize)));
+                }
+            }
+        }
+
+        public NavigationNode GetNearestNode(Vector3 v)
+        {
+            NavigationNode closest = null;
+            float distance = float.MaxValue;
+
+            foreach (Bucket b in buckets)
+            {
+                if (b.PointIn(v))
+                {
+                    List<IPartitionItem> nodesInBucket = b.itemsInBucket.FindAll(x => x.Type == "NavigationNode");
+
+                    foreach (NavigationNode node in nodesInBucket)
+                    {
+                        float d = (node.WorldPosition - v).Length();
+
+                        if (d < distance)
+                        {
+                            closest = node;
+                            distance = d;
+                        }
+                    }
+
+                }
+            }
+            return closest;
+        }
+
+        public void AddNavigationNode(NavigationNode n)
+        {
+            foreach (Bucket b in buckets)
+                if (b.PointIn(n.WorldPosition))
+                    b.itemsInBucket.Add(n as IPartitionItem);
+        }
+
+        public void AddDoomLine(RestfulDoomBot.DoomLine doomLine)
+        {
+            foreach (Bucket b in buckets)
+            {
+                if (b.LineIntersects(doomLine.start, doomLine.end))
+                    b.itemsInBucket.Add(doomLine as IPartitionItem);
+
+                //add lines that are completely contained to the bucket also
+                if (b.PointIn(doomLine.start) && b.PointIn(doomLine.end))
+                    b.itemsInBucket.Add(doomLine as IPartitionItem);
+            }
+        }
+
+        public bool IntersectsALevelSegment(Vector3 a, Vector3 b)
+        {
+
+            foreach (Bucket buck in buckets)
+            {
+                if (buck.LineIntersects(a, b) || (buck.PointIn(a) && buck.PointIn(b)))
+                {
+                    List<IPartitionItem> linesInBucket = buck.itemsInBucket.FindAll(x => x.Type == "DoomLine");
+                    foreach (RestfulDoomBot.DoomLine line in linesInBucket)
+                    {
+                        if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), a.ToVector2XZ(), b.ToVector2XZ()))
+                            return true;
+
+                    }
+                }
+            }
+
+            return false;
 
         }
 
