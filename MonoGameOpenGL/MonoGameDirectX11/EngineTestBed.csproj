@@ -52,7 +52,9 @@
     <Compile Include="Game\SimpleEnemy.cs" />
     <Compile Include="Game\SimpleEnemyAIController.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />
-    <Compile Include="Screens\RestfulDoomBot.cs" />
+    <Compile Include="Screens\Doom\AStar.cs" />
+    <Compile Include="Screens\Doom\NavigationNode.cs" />
+    <Compile Include="Screens\Doom\RestfulDoomBot.cs" />
     <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="TestScreen.cs" />

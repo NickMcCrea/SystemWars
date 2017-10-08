@@ -14,6 +14,7 @@ using RestSharp;
 using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.DoomLib;
 using Kaitai;
+using NickLib.Pathfinding;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -46,6 +47,10 @@ namespace MonoGameDirectX11.Screens
         DoomWad.Sidedefs sideDefs;
         private List<DoomLine> levelLines;
         private LibTessDotNet.Double.Tess tesselator;
+        private AStar aStar;
+        private Vector3 mouseLeftPoint, mouseRightPoint;
+        private List<NavigationNode> path;
+
         public struct DoomLine
         {
             public Vector3 start;
@@ -118,7 +123,7 @@ namespace MonoGameDirectX11.Screens
 
             worldObjects = new Dictionary<int, GameObject>();
             apiHandler = new DoomAPIHandler(restHost, restPort);
-
+            aStar = new AStar();
 
             GenerateNavStructures();
 
@@ -467,8 +472,38 @@ namespace MonoGameDirectX11.Screens
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Enter))
                 floodFiller.pause = !floodFiller.pause;
 
+            if (input.MouseLeftPress())
+            {
+              
+                Plane p = new Plane(Vector3.Down, 0);
+                Ray ray = input.GetProjectedMouseRay();
+                float? result;
+                ray.Intersects(ref p, out result);
+                if(result.HasValue)
+                {
+                    mouseLeftPoint = ray.Position + ray.Direction * result.Value;
+                    FindPath();
+
+                }
+            }
+            if (input.MouseRightPress())
+            {
+                
+                Plane p = new Plane(Vector3.Down, 0);
+                Ray ray = input.GetProjectedMouseRay();
+                float? result;
+                ray.Intersects(ref p, out result);
+                if (result.HasValue)
+                {
+                    mouseRightPoint = ray.Position + ray.Direction * result.Value;
+                    FindPath();
+
+                }
+            }
+
 
             floodFiller.Update();
+
 
 
             //apiHandler.MovePlayerForward(10);
@@ -503,6 +538,14 @@ namespace MonoGameDirectX11.Screens
             base.Update(gameTime);
         }
 
+        private void FindPath()
+        {
+            NavigationNode a = floodFiller.FindNearestPoint(mouseLeftPoint);
+            NavigationNode b = floodFiller.FindNearestPoint(mouseRightPoint);
+            bool success;
+            path = aStar.FindPath(a, b, out success);
+        }
+
         private void HandleResponses()
         {
 
@@ -534,6 +577,8 @@ namespace MonoGameDirectX11.Screens
             RenderLineDefs();
 
             RenderFloodFill();
+
+            RenderPath();
 
             if (playerObj != null)
             {
@@ -571,9 +616,23 @@ namespace MonoGameDirectX11.Screens
             base.Render(gameTime);
         }
 
+        private void RenderPath()
+        {
+            if (path == null)
+                return;
+            if (path.Count == 0)
+                return;
+
+            for(int i= 0; i < path.Count-1; i++)
+            {
+                DebugShapeRenderer.AddLine(path[i].WorldPosition, path[i + 1].WorldPosition, Color.Purple);
+
+            }
+        }
+
         private void RenderFloodFill()
         {
-            foreach (DoomFloodFill.DoomPoint vec in floodFiller.positions)
+            foreach (NavigationNode vec in floodFiller.positions)
             {
                 Color colorOfSphere = Color.Orange;
 
@@ -583,13 +642,15 @@ namespace MonoGameDirectX11.Screens
                 if (floodFiller.justAdded.Contains(vec))
                     colorOfSphere = Color.Red;
 
-                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.position, 0.2f), colorOfSphere);
+                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.WorldPosition, 0.2f), colorOfSphere);
+
+                //foreach(NavigationNode neighbour in vec.Neighbours)
+                //{
+                //    DebugShapeRenderer.AddLine(vec.WorldPosition, neighbour.WorldPosition, Color.Green);
+                //}
             }
 
-            foreach (DoomFloodFill.DoomLink vec in floodFiller.links)
-            {
-                DebugShapeRenderer.AddLine(vec.A.position, vec.B.position, Color.Green);
-            }
+
         }
 
         private void RenderLineDefs()
@@ -623,44 +684,19 @@ namespace MonoGameDirectX11.Screens
     public class DoomFloodFill
     {
         public bool pause = true;
-        public class DoomPoint
-        {
-            public Vector3 position;
-            public bool done;
 
 
-
-        }
-
-
-
-        public class DoomLink
-        {
-            public DoomPoint A;
-            public DoomPoint B;
-
-            public bool Compare(DoomLink other)
-            {
-                if (A == other.A && B == other.B)
-                    return true;
-                if (A == other.B && B == other.A)
-                    return true;
-                return false;
-            }
-        }
-
+       
         float stepSize = 1f;
-        public List<DoomPoint> positions;
-        public List<DoomLink> links;
+        public List<NavigationNode> positions;
         private List<RestfulDoomBot.DoomLine> levelLineGeometry;
-        public Queue<DoomPoint> positionsToSearch = new Queue<DoomPoint>();
-        public DoomPoint next;
-        public List<DoomPoint> justAdded = new List<DoomPoint>();
+        public Queue<NavigationNode> positionsToSearch = new Queue<NavigationNode>();
+        public NavigationNode next;
+        public List<NavigationNode> justAdded = new List<NavigationNode>();
 
         public DoomFloodFill(List<RestfulDoomBot.DoomLine> levelLines, Vector3 startPoint)
         {
-            positions = new List<DoomPoint>();
-            links = new List<DoomLink>();
+            positions = new List<NavigationNode>();
             levelLineGeometry = levelLines;
             AddPoint(startPoint);
 
@@ -669,16 +705,16 @@ namespace MonoGameDirectX11.Screens
 
         private void AddPoint(Vector3 vec)
         {
-            DoomPoint p = new DoomPoint() { position = vec };
+            NavigationNode p = new NavigationNode() { WorldPosition = vec };
             positions.Add(p);
             positionsToSearch.Enqueue(p);
 
         }
 
-        public void ConnectPoints(DoomPoint a, DoomPoint b)
+        public void ConnectPoints(NavigationNode a, NavigationNode b)
         {
-            DoomLink d = new DoomLink() { A = a, B = b };
-            links.Add(d);
+            a.Neighbours.Add(b);
+            b.Neighbours.Add(a);
         }
 
         public void Update()
@@ -697,22 +733,22 @@ namespace MonoGameDirectX11.Screens
             if (positionsToSearch.Count == 0)
                 return;
 
-            DoomPoint current = positionsToSearch.Dequeue();
+            NavigationNode current = positionsToSearch.Dequeue();
 
             if (positionsToSearch.Count > 0)
                 next = positionsToSearch.Peek();
 
             //search north, south east and west, then intersect each line with the map.
-            DoomPoint north = GeneratePoint(current, new Vector3(stepSize, 0, 0));
+            NavigationNode north = GeneratePoint(current, new Vector3(stepSize, 0, 0));
             ConnectIfNotIntersect(current, north);
 
-            DoomPoint south = GeneratePoint(current, new Vector3(-stepSize, 0, 0));
+            NavigationNode south = GeneratePoint(current, new Vector3(-stepSize, 0, 0));
             ConnectIfNotIntersect(current, south);
 
-            DoomPoint east = GeneratePoint(current, new Vector3(0, 0, stepSize));
+            NavigationNode east = GeneratePoint(current, new Vector3(0, 0, stepSize));
             ConnectIfNotIntersect(current, east);
 
-            DoomPoint west = GeneratePoint(current, new Vector3(0, 0, -stepSize));
+            NavigationNode west = GeneratePoint(current, new Vector3(0, 0, -stepSize));
             ConnectIfNotIntersect(current, west);
 
             current.done = true;
@@ -720,34 +756,31 @@ namespace MonoGameDirectX11.Screens
 
         }
 
-        private DoomPoint GeneratePoint(DoomPoint current, Vector3 offset)
+        private NavigationNode GeneratePoint(NavigationNode current, Vector3 offset)
         {
-            Vector3 newPos = current.position + offset;
+            Vector3 newPos = current.WorldPosition + offset;
 
             //does this already exist? if so return it
-            DoomPoint test = positions.Find(x => x.position == newPos);
+            NavigationNode test = positions.Find(x => x.WorldPosition == newPos);
 
             if (test != null)
                 return test;
 
             //make a new point and add it to the queue
-            DoomPoint newPoint = new DoomPoint() { position = newPos };
-
+            NavigationNode newPoint = new NavigationNode() { WorldPosition = newPos };
+            newPoint.Navigable = true;
             return newPoint;
         }
 
-        private void ConnectIfNotIntersect(DoomPoint current, DoomPoint adjacent)
+        private void ConnectIfNotIntersect(NavigationNode current, NavigationNode adjacent)
         {
 
 
             bool exists = false;
-            var newLink = new DoomLink() { A = current, B = adjacent };
-            foreach (DoomLink l in links)
-            {
-                if (l.Compare(newLink))
-                    return;
-            }
 
+            //already done
+            if (current.Neighbours.Contains(adjacent))
+                return;
 
 
 
@@ -755,7 +788,7 @@ namespace MonoGameDirectX11.Screens
             foreach (RestfulDoomBot.DoomLine line in levelLineGeometry)
             {
                 Vector2 intersectPoint;
-                if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), current.position.ToVector2XZ(), adjacent.position.ToVector2XZ(), out intersectPoint))
+                if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), current.WorldPosition.ToVector2XZ(), adjacent.WorldPosition.ToVector2XZ(), out intersectPoint))
                 {
                     intersect = true;
                     break;
@@ -769,16 +802,18 @@ namespace MonoGameDirectX11.Screens
             if (!intersect)
             {
 
-                links.Add(newLink);
+                ConnectPoints(current, adjacent);
+
                 if (!adjacent.done)
                 {
                     //add the point if it doesn't already exist
-                    DoomPoint test = positions.Find(x => MonoMathHelper.AlmostEquals(x.position, adjacent.position, 0.01f));
+                    NavigationNode test = positions.Find(x => MonoMathHelper.AlmostEquals(x.WorldPosition, adjacent.WorldPosition, 0.01f));
                     if (test == null)
                     {
                         positions.Add(adjacent);
                         positionsToSearch.Enqueue(adjacent);
                         justAdded.Add(adjacent);
+
                     }
                     else
                     {
@@ -793,6 +828,39 @@ namespace MonoGameDirectX11.Screens
 
         }
 
+        internal NavigationNode FindNearestPoint(Vector3 mouseLeftPoint)
+        {
+
+            NavigationNode closest = null;
+            float distance = float.MaxValue;
+
+            foreach(NavigationNode node in positions)
+            {
+                float d = (node.WorldPosition - mouseLeftPoint).Length();
+
+                if (d < distance)
+                {
+                    closest = node;
+                    distance = d;
+                }
+            }
+            return closest;
+        }
+    }
+
+
+    public interface IPartitionItem
+    {
+        Vector3 position { get; }
+    }
+
+    public class GridPartition
+    {
+
+        public void AddItem(IPartitionItem item)
+        {
+
+        }
 
     }
 
