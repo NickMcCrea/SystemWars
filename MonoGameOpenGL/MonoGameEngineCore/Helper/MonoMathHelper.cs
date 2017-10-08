@@ -475,38 +475,7 @@ namespace MonoGameEngineCore.Helper
             return intersection;
         }
 
-        public static bool LineSegmentIntersection(Vector3 a1, Vector3 a2, Vector3 b1, Vector3 b2,
-            out Vector3 intersectionPoint)
-        {
-            float firstLineSlopeX, firstLineSlopeY, secondLineSlopeX, secondLineSlopeY;
-
-            firstLineSlopeX = a2.X - a1.X;
-            firstLineSlopeY = a2.Y - a1.Y;
-
-            secondLineSlopeX = b2.X - b1.X;
-            secondLineSlopeY = b2.Y - b1.Y;
-
-            float s, t;
-            s = (-firstLineSlopeY*(a1.X - b1.X) + firstLineSlopeX*(a1.Y - b1.Y))/
-                (-secondLineSlopeX*firstLineSlopeY + firstLineSlopeX*secondLineSlopeY);
-            t = (secondLineSlopeX*(a1.Y - b1.Y) - secondLineSlopeY*(a1.X - b1.X))/
-                (-secondLineSlopeX*firstLineSlopeY + firstLineSlopeX*secondLineSlopeY);
-
-            if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
-            {
-                float intersectionPointX = a1.X + (t*firstLineSlopeX);
-                float intersectionPointY = a1.Y + (t*firstLineSlopeY);
-
-                // Collision detected
-                intersectionPoint = new Vector3(intersectionPointX, intersectionPointY, 0);
-
-                return true;
-            }
-
-            intersectionPoint = Vector3.Zero;
-            return false; // No collision
-        }
-
+   
         public static Vector2[] Vector3ToVector2UsingXZ(Vector3[] vec3Array)
         {
             Vector2[] vecArray = new Vector2[vec3Array.Length];

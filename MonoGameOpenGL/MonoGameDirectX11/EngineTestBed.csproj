@@ -78,6 +78,10 @@
       <HintPath>..\packages\JSON.1.0.1\lib\net40\Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LibTessDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unofficial.LibTessDotNet.1.0.2\lib\net45\LibTessDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MarcelJoachimKloubert.DWAD">
       <HintPath>..\Assemblies\MarcelJoachimKloubert.DWAD.dll</HintPath>
     </Reference>

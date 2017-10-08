@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.Helper;
-using MarcelJoachimKloubert.DWAD;
 using System.IO;
-
+using LibTessDotNet;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Rendering.Camera;
@@ -18,7 +17,7 @@ using Kaitai;
 
 namespace MonoGameDirectX11.Screens
 {
-    class RestfulDoomBot : Screen
+    public class RestfulDoomBot : Screen
     {
         bool connectToServer = false;
         GameObject cameraObject;
@@ -45,6 +44,17 @@ namespace MonoGameDirectX11.Screens
         DoomWad.Blockmap blockMap;
         DoomWad.Vertexes vertices;
         DoomWad.Sidedefs sideDefs;
+        private List<DoomLine> levelLines;
+        private LibTessDotNet.Double.Tess tesselator;
+        public struct DoomLine
+        {
+            public Vector3 start;
+            public Vector3 end;
+            public Color color;
+
+        }
+        private DoomFloodFill floodFiller;
+
 
 
         public RestfulDoomBot()
@@ -109,9 +119,114 @@ namespace MonoGameDirectX11.Screens
             worldObjects = new Dictionary<int, GameObject>();
             apiHandler = new DoomAPIHandler(restHost, restPort);
 
+
+            GenerateNavStructures();
+
             base.OnInitialise();
         }
 
+        private void GenerateNavStructures()
+        {
+            levelLines = new List<DoomLine>();
+            foreach (DoomWad.Linedef lineDef in lineDefs.Entries)
+            {
+                //sector tag is useless - always 0
+                //DoomWad.Sector sector = sectors.Entries[lineDef.SectorTag];
+
+                DoomWad.Sidedef sideDefLeft, sideDefRight;
+                sideDefLeft = null;
+
+                //most lineDefs are not double sided. SideDef ID of 65535 means no side def for this direction
+                if (lineDef.SidedefLeftIdx != 65535)
+                {
+                    sideDefLeft = sideDefs.Entries[lineDef.SidedefLeftIdx];
+
+                }
+
+                sideDefRight = sideDefs.Entries[lineDef.SidedefRightIdx];
+
+                var sector = sectors.Entries[sideDefRight.SectorId];
+
+                Color lineColor, lineColorMin, lineColorMax;
+
+
+                float heightDiff = 0;
+                if (sideDefLeft != null)
+                {
+                    var sec1 = sectors.Entries[sideDefRight.SectorId];
+                    var sec2 = sectors.Entries[sideDefLeft.SectorId];
+                    heightDiff = Math.Abs(sec1.FloorZ - sec2.FloorZ);
+                }
+
+
+
+                //convert the ceiling or floor height to a useful range.
+                float convertedHeight = sector.CeilZ / 8;
+                convertedHeight += 17;
+                convertedHeight /= 34;
+
+                lineColorMin = Color.Blue;
+                lineColorMax = Color.Red;
+
+                lineColor = Color.Lerp(lineColorMin, lineColorMax, convertedHeight);
+
+
+                DoomWad.Vertex start = vertices.Entries[lineDef.VertexStartIdx];
+                DoomWad.Vertex end = vertices.Entries[lineDef.VertexEndIdx];
+
+
+
+                var p1 = new Vector3((start.X) / scale + offsetX, 0,
+                                      (start.Y) / scale + offsetY);
+
+                var p2 = new Vector3((end.X) / scale + offsetX, 0,
+                                   (end.Y) / scale + offsetY);
+
+                if (sideDefLeft == null)
+                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
+
+                if (sideDefLeft != null && heightDiff > 24)
+                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
+
+            }
+
+            //TesselateLevel();
+
+            FloodFillLevel();
+
+
+
+        }
+
+        private Vector3 ConvertPosition(float x, float y)
+        {
+            return new Vector3(x / scale + offsetX, 0, y / scale + offsetY);
+        }
+
+        private void FloodFillLevel()
+        {
+            var playerStartThing = things.Entries.Find(x => x.Type == 1);
+
+            Vector3 pos = ConvertPosition(playerStartThing.X, playerStartThing.Y);
+
+
+            floodFiller = new DoomFloodFill(levelLines, pos);
+
+        }
+
+        private void TesselateLevel()
+        {
+            tesselator = new LibTessDotNet.Double.Tess();
+            var contour = new LibTessDotNet.Double.ContourVertex[levelLines.Count];
+            for (int i = 0; i < levelLines.Count; i++)
+            {
+                contour[i].Position = new LibTessDotNet.Double.Vec3() { X = levelLines[i].start.X, Y = levelLines[i].start.Z, Z = 0 };
+            }
+
+            tesselator.AddContour(contour, LibTessDotNet.Double.ContourOrientation.Clockwise);
+
+            tesselator.Tessellate(LibTessDotNet.Double.WindingRule.EvenOdd, LibTessDotNet.Double.ElementType.Polygons, 3);
+        }
 
         private void ResponseWorldObjects(IRestResponse response)
         {
@@ -125,7 +240,6 @@ namespace MonoGameDirectX11.Screens
             UpdateWorldObjects(jsonValues);
 
         }
-
 
         private void ResponsePlayerDetails(IRestResponse response)
         {
@@ -347,8 +461,9 @@ namespace MonoGameDirectX11.Screens
                 cameraObject.Transform.Translate(new Vector3(cameraSpeed, 0, 0));
 
 
-            if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
-                apiHandler.MovePlayerForward(10);
+           // if (input.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Space))
+                floodFiller.Step();
+            //apiHandler.MovePlayerForward(10);
 
             if (connectToServer)
             {
@@ -410,7 +525,7 @@ namespace MonoGameDirectX11.Screens
 
             RenderLineDefs();
 
-        
+            RenderFloodFill();
 
             if (playerObj != null)
             {
@@ -443,36 +558,196 @@ namespace MonoGameDirectX11.Screens
                 DebugText.Write(playerAngle.ToString());
             }
 
+
+
             base.Render(gameTime);
+        }
+
+        private void RenderFloodFill()
+        {
+            foreach (DoomFloodFill.DoomPoint vec in floodFiller.positions)
+            {
+                DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.position, 0.2f), Color.Orange);
+            }
+
+            foreach (DoomFloodFill.DoomLink vec in floodFiller.links)
+            {
+                DebugShapeRenderer.AddLine(vec.A.position, vec.B.position, Color.Green);
+            }
         }
 
         private void RenderLineDefs()
         {
-            foreach (DoomWad.Linedef lineDef in lineDefs.Entries)
+
+
+            foreach (DoomLine l in levelLines)
             {
-                DoomWad.Sector sector = sectors.Entries[lineDef.SectorTag];
 
-                //DoomWad.Sidedef sideDefLeft = sideDefs.Entries[lineDef.SidedefLeftIdx];
-                //DoomWad.Sidedef sideDefRight = sideDefs.Entries[lineDef.SidedefRightIdx];
-
-                if (sector.FloorZ < 0)
-                    continue;
-
-                DoomWad.Vertex start = vertices.Entries[lineDef.VertexStartIdx];
-                DoomWad.Vertex end = vertices.Entries[lineDef.VertexEndIdx];
-
-                
-
-                var p1 = new Vector3((start.X) / scale + offsetX, 0,
-                                      (start.Y) / scale + offsetY);
-
-                var p2 = new Vector3((end.X) / scale + offsetX, 0,
-                                   (end.Y) / scale + offsetY);
-
-                DebugShapeRenderer.AddLine(p1, p2, Color.Orange);
+                DebugShapeRenderer.AddLine(l.start, l.end, l.color);
 
             }
+
+            //int numTriangles = tesselator.ElementCount;
+
+            //for(int i = 0; i < numTriangles; i++)
+            //{
+            //    var v0 = tesselator.Vertices[tesselator.Elements[i * 3]].Position;
+            //    var v1 = tesselator.Vertices[tesselator.Elements[i * 3 + 1]].Position;
+            //    var v2 = tesselator.Vertices[tesselator.Elements[i * 3 + 2]].Position;
+
+            //    DebugShapeRenderer.AddLine(new Vector3((float)v0.X,0,(float)v0.Y), new Vector3((float)v1.X, 0, (float)v1.Y),Color.Orange);
+            //    DebugShapeRenderer.AddLine(new Vector3((float)v1.X, 0, (float)v1.Y), new Vector3((float)v2.X, 0, (float)v2.Y), Color.Orange);
+            //    DebugShapeRenderer.AddLine(new Vector3((float)v2.X, 0, (float)v2.Y), new Vector3((float)v0.X, 0, (float)v0.Y), Color.Orange);
+
+            //}
+
         }
+    }
+
+    public class DoomFloodFill
+    {
+        public class DoomPoint
+        {
+            public Vector3 position;
+            public bool done;
+
+        }
+        public class DoomLink
+        {
+            public DoomPoint A;
+            public DoomPoint B;
+
+            public bool Compare(DoomLink other)
+            {
+                if (A == other.A && B == other.B)
+                    return true;
+                if (A == other.B && B == other.A)
+                    return true;
+                return false;
+            }
+        }
+
+        float stepSize = 1f;
+        public List<DoomPoint> positions;
+        public List<DoomLink> links;
+        private List<RestfulDoomBot.DoomLine> levelLineGeometry;
+          public Queue<DoomPoint> positionsToSearch = new Queue<DoomPoint>();
+
+        public DoomFloodFill(List<RestfulDoomBot.DoomLine> levelLines, Vector3 startPoint)
+        {
+            positions = new List<DoomPoint>();
+            links = new List<DoomLink>();
+            levelLineGeometry = levelLines;
+            AddPoint(startPoint);
+        }
+
+        private void AddPoint(Vector3 vec)
+        {
+            DoomPoint p = new DoomPoint() { position = vec };
+            positions.Add(p);
+            positionsToSearch.Enqueue(p);
+
+        }
+
+        public void ConnectPoints(DoomPoint a, DoomPoint b)
+        {
+            DoomLink d = new DoomLink() { A = a, B = b };
+            links.Add(d);
+        }
+
+        public void Step()
+        {
+            if (positionsToSearch.Count == 0)
+                return;
+
+            DoomPoint current = positionsToSearch.Dequeue();
+
+            
+
+            //search north, south east and west, then intersect each line with the map.
+            DoomPoint north = GeneratePoint(current, new Vector3(stepSize, 0, 0));
+            ConnectIfNotIntersect(current, north);
+
+            DoomPoint south = GeneratePoint(current, new Vector3(-stepSize, 0, 0));
+            ConnectIfNotIntersect(current, south);
+
+            DoomPoint east = GeneratePoint(current, new Vector3(0, 0, stepSize));
+            ConnectIfNotIntersect(current, east);
+
+            DoomPoint west = GeneratePoint(current, new Vector3(0, 0, -stepSize));
+            ConnectIfNotIntersect(current, west);
+
+            current.done = true;
+          
+
+        }
+
+        private DoomPoint GeneratePoint(DoomPoint current, Vector3 offset)
+        {
+            Vector3 newPos = current.position + offset;
+
+            //does this already exist? if so return it
+            DoomPoint test = positions.Find(x => x.position == newPos);
+
+            if (test != null)
+                return test;
+
+            //make a new point and add it to the queue
+            DoomPoint newPoint = new DoomPoint() { position = newPos };
+
+            return newPoint;
+        }
+
+        private void ConnectIfNotIntersect(DoomPoint current, DoomPoint adjacent)
+        {
+
+            
+
+
+            bool exists = false;
+            var newLink = new DoomLink() { A = current, B = adjacent };
+            foreach (DoomLink l in links)
+            {
+                if (l.Compare(newLink))
+                    return;
+            }
+
+           
+
+
+            bool intersect = false;
+            foreach (RestfulDoomBot.DoomLine line in levelLineGeometry)
+            {
+                Vector2 intersectPoint;
+                if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), current.position.ToVector2XZ(), adjacent.position.ToVector2XZ(), out intersectPoint))
+                {
+                    intersect = true;
+                    break;
+                }
+
+
+            }
+
+            //if there's no intersection, , and there isn't a link already, 
+            //add a link, add the new position, and add to the queue for future search
+            if (!intersect)
+            {
+               
+               links.Add(newLink);
+
+                if (!adjacent.done)
+                {
+                    positions.Add(adjacent);
+                    positionsToSearch.Enqueue(adjacent);
+                }
+            }
+
+
+
+
+        }
+
+       
     }
 
 
