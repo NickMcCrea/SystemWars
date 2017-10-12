@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using NickLib;
-
+using MonoGameDirectX11.Screens.Doom;
 
 namespace NickLib.Pathfinding
 {

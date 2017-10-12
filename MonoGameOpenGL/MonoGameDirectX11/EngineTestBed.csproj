@@ -53,8 +53,13 @@
     <Compile Include="Game\SimpleEnemyAIController.cs" />
     <Compile Include="Screens\CombatArenaTest.cs" />
     <Compile Include="Screens\Doom\AStar.cs" />
-    <Compile Include="Screens\Doom\NavigationNode.cs" />
-    <Compile Include="Screens\Doom\RestfulDoomBot.cs" />
+    <Compile Include="Screens\Doom\Common.cs" />
+    <Compile Include="Screens\Doom\DoomLib\DoomAPIHandler.cs" />
+    <Compile Include="Screens\Doom\DoomLib\DoomWad.cs" />
+    <Compile Include="Screens\Doom\DoomLib\KaitaiStream.cs" />
+    <Compile Include="Screens\Doom\DoomLib\KaitaiStruct.cs" />
+    <Compile Include="Screens\Doom\RestfulDoomBotTest.cs" />
+    <Compile Include="Screens\Doom\SinglePlayerDoomBot.cs" />
     <Compile Include="Screens\EditorTest.cs" />
     <Compile Include="Screens\MiniPlanet.cs" />
     <Compile Include="TestScreen.cs" />

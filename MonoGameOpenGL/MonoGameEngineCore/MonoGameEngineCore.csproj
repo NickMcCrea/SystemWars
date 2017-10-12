@@ -62,10 +62,6 @@
   <ItemGroup>
     <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Audio\IAudioEmitter.cs" />
-    <Compile Include="DoomLib\DoomAPIHandler.cs" />
-    <Compile Include="DoomLib\DoomWad.cs" />
-    <Compile Include="DoomLib\KaitaiStream.cs" />
-    <Compile Include="DoomLib\KaitaiStruct.cs" />
     <Compile Include="Editor\ModelEditor.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="GameObject\Components\Controllers\TopDownController.cs" />
