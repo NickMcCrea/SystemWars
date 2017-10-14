@@ -325,7 +325,7 @@ namespace MonoGameDirectX11.Screens.Doom
                 //don't place points too close to a wall, then we can't navigate them
                 if (partition.DistanceFromClosestWall(adjacent.WorldPosition) < 0.2f)
                    return;
-
+               
                 ConnectPoints(current, adjacent);
 
                 if (!adjacent.done)
@@ -355,6 +355,19 @@ namespace MonoGameDirectX11.Screens.Doom
         internal NavigationNode FindNearestPoint(Vector3 mouseLeftPoint)
         {
             return partition.GetNearestNode(mouseLeftPoint);
+
+        }
+
+        internal void OptimiseNode(NavigationNode node)
+        {
+            //for each neighbour, if we have LOS to each of ITS neighbours, then
+            //eliminate them.
+
+
+            foreach(NavigationNode neighbour in node.Neighbours)
+            {
+
+            }
 
         }
     }
