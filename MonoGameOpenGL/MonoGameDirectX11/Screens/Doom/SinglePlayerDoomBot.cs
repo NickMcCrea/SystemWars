@@ -19,7 +19,7 @@ namespace MonoGameDirectX11.Screens.Doom
         DoomAPIHandler apiHandler;
         GameObject playerObj;
         Dictionary<int, GameObject> worldObjects;
-
+        List<string> pickUpTypes;
         string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
 
 
@@ -56,7 +56,7 @@ namespace MonoGameDirectX11.Screens.Doom
                 UpdatePlayer(x);
             });
 
-            apiHandler.CreateRegularRequest(20000, new RestRequest("world/objects"), x =>
+            apiHandler.CreateRegularRequest(4000, new RestRequest("world/objects"), x =>
             {
                 foreach (GameObject worldObject in worldObjects.Values)
                     SystemCore.GameObjectManager.RemoveObject(worldObject);
@@ -65,6 +65,9 @@ namespace MonoGameDirectX11.Screens.Doom
 
                 IDictionary<string, object> jsonValues = Json.JsonParser.FromJson(x.Content);
                 List<object> objectList = jsonValues["array0"] as List<object>;
+
+
+                List<string> types = new List<string>();
 
 
                 foreach (object o in objectList)
@@ -83,8 +86,17 @@ namespace MonoGameDirectX11.Screens.Doom
                     CreateLocalWorldObject(id, type, out worldObject, out component);
 
                     UpdateObject(worldObject, angle, xpos, ypos, type, health, distance);
+
+                    types.Add(type);
                 }
+
+
             });
+
+
+            pickUpTypes = new List<string>();
+
+
 
             base.OnInitialise();
         }
@@ -114,6 +126,7 @@ namespace MonoGameDirectX11.Screens.Doom
             worldObject.AddComponent(component);
             worldObject.ID = (int)id;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(worldObject);
+            worldObject.Transform.Scale = 0.3f;
             worldObjects.Add(worldObject.ID, worldObject);
         }
         private ProceduralShape CreateShape(string type)
@@ -156,15 +169,18 @@ namespace MonoGameDirectX11.Screens.Doom
             {
                 playerObj = GameObjectFactory.CreateRenderableGameObjectFromShape(
                         new ProceduralCube(), EffectLoader.LoadSM5Effect("flatshaded"));
-
+                playerObj.Transform.Scale = 0.5f;
                 var id = (double)jsonValues["id"];
                 playerObj.ID = (int)id;
                 DoomComponent component = new DoomComponent();
                 component.DoomType = "Player";
-                component.HitVectorSize = 2f;
+                component.HitVectorSize = 0.5f;
                 playerObj.AddComponent(component);
                 playerObj.AddComponent(new DoomMovementComponent(mapHandler, apiHandler));
+                playerObj.AddComponent(new DoomCombatComponent(mapHandler, apiHandler, worldObjects));
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(playerObj);
+
+
 
             }
 
@@ -183,7 +199,7 @@ namespace MonoGameDirectX11.Screens.Doom
             base.OnRemove();
         }
 
-        bool pathTest = false;
+        bool endOfLevelSeeking = false;
         public override void Update(GameTime gameTime)
         {
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Escape))
@@ -194,52 +210,92 @@ namespace MonoGameDirectX11.Screens.Doom
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.P))
                 apiHandler.TurnRight(10);
 
+            if (input.MouseLeftPress())
+            {
+                Plane p = new Plane(Vector3.Down, 0);
+                Ray ray = input.GetProjectedMouseRay();
+                float? result;
+                ray.Intersects(ref p, out result);
+                if (result.HasValue)
+                {
+                    Vector3 mouseLeftPoint = ray.Position + ray.Direction * result.Value;
+                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(mouseLeftPoint);
+                }
+            }
+
 
             UpdateCamera();
 
             if (!mapHandler.FloodFillComplete)
                 mapHandler.FloodFillStep();
-            else
+
+            if (mapHandler.FloodFillComplete && playerObj.GetComponent<DoomMovementComponent>().path == null)
             {
-                if (!pathTest)
+                playerObj.GetComponent<DoomMovementComponent>().PathToPoint(mapHandler.LevelEnd);
+                endOfLevelSeeking = true;
+            }
+
+            //check if we can see anything. If so, path to it.
+
+            List<GameObject> visiblePickups = new List<GameObject>();
+            foreach (GameObject o in worldObjects.Values)
+            {
+
+
+
+
+                if (mapHandler.IntersectsLevel(playerObj.Transform.AbsoluteTransform.Translation, o.Transform.AbsoluteTransform.Translation))
+                    continue;
+
+                DoomComponent d = o.GetComponent<DoomComponent>();
+
+                if (d.DoomType.ToLower().Contains("armor"))
+                    visiblePickups.Add(o);
+                if (d.DoomType.ToLower().Contains("health"))
+                    visiblePickups.Add(o);
+                if (d.DoomType.ToLower().Contains("shotgun"))
+                    visiblePickups.Add(o);
+                if (d.DoomType.ToLower().Contains("ammo"))
+                    visiblePickups.Add(o);
+                if (d.DoomType.ToLower().Contains("keycard"))
+                    visiblePickups.Add(o);
+
+            }
+
+            float closest = float.MaxValue;
+            GameObject closestPickup = null;
+            foreach (GameObject o in visiblePickups)
+            {
+                float dist = (playerObj.Transform.AbsoluteTransform.Translation - o.Transform.AbsoluteTransform.Translation).Length();
+                if (dist < closest)
                 {
-                    pathTest = true;
-                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(new Vector3(27, 0, -50));
+                    closestPickup = o;
+                    closest = dist;
                 }
             }
+
+            if (closestPickup != null)
+            {
+               
+                if (playerObj.GetComponent<DoomMovementComponent>().path == null || endOfLevelSeeking)
+                {
+                    endOfLevelSeeking = false;
+                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(closestPickup.Transform.AbsoluteTransform.Translation);
+                }
+            }
+
+
 
             apiHandler.Update();
 
 
             if (playerObj != null)
             {
-                DoomComponent playerDoomComponent = playerObj.GetComponent<DoomComponent>();
 
-                Color forwardColor = Color.Red;
-                Color leftColor = Color.Red;
-                Color rightColor = Color.Red;
-
-                if (playerDoomComponent.ForwardHitVector)
-                    forwardColor = Color.Blue;
-                if (playerDoomComponent.LeftHitVector)
-                    leftColor = Color.Blue;
-                if (playerDoomComponent.RightHightVector)
-                    rightColor = Color.Blue;
-
-
-                Vector3 pos = playerObj.Transform.AbsoluteTransform.Translation;
-                Vector3 forwardVec = playerObj.Transform.AbsoluteTransform.Translation + playerObj.Transform.AbsoluteTransform.Forward * playerDoomComponent.HitVectorSize;
-                Vector3 rightVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, MathHelper.PiOver4);
-                Vector3 leftVec = MonoMathHelper.RotateAroundPoint(forwardVec, playerObj.Transform.AbsoluteTransform.Translation, Vector3.Up, -MathHelper.PiOver4);
-
-                DebugShapeRenderer.AddLine(pos, forwardVec, forwardColor);
-                DebugShapeRenderer.AddLine(pos, leftVec, leftColor);
-                DebugShapeRenderer.AddLine(pos, rightVec, rightColor);
 
 
 
                 DebugText.Write(playerObj.Transform.AbsoluteTransform.Translation.ToString());
-                // DebugText.Write(playerAngle.ToString());
             }
 
 
@@ -294,6 +350,8 @@ namespace MonoGameDirectX11.Screens.Doom
                     }
                 }
             }
+
+            DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(mapHandler.LevelEnd, 1f), Color.Orange);
 
             base.Render(gameTime);
         }

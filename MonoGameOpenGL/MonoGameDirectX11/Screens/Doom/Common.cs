@@ -34,6 +34,7 @@ namespace MonoGameDirectX11.Screens.Doom
 
     public class DoomMapHandler
     {
+        public Vector3 LevelEnd { get; set; }
         string wadPath;
         string startMarker, endMarker;
         private List<DoomLine> levelLines;
@@ -49,11 +50,48 @@ namespace MonoGameDirectX11.Screens.Doom
         public float offsetZ = 0;
         public bool FloodFillComplete { get { return floodFiller.complete; } }
 
+        private List<int> blockingObjectIDs;
+
         public DoomMapHandler(string wadPath, string startLevelMarker, string endLevelMarker)
         {
             this.wadPath = wadPath;
             startMarker = startLevelMarker;
             endMarker = endLevelMarker;
+            blockingObjectIDs = new List<int>();
+
+            blockingObjectIDs.Add(55);
+            blockingObjectIDs.Add(54);
+            blockingObjectIDs.Add(56);
+            blockingObjectIDs.Add(57);
+            blockingObjectIDs.Add(46);
+            blockingObjectIDs.Add(47);
+            blockingObjectIDs.Add(48);
+            blockingObjectIDs.Add(32);
+            blockingObjectIDs.Add(33);
+
+
+            blockingObjectIDs.Add(31);
+            blockingObjectIDs.Add(35);
+            blockingObjectIDs.Add(45);
+            blockingObjectIDs.Add(43);
+            blockingObjectIDs.Add(42);
+            blockingObjectIDs.Add(41);
+            blockingObjectIDs.Add(37);
+            blockingObjectIDs.Add(36);
+            blockingObjectIDs.Add(25);
+
+            blockingObjectIDs.Add(26);
+            blockingObjectIDs.Add(27);
+            blockingObjectIDs.Add(28);
+            blockingObjectIDs.Add(29);
+            blockingObjectIDs.Add(30);
+            blockingObjectIDs.Add(86);
+            blockingObjectIDs.Add(85);
+            blockingObjectIDs.Add(70);
+            blockingObjectIDs.Add(2035);
+            blockingObjectIDs.Add(2028);
+
+
         }
 
         public void ParseWad()
@@ -94,6 +132,16 @@ namespace MonoGameDirectX11.Screens.Doom
                 }
             }
 
+            var exitLine = lineDefs.Entries.Find(x => x.LineType == 11);
+
+            DoomWad.Vertex startExit = vertices.Entries[exitLine.VertexStartIdx];
+            DoomWad.Vertex endExit = vertices.Entries[exitLine.VertexEndIdx];
+            var p1Exit = new Vector3((startExit.X) / scale + offsetX, 0,
+                                  (startExit.Y) / scale + offsetZ);
+            var p2Exit = new Vector3((endExit.X) / scale + offsetX, 0,
+                               (endExit.Y) / scale + offsetZ);
+
+            LevelEnd = (p1Exit + p2Exit) / 2;
 
 
             levelLines = new List<DoomLine>();
@@ -158,6 +206,29 @@ namespace MonoGameDirectX11.Screens.Doom
                     levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
 
             }
+
+
+            var blockingThings = things.Entries.Where(x => blockingObjectIDs.Contains(x.Type));
+
+            foreach(DoomWad.Thing t in blockingThings)
+            {
+                var pos = new Vector3((t.X) / scale + offsetX, 0,
+                               (t.Y) / scale + offsetZ);
+
+                float size = 0.2f;
+                Vector3 topLeft = pos + new Vector3(-size, 0, size);
+                Vector3 topRight = pos + new Vector3(size, 0, size);
+                Vector3 bottomRight = pos + new Vector3(size, 0, -size);
+                Vector3 bottomLeft = pos + new Vector3(-size, 0, -size);
+                levelLines.Add(new DoomLine() { start = topLeft, end = topRight, color = Color.Red });
+                levelLines.Add(new DoomLine() { start = topRight, end = bottomRight, color = Color.Red });
+                levelLines.Add(new DoomLine() { start = bottomRight, end = bottomLeft, color = Color.Red });
+                levelLines.Add(new DoomLine() { start = bottomLeft, end = topLeft, color = Color.Red });
+
+            }
+
+
+
         }
 
         internal void InitialiseFloodFill()
@@ -187,6 +258,11 @@ namespace MonoGameDirectX11.Screens.Doom
         internal NavigationNode FindNavPoint(Vector3 target)
         {
             return floodFiller.FindNearestPoint(target);
+        }
+
+        internal bool IntersectsLevel(Vector3 start, Vector3 end)
+        {
+            return floodFiller.partition.IntersectsALevelSegment(start, end);
         }
     }
 
@@ -324,8 +400,8 @@ namespace MonoGameDirectX11.Screens.Doom
 
                 //don't place points too close to a wall, then we can't navigate them
                 if (partition.DistanceFromClosestWall(adjacent.WorldPosition) < 0.2f)
-                   return;
-               
+                    return;
+
                 ConnectPoints(current, adjacent);
 
                 if (!adjacent.done)
@@ -364,7 +440,7 @@ namespace MonoGameDirectX11.Screens.Doom
             //eliminate them.
 
 
-            foreach(NavigationNode neighbour in node.Neighbours)
+            foreach (NavigationNode neighbour in node.Neighbours)
             {
 
             }
@@ -453,23 +529,20 @@ namespace MonoGameDirectX11.Screens.Doom
 
             foreach (Bucket b in buckets)
             {
-                if (b.PointIn(v))
+                List<IPartitionItem> nodesInBucket = b.itemsInBucket.FindAll(x => x.Type == "NavigationNode");
+
+                foreach (NavigationNode node in nodesInBucket)
                 {
-                    List<IPartitionItem> nodesInBucket = b.itemsInBucket.FindAll(x => x.Type == "NavigationNode");
+                    float d = (node.WorldPosition - v).Length();
 
-                    foreach (NavigationNode node in nodesInBucket)
+                    if (d < distance)
                     {
-                        float d = (node.WorldPosition - v).Length();
-
-                        if (d < distance)
-                        {
-                            closest = node;
-                            distance = d;
-                        }
+                        closest = node;
+                        distance = d;
                     }
-
                 }
             }
+            
             return closest;
         }
 

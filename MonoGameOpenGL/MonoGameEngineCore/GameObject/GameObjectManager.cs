@@ -233,9 +233,6 @@ namespace MonoGameEngineCore.GameObject
             return gameObjects.Values.ToList();
         }
 
-    
-
-
         public GameObject GetObject(string name)
         {
             foreach (GameObject o in gameObjects.Values)
