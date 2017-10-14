@@ -83,14 +83,14 @@ namespace MonoGameDirectX11.Screens
 
                 var doomWad = DoomWad.FromFile(filePath);
 
-                string desiredLevel = "E1M3";
+                string desiredLevel = "E1M1";
 
                 int levelMarker = doomWad.Index.FindIndex(x => x.Name.Contains(desiredLevel));
                 for (int i = levelMarker + 1; i < doomWad.NumIndexEntries; i++)
                 {
                     var currentIndex = doomWad.Index[i];
 
-                    if (currentIndex.Name.Contains("E1M4"))
+                    if (currentIndex.Name.Contains("E1M2"))
                         break;
 
                     if (currentIndex.Name == ("SECTORS\0"))

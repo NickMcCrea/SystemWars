@@ -196,7 +196,7 @@ namespace MonoGameDirectX11.Screens.Doom
         public bool complete = false;
         public BucketPartition partition;
 
-        float stepSize = 2f;
+        float stepSize = 1f;
         public List<NavigationNode> positions;
         private List<DoomLine> levelLineGeometry;
         public Queue<NavigationNode> positionsToSearch = new Queue<NavigationNode>();
@@ -321,6 +321,10 @@ namespace MonoGameDirectX11.Screens.Doom
             //add a link, add the new position, and add to the queue for future search
             if (!partition.IntersectsALevelSegment(current.WorldPosition, adjacent.WorldPosition))
             {
+
+                //don't place points too close to a wall, then we can't navigate them
+                if (partition.DistanceFromClosestWall(adjacent.WorldPosition) < 0.2f)
+                   return;
 
                 ConnectPoints(current, adjacent);
 
@@ -497,6 +501,22 @@ namespace MonoGameDirectX11.Screens.Doom
 
         }
 
+        internal float DistanceFromClosestWall(Vector3 p)
+        {
+            float closest = float.MaxValue;
+            foreach (Bucket b in buckets)
+            {
+                List<IPartitionItem> linesInBucket = b.itemsInBucket.FindAll(x => x.Type == "DoomLine");
+                foreach (DoomLine line in linesInBucket)
+                {
+                    float dist = MonoMathHelper.DistanceLineSegmentToPoint(line.start.ToVector2XZ(), line.end.ToVector2XZ(), p.ToVector2XZ());
+                    if (dist < closest)
+                        closest = dist;
+                }
+
+            }
+            return closest;
+        }
     }
 
     public struct DoomLine : IPartitionItem
