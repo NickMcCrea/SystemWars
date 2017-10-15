@@ -346,7 +346,7 @@ namespace NickLib.Pathfinding
                     continue;
                 OpenNodeInformation info = m_openNodeList[node];
                 int nodeScore = info.StartCost + (int)info.EstimatedDestinationCost;
-
+                nodeScore += (int)node.Cost;
                 if (nodeScore < currentBestScore)
                 {
                     bestNode = node;

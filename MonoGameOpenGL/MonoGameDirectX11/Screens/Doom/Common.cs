@@ -25,7 +25,9 @@ namespace MonoGameDirectX11.Screens.Doom
         public NavigationNode()
         {
             Neighbours = new List<NavigationNode>();
+            Cost = 0;
         }
+        public int Cost { get; set; }
 
         public bool Navigable { get; set; }
         public Vector3 WorldPosition { get; set; }
@@ -44,6 +46,8 @@ namespace MonoGameDirectX11.Screens.Doom
         DoomWad.Blockmap blockMap;
         DoomWad.Vertexes vertices;
         DoomWad.Sidedefs sideDefs;
+        public List<DoomLine> Doors;
+        public List<DoomLine> Unknowns;
         public DoomFloodFill floodFiller;
         public float scale = 50f;
         public float offsetX = 0;
@@ -54,6 +58,8 @@ namespace MonoGameDirectX11.Screens.Doom
 
         public DoomMapHandler(string wadPath, string startLevelMarker, string endLevelMarker)
         {
+            Doors = new List<DoomLine>();
+            Unknowns = new List<DoomLine>();
             this.wadPath = wadPath;
             startMarker = startLevelMarker;
             endMarker = endLevelMarker;
@@ -200,17 +206,37 @@ namespace MonoGameDirectX11.Screens.Doom
                                    (end.Y) / scale + offsetZ);
 
                 if (sideDefLeft == null)
-                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
+                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor, BlocksLineOfSight = true });
 
                 if (sideDefLeft != null && heightDiff > 24)
-                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor });
+                    levelLines.Add(new DoomLine() { start = p1, end = p2, color = lineColor, BlocksLineOfSight = false });
+
+                if (sideDefLeft != null && heightDiff <= 24)
+                {
+                    Console.WriteLine("Potential door");
+                    if (lineDef.LineType == 1)
+                    {
+                        Doors.Add(new DoomLine() { start = p1, end = p2, color = Color.OrangeRed, BlocksLineOfSight = true });
+                    }
+                    else
+                    {
+                        int value = lineDef.Flags;
+                        string binary = Convert.ToString(value, 2);
+                        int blockFlag = 1;
+                        var mystring = binary.Substring(binary.Length-1, 1);
+                        if (mystring == blockFlag.ToString())
+                            levelLines.Add(new DoomLine() { start = p1, end = p2, color = Color.Aquamarine, BlocksLineOfSight = true });
+
+                    }
+                }
+
 
             }
 
 
             var blockingThings = things.Entries.Where(x => blockingObjectIDs.Contains(x.Type));
 
-            foreach(DoomWad.Thing t in blockingThings)
+            foreach (DoomWad.Thing t in blockingThings)
             {
                 var pos = new Vector3((t.X) / scale + offsetX, 0,
                                (t.Y) / scale + offsetZ);
@@ -220,10 +246,10 @@ namespace MonoGameDirectX11.Screens.Doom
                 Vector3 topRight = pos + new Vector3(size, 0, size);
                 Vector3 bottomRight = pos + new Vector3(size, 0, -size);
                 Vector3 bottomLeft = pos + new Vector3(-size, 0, -size);
-                levelLines.Add(new DoomLine() { start = topLeft, end = topRight, color = Color.Red });
-                levelLines.Add(new DoomLine() { start = topRight, end = bottomRight, color = Color.Red });
-                levelLines.Add(new DoomLine() { start = bottomRight, end = bottomLeft, color = Color.Red });
-                levelLines.Add(new DoomLine() { start = bottomLeft, end = topLeft, color = Color.Red });
+                levelLines.Add(new DoomLine() { start = topLeft, end = topRight, color = Color.Red, BlocksLineOfSight = true });
+                levelLines.Add(new DoomLine() { start = topRight, end = bottomRight, color = Color.Red, BlocksLineOfSight = true });
+                levelLines.Add(new DoomLine() { start = bottomRight, end = bottomLeft, color = Color.Red, BlocksLineOfSight = true });
+                levelLines.Add(new DoomLine() { start = bottomLeft, end = topLeft, color = Color.Red, BlocksLineOfSight = true });
 
             }
 
@@ -260,9 +286,9 @@ namespace MonoGameDirectX11.Screens.Doom
             return floodFiller.FindNearestPoint(target);
         }
 
-        internal bool IntersectsLevel(Vector3 start, Vector3 end)
+        internal bool IntersectsLevel(Vector3 start, Vector3 end, bool onlyCareAboutVisibility = false)
         {
-            return floodFiller.partition.IntersectsALevelSegment(start, end);
+            return floodFiller.partition.IntersectsALevelSegment(start, end, onlyCareAboutVisibility);
         }
     }
 
@@ -395,7 +421,7 @@ namespace MonoGameDirectX11.Screens.Doom
 
             //if there's no intersection, , and there isn't a link already, 
             //add a link, add the new position, and add to the queue for future search
-            if (!partition.IntersectsALevelSegment(current.WorldPosition, adjacent.WorldPosition))
+            if (!partition.IntersectsALevelSegment(current.WorldPosition, adjacent.WorldPosition, false))
             {
 
                 //don't place points too close to a wall, then we can't navigate them
@@ -510,9 +536,6 @@ namespace MonoGameDirectX11.Screens.Doom
         {
             buckets = new List<Bucket>();
 
-
-
-
             for (float x = startX; x < (startX + (numofBucketsX * bucketSize)); x += bucketSize)
             {
                 for (float z = startZ; z < (startZ + (numofBucketsZ * bucketSize)); z += bucketSize)
@@ -542,7 +565,7 @@ namespace MonoGameDirectX11.Screens.Doom
                     }
                 }
             }
-            
+
             return closest;
         }
 
@@ -566,7 +589,7 @@ namespace MonoGameDirectX11.Screens.Doom
             }
         }
 
-        public bool IntersectsALevelSegment(Vector3 a, Vector3 b)
+        public bool IntersectsALevelSegment(Vector3 a, Vector3 b, bool onlyCareAboutVisibility)
         {
 
             foreach (Bucket buck in buckets)
@@ -576,12 +599,20 @@ namespace MonoGameDirectX11.Screens.Doom
                     List<IPartitionItem> linesInBucket = buck.itemsInBucket.FindAll(x => x.Type == "DoomLine");
                     foreach (DoomLine line in linesInBucket)
                     {
+                        //this is a test of LOS only, so ignore lines that prevent traverse but allow LOS
+                        //e.g. testing for LOS for a monster on a high pillar
+                        if (onlyCareAboutVisibility)
+                            if (!line.BlocksLineOfSight)
+                                continue;
+
                         if (MonoMathHelper.LineIntersection(line.start.ToVector2XZ(), line.end.ToVector2XZ(), a.ToVector2XZ(), b.ToVector2XZ()))
                             return true;
 
                     }
                 }
             }
+
+
 
             return false;
 
@@ -610,11 +641,14 @@ namespace MonoGameDirectX11.Screens.Doom
         public Vector3 start;
         public Vector3 end;
         public Color color;
+        public bool BlocksLineOfSight;
         public string Type { get { return "DoomLine"; } }
         public Vector3 MidPoint()
         {
             return (start + end) / 2;
         }
+
+
 
     }
 

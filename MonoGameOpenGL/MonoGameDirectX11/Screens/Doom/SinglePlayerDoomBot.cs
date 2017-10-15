@@ -21,7 +21,9 @@ namespace MonoGameDirectX11.Screens.Doom
         Dictionary<int, GameObject> worldObjects;
         List<string> pickUpTypes;
         string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
-
+        bool doNothing = false;
+        bool collectItems = true;
+        bool endOfLevelSeeking = false;
 
         public SinglePlayerDoomBot()
         {
@@ -184,6 +186,8 @@ namespace MonoGameDirectX11.Screens.Doom
 
             }
 
+          
+
             //remember to scale it appropriately. In doom, Z is up, but here it's Y, so swap those coords
             playerObj.Transform.SetPosition(new Vector3((float)xpos / mapHandler.scale, 0, (float)ypos / mapHandler.scale));
 
@@ -199,7 +203,6 @@ namespace MonoGameDirectX11.Screens.Doom
             base.OnRemove();
         }
 
-        bool endOfLevelSeeking = false;
         public override void Update(GameTime gameTime)
         {
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Escape))
@@ -212,15 +215,7 @@ namespace MonoGameDirectX11.Screens.Doom
 
             if (input.MouseLeftPress())
             {
-                Plane p = new Plane(Vector3.Down, 0);
-                Ray ray = input.GetProjectedMouseRay();
-                float? result;
-                ray.Intersects(ref p, out result);
-                if (result.HasValue)
-                {
-                    Vector3 mouseLeftPoint = ray.Position + ray.Direction * result.Value;
-                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(mouseLeftPoint);
-                }
+                //PathToMousePoint();
             }
 
 
@@ -229,20 +224,51 @@ namespace MonoGameDirectX11.Screens.Doom
             if (!mapHandler.FloodFillComplete)
                 mapHandler.FloodFillStep();
 
-            if (mapHandler.FloodFillComplete && playerObj.GetComponent<DoomMovementComponent>().path == null)
+            if (mapHandler.FloodFillComplete && playerObj.GetComponent<DoomMovementComponent>().path == null && !doNothing)
             {
                 playerObj.GetComponent<DoomMovementComponent>().PathToPoint(mapHandler.LevelEnd);
                 endOfLevelSeeking = true;
             }
 
             //check if we can see anything. If so, path to it.
+            if (!doNothing)
+            {
+                if (collectItems)
+                    PickUpObjects();
+            }
 
+
+            apiHandler.Update();
+
+
+            if (playerObj != null)
+            {
+
+                DebugText.Write(playerObj.Transform.AbsoluteTransform.Translation.ToString());
+            }
+
+
+            base.Update(gameTime);
+        }
+
+        private void PathToMousePoint()
+        {
+            Plane p = new Plane(Vector3.Down, 0);
+            Ray ray = input.GetProjectedMouseRay();
+            float? result;
+            ray.Intersects(ref p, out result);
+            if (result.HasValue)
+            {
+                Vector3 mouseLeftPoint = ray.Position + ray.Direction * result.Value;
+                playerObj.GetComponent<DoomMovementComponent>().PathToPoint(mouseLeftPoint);
+            }
+        }
+
+        private void PickUpObjects()
+        {
             List<GameObject> visiblePickups = new List<GameObject>();
             foreach (GameObject o in worldObjects.Values)
             {
-
-
-
 
                 if (mapHandler.IntersectsLevel(playerObj.Transform.AbsoluteTransform.Translation, o.Transform.AbsoluteTransform.Translation))
                     continue;
@@ -276,30 +302,13 @@ namespace MonoGameDirectX11.Screens.Doom
 
             if (closestPickup != null)
             {
-               
+
                 if (playerObj.GetComponent<DoomMovementComponent>().path == null || endOfLevelSeeking)
                 {
                     endOfLevelSeeking = false;
                     playerObj.GetComponent<DoomMovementComponent>().PathToPoint(closestPickup.Transform.AbsoluteTransform.Translation);
                 }
             }
-
-
-
-            apiHandler.Update();
-
-
-            if (playerObj != null)
-            {
-
-
-
-
-                DebugText.Write(playerObj.Transform.AbsoluteTransform.Translation.ToString());
-            }
-
-
-            base.Update(gameTime);
         }
 
         private void UpdateCamera()
@@ -331,6 +340,14 @@ namespace MonoGameDirectX11.Screens.Doom
 
             }
 
+            foreach (DoomLine d in mapHandler.Doors)
+            {
+                DebugShapeRenderer.AddLine(d.start, d.end, d.color);
+            }
+            foreach (DoomLine d in mapHandler.Unknowns)
+            {
+                DebugShapeRenderer.AddLine(d.start, d.end, d.color);
+            }
             if (!mapHandler.FloodFillComplete)
                 RenderFloodFill();
 
@@ -385,13 +402,5 @@ namespace MonoGameDirectX11.Screens.Doom
 
 
 
-    //move to
-    //1. Find nav points
-    //2. Obtain path between them
-    //3. Take first point on the path
-    //4. turn towards it
-    //5. move forward
-    //6. measure distnance to node
-    //7. If < threshold, transition to new distance.
 
 }

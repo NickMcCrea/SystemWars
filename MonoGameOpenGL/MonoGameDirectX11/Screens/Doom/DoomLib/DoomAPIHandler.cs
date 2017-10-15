@@ -236,7 +236,7 @@ namespace MonoGameEngineCore.DoomLib
             else
             {
                 //get the timer
-                var coolDownThing  = coolDownTimers[type];
+                var coolDownThing = coolDownTimers[type];
 
                 if ((DateTime.Now - coolDownThing.LastExecuted).TotalMilliseconds > coolDownThing.CoolDown)
                 {
@@ -305,6 +305,7 @@ namespace MonoGameEngineCore.DoomLib
         DateTime lastTurn = DateTime.Now;
         float movementFrequency = 500;
         float turnFrquency = 100;
+        float minDistanceToNode = 0.4f;
 
         public DoomMovementComponent(DoomMapHandler mapHandler, DoomAPIHandler apiHandler)
         {
@@ -352,7 +353,7 @@ namespace MonoGameEngineCore.DoomLib
 
 
                 Vector3 toTarget = currentNode.WorldPosition - ParentObject.Transform.AbsoluteTransform.Translation;
-                if (toTarget.Length() < 0.8f)
+                if (toTarget.Length() < minDistanceToNode)
                 {
                     path.RemoveAt(0);
                     return;
@@ -429,7 +430,7 @@ namespace MonoGameEngineCore.DoomLib
 
             Vector3 pos = ParentObject.Transform.AbsoluteTransform.Translation;
             pos.Y = 0;
-         
+
             Vector3 toNode = currentNode.WorldPosition - pos;
 
             Vector3 perpendicularVec = Vector3.Cross(toNode, Vector3.Up);
@@ -459,7 +460,7 @@ namespace MonoGameEngineCore.DoomLib
             }
             else
                 return false;
-          
+
         }
 
         private void FeelForward()
@@ -468,8 +469,8 @@ namespace MonoGameEngineCore.DoomLib
 
             Vector3 pos = ParentObject.Transform.AbsoluteTransform.Translation;
             Vector3 forwardVec = ParentObject.Transform.AbsoluteTransform.Translation + ParentObject.Transform.AbsoluteTransform.Forward * playerDoomComponent.HitVectorSize;
-            Vector3 rightVec = MonoMathHelper.RotateAroundPoint(forwardVec, ParentObject.Transform.AbsoluteTransform.Translation, Vector3.Up, MathHelper.PiOver4/2);
-            Vector3 leftVec = MonoMathHelper.RotateAroundPoint(forwardVec, ParentObject.Transform.AbsoluteTransform.Translation, Vector3.Up, -MathHelper.PiOver4/2);
+            Vector3 rightVec = MonoMathHelper.RotateAroundPoint(forwardVec, ParentObject.Transform.AbsoluteTransform.Translation, Vector3.Up, MathHelper.PiOver4 / 2);
+            Vector3 leftVec = MonoMathHelper.RotateAroundPoint(forwardVec, ParentObject.Transform.AbsoluteTransform.Translation, Vector3.Up, -MathHelper.PiOver4 / 2);
             pos.Y = 0;
             forwardVec.Y = 0;
             rightVec.Y = 0;
@@ -523,7 +524,7 @@ namespace MonoGameEngineCore.DoomLib
             {
                 NavigationNode nodeToExamine = path[i];
 
-                
+
                 bool centerClear = false;
                 bool leftClear = false;
                 bool rightClear = false;
@@ -535,7 +536,7 @@ namespace MonoGameEngineCore.DoomLib
                 //width
                 perpendicularVec *= 0.01f;
 
-              
+
                 //if we pass all 3 of these tests, this means we have clear LOS 
                 //to this node, wide enough to squeeze through. So we can skip prior nodes.
                 if (!mapHandler.IntersectsLevel(pos, nodeToExamine.WorldPosition))
@@ -668,8 +669,9 @@ namespace MonoGameEngineCore.DoomLib
         Dictionary<int, GameObject.GameObject> worldObjects;
         float turnFrquency = 100;
         float shootFrequency = 500;
-        float minimumCombatDistance = 10;
+        float minimumCombatDistance = 14;
         bool turning;
+        int shotsFired;
 
         public DoomCombatComponent(DoomMapHandler mapHandler, DoomAPIHandler apiHandler, Dictionary<int, GameObject.GameObject> worldObjects)
         {
@@ -717,10 +719,16 @@ namespace MonoGameEngineCore.DoomLib
 
             //check LOS to monsters. If 
             if (worldObjects == null)
+            {
+                shotsFired = 0;
+                return;
+            }
+            if (worldObjects.Count == 0)
+            {
+                shotsFired = 0;
                 return;
 
-            if (worldObjects.Count == 0)
-                return;
+            }
 
 
 
@@ -737,15 +745,33 @@ namespace MonoGameEngineCore.DoomLib
             foreach (GameObject.GameObject monster in monsters)
             {
 
-                if (!mapHandler.IntersectsLevel(ParentObject.Transform.AbsoluteTransform.Translation, monster.Transform.AbsoluteTransform.Translation))
+                if (!mapHandler.IntersectsLevel(ParentObject.Transform.AbsoluteTransform.Translation, monster.Transform.AbsoluteTransform.Translation, true))
                 {
                     //we can see it. 
                     visibleMonsters.Add(monster);
+
+                    foreach (DoomLine door in mapHandler.Doors)
+                    {
+                        if (MonoMathHelper.LineIntersection(ParentObject.Transform.AbsoluteTransform.Translation.ToVector2XZ(),
+                            monster.Transform.AbsoluteTransform.Translation.ToVector2XZ(),
+                            door.start.ToVector2XZ(), door.end.ToVector2XZ()))
+                        {
+
+                            //there's a door between us and the monster. remove it
+                            if (visibleMonsters.Contains(monster))
+                                visibleMonsters.Remove(monster);
+                        }
+                    }
+
+
                 }
             }
 
             if (visibleMonsters.Count == 0)
+            {
+                shotsFired = 0;
                 return;
+            }
 
 
             //when in combat, get much more frequent updates on enemy movements.
@@ -766,11 +792,16 @@ namespace MonoGameEngineCore.DoomLib
             }
 
             if (closestDist > minimumCombatDistance)
+            {
+                shotsFired = 0;
                 return;
+            }
 
             //disable movement.
             ParentObject.GetComponent<DoomMovementComponent>().Enabled = false;
 
+            DebugShapeRenderer.AddLine(ParentObject.Transform.AbsoluteTransform.Translation,
+                target.Transform.AbsoluteTransform.Translation, Color.OrangeRed);
 
 
             Vector3 targetPosition = target.Transform.AbsoluteTransform.Translation;
@@ -824,6 +855,19 @@ namespace MonoGameEngineCore.DoomLib
 
                 Shoot();
 
+                if(shotsFired > 8)
+                {
+                    //we keep missing. shift the aim a bit.
+                    bool left = RandomHelper.CoinToss();
+                    if (left)
+                        TurnLeft(1);
+                    else
+                    {
+                        TurnRight(1);
+                    }
+                    shotsFired = 0;
+
+                }
             }
 
 
@@ -833,10 +877,11 @@ namespace MonoGameEngineCore.DoomLib
         {
             if ((DateTime.Now - lastShoot).TotalMilliseconds < shootFrequency)
                 return;
-
+            shotsFired++;
             lastShoot = DateTime.Now;
             apiHandler.EnqueueRequest(false, shootRequest, x =>
             {
+            
 
             });
         }
