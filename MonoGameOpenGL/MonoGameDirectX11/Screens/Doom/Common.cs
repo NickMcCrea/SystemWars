@@ -47,7 +47,8 @@ namespace MonoGameDirectX11.Screens.Doom
         DoomWad.Vertexes vertices;
         DoomWad.Sidedefs sideDefs;
         public List<DoomLine> Doors;
-        public List<DoomLine> Unknowns;
+        public List<DoomLine> InternalLines;
+        public List<DoomLine> HazardLines;
         public DoomFloodFill floodFiller;
         public float scale = 50f;
         public float offsetX = 0;
@@ -59,7 +60,8 @@ namespace MonoGameDirectX11.Screens.Doom
         public DoomMapHandler(string wadPath, string startLevelMarker, string endLevelMarker)
         {
             Doors = new List<DoomLine>();
-            Unknowns = new List<DoomLine>();
+            InternalLines = new List<DoomLine>();
+            HazardLines = new List<DoomLine>();
             this.wadPath = wadPath;
             startMarker = startLevelMarker;
             endMarker = endLevelMarker;
@@ -223,10 +225,23 @@ namespace MonoGameDirectX11.Screens.Doom
                         int value = lineDef.Flags;
                         string binary = Convert.ToString(value, 2);
                         int blockFlag = 1;
-                        var mystring = binary.Substring(binary.Length-1, 1);
+                        var mystring = binary.Substring(binary.Length - 1, 1);
                         if (mystring == blockFlag.ToString())
                             levelLines.Add(new DoomLine() { start = p1, end = p2, color = Color.Aquamarine, BlocksLineOfSight = true });
+                        else
+                        {
+                            //find out if the line here crosses into a floor damage sector
+                            if (sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageEnd ||
+                                sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageHellslime ||
+                                sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageLavaHefty ||
+                                sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageLavaWimpy ||
+                                sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageNukage ||
+                                sector.SpecialType == DoomWad.Sector.SpecialSector.DDamageSuperHellslime)
+                                HazardLines.Add(new DoomLine() { start = p1, end = p2, color = Color.Green, BlocksLineOfSight = false });
+                            else
+                                InternalLines.Add(new DoomLine() { start = p1, end = p2, color = Color.White, BlocksLineOfSight = false });
 
+                        }
                     }
                 }
 
@@ -262,7 +277,7 @@ namespace MonoGameDirectX11.Screens.Doom
 
             var playerStartThing = things.Entries.Find(x => x.Type == 1);
             Vector3 pos = ConvertPosition(playerStartThing.X, playerStartThing.Y);
-            floodFiller = new DoomFloodFill(levelLines, pos, vertices, scale, offsetX, offsetZ);
+            floodFiller = new DoomFloodFill(this, levelLines, pos, vertices, scale, offsetX, offsetZ);
 
         }
 
@@ -304,11 +319,13 @@ namespace MonoGameDirectX11.Screens.Doom
         public Queue<NavigationNode> positionsToSearch = new Queue<NavigationNode>();
         public NavigationNode next;
         public List<NavigationNode> justAdded = new List<NavigationNode>();
+        private DoomMapHandler mapHandler;
 
-        public DoomFloodFill(List<DoomLine> levelLines, Vector3 startPoint, DoomWad.Vertexes vertexes, float scale, float xOffset, float zOffset)
+        public DoomFloodFill(DoomMapHandler mapHandler, List<DoomLine> levelLines, Vector3 startPoint, DoomWad.Vertexes vertexes, float scale, float xOffset, float zOffset)
         {
             positions = new List<NavigationNode>();
             levelLineGeometry = levelLines;
+            this.mapHandler = mapHandler;
 
 
             float startX = vertexes.Entries.Min(x => x.X - 10) / scale + xOffset;
@@ -424,6 +441,20 @@ namespace MonoGameDirectX11.Screens.Doom
             if (!partition.IntersectsALevelSegment(current.WorldPosition, adjacent.WorldPosition, false))
             {
 
+                //check if we cross a hazard line
+                if (CrossesHazardLine(current, adjacent))
+                {
+                    return;
+                    if (current.Cost == 0)
+                        adjacent.Cost = 100;
+                    if (current.Cost == 100)
+                        adjacent.Cost = 0;
+                }
+                else
+                {
+                    adjacent.Cost = current.Cost;
+                }
+
                 //don't place points too close to a wall, then we can't navigate them
                 if (partition.DistanceFromClosestWall(adjacent.WorldPosition) < 0.2f)
                     return;
@@ -452,6 +483,23 @@ namespace MonoGameDirectX11.Screens.Doom
 
 
 
+        }
+
+        private bool CrossesHazardLine(NavigationNode current, NavigationNode adjacent)
+        {
+            if (mapHandler == null)
+                return false;
+            
+            
+            foreach(DoomLine hazardLine in mapHandler.HazardLines)
+            {
+                if(MonoMathHelper.LineIntersection(current.WorldPosition.ToVector2XZ(), adjacent.WorldPosition.ToVector2XZ(),
+                    hazardLine.start.ToVector2XZ(), hazardLine.end.ToVector2XZ()))
+                {
+                    return true;
+                }
+            }
+            return false; 
         }
 
         internal NavigationNode FindNearestPoint(Vector3 mouseLeftPoint)

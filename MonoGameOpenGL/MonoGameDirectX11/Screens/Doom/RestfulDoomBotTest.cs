@@ -208,7 +208,7 @@ namespace MonoGameDirectX11.Screens
             Vector3 pos = ConvertPosition(playerStartThing.X, playerStartThing.Y);
 
 
-            floodFiller = new DoomFloodFill(levelLines, pos, vertices, scale, offsetX, offsetZ);
+            floodFiller = new DoomFloodFill(null, levelLines, pos, vertices, scale, offsetX, offsetZ);
 
         }
 

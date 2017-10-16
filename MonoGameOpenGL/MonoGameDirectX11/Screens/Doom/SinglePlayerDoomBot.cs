@@ -186,7 +186,7 @@ namespace MonoGameDirectX11.Screens.Doom
 
             }
 
-          
+
 
             //remember to scale it appropriately. In doom, Z is up, but here it's Y, so swap those coords
             playerObj.Transform.SetPosition(new Vector3((float)xpos / mapHandler.scale, 0, (float)ypos / mapHandler.scale));
@@ -264,6 +264,7 @@ namespace MonoGameDirectX11.Screens.Doom
             }
         }
 
+        GameObject currentClosestPickup = null;
         private void PickUpObjects()
         {
             List<GameObject> visiblePickups = new List<GameObject>();
@@ -289,24 +290,40 @@ namespace MonoGameDirectX11.Screens.Doom
             }
 
             float closest = float.MaxValue;
-            GameObject closestPickup = null;
+            GameObject newClosestPickup = null;
             foreach (GameObject o in visiblePickups)
             {
                 float dist = (playerObj.Transform.AbsoluteTransform.Translation - o.Transform.AbsoluteTransform.Translation).Length();
                 if (dist < closest)
                 {
-                    closestPickup = o;
+                    newClosestPickup = o;
                     closest = dist;
                 }
+
+
             }
 
-            if (closestPickup != null)
+            //if we've collected the item, but the path is still there, drop the path
+            if (!visiblePickups.Contains(currentClosestPickup) && !endOfLevelSeeking)
+            {
+                if (playerObj != null)
+                    playerObj.GetComponent<DoomMovementComponent>().path = null;
+            }
+
+
+            if (newClosestPickup != null)
             {
 
                 if (playerObj.GetComponent<DoomMovementComponent>().path == null || endOfLevelSeeking)
                 {
                     endOfLevelSeeking = false;
-                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(closestPickup.Transform.AbsoluteTransform.Translation);
+                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(newClosestPickup.Transform.AbsoluteTransform.Translation);
+                    currentClosestPickup = newClosestPickup;
+                }
+                else if (newClosestPickup != currentClosestPickup)
+                {
+                    playerObj.GetComponent<DoomMovementComponent>().PathToPoint(newClosestPickup.Transform.AbsoluteTransform.Translation);
+                    currentClosestPickup = newClosestPickup;
                 }
             }
         }
@@ -339,12 +356,15 @@ namespace MonoGameDirectX11.Screens.Doom
                 DebugShapeRenderer.AddLine(l.start, l.end, l.color);
 
             }
-
+            foreach (DoomLine d in mapHandler.HazardLines)
+            {
+                DebugShapeRenderer.AddLine(d.start, d.end, d.color);
+            }
             foreach (DoomLine d in mapHandler.Doors)
             {
                 DebugShapeRenderer.AddLine(d.start, d.end, d.color);
             }
-            foreach (DoomLine d in mapHandler.Unknowns)
+            foreach (DoomLine d in mapHandler.InternalLines)
             {
                 DebugShapeRenderer.AddLine(d.start, d.end, d.color);
             }
@@ -385,8 +405,10 @@ namespace MonoGameDirectX11.Screens.Doom
                 if (mapHandler.floodFiller.justAdded.Contains(vec))
                     colorOfSphere = Color.Red;
 
-                if (!vec.done)
+                if (vec.Cost == 0)
                     DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.WorldPosition, 0.2f), colorOfSphere);
+                else
+                    DebugShapeRenderer.AddBoundingSphere(new BoundingSphere(vec.WorldPosition, 0.2f), Color.Red);
 
                 foreach (NavigationNode neighbour in vec.Neighbours)
                 {

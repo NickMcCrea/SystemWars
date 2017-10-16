@@ -303,9 +303,9 @@ namespace MonoGameEngineCore.DoomLib
         public event EventHandler<EventArgs> UpdateOrderChanged;
         DateTime lastMovement = DateTime.Now;
         DateTime lastTurn = DateTime.Now;
-        float movementFrequency = 500;
+        float movementFrequency = 200;
         float turnFrquency = 100;
-        float minDistanceToNode = 0.4f;
+        float minDistanceToNode = 0.5f;
 
         public DoomMovementComponent(DoomMapHandler mapHandler, DoomAPIHandler apiHandler)
         {
@@ -390,7 +390,7 @@ namespace MonoGameEngineCore.DoomLib
                 {
                     if (!turning)
                     {
-                        TurnLeft(2);
+                        TurnLeft(3);
                     }
                 }
                 if (dot < -0.1f)
@@ -398,7 +398,7 @@ namespace MonoGameEngineCore.DoomLib
                     if (!turning)
                     {
 
-                        TurnRight(2);
+                        TurnRight(3);
                     }
                 }
 
@@ -520,7 +520,7 @@ namespace MonoGameEngineCore.DoomLib
             Vector3 pos = ParentObject.Transform.AbsoluteTransform.Translation;
             pos.Y = 0;
             int indexToRemove = -1;
-            for (int i = 1; i < path.Count - 1; i++)
+            for (int i = 1; i < path.Count; i++)
             {
                 NavigationNode nodeToExamine = path[i];
 
@@ -669,7 +669,7 @@ namespace MonoGameEngineCore.DoomLib
         Dictionary<int, GameObject.GameObject> worldObjects;
         float turnFrquency = 100;
         float shootFrequency = 500;
-        float minimumCombatDistance = 14;
+        float minimumCombatDistance = 10;
         bool turning;
         int shotsFired;
 
@@ -855,7 +855,7 @@ namespace MonoGameEngineCore.DoomLib
 
                 Shoot();
 
-                if(shotsFired > 8)
+                if (shotsFired > 8)
                 {
                     //we keep missing. shift the aim a bit.
                     bool left = RandomHelper.CoinToss();
@@ -881,7 +881,7 @@ namespace MonoGameEngineCore.DoomLib
             lastShoot = DateTime.Now;
             apiHandler.EnqueueRequest(false, shootRequest, x =>
             {
-            
+
 
             });
         }
