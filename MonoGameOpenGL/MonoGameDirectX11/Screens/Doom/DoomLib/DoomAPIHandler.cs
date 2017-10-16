@@ -304,8 +304,9 @@ namespace MonoGameEngineCore.DoomLib
         DateTime lastMovement = DateTime.Now;
         DateTime lastTurn = DateTime.Now;
         float movementFrequency = 200;
-        float turnFrquency = 100;
+        float turnFrquency = 80;
         float minDistanceToNode = 0.5f;
+        float movementRangeThreshold = 0.3f;
 
         public DoomMovementComponent(DoomMapHandler mapHandler, DoomAPIHandler apiHandler)
         {
@@ -390,7 +391,7 @@ namespace MonoGameEngineCore.DoomLib
                 {
                     if (!turning)
                     {
-                        TurnLeft(3);
+                        TurnLeft(2);
                     }
                 }
                 if (dot < -0.1f)
@@ -398,11 +399,11 @@ namespace MonoGameEngineCore.DoomLib
                     if (!turning)
                     {
 
-                        TurnRight(3);
+                        TurnRight(2);
                     }
                 }
 
-                if (dot > -0.1f && dot < 0.1f)
+                if (dot > -movementRangeThreshold && dot < movementRangeThreshold)
                 {
                     //the node we need is right behind us. Instigate a turn.
                     if (MonoMathHelper.AlmostEquals(180d, angle, 10))
@@ -667,7 +668,7 @@ namespace MonoGameEngineCore.DoomLib
         DateTime lastTurn = DateTime.Now;
         DateTime lastShoot = DateTime.Now;
         Dictionary<int, GameObject.GameObject> worldObjects;
-        float turnFrquency = 100;
+        float turnFrquency = 80;
         float shootFrequency = 500;
         float minimumCombatDistance = 10;
         bool turning;
