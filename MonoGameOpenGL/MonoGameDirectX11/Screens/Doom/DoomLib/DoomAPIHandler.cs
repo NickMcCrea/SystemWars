@@ -307,7 +307,7 @@ namespace MonoGameEngineCore.DoomLib
         float turnFrquency = 80;
         float minDistanceToNode = 0.5f;
         float movementRangeThreshold = 0.3f;
-
+        int movementAttemptsWithNoPositionChange;
         public DoomMovementComponent(DoomMapHandler mapHandler, DoomAPIHandler apiHandler)
         {
             this.mapHandler = mapHandler;
@@ -332,6 +332,7 @@ namespace MonoGameEngineCore.DoomLib
 
         bool turning = false;
         bool moving = false;
+        Vector3 lastKnownPositionBeforeMovementCommand;
         public void Update(GameTime gameTime)
         {
             if (path == null)
@@ -414,7 +415,17 @@ namespace MonoGameEngineCore.DoomLib
 
                     if (!moving)
                     {
-                        MoveForward(4);
+                        //we're likely stuck. Try moving back
+                        if (movementAttemptsWithNoPositionChange > 50)
+                        {
+                            MoveBackward(4);
+                            movementAttemptsWithNoPositionChange = 0;
+                        }
+                        else
+                        {
+                            MoveForward(4);
+                        }
+                       
                     }
                 }
 
@@ -537,6 +548,10 @@ namespace MonoGameEngineCore.DoomLib
                 //width
                 perpendicularVec *= 0.01f;
 
+                //don't optimize route when we cross a hazard line boundary
+                if (mapHandler.IntersectsHazardLine(pos, nodeToExamine.WorldPosition))
+                    continue;
+
 
                 //if we pass all 3 of these tests, this means we have clear LOS 
                 //to this node, wide enough to squeeze through. So we can skip prior nodes.
@@ -587,7 +602,31 @@ namespace MonoGameEngineCore.DoomLib
             {
                 moving = false;
             });
+
+            if (MonoMathHelper.DistanceBetween(lastKnownPositionBeforeMovementCommand, ParentObject.Transform.AbsoluteTransform.Translation) < 0.2f)
+                movementAttemptsWithNoPositionChange++;
+
+            lastKnownPositionBeforeMovementCommand = ParentObject.Transform.AbsoluteTransform.Translation;
         }
+
+        public void MoveBackward(float amountToMove)
+        {
+            if ((DateTime.Now - lastMovement).TotalMilliseconds < movementFrequency)
+                return;
+
+            lastMovement = DateTime.Now;
+
+            var back = new RestRequest("player/actions", Method.POST);
+            back.RequestFormat = DataFormat.Json;
+            back.AddBody(new PlayerAction() { type = "backward", amount = amountToMove });
+            apiHandler.EnqueueRequest(false, back, x =>
+            {
+                moving = false;
+            });
+
+           
+        }
+
 
         public void TurnRight(float amountToTurn)
         {
@@ -845,7 +884,7 @@ namespace MonoGameEngineCore.DoomLib
 
             }
 
-            if (dot > -0.1f && dot < 0.1f)
+            if (dot > -0.3f && dot < 0.3f)
             {
                 //the node we need is right behind us. Instigate a turn.
                 if (MonoMathHelper.AlmostEquals(180d, angle, 10))

@@ -305,6 +305,16 @@ namespace MonoGameDirectX11.Screens.Doom
         {
             return floodFiller.partition.IntersectsALevelSegment(start, end, onlyCareAboutVisibility);
         }
+
+        internal bool IntersectsHazardLine(Vector3 start, Vector3 end)
+        {
+            foreach(DoomLine line in HazardLines)
+            {
+                if (MonoMathHelper.LineIntersection(start.ToVector2XZ(), end.ToVector2XZ(), line.start.ToVector2XZ(), line.end.ToVector2XZ()))
+                    return true;
+            }
+            return false;
+        }
     }
 
     public class DoomFloodFill

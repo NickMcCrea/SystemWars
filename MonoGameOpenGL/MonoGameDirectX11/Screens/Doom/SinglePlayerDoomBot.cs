@@ -24,7 +24,7 @@ namespace MonoGameDirectX11.Screens.Doom
         bool doNothing = false;
         bool collectItems = true;
         bool endOfLevelSeeking = false;
-
+        int playerId = -1;
         public SinglePlayerDoomBot()
         {
 
@@ -61,7 +61,10 @@ namespace MonoGameDirectX11.Screens.Doom
             apiHandler.CreateRegularRequest(4000, new RestRequest("world/objects"), x =>
             {
                 foreach (GameObject worldObject in worldObjects.Values)
+                {
                     SystemCore.GameObjectManager.RemoveObject(worldObject);
+
+                }
 
                 worldObjects.Clear();
 
@@ -74,12 +77,16 @@ namespace MonoGameDirectX11.Screens.Doom
 
                 foreach (object o in objectList)
                 {
+
                     double id, angle, health, distance, xpos, ypos;
                     string type;
 
                     ParseObjectData(o, out id, out type, out angle, out health, out distance, out xpos, out ypos);
 
                     if (id == 0)
+                        continue;
+
+                    if (id == playerId)
                         continue;
 
                     GameObject worldObject;
@@ -174,6 +181,7 @@ namespace MonoGameDirectX11.Screens.Doom
                 playerObj.Transform.Scale = 0.5f;
                 var id = (double)jsonValues["id"];
                 playerObj.ID = (int)id;
+                playerId = playerObj.ID;
                 DoomComponent component = new DoomComponent();
                 component.DoomType = "Player";
                 component.HitVectorSize = 0.5f;
@@ -368,8 +376,8 @@ namespace MonoGameDirectX11.Screens.Doom
             {
                 DebugShapeRenderer.AddLine(d.start, d.end, d.color);
             }
-            if (!mapHandler.FloodFillComplete)
-                RenderFloodFill();
+           // if (!mapHandler.FloodFillComplete)
+           //     RenderFloodFill();
 
             if (playerObj != null)
             {
