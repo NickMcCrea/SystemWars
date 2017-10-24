@@ -254,6 +254,12 @@ namespace MonoGameEngineCore.DoomLib
         public float amount { get; set; }
     }
 
+     public class PlayerTurnAction
+    {
+        public string type { get; set; }
+        public float target_angle { get; set; }
+    }
+
     public class DoomComponent : IComponent
     {
 
@@ -627,7 +633,6 @@ namespace MonoGameEngineCore.DoomLib
            
         }
 
-
         public void TurnRight(float amountToTurn)
         {
             if ((DateTime.Now - lastTurn).TotalMilliseconds < turnFrquency)
@@ -657,6 +662,40 @@ namespace MonoGameEngineCore.DoomLib
             left.RequestFormat = DataFormat.Json;
             left.AddBody(new PlayerAction() { type = "turn-left", amount = amountToTurn });
             apiHandler.EnqueueRequest(false, left, x =>
+            {
+                turning = false;
+            });
+        }
+
+        public void TurnRightToHeading(float heading)
+        {
+            if ((DateTime.Now - lastTurn).TotalMilliseconds < turnFrquency)
+                return;
+
+            turning = true;
+            lastTurn = DateTime.Now;
+
+            var right = new RestRequest("player/turn", Method.POST);
+            right.RequestFormat = DataFormat.Json;
+            right.AddBody(new PlayerTurnAction() { type = "right", target_angle = heading });
+            apiHandler.EnqueueRequest(false, right, x =>
+            {
+                turning = false;
+            });
+        }
+
+        public void TurnLeftToHeading(float heading)
+        {
+            if ((DateTime.Now - lastTurn).TotalMilliseconds < turnFrquency)
+                return;
+
+            turning = true;
+            lastTurn = DateTime.Now;
+
+            var right = new RestRequest("player/turn", Method.POST);
+            right.RequestFormat = DataFormat.Json;
+            right.AddBody(new PlayerTurnAction() { type = "left", target_angle = heading });
+            apiHandler.EnqueueRequest(false, right, x =>
             {
                 turning = false;
             });
@@ -709,7 +748,7 @@ namespace MonoGameEngineCore.DoomLib
         Dictionary<int, GameObject.GameObject> worldObjects;
         float turnFrquency = 80;
         float shootFrequency = 500;
-        float minimumCombatDistance = 10;
+        float minimumCombatDistance = 20;
         bool turning;
         int shotsFired;
 
@@ -955,6 +994,40 @@ namespace MonoGameEngineCore.DoomLib
             left.RequestFormat = DataFormat.Json;
             left.AddBody(new PlayerAction() { type = "turn-left", amount = amountToTurn });
             apiHandler.EnqueueRequest(false, left, x =>
+            {
+                turning = false;
+            });
+        }
+
+        public void TurnRightToHeading(float heading)
+        {
+            if ((DateTime.Now - lastTurn).TotalMilliseconds < turnFrquency)
+                return;
+
+            turning = true;
+            lastTurn = DateTime.Now;
+
+            var right = new RestRequest("player/turn", Method.POST);
+            right.RequestFormat = DataFormat.Json;
+            right.AddBody(new PlayerTurnAction() { type = "right", target_angle = heading });
+            apiHandler.EnqueueRequest(false, right, x =>
+            {
+                turning = false;
+            });
+        }
+
+        public void TurnLeftToHeading(float heading)
+        {
+            if ((DateTime.Now - lastTurn).TotalMilliseconds < turnFrquency)
+                return;
+
+            turning = true;
+            lastTurn = DateTime.Now;
+
+            var right = new RestRequest("player/turn", Method.POST);
+            right.RequestFormat = DataFormat.Json;
+            right.AddBody(new PlayerTurnAction() { type = "left", target_angle = heading });
+            apiHandler.EnqueueRequest(false, right, x =>
             {
                 turning = false;
             });
