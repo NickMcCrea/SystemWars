@@ -254,7 +254,7 @@ namespace MonoGameEngineCore.DoomLib
         public float amount { get; set; }
     }
 
-     public class PlayerTurnAction
+    public class PlayerTurnAction
     {
         public string type { get; set; }
         public float target_angle { get; set; }
@@ -327,7 +327,7 @@ namespace MonoGameEngineCore.DoomLib
             var use = new RestRequest("player/actions", Method.POST);
             use.RequestFormat = DataFormat.Json;
             use.AddBody(new PlayerAction() { type = "use", amount = 1 });
-            apiHandler.CreateRegularRequest(10000, use, x => { });
+            apiHandler.CreateRegularRequest(5000, use, x => { });
 
         }
 
@@ -354,7 +354,7 @@ namespace MonoGameEngineCore.DoomLib
 
                 //check we can still see our node. Sometimes we can't, after 
                 //applying an unexpectedly large move.
-                if (!CanStillPathToNode(currentNode))
+                if (!CanStillPathToNode(currentNode) && currentNode.WorldPosition != mapHandler.LevelEnd)
                 {
                     PathToPoint(path[path.Count - 1].WorldPosition);
                 }
@@ -388,9 +388,12 @@ namespace MonoGameEngineCore.DoomLib
                 float spinAmount = angle * (105f / 360);
 
 
-                DebugText.Write(dot.ToString());
-                DebugText.Write(angle.ToString());
-                DebugText.Write(spinAmount.ToString());
+                float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector((currentNode.WorldPosition - ParentObject.Transform.AbsoluteTransform.Translation).ToVector2XZ()));
+                heading = (heading + 360) % 360;
+                //DebugText.Write(dot.ToString());
+                // DebugText.Write(angle.ToString());
+                // DebugText.Write(spinAmount.ToString());
+                DebugText.Write("Heading: " + heading.ToString());
 
 
 
@@ -398,7 +401,8 @@ namespace MonoGameEngineCore.DoomLib
                 {
                     if (!turning)
                     {
-                        TurnLeft(2);
+                        //TurnLeft(2);
+                        TurnLeftToHeading(heading);
                     }
                 }
                 if (dot < -0.1f)
@@ -406,7 +410,8 @@ namespace MonoGameEngineCore.DoomLib
                     if (!turning)
                     {
 
-                        TurnRight(2);
+                        //TurnRight(2);
+                        TurnRightToHeading(heading);
                     }
                 }
 
@@ -431,7 +436,7 @@ namespace MonoGameEngineCore.DoomLib
                         {
                             MoveForward(4);
                         }
-                       
+
                     }
                 }
 
@@ -630,7 +635,7 @@ namespace MonoGameEngineCore.DoomLib
                 moving = false;
             });
 
-           
+
         }
 
         public void TurnRight(float amountToTurn)
@@ -748,7 +753,7 @@ namespace MonoGameEngineCore.DoomLib
         Dictionary<int, GameObject.GameObject> worldObjects;
         float turnFrquency = 80;
         float shootFrequency = 500;
-        float minimumCombatDistance = 20;
+        float minimumCombatDistance = 15;
         bool turning;
         int shotsFired;
 
@@ -905,20 +910,24 @@ namespace MonoGameEngineCore.DoomLib
             //1 degree = 105 / 360
             var angle = MathHelper.ToDegrees(MonoMathHelper.GetAngleBetweenVectors(toTarget, forwardVec));
 
+            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector((toTarget).ToVector2XZ()));
+            heading = (heading + 360) % 360;
 
-            if (dot > 0.1f)
+            if (dot > 0.05f)
             {
                 if (!turning)
                 {
-                    TurnLeft(2);
+                    //TurnLeft(2);
+                    TurnLeftToHeading(heading);
                 }
 
             }
-            if (dot < -0.1f)
+            if (dot < -0.05f)
             {
                 if (!turning)
                 {
-                    TurnRight(2);
+                    //TurnRight(2);
+                    TurnRightToHeading(heading);
                 }
 
             }
@@ -928,7 +937,7 @@ namespace MonoGameEngineCore.DoomLib
                 //the node we need is right behind us. Instigate a turn.
                 if (MonoMathHelper.AlmostEquals(180d, angle, 10))
                 {
-                    TurnLeft(3);
+                    TurnLeftToHeading(heading);
                     return;
                 }
 

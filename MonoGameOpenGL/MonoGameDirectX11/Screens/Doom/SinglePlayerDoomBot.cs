@@ -24,6 +24,7 @@ namespace MonoGameDirectX11.Screens.Doom
         bool doNothing = false;
         bool collectItems = true;
         bool endOfLevelSeeking = false;
+        int level = 2;
         int playerId = -1;
         public SinglePlayerDoomBot()
         {
@@ -45,13 +46,13 @@ namespace MonoGameDirectX11.Screens.Doom
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, -500, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1));
 
-
-            mapHandler = new DoomMapHandler(filePath, "E1M1", "E1M2");
+            
+            mapHandler = new DoomMapHandler(filePath, "E1M"+level.ToString(), "E1M"+(level+1).ToString());
             mapHandler.ParseWad();
             mapHandler.InitialiseFloodFill();
 
 
-            apiHandler = new DoomAPIHandler("http://192.168.1.77", 6001);
+            apiHandler = new DoomAPIHandler("http://localhost", 6001);
 
             apiHandler.CreateRegularRequest(1000, new RestRequest("player"), x =>
             {
@@ -211,15 +212,27 @@ namespace MonoGameDirectX11.Screens.Doom
             base.OnRemove();
         }
 
+        float heading = 80;
         public override void Update(GameTime gameTime)
         {
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Escape))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.O))
-                apiHandler.TurnLeft(10);
+            {
+                heading -= 10;
+                playerObj.GetComponent<DoomMovementComponent>().TurnRightToHeading(heading);
+            }
             if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.P))
-                apiHandler.TurnRight(10);
+            {
+                heading += 10;
+                playerObj.GetComponent<DoomMovementComponent>().TurnRightToHeading(heading);
+            }
+
+            if (heading > 360)
+                heading = 0;
+            if (heading < 0)
+                heading = 360;
 
             if (input.MouseLeftPress())
             {
@@ -376,8 +389,8 @@ namespace MonoGameDirectX11.Screens.Doom
             {
                 DebugShapeRenderer.AddLine(d.start, d.end, d.color);
             }
-           // if (!mapHandler.FloodFillComplete)
-           //     RenderFloodFill();
+            // if (!mapHandler.FloodFillComplete)
+            //     RenderFloodFill();
 
             if (playerObj != null)
             {
