@@ -14,6 +14,7 @@ using MonoGameEngineCore.DoomLib;
 using Kaitai;
 using NickLib.Pathfinding;
 using MonoGameDirectX11.Screens.Doom;
+using MonoGameDirectX11.Screens.Doom.DoomLib;
 
 namespace MonoGameDirectX11.Screens
 {
@@ -49,8 +50,6 @@ namespace MonoGameDirectX11.Screens
         private AStar aStar;
         private Vector3 mouseLeftPoint, mouseRightPoint;
         private List<NavigationNode> path;
-
-    
         private DoomFloodFill floodFiller;
 
 

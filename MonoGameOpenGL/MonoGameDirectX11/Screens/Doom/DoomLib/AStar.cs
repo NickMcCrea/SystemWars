@@ -5,9 +5,27 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using NickLib;
 using MonoGameDirectX11.Screens.Doom;
+using MonoGameDirectX11.Screens.Doom.DoomLib;
 
 namespace NickLib.Pathfinding
 {
+    public class NavigationNode : IPartitionItem
+    {
+
+        public List<NavigationNode> Neighbours { get; set; }
+        public string Type { get { return "NavigationNode"; } }
+        public bool done;
+        public NavigationNode()
+        {
+            Neighbours = new List<NavigationNode>();
+            Cost = 0;
+        }
+        public int Cost { get; set; }
+
+        public bool Navigable { get; set; }
+        public Vector3 WorldPosition { get; set; }
+    }
+
     public class AStar
     {
         public static string LastPathTime { get; set; }

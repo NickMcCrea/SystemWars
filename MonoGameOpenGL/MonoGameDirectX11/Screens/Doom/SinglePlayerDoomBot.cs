@@ -9,6 +9,8 @@ using RestSharp;
 using System.Collections.Generic;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using NickLib.Pathfinding;
+using MonoGameDirectX11.Screens.Doom.DoomLib;
 
 namespace MonoGameDirectX11.Screens.Doom
 {
@@ -22,10 +24,12 @@ namespace MonoGameDirectX11.Screens.Doom
         List<string> pickUpTypes;
         string filePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\Downloads\\Doom1.WAD";
         bool doNothing = false;
-        bool collectItems = true;
+        bool collectItems = false;
         bool endOfLevelSeeking = false;
-        int level = 2;
+        int level = 1;
         int playerId = -1;
+        string url = "http://localhost";
+        int port = 6001;
         public SinglePlayerDoomBot()
         {
 
@@ -52,7 +56,7 @@ namespace MonoGameDirectX11.Screens.Doom
             mapHandler.InitialiseFloodFill();
 
 
-            apiHandler = new DoomAPIHandler("http://localhost", 6001);
+            apiHandler = new DoomAPIHandler(url, port);
 
             apiHandler.CreateRegularRequest(1000, new RestRequest("player"), x =>
             {
