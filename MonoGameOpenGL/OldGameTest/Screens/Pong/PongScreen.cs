@@ -52,7 +52,6 @@ namespace OldGameTest.Screens
             base.OnRemove();
         }
 
-
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
