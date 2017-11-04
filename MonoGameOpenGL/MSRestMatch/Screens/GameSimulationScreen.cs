@@ -6,6 +6,9 @@ using MSRestMatch.GameServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Description;
+using System.ServiceModel.Web;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +18,8 @@ namespace MSRestMatch.Screens
     {
 
         GameObject cameraObject;
-
+        WebServiceHost host;
+        ServiceEndpoint ep;
 
         public GameSimulationScreen()
         {
@@ -33,12 +37,16 @@ namespace MSRestMatch.Screens
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
 
             cameraObject = new GameObject();
-    
+
 
             cameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.25f, 1000.0f, false));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, -500, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1));
+
+            host = new WebServiceHost(typeof(Service), new Uri("http://localhost:8000/"));
+            ep = host.AddServiceEndpoint(typeof(IService), new WebHttpBinding(), "");
+            host.Open();
 
             base.OnInitialise();
         }
