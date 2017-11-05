@@ -1,5 +1,6 @@
 ﻿using BEPUphysics.NarrowPhaseSystems.Pairs;
 using Microsoft.Xna.Framework;
+using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
@@ -50,7 +51,7 @@ namespace MSRestMatch.GameServer
         Player player;
         Vector2 currentForward;
         PhysicsComponent physicsComponent;
-        float maxSpeed = 0.02f;
+        float maxSpeed = 0.01f;
 
         public void Initialise()
         {
@@ -115,9 +116,16 @@ namespace MSRestMatch.GameServer
 
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
                     remove.Y = 0;
+
+                    // if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
                     ParentObject.Transform.Translate(remove);
-                    ParentObject.Transform.Velocity = Vector3.Zero;
-                    ((Player)ParentObject).DesiredPosition = ParentObject.Transform.AbsoluteTransform.Translation;
+                    if (remove != Vector3.Zero)
+                    {
+                        ParentObject.Transform.Velocity = Vector3.Zero;
+                        ((Player)ParentObject).DesiredPosition = ParentObject.Transform.AbsoluteTransform.Translation;
+                    }
+
+                    break;
                 }
 
             }
