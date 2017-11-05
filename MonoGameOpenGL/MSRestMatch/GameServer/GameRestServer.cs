@@ -95,6 +95,11 @@ namespace MSRestMatch.GameServer
                 float value = float.Parse(playerAction.Value);
                 p.DesiredHeading = value;
             }
+
+            if(playerAction.Action == "move_forward")
+            {
+                p.DesiredPosition = p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * float.Parse(playerAction.Value);
+            }
            
         }
     }
