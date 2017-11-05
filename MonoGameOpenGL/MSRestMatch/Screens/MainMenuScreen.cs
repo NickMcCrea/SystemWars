@@ -45,6 +45,9 @@ namespace MSRestMatch
 
         public override void Update(GameTime gameTime)
         {
+            if (input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Escape))
+                SystemCore.Game.Exit();
+
             base.Update(gameTime);
         }
 

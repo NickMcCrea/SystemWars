@@ -20,6 +20,7 @@ namespace MSRestMatch.GameServer
             this.AddComponent(new RenderGeometryComponent(new ProceduralSphere(10, 10)));
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             this.AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
+            this.AddComponent(new ShadowCasterComponent());
         }
     }
 
@@ -49,6 +50,7 @@ namespace MSRestMatch.GameServer
         Player player;
         Vector2 currentForward;
         PhysicsComponent physicsComponent;
+        float maxSpeed = 0.02f;
 
         public void Initialise()
         {
@@ -66,15 +68,19 @@ namespace MSRestMatch.GameServer
             TurnToDesiredHeading();
 
             Vector3 currentPos = ParentObject.Transform.AbsoluteTransform.Translation;
-            if(!MonoMathHelper.AlmostEquals(currentPos, player.DesiredPosition, 0.1f))
+            if (!MonoMathHelper.AlmostEquals(currentPos, player.DesiredPosition, 0.1f))
             {
                 Vector3 toTarget = player.DesiredPosition - currentPos;
+                var distance = toTarget.Length();
                 toTarget.Normalize();
-                player.Transform.Velocity = toTarget * 0.1f;
+                var speed = MathHelper.Clamp((distance * 0.001f), 0, maxSpeed);
+                player.Transform.Velocity = toTarget * speed;
             }
             else
             {
+                //close enough!
                 player.Transform.Velocity = Vector3.Zero;
+                player.DesiredPosition = player.Transform.AbsoluteTransform.Translation;
             }
 
             HandleCollisions();
@@ -110,8 +116,8 @@ namespace MSRestMatch.GameServer
                     var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
                     remove.Y = 0;
                     ParentObject.Transform.Translate(remove);
-                    ParentObject.Transform.Velocity += (remove * 0.01f);
-                    break;
+                    ParentObject.Transform.Velocity = Vector3.Zero;
+                    ((Player)ParentObject).DesiredPosition = ParentObject.Transform.AbsoluteTransform.Translation;
                 }
 
             }
