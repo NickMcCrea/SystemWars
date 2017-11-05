@@ -99,6 +99,12 @@ namespace MonoGameEngineCore.Helper
             return (float)Math.Atan2(heading.Y, heading.X);
         }
 
+        public static Vector2 GetVectorFromHeading(float heading)
+        {
+            Vector2 v = new Vector2((float)Math.Cos(heading), (float)Math.Sin(heading));
+            return v;
+        }
+
         /// <summary>
         /// Distance from our point to the line described by linePos1 and linePos2.
         /// </summary>

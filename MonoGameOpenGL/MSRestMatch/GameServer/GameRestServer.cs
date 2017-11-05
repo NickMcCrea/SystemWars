@@ -25,6 +25,10 @@ namespace MSRestMatch.GameServer
         [OperationContract, WebInvoke(UriTemplate = "/player/create/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         PlayerJson CreatePlayer(PlayerCreate create);
 
+        [OperationContract, WebInvoke(UriTemplate = "/player/action/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        void PlayerAction(PlayerAction action);
+
+
     }
 
     class Service : IService
@@ -76,9 +80,31 @@ namespace MSRestMatch.GameServer
             p = SystemCore.GameObjectManager.GetObject(create.Name) as Player;
             return new PlayerJson() { Id = p.ID, Name = p.Name };
         }
-    }
-    
 
+        public void PlayerAction(PlayerAction playerAction)
+        {
+            Player p = SystemCore.GameObjectManager.GetObject(int.Parse(playerAction.Id)) as Player;
+            if (p == null)
+            {
+                WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.NotFound;
+                return;
+            }
+
+            if(playerAction.Action == "set_heading")
+            {
+                float value = float.Parse(playerAction.Value);
+                p.DesiredHeading = value;
+            }
+           
+        }
+    }
+
+    public class PlayerAction
+    {
+        public string Id { get; set; }
+        public string Action { get; set; }
+        public string Value { get; set; }
+    }
     public class PlayerCreate
     {
         public string Name { get; set; }
