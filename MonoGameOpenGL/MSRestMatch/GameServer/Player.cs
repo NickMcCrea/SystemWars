@@ -46,6 +46,7 @@ namespace MSRestMatch.GameServer
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
         Player player;
+        Vector2 currentForward;
         public void Initialise()
         {
 
@@ -59,21 +60,24 @@ namespace MSRestMatch.GameServer
         public void Update(GameTime gameTime)
         {
             //get current heading
-            Vector3 currentForward = ParentObject.Transform.AbsoluteTransform.Forward;
+            currentForward = ParentObject.Transform.AbsoluteTransform.Forward.ToVector2XZ();
 
-            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(currentForward.ToVector2XZ()));
+            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(currentForward));
             heading = (heading + 360) % 360;
 
+            Vector2 desiredForward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(player.DesiredHeading - 360));
 
             if (heading != player.DesiredHeading)
             {
-                heading = MathHelper.Lerp(heading, player.DesiredHeading, 0.1f);
-                Vector2 forward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(heading - 360));
-                player.Transform.SetLookAndUp(new Vector3(forward.X, 0, forward.Y), Vector3.Up);
+
+                currentForward = Vector2.Lerp(currentForward, desiredForward, 0.1f);
+                player.Transform.SetLookAndUp(new Vector3(currentForward.X, 0, currentForward.Y), Vector3.Up);
             }
 
 
 
         }
+
+    
     }
 }
