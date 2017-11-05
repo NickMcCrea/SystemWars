@@ -44,10 +44,14 @@ namespace MSRestMatch.Screens
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, -500, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1));
 
-            host = new WebServiceHost(typeof(Service), new Uri("http://localhost:8000/"));
+            var service = new Service(gameSim);
+
+            host = new WebServiceHost(service, new Uri("http://localhost:8000/"));
+            var behaviour = host.Description.Behaviors.Find<ServiceBehaviorAttribute>();
+            behaviour.InstanceContextMode = InstanceContextMode.Single;
             ep = host.AddServiceEndpoint(typeof(IService), new WebHttpBinding(), "");
             host.Open();
-
+            
             base.OnInitialise();
         }
 
