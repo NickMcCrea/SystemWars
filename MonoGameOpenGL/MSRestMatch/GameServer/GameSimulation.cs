@@ -13,6 +13,7 @@ namespace MSRestMatch.GameServer
     class GameSimulation : IGameSubSystem
     {
 
+
         public GameSimulation()
         {
 
@@ -21,7 +22,7 @@ namespace MSRestMatch.GameServer
         public void Initalise()
         {
             AddPlayer(new Vector3(-100,0,0), "Nick", Color.Red);
-
+            AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
             //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
 
             //AddPlayer(new Vector3(10,0,10), "Arran", Color.Blue);
@@ -35,16 +36,7 @@ namespace MSRestMatch.GameServer
 
         public void Render(GameTime gameTime)
         {
-            var playerList = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
-
-            foreach (Player p in playerList)
-            {
-                DebugShapeRenderer.AddUnitSphere(p.Transform.AbsoluteTransform.Translation, p.PlayerColor);
-
-                DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation,
-                    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
-
-            }
+           
         }
 
         public void Update(GameTime gameTime)

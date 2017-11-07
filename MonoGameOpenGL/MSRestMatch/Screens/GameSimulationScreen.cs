@@ -52,15 +52,15 @@ namespace MSRestMatch.Screens
 
         private static void CreateTestArena()
         {
-            var groundShape = new ProceduralCuboid(200, 200, 0.5f);
-            groundShape.SetColor(Color.DarkOrange);
-            var gameObjectPlane = new GameObject();
-            gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
-            gameObjectPlane.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
-            gameObjectPlane.Transform.Scale = 1f;
-            gameObjectPlane.AddComponent(new ShadowCasterComponent());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
-            gameObjectPlane.Transform.SetPosition(new Vector3(0, -4, 0));
+            //var groundShape = new ProceduralCuboid(200, 200, 0.5f);
+            //groundShape.SetColor(Color.DarkOrange);
+            //var gameObjectPlane = new GameObject();
+            //gameObjectPlane.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(groundShape), BufferBuilder.IndexBufferBuild(groundShape), groundShape.PrimitiveCount));
+            //gameObjectPlane.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            //gameObjectPlane.Transform.Scale = 1f;
+            //gameObjectPlane.AddComponent(new ShadowCasterComponent());
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObjectPlane);
+            //gameObjectPlane.Transform.SetPosition(new Vector3(0, -4, 0));
 
             float arenaSize = 40f;
 
@@ -151,6 +151,20 @@ namespace MSRestMatch.Screens
 
         public override void Render(GameTime gameTime)
         {
+            var playerList = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
+
+            foreach (Player p in playerList)
+            {
+                DebugShapeRenderer.AddUnitSphere(p.Transform.AbsoluteTransform.Translation, p.PlayerColor);
+
+                DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation,
+                    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
+
+
+
+
+            }
+
             base.Render(gameTime);
         }
     }

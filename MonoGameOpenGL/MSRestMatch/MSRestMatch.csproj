@@ -62,6 +62,8 @@
     <Compile Include="GameServer\GameRestServer.cs" />
     <Compile Include="GameServer\GameSimulation.cs" />
     <Compile Include="GameServer\Player.cs" />
+    <Compile Include="GameServer\Projectile.cs" />
+    <Compile Include="GameServer\Weapon.cs" />
     <Compile Include="Screens\GameSimulationScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />

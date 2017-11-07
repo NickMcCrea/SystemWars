@@ -8,14 +8,25 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
 using System;
+using System.Collections.Generic;
 
 namespace MSRestMatch.GameServer
 {
+
+
+    
+    
+
     class Player : GameObject
     {
         public Color PlayerColor { get; set; }
         public float DesiredHeading { get; set; }
         public Vector3 DesiredPosition { get; set; }
+        public int Health { get; set; }
+
+        public List<Weapon> Weapons;
+        public Weapon CurrentWeapon { get; set; }
+        
         public Player()
         {
             this.AddComponent(new PlayerControlComponent());
@@ -23,6 +34,22 @@ namespace MSRestMatch.GameServer
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             this.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.sphere));
             this.AddComponent(new ShadowCasterComponent());
+            Health = 100;
+            Weapons = new List<Weapon>();
+            Weapons.Add(WeaponFactory.CreatePistol());
+            CurrentWeapon = Weapons[0];
+        }
+
+        public void FireCurrentWeapon()
+        {
+            Projectile p = new Projectile(Transform.AbsoluteTransform.Translation, Transform.AbsoluteTransform.Forward * CurrentWeapon.ProjectileSpeed, CurrentWeapon);
+        }
+
+        internal void DamagePlayer(Weapon firingWeapon)
+        {
+            Health -= firingWeapon.Damage;
+            if (Health < 0)
+                Health = 0;
         }
     }
 
@@ -96,7 +123,10 @@ namespace MSRestMatch.GameServer
             {
                 player.DesiredPosition -= new Vector3(0, 0, 10);
             }
-
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.M))
+            {
+                player.FireCurrentWeapon();
+            }
 
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.K))
             {
