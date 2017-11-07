@@ -1,4 +1,5 @@
 ﻿using BEPUphysics.NarrowPhaseSystems.Pairs;
+using BEPUphysics.Paths.PathFollowing;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
@@ -20,7 +21,7 @@ namespace MSRestMatch.GameServer
             this.AddComponent(new PlayerControlComponent());
             this.AddComponent(new RenderGeometryComponent(new ProceduralSphere(10, 10)));
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
-            this.AddComponent(new PhysicsComponent(true, false, PhysicsMeshType.sphere));
+            this.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.sphere));
             this.AddComponent(new ShadowCasterComponent());
         }
     }
@@ -29,6 +30,8 @@ namespace MSRestMatch.GameServer
     class PlayerControlComponent : IComponent, IUpdateable
     {
 
+        EntityMover mover;
+        EntityRotator rotator;
 
         public PlayerControlComponent()
         {
@@ -51,7 +54,6 @@ namespace MSRestMatch.GameServer
         Player player;
         Vector2 currentForward;
         PhysicsComponent physicsComponent;
-        float maxSpeed = 0.01f;
 
         public void Initialise()
         {
@@ -62,30 +64,48 @@ namespace MSRestMatch.GameServer
         {
             player = ParentObject as Player;
             this.physicsComponent = ParentObject.GetComponent<PhysicsComponent>();
+
+            mover = new EntityMover(physicsComponent.PhysicsEntity);
+            rotator = new EntityRotator(physicsComponent.PhysicsEntity);
+            SystemCore.PhysicsSimulation.Add(mover);
+            SystemCore.PhysicsSimulation.Add(rotator);
+
+            mover.LinearMotor.Settings.Servo.SpringSettings.Stiffness /= 10000;
+            mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 10000;
+
         }
 
         public void Update(GameTime gameTime)
         {
             TurnToDesiredHeading();
 
-            Vector3 currentPos = ParentObject.Transform.AbsoluteTransform.Translation;
-            if (!MonoMathHelper.AlmostEquals(currentPos, player.DesiredPosition, 0.1f))
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.O))
             {
-                Vector3 toTarget = player.DesiredPosition - currentPos;
-                var distance = toTarget.Length();
-                toTarget.Normalize();
-                var speed = MathHelper.Clamp((distance * 0.001f), 0, maxSpeed);
-                player.Transform.Velocity = toTarget * speed;
+                player.DesiredPosition += new Vector3(10, 0, 0);
+                //physicsComponent.PhysicsEntity.LinearVelocity = new BEPUutilities.Vector3(-50, 0, 0);
             }
-            else
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.P))
             {
-                //close enough!
-                player.Transform.Velocity = Vector3.Zero;
-                player.DesiredPosition = player.Transform.AbsoluteTransform.Translation;
+                player.DesiredPosition -= new Vector3(10, 0, 0);
+
+            }
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Q))
+            {
+                player.DesiredPosition += new Vector3(0, 0, 10);
+            }
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.A))
+            {
+                player.DesiredPosition -= new Vector3(0, 0, 10);
+
             }
 
-            HandleCollisions();
+            mover.TargetPosition = player.DesiredPosition.ToBepuVector();
 
+            if (physicsComponent.InCollision())
+            {
+
+                return;
+            }
         }
 
         private void TurnToDesiredHeading()
@@ -97,39 +117,16 @@ namespace MSRestMatch.GameServer
 
             Vector2 desiredForward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(player.DesiredHeading - 360));
 
-            if (heading != player.DesiredHeading)
-            {
-                currentForward = Vector2.Lerp(currentForward, desiredForward, 0.1f);
-                player.Transform.SetLookAndUp(new Vector3(currentForward.X, 0, currentForward.Y), Vector3.Up);
-            }
+            //rotator.TargetOrientation = BEPUutilities.Quaternion.
+
+            //if (heading != player.DesiredHeading)
+            //{
+            //    currentForward = Vector2.Lerp(currentForward, desiredForward, 0.1f);
+            //    player.Transform.SetLookAndUp(new Vector3(currentForward.X, 0, currentForward.Y), Vector3.Up);
+            //}
         }
 
-        private void HandleCollisions()
-        {
-            var pairs = physicsComponent.PhysicsEntity.CollisionInformation.Pairs;
-            foreach (CollidablePairHandler pair in pairs)
-            {
 
-                var contacts = pair.Contacts;
-                foreach (ContactInformation contact in contacts)
-                {
-
-                    var remove = (-pair.Contacts[0].Contact.Normal * pair.Contacts[0].Contact.PenetrationDepth).ToXNAVector();
-                    remove.Y = 0;
-
-                    // if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.Space))
-                    ParentObject.Transform.Translate(remove);
-                    if (remove != Vector3.Zero)
-                    {
-                        ParentObject.Transform.Velocity = Vector3.Zero;
-                        ((Player)ParentObject).DesiredPosition = ParentObject.Transform.AbsoluteTransform.Translation;
-                    }
-
-                    break;
-                }
-
-            }
-        }
 
     }
 }

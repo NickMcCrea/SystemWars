@@ -20,7 +20,7 @@ namespace MSRestMatch.GameServer
 
         public void Initalise()
         {
-            //AddPlayer(Vector3.Zero, "Nick", Color.Red);
+            AddPlayer(new Vector3(-100,0,0), "Nick", Color.Red);
 
             //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
 
@@ -41,8 +41,8 @@ namespace MSRestMatch.GameServer
             {
                 DebugShapeRenderer.AddUnitSphere(p.Transform.AbsoluteTransform.Translation, p.PlayerColor);
 
-                DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation, 
-                    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
+                //DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation, 
+                //    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
 
             }
         }
@@ -57,6 +57,7 @@ namespace MSRestMatch.GameServer
             Player p = new Player();
             p.Transform.AbsoluteTransform.Translation = startPos;
             p.Name = playerName;
+            p.DesiredPosition = startPos;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
 
             if (color.HasValue)

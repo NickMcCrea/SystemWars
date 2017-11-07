@@ -33,8 +33,15 @@ namespace MonoGameEngineCore.GameObject.Components
             
             staticMesh.Tag = this.Tag;
 
-            SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(staticMesh);
 
+            if (!SystemCore.PhysicsOnBackgroundThread)
+                SystemCore.PhysicsSimulation.Add(staticMesh);
+            else
+            {
+                SystemCore.PhysicsSimulation.SpaceObjectBuffer.Add(staticMesh);
+            }
+            
+    
         }
 
         public void Initialise()
