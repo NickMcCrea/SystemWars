@@ -41,8 +41,8 @@ namespace MSRestMatch.GameServer
             {
                 DebugShapeRenderer.AddUnitSphere(p.Transform.AbsoluteTransform.Translation, p.PlayerColor);
 
-                //DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation, 
-                //    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
+                DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation,
+                    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
 
             }
         }

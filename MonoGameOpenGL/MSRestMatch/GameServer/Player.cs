@@ -82,7 +82,6 @@ namespace MSRestMatch.GameServer
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.O))
             {
                 player.DesiredPosition += new Vector3(10, 0, 0);
-                //physicsComponent.PhysicsEntity.LinearVelocity = new BEPUutilities.Vector3(-50, 0, 0);
             }
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.P))
             {
@@ -96,9 +95,21 @@ namespace MSRestMatch.GameServer
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.A))
             {
                 player.DesiredPosition -= new Vector3(0, 0, 10);
-
             }
 
+
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.K))
+            {
+                player.DesiredHeading += 10;
+                player.DesiredHeading = player.DesiredHeading % 360;
+            }
+            if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.L))
+            {
+                player.DesiredHeading -= 10;
+                player.DesiredHeading = player.DesiredHeading % 360;
+            }
+          
+            
             mover.TargetPosition = player.DesiredPosition.ToBepuVector();
 
             if (physicsComponent.InCollision())
@@ -117,13 +128,15 @@ namespace MSRestMatch.GameServer
 
             Vector2 desiredForward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(player.DesiredHeading - 360));
 
-            //rotator.TargetOrientation = BEPUutilities.Quaternion.
+            var lookMatrix = Matrix.CreateWorld(ParentObject.Transform.AbsoluteTransform.Translation,
+                new Vector3(desiredForward.X, 0, desiredForward.Y), Vector3.Up);
 
-            //if (heading != player.DesiredHeading)
-            //{
-            //    currentForward = Vector2.Lerp(currentForward, desiredForward, 0.1f);
-            //    player.Transform.SetLookAndUp(new Vector3(currentForward.X, 0, currentForward.Y), Vector3.Up);
-            //}
+            var bepuMatrix =  MonoMathHelper.GenerateBepuMatrixFromMono(lookMatrix);
+
+            BEPUutilities.Quaternion desiredRot = BEPUutilities.Quaternion.CreateFromRotationMatrix(bepuMatrix);
+            rotator.TargetOrientation = desiredRot;
+
+       
         }
 
 
