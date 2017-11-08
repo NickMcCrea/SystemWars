@@ -16,11 +16,15 @@ namespace MSRestMatch.GameServer
     {
 
 
-        [OperationContract, WebGet(UriTemplate = "/player/id/{id}", ResponseFormat = WebMessageFormat.Json)]
+        [OperationContract, WebGet(UriTemplate = "/player/id/{id}/", ResponseFormat = WebMessageFormat.Json)]
         PlayerJson GetPlayer(string id);
+       
 
-        [OperationContract, WebGet(UriTemplate = "/player/name/{name}", ResponseFormat = WebMessageFormat.Json)]
+        [OperationContract, WebGet(UriTemplate = "/player/name/{name}/", ResponseFormat = WebMessageFormat.Json)]
         PlayerJson GetPlayerByName(string name);
+
+        [OperationContract, WebInvoke(UriTemplate = "/player/drop/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        void DropPlayer(string id);
 
         [OperationContract, WebInvoke(UriTemplate = "/player/create/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         PlayerJson CreatePlayer(PlayerCreate create);
@@ -47,7 +51,7 @@ namespace MSRestMatch.GameServer
 
             var p = SystemCore.GameObjectManager.GetObject(idInt) as Player;
             if (p != null)
-                return new PlayerJson() { Id = p.ID, Name = p.Name };
+                return new PlayerJson() { Id = p.ID, Name = p.Name, Health = p.Health, X = p.GetX(), Y = p.GetY(), Heading = p.GetHeading() };
             else
             {
                 WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.NotFound;
@@ -59,7 +63,7 @@ namespace MSRestMatch.GameServer
         {
             var p = SystemCore.GameObjectManager.GetObject(name) as Player;
             if (p != null)
-                return new PlayerJson() { Id = p.ID, Name = p.Name };
+                return new PlayerJson() { Id = p.ID, Name = p.Name, Health = p.Health, X = p.GetX(), Y = p.GetY(), Heading = p.GetHeading() };
             else
             {
                 WebOperationContext.Current.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.NotFound;
@@ -76,9 +80,18 @@ namespace MSRestMatch.GameServer
                 return null;
             }
 
-            sim.AddPlayer(new Vector3(-100,0,0), create.Name, Color.Red);
+            sim.AddPlayer(new Vector3(100,0,0), create.Name, Color.Red);
             p = SystemCore.GameObjectManager.GetObject(create.Name) as Player;
             return new PlayerJson() { Id = p.ID, Name = p.Name };
+        }
+
+        public void DropPlayer(string id)
+        {
+            Player p = SystemCore.GameObjectManager.GetObject(int.Parse(id)) as Player;
+            if (p != null)
+            {
+                SystemCore.GameObjectManager.RemoveObject(p);
+            }
         }
 
         public void PlayerAction(PlayerAction playerAction)
@@ -96,9 +109,10 @@ namespace MSRestMatch.GameServer
                 p.DesiredHeading = value;
             }
 
-            if(playerAction.Action == "move_forward")
+            if(playerAction.Action == "move")
             {
-                p.DesiredPosition = p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * float.Parse(playerAction.Value);
+                p.DesiredPosition = p.Transform.AbsoluteTransform.Translation + 
+                    new Vector3(float.Parse(playerAction.X), 0, float.Parse(playerAction.Y));
             }
            
         }
@@ -109,11 +123,20 @@ namespace MSRestMatch.GameServer
         public string Id { get; set; }
         public string Action { get; set; }
         public string Value { get; set; }
+        public string X { get; set; }
+        public string Y { get; set; }
     }
+
     public class PlayerCreate
     {
         public string Name { get; set; }
     }
+
+    public class PlayerDrop
+    {
+        public string Id { get; set; }
+    }
+
     public class PlayerJson
     {
         public int Id { get; set; }

@@ -14,8 +14,8 @@ namespace MSRestMatch.GameServer
 {
 
 
-    
-    
+
+
 
     class Player : GameObject
     {
@@ -26,7 +26,7 @@ namespace MSRestMatch.GameServer
 
         public List<Weapon> Weapons;
         public Weapon CurrentWeapon { get; set; }
-        
+
         public Player()
         {
             this.AddComponent(new PlayerControlComponent());
@@ -50,6 +50,23 @@ namespace MSRestMatch.GameServer
             Health -= firingWeapon.Damage;
             if (Health < 0)
                 Health = 0;
+        }
+
+        internal float GetHeading()
+        {
+            var currentForward = Transform.AbsoluteTransform.Forward.ToVector2XZ();
+            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(currentForward));
+            heading = (heading + 360) % 360;
+            return heading;
+        }
+
+        internal float GetX()
+        {
+            return Transform.AbsoluteTransform.Translation.X;
+        }
+        internal float GetY()
+        {
+            return Transform.AbsoluteTransform.Translation.Z;
         }
     }
 
@@ -138,8 +155,8 @@ namespace MSRestMatch.GameServer
                 player.DesiredHeading -= 10;
                 player.DesiredHeading = player.DesiredHeading % 360;
             }
-          
-            
+
+
             mover.TargetPosition = player.DesiredPosition.ToBepuVector();
 
             if (physicsComponent.InCollision())
@@ -152,21 +169,19 @@ namespace MSRestMatch.GameServer
         private void TurnToDesiredHeading()
         {
             //get current heading
-            currentForward = ParentObject.Transform.AbsoluteTransform.Forward.ToVector2XZ();
-            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(currentForward));
-            heading = (heading + 360) % 360;
+            var heading = player.GetHeading();
 
             Vector2 desiredForward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(player.DesiredHeading - 360));
 
             var lookMatrix = Matrix.CreateWorld(ParentObject.Transform.AbsoluteTransform.Translation,
                 new Vector3(desiredForward.X, 0, desiredForward.Y), Vector3.Up);
 
-            var bepuMatrix =  MonoMathHelper.GenerateBepuMatrixFromMono(lookMatrix);
+            var bepuMatrix = MonoMathHelper.GenerateBepuMatrixFromMono(lookMatrix);
 
             BEPUutilities.Quaternion desiredRot = BEPUutilities.Quaternion.CreateFromRotationMatrix(bepuMatrix);
             rotator.TargetOrientation = desiredRot;
 
-       
+
         }
 
 

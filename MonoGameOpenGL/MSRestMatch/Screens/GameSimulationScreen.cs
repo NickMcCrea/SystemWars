@@ -43,7 +43,7 @@ namespace MSRestMatch.Screens
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, 200, 0), new Vector3(0, -1, 0), new Vector3(0, 0, 1));
 
-            CreateTestArena();
+            //CreateTestArena();
 
             CreateRestService(gameSim);
 

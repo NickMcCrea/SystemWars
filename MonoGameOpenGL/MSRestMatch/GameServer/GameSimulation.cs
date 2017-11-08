@@ -21,8 +21,8 @@ namespace MSRestMatch.GameServer
 
         public void Initalise()
         {
-            AddPlayer(new Vector3(-100,0,0), "Nick", Color.Red);
-            AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
+           // AddPlayer(new Vector3(-100,0,0), "Nick", Color.Red);
+           // AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
             //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
 
             //AddPlayer(new Vector3(10,0,10), "Arran", Color.Blue);
