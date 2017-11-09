@@ -36,6 +36,9 @@ namespace MSRestMatch.Screens
             SystemCore.AddNewUpdateRenderSubsystem(gameSim);
             SystemCore.CursorVisible = true;
             SystemCore.ActiveScene.SetUpAmbientAndFullLightingRig();
+            SystemCore.ActiveScene.GetKeyLight().LightColor = Color.LightBlue;
+            SystemCore.ActiveScene.FogEnabled = false;
+            
 
             cameraObject = new GameObject();
             cameraObject.AddComponent(new ComponentCamera(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 1f, 200f, false));
@@ -46,7 +49,9 @@ namespace MSRestMatch.Screens
 
             host = WebHostHelper.CreateWebHost(gameSim);
 
-            gameSim.CreateSimpleArena();
+            gameSim.CreateFloor(4,4,10);
+
+            gameSim.CreateTrainingArena();
 
             gameSim.AddTrainingDummy();
           

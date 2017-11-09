@@ -79,7 +79,16 @@ namespace MonoGameEngineCore.Rendering
             LightsInScene.Add(back);
         }
 
-
+        public DiffuseLight GetBackLight()
+        {
+            return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight)
+            && ((DiffuseLight)x).DiffuseType == DiffuseLightType.Back) as DiffuseLight;
+        }
+        public DiffuseLight GetFillLight()
+        {
+            return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight)
+            && ((DiffuseLight)x).DiffuseType == DiffuseLightType.Fill) as DiffuseLight;
+        }
         public DiffuseLight GetKeyLight()
         {
             return LightsInScene.Find(x => x.GetType() == typeof(DiffuseLight)

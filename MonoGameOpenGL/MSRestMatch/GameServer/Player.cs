@@ -44,10 +44,17 @@ namespace MSRestMatch.GameServer
             get; set;
         }
 
-        public Player()
+        public Player(Color? color)
         {
+            var shape = new ProceduralSphere(10, 10);
+            if (color.HasValue)
+            {
+                PlayerColor = color.Value;
+                shape.SetColor(color.Value);
+            }
+
             this.AddComponent(new PlayerControlComponent());
-            this.AddComponent(new RenderGeometryComponent(new ProceduralSphere(10, 10)));
+            this.AddComponent(new RenderGeometryComponent(shape));
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             this.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.sphere));
             this.AddComponent(new ShadowCasterComponent());

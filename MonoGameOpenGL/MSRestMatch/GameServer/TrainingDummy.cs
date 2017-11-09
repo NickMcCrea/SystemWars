@@ -50,7 +50,7 @@ namespace MSRestMatch.GameServer
                 timeSinceLastTrigger = (float)gameTime.TotalGameTime.TotalSeconds;
 
                 p.DesiredHeading = RandomHelper.GetRandomInt(0, 360);
-                p.DesiredPosition = RandomHelper.GetRandomVector3(-50, 50).ZeroYComponent();
+                p.DesiredPosition = RandomHelper.GetRandomVector3(-10, 10).ZeroYComponent();
             }
         }
     }

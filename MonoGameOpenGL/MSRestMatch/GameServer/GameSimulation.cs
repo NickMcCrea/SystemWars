@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Helper;
+using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GameObject.Components.RenderComponents;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MSRestMatch.GameServer
 {
@@ -52,29 +55,62 @@ namespace MSRestMatch.GameServer
 
         }
 
-        public void AddPlayer(Vector3 startPos, string playerName, Color? color = null)
+        public void AddPlayer(Vector3 startPos, string playerName)
         {
-            Player p = new Player();
+            Player p = new Player(RandomHelper.RandomColor);
             p.Transform.AbsoluteTransform.Translation = startPos;
             p.Name = playerName;
             p.DesiredPosition = startPos;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
 
-            if (color.HasValue)
-                p.PlayerColor = color.Value;
+        
         }
 
-        internal void CreateSimpleArena()
+        internal void CreateFloor(int x, int y, float scale)
+        {
+
+            for (int i = -x / 2; i < x / 2; i++)
+            {
+                for (int j = -y / 2; j < y / 2; j++)
+                {
+                    GameObject o = new GameObject();
+                    o.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
+                    MaterialFactory.ApplyMaterialComponent(o, "Grid");
+                    o.AddComponent(new ShadowCasterComponent());
+                    o.Transform.Scale = scale;
+                    o.Transform.Translate(new Vector3(i * scale*2, -5, j * scale*2));
+                    SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
+                }
+            }
+
+
+            //GameObject gameObject = new GameObject();
+            //gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
+            //MaterialFactory.ApplyMaterialComponent(gameObject, "SciFiFloor");
+            //gameObject.AddComponent(new ShadowCasterComponent());
+            //gameObject.Transform.Scale = 10f;
+            //gameObject.Transform.Translate(new Vector3(0, -5, 0));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
+
+            //GameObject gameObject2 = new GameObject();
+            //gameObject2.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
+            //MaterialFactory.ApplyMaterialComponent(gameObject2, "SciFiFloor");
+            //gameObject2.AddComponent(new ShadowCasterComponent());
+            //gameObject2.Transform.Scale = 10f;
+            //gameObject2.Transform.Translate(new Vector3(20, -5, 0));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject2);
+        }
+
+        internal void CreateTrainingArena()
         {
            
         }
 
         internal void AddTrainingDummy()
         {
-            Player p = new Player();
+            Player p = new Player(RandomHelper.RandomColor);
             p.Name = "TrainingDummy";
             p.AddComponent(new TrainingDummyComponent());
-            p.PlayerColor = Color.CornflowerBlue;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
         }
 

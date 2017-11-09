@@ -80,7 +80,7 @@ namespace MSRestMatch.GameServer
                 return null;
             }
 
-            sim.AddPlayer(new Vector3(100,0,0), create.Name, Color.Red);
+            sim.AddPlayer(new Vector3(0,0,0), create.Name);
             p = SystemCore.GameObjectManager.GetObject(create.Name) as Player;
             return new PlayerJson() { Id = p.ID, Name = p.Name };
         }

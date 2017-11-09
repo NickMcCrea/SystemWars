@@ -113,6 +113,30 @@ namespace MonoGameEngineCore.GameObject.Components.RenderComponents
             crateMat.ShaderName = "DiffuseSpecularTextured";
             matDictionary.Add(crateMat.MaterialName, crateMat);
 
+            MaterialComponent grid = new MaterialComponent();
+            grid.MaterialName = "Grid";
+            grid.MatColor = Color.White;
+            grid.MatColorIntensity = 0;
+            grid.SpecularColor = Color.White;
+            grid.Shininess = 0;
+            grid.SpecularIntensity = 0;
+            grid.TextureName = "Textures/trontile";
+            grid.TextureIntensity = 1f;
+            grid.ShaderName = "DiffuseSpecularTextured";
+            matDictionary.Add(grid.MaterialName, grid);
+
+            MaterialComponent scifiFloor = new MaterialComponent();
+            scifiFloor.MaterialName = "SciFiFloor";
+            scifiFloor.MatColor = Color.White;
+            scifiFloor.MatColorIntensity = 0;
+            scifiFloor.SpecularColor = Color.White;
+            scifiFloor.Shininess = 0;
+            scifiFloor.SpecularIntensity = 0;
+            scifiFloor.TextureName = "Textures/Sci-Fi-Floor-Diffuse";
+            scifiFloor.TextureIntensity = 1f;
+            scifiFloor.ShaderName = "DiffuseSpecularTextured";
+            matDictionary.Add(scifiFloor.MaterialName, scifiFloor);
+
 
         }
 
