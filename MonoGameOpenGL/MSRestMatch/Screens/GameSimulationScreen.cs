@@ -53,7 +53,7 @@ namespace MSRestMatch.Screens
 
             gameSim.CreateTrainingArena();
 
-            gameSim.AddTrainingDummy();
+            gameSim.TrainingMode = true;
           
 
             base.OnInitialise();

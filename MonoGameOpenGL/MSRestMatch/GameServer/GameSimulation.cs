@@ -15,11 +15,11 @@ namespace MSRestMatch.GameServer
 {
     class GameSimulation : IGameSubSystem
     {
-
+        public bool TrainingMode { get; set; }
 
         public GameSimulation()
         {
-
+          
         }
 
         public void Initalise()
@@ -28,7 +28,7 @@ namespace MSRestMatch.GameServer
             // AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
             //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
             //AddPlayer(new Vector3(10,0,10), "Arran", Color.Blue);
-
+           
         }
 
         public void OnRemove()
@@ -106,6 +106,8 @@ namespace MSRestMatch.GameServer
            
         }
 
+
+
         internal void AddTrainingDummy()
         {
             Player p = new Player(RandomHelper.RandomColor);
@@ -127,6 +129,12 @@ namespace MSRestMatch.GameServer
                 SystemCore.GameObjectManager.RemoveObject(o);
         }
 
-       
+        internal void AddCombatDummy()
+        {
+            Player p = new Player(RandomHelper.RandomColor);
+            p.Name = "CombatDummy";
+            p.AddComponent(new TrainingDummyComponent());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
+        }
     }
 }

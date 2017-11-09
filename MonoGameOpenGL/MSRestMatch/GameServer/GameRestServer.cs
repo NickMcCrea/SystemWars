@@ -32,7 +32,11 @@ namespace MSRestMatch.GameServer
         [OperationContract, WebInvoke(UriTemplate = "/player/action/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         void PlayerAction(PlayerAction action);
 
+        [OperationContract, WebInvoke(UriTemplate = "/trainingdummy/basic/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        void RequestBasicTrainingDummy();
 
+        [OperationContract, WebInvoke(UriTemplate = "/trainingdummy/combat/", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
+        void RequestCombatDummy();
     }
 
     class Service : IService
@@ -116,6 +120,16 @@ namespace MSRestMatch.GameServer
                     new Vector3(float.Parse(playerAction.X), 0, float.Parse(playerAction.Y));
             }
            
+        }
+
+        public void RequestBasicTrainingDummy()
+        {
+            sim.AddTrainingDummy();
+        }
+
+        public void RequestCombatDummy()
+        {
+            sim.AddCombatDummy();
         }
     }
 
