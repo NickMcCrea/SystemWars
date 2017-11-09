@@ -87,10 +87,11 @@ namespace MSRestMatch.GameServer
 
         public void DropPlayer(string id)
         {
-            Player p = SystemCore.GameObjectManager.GetObject(int.Parse(id)) as Player;
-            if (p != null)
+            int result;
+            if (int.TryParse(id, out result))
             {
-                SystemCore.GameObjectManager.RemoveObject(p);
+                sim.RemovePlayer(result);
+
             }
         }
 

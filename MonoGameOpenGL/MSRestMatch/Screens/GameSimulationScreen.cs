@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 
 namespace MSRestMatch.Screens
 {
-    class GameSimulationScreen : Screen
+    class TrainingSimScreen : Screen
     {
 
         GameObject cameraObject;
         WebServiceHost host;
 
-        public GameSimulationScreen()
+        public TrainingSimScreen()
         {
 
         }
@@ -43,9 +43,13 @@ namespace MSRestMatch.Screens
             SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, 200, 0), new Vector3(0, -1, 0), new Vector3(0, 0, 1));
 
-            //CreateTestArena();
 
-            CreateRestService(gameSim);
+            host = WebHostHelper.CreateWebHost(gameSim);
+
+            gameSim.CreateSimpleArena();
+
+            gameSim.AddTrainingDummy();
+          
 
             base.OnInitialise();
         }
@@ -110,16 +114,6 @@ namespace MSRestMatch.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(arenaObject);
         }
 
-        private void CreateRestService(GameSimulation gameSim)
-        {
-            var service = new Service(gameSim);
-            host = new WebServiceHost(service, new Uri("http://localhost:8000/"));
-            var behaviour = host.Description.Behaviors.Find<ServiceBehaviorAttribute>();
-            behaviour.InstanceContextMode = InstanceContextMode.Single;
-            var ep = host.AddServiceEndpoint(typeof(IService), new WebHttpBinding(), "");
-            host.Open();
-        }
-
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
@@ -151,19 +145,7 @@ namespace MSRestMatch.Screens
 
         public override void Render(GameTime gameTime)
         {
-            var playerList = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
-
-            foreach (Player p in playerList)
-            {
-                DebugShapeRenderer.AddUnitSphere(p.Transform.AbsoluteTransform.Translation, p.PlayerColor);
-
-                DebugShapeRenderer.AddLine(p.Transform.AbsoluteTransform.Translation,
-                    p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
-
-
-
-
-            }
+            
 
             base.Render(gameTime);
         }

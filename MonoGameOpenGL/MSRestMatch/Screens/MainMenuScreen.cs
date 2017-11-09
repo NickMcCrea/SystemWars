@@ -18,19 +18,23 @@ namespace MSRestMatch
             : base()
         {
 
-            string screenOne = "ServerTest";
-        
+            string screenOne = "Training Arena";
+            string screenTwo = "Death Match Arena";
 
 
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
             b.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new GameSimulationScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new TrainingSimScreen());
             };
-
+            b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
+            b.OnClick += (sender, args) =>
+            {
+                SystemCore.ScreenManager.AddAndSetActive(new DeathMatchArenaScreen());
+            };
 
 
 

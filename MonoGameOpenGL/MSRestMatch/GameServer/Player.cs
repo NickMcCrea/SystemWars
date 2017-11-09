@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
+using MonoGameEngineCore.GUI;
+using MonoGameEngineCore.GUI.Controls;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
@@ -17,15 +19,30 @@ namespace MSRestMatch.GameServer
 
 
 
-    class Player : GameObject
+    class Player : GameObject, IUpdateable
     {
+        public bool Invulnurable { get; set; }
         public Color PlayerColor { get; set; }
         public float DesiredHeading { get; set; }
         public Vector3 DesiredPosition { get; set; }
         public int Health { get; set; }
-
+        public Label PlayerLabel { get; set; }
         public List<Weapon> Weapons;
+
+        public event EventHandler<EventArgs> EnabledChanged;
+        public event EventHandler<EventArgs> UpdateOrderChanged;
+
         public Weapon CurrentWeapon { get; set; }
+
+        public bool Enabled
+        {
+            get; set;
+        }
+
+        public int UpdateOrder
+        {
+            get; set;
+        }
 
         public Player()
         {
@@ -38,6 +55,10 @@ namespace MSRestMatch.GameServer
             Weapons = new List<Weapon>();
             Weapons.Add(WeaponFactory.CreatePistol());
             CurrentWeapon = Weapons[0];
+
+
+            PlayerLabel = new Label(GUIFonts.Fonts["neurosmall"], "");
+            SystemCore.GUIManager.AddControl(PlayerLabel);
         }
 
         public void FireCurrentWeapon()
@@ -47,6 +68,7 @@ namespace MSRestMatch.GameServer
 
         internal void DamagePlayer(Weapon firingWeapon)
         {
+            
             Health -= firingWeapon.Damage;
             if (Health < 0)
                 Health = 0;
@@ -67,6 +89,15 @@ namespace MSRestMatch.GameServer
         internal float GetY()
         {
             return Transform.AbsoluteTransform.Translation.Z;
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            PlayerLabel.Text = Name;
+            PlayerLabel.SetPosition(MonoMathHelper.ScreenProject(Transform.AbsoluteTransform.Translation - Vector3.Forward * 5, SystemCore.Viewport, 
+                SystemCore.ActiveCamera.View, 
+                SystemCore.ActiveCamera.Projection, 
+                Matrix.Identity).ToVector2XY());
         }
     }
 
@@ -114,8 +145,9 @@ namespace MSRestMatch.GameServer
             SystemCore.PhysicsSimulation.Add(mover);
             SystemCore.PhysicsSimulation.Add(rotator);
 
+         
             mover.LinearMotor.Settings.Servo.SpringSettings.Stiffness /= 10000;
-            mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 10000;
+            mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 1000;
 
         }
 

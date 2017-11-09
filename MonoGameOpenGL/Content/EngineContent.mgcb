@@ -322,3 +322,10 @@
 /processorParam:DebugMode=Auto
 /build:Effects/SM5.0/Water.fx
 
+#begin Fonts/neurosmall.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/neurosmall.spritefont
+

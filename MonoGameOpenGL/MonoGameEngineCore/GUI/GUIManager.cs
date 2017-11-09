@@ -7,6 +7,7 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.GUI.Controls;
 using Microsoft.Xna.Framework;
 using NickMathHelper.Rendering;
+using System;
 
 namespace MonoGameEngineCore.GUI
 {
@@ -88,9 +89,12 @@ namespace MonoGameEngineCore.GUI
         {
             GUIFonts.Fonts.Add("test", content.Load<SpriteFont>("Fonts/SimpleSansSerif"));
             GUIFonts.Fonts.Add("neuropolitical", content.Load<SpriteFont>("Fonts/neuropolitical"));
+            GUIFonts.Fonts.Add("neurosmall", content.Load<SpriteFont>("Fonts/neurosmall"));
             GUIFonts.Fonts.Add("sansserif", content.Load<SpriteFont>("Fonts/SimpleSansSerif"));
             GUITexture.Textures.Add("blank", content.Load<Texture2D>("Textures/blank"));
         }
+
+      
 
         public void Update(GameTime gameTime)
         {
