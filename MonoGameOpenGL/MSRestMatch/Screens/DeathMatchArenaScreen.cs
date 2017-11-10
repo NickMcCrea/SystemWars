@@ -21,8 +21,12 @@ namespace MSRestMatch
 
         public override void OnInitialise()
         {
+            GameSimRules rules = new GameSimRules();
+            rules.FragWinLimit = 20;
+            rules.RespawnTime = 5;
+            rules.GameTimeLimit = 300;
 
-            var gameSim = new GameSimulation();
+            var gameSim = new GameSimulation(rules);
             SystemCore.AddNewUpdateRenderSubsystem(gameSim);
             SystemCore.CursorVisible = true;
             SystemCore.ActiveScene.SetUpAmbientAndFullLightingRig();

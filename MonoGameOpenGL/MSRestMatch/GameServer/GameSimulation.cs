@@ -13,13 +13,30 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MSRestMatch.GameServer
 {
+    public class GameSimRules
+    {
+        public int FragWinLimit { get; set; }
+        public int RespawnTime { get; set; }
+        public int GameTimeLimit { get; set; }
+
+        public GameSimRules()
+        {
+            FragWinLimit = 10;
+            RespawnTime = 5;
+            GameTimeLimit = 300;
+        }
+    }
+
     class GameSimulation : IGameSubSystem
     {
         public bool TrainingMode { get; set; }
+        public Dictionary<Player, DateTime> deadPlayers;
+        private GameSimRules ruleSet;
 
-        public GameSimulation()
+        public GameSimulation(GameSimRules ruleset)
         {
-          
+            deadPlayers = new Dictionary<Player, DateTime>();
+            ruleSet = ruleset;
         }
 
         public void Initalise()
@@ -28,7 +45,7 @@ namespace MSRestMatch.GameServer
             // AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
             //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
             //AddPlayer(new Vector3(10,0,10), "Arran", Color.Blue);
-           
+
         }
 
         public void OnRemove()
@@ -36,9 +53,19 @@ namespace MSRestMatch.GameServer
 
         }
 
+        public static List<GameObject> GetLivingPlayers()
+        {
+            return SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player && !((Player)x).Dead);
+        }
+
+        public static List<GameObject> GetDeadPlayers()
+        {
+            return SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player && ((Player)x).Dead);
+        }
+
         public void Render(GameTime gameTime)
         {
-            var playerList = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
+            var playerList = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player && !((Player)x).Dead);
 
             foreach (Player p in playerList)
             {
@@ -52,7 +79,35 @@ namespace MSRestMatch.GameServer
 
         public void Update(GameTime gameTime)
         {
+            //find all the dead players
+            var players = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
+            
+            foreach (Player p in players)
+            {
+                if (p.Dead)
+                {
+                    if (!deadPlayers.ContainsKey(p))
+                    {
+                        deadPlayers.Add(p, DateTime.Now);
+                        p.DisablePlayer();
+                    }
+                }
+            }
 
+            var deadPlayerList = deadPlayers.Keys.ToList();
+            foreach(Player p in deadPlayerList)
+            {
+                DateTime deathTime = deadPlayers[p];
+
+                TimeSpan timeSinceDeath = DateTime.Now - deathTime;
+                if(timeSinceDeath.TotalSeconds > ruleSet.RespawnTime)
+                {
+                    p.Respawn();
+                    deadPlayers.Remove(p);
+                }
+
+
+            }
         }
 
         public void AddPlayer(Vector3 startPos, string playerName)
@@ -63,7 +118,7 @@ namespace MSRestMatch.GameServer
             p.DesiredPosition = startPos;
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
 
-        
+
         }
 
         internal void CreateFloor(int x, int y, float scale)
@@ -78,7 +133,7 @@ namespace MSRestMatch.GameServer
                     MaterialFactory.ApplyMaterialComponent(o, "Grid");
                     o.AddComponent(new ShadowCasterComponent());
                     o.Transform.Scale = scale;
-                    o.Transform.Translate(new Vector3(i * scale*2, -5, j * scale*2));
+                    o.Transform.Translate(new Vector3(i * scale * 2, -5, j * scale * 2));
                     SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
                 }
             }
@@ -103,7 +158,7 @@ namespace MSRestMatch.GameServer
 
         internal void CreateTrainingArena()
         {
-           
+
         }
 
 
@@ -133,7 +188,7 @@ namespace MSRestMatch.GameServer
         {
             Player p = new Player(RandomHelper.RandomColor);
             p.Name = "CombatDummy";
-            p.AddComponent(new TrainingDummyComponent());
+            p.AddComponent(new CombatDummyComponent());
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(p);
         }
     }

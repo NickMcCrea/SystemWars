@@ -11,6 +11,7 @@ namespace MSRestMatch.GameServer
         public string Name { get; set; }
         public int Damage { get; set; }
         public int FiringInterval { get; set; }
+        public DateTime LastFired { get; set; }
         public float ProjectileSpeed { get; set; }
         public float DamageRadius { get; set; }
     }
@@ -19,7 +20,7 @@ namespace MSRestMatch.GameServer
     {
         public static Weapon CreatePistol()
         {
-            return new Weapon() { Name = "Pistol", Damage = 5, DamageRadius = 0.1f, FiringInterval = 1000, ProjectileSpeed = 0.01f };
+            return new Weapon() { Name = "Pistol", Damage = 5, DamageRadius = 0.1f, FiringInterval = 1000, ProjectileSpeed = 0.1f };
         }
     }
 }

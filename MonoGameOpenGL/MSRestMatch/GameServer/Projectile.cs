@@ -86,6 +86,10 @@ namespace MSRestMatch.GameServer
                     }
                 }
             }
+
+            //projectile is miles away. Remove it.
+            if (ParentObject.Transform.AbsoluteTransform.Translation.Length() > 500)
+                Remove();
         }
 
         void Remove()

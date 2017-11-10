@@ -21,6 +21,7 @@ namespace MSRestMatch.GameServer
 
     class Player : GameObject, IUpdateable
     {
+        private int maxHealth = 50;
         public bool Invulnurable { get; set; }
         public Color PlayerColor { get; set; }
         public float DesiredHeading { get; set; }
@@ -28,6 +29,7 @@ namespace MSRestMatch.GameServer
         public int Health { get; set; }
         public Label PlayerLabel { get; set; }
         public List<Weapon> Weapons;
+        public bool Dead { get; set; }
 
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
@@ -58,7 +60,7 @@ namespace MSRestMatch.GameServer
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             this.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.sphere));
             this.AddComponent(new ShadowCasterComponent());
-            Health = 100;
+            Health = maxHealth;
             Weapons = new List<Weapon>();
             Weapons.Add(WeaponFactory.CreatePistol());
             CurrentWeapon = Weapons[0];
@@ -68,17 +70,45 @@ namespace MSRestMatch.GameServer
             SystemCore.GUIManager.AddControl(PlayerLabel);
         }
 
+
+
         public void FireCurrentWeapon()
         {
-            Projectile p = new Projectile(Transform.AbsoluteTransform.Translation, Transform.AbsoluteTransform.Forward * CurrentWeapon.ProjectileSpeed, CurrentWeapon);
+            var timeSinceFired = DateTime.Now - CurrentWeapon.LastFired;
+            if (timeSinceFired.TotalMilliseconds > CurrentWeapon.FiringInterval)
+            {
+                CurrentWeapon.LastFired = DateTime.Now;
+                Projectile p = new Projectile(Transform.AbsoluteTransform.Translation, Transform.AbsoluteTransform.Forward * CurrentWeapon.ProjectileSpeed, CurrentWeapon);
+            }
         }
 
         internal void DamagePlayer(Weapon firingWeapon)
         {
-            
+
             Health -= firingWeapon.Damage;
-            if (Health < 0)
-                Health = 0;
+            if (Health <= 0)
+            {
+                Dead = true;
+            }
+        }
+
+        public void DisablePlayer()
+        {
+
+            GetComponent<EffectRenderComponent>().Visible = false;
+            GetComponent<ShadowCasterComponent>().Visible = false;
+            PlayerLabel.Visible = false;
+            Dead = true;
+            
+        }
+
+        internal void Respawn()
+        {
+            Health = maxHealth;
+            Dead = false;
+            Enabled = true;
+            GetComponent<EffectRenderComponent>().Visible = true;
+            PlayerLabel.Visible = true;
         }
 
         internal float GetHeading()
@@ -100,10 +130,13 @@ namespace MSRestMatch.GameServer
 
         public void Update(GameTime gameTime)
         {
+            if (Dead)
+                return;
+
             PlayerLabel.Text = Name;
-            PlayerLabel.SetPosition(MonoMathHelper.ScreenProject(Transform.AbsoluteTransform.Translation - Vector3.Forward * 5, SystemCore.Viewport, 
-                SystemCore.ActiveCamera.View, 
-                SystemCore.ActiveCamera.Projection, 
+            PlayerLabel.SetPosition(MonoMathHelper.ScreenProject(Transform.AbsoluteTransform.Translation - Vector3.Forward * 5, SystemCore.Viewport,
+                SystemCore.ActiveCamera.View,
+                SystemCore.ActiveCamera.Projection,
                 Matrix.Identity).ToVector2XY());
         }
     }
@@ -152,7 +185,7 @@ namespace MSRestMatch.GameServer
             SystemCore.PhysicsSimulation.Add(mover);
             SystemCore.PhysicsSimulation.Add(rotator);
 
-         
+
             mover.LinearMotor.Settings.Servo.SpringSettings.Stiffness /= 10000;
             mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 1000;
 
@@ -160,6 +193,9 @@ namespace MSRestMatch.GameServer
 
         public void Update(GameTime gameTime)
         {
+            if (player.Dead)
+                return;
+
             TurnToDesiredHeading();
 
             if (SystemCore.Input.KeyPress(Microsoft.Xna.Framework.Input.Keys.O))
@@ -223,7 +259,16 @@ namespace MSRestMatch.GameServer
 
         }
 
+        internal void SetHeadingToPointToVector(Vector3 targetVec)
+        {
+            Vector3 toTarget = targetVec - ParentObject.Transform.AbsoluteTransform.Translation;
+            toTarget.Normalize();
 
+            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(toTarget.ToVector2XZ()));
+            heading = (heading + 360) % 360;
 
+            player.DesiredHeading = heading;
+
+        }
     }
 }

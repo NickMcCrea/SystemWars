@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameServer\CombatDummyComponent.cs" />
     <Compile Include="GameServer\GameRestServer.cs" />
     <Compile Include="GameServer\GameSimulation.cs" />
     <Compile Include="GameServer\Player.cs" />
