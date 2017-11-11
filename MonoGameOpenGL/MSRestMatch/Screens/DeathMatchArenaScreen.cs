@@ -51,6 +51,7 @@ namespace MSRestMatch
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
+            SystemCore.GameObjectManager.ClearAllObjects();
             host.Close();
             base.OnRemove();
         }

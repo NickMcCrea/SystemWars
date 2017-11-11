@@ -22,7 +22,7 @@ namespace MSRestMatch
             string screenTwo = "Death Match Arena";
 
 
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("MS Rest Match", SystemCore.ActiveColorScheme, screenOne, screenTwo);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;

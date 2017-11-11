@@ -59,16 +59,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameServer\CombatDummyComponent.cs" />
+    <Compile Include="GameSimulation\CombatDummyComponent.cs" />
     <Compile Include="GameServer\GameRestServer.cs" />
-    <Compile Include="GameServer\GameSimulation.cs" />
-    <Compile Include="GameServer\Player.cs" />
-    <Compile Include="GameServer\Projectile.cs" />
-    <Compile Include="GameServer\TrainingDummy.cs" />
-    <Compile Include="GameServer\Weapon.cs" />
+    <Compile Include="GameSimulation\GameSimulation.cs" />
+    <Compile Include="GameSimulation\Player.cs" />
+    <Compile Include="GameSimulation\Projectile.cs" />
+    <Compile Include="GameSimulation\TrainingDummy.cs" />
+    <Compile Include="GameSimulation\Weapon.cs" />
     <Compile Include="GameServer\WebHostHelper.cs" />
     <Compile Include="Screens\DeathMatchArenaScreen.cs" />
-    <Compile Include="Screens\GameSimulationScreen.cs" />
+    <Compile Include="Screens\TrainingSimScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,7 +87,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <Content Include="Todo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

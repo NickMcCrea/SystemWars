@@ -1,0 +1,15 @@
+﻿- Pickups
+	- Health
+	- Ammo
+
+- weapon types
+
+- Define level + wall structure
+	- levels built of floor tiles.
+	- walls can then be placed around any tile edge that's not adjacent to another tile
+	- 
+
+- player spawn points
+
+- procedural training + deathmatch arena generation
+	- generate floor space, walls + pickups

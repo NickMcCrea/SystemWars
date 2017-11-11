@@ -15,10 +15,6 @@ using System.Collections.Generic;
 namespace MSRestMatch.GameServer
 {
 
-
-
-
-
     class Player : GameObject, IUpdateable
     {
         private int maxHealth = 50;
@@ -46,7 +42,7 @@ namespace MSRestMatch.GameServer
             get; set;
         }
 
-        public Player(Color? color)
+        public Player(Color? color, bool manualControl = false)
         {
             var shape = new ProceduralSphere(10, 10);
             if (color.HasValue)
@@ -55,7 +51,10 @@ namespace MSRestMatch.GameServer
                 shape.SetColor(color.Value);
             }
 
-            this.AddComponent(new PlayerControlComponent());
+            if (!manualControl)
+                this.AddComponent(new PlayerControlComponent());
+            else
+                this.AddComponent(new ManualControlComponent());
             this.AddComponent(new RenderGeometryComponent(shape));
             this.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
             this.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.sphere));
@@ -99,7 +98,7 @@ namespace MSRestMatch.GameServer
             GetComponent<ShadowCasterComponent>().Visible = false;
             PlayerLabel.Visible = false;
             Dead = true;
-            
+
         }
 
         internal void Respawn()
@@ -141,14 +140,13 @@ namespace MSRestMatch.GameServer
         }
     }
 
-
-    class PlayerControlComponent : IComponent, IUpdateable
+    class ManualControlComponent : IComponent, IUpdateable
     {
 
         EntityMover mover;
         EntityRotator rotator;
 
-        public PlayerControlComponent()
+        public ManualControlComponent()
         {
             Enabled = true;
         }
@@ -167,7 +165,6 @@ namespace MSRestMatch.GameServer
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
         Player player;
-        Vector2 currentForward;
         PhysicsComponent physicsComponent;
 
         public void Initialise()
@@ -230,6 +227,102 @@ namespace MSRestMatch.GameServer
                 player.DesiredHeading -= 10;
                 player.DesiredHeading = player.DesiredHeading % 360;
             }
+
+
+            mover.TargetPosition = player.DesiredPosition.ToBepuVector();
+
+            if (physicsComponent.InCollision())
+            {
+
+                return;
+            }
+        }
+
+        private void TurnToDesiredHeading()
+        {
+            //get current heading
+            var heading = player.GetHeading();
+
+            Vector2 desiredForward = MonoMathHelper.GetVectorFromHeading(MathHelper.ToRadians(player.DesiredHeading - 360));
+
+            var lookMatrix = Matrix.CreateWorld(ParentObject.Transform.AbsoluteTransform.Translation,
+                new Vector3(desiredForward.X, 0, desiredForward.Y), Vector3.Up);
+
+            var bepuMatrix = MonoMathHelper.GenerateBepuMatrixFromMono(lookMatrix);
+
+            BEPUutilities.Quaternion desiredRot = BEPUutilities.Quaternion.CreateFromRotationMatrix(bepuMatrix);
+            rotator.TargetOrientation = desiredRot;
+
+
+        }
+
+        internal void SetHeadingToPointToVector(Vector3 targetVec)
+        {
+            Vector3 toTarget = targetVec - ParentObject.Transform.AbsoluteTransform.Translation;
+            toTarget.Normalize();
+
+            float heading = MathHelper.ToDegrees(MonoMathHelper.GetHeadingFromVector(toTarget.ToVector2XZ()));
+            heading = (heading + 360) % 360;
+
+            player.DesiredHeading = heading;
+
+        }
+    }
+
+    class PlayerControlComponent : IComponent, IUpdateable
+    {
+
+        EntityMover mover;
+        EntityRotator rotator;
+
+        public PlayerControlComponent()
+        {
+            Enabled = true;
+        }
+        public bool Enabled
+        {
+            get; set;
+        }
+        public GameObject ParentObject
+        {
+            get; set;
+        }
+        public int UpdateOrder
+        {
+            get; set;
+        }
+        public event EventHandler<EventArgs> EnabledChanged;
+        public event EventHandler<EventArgs> UpdateOrderChanged;
+        Player player;
+        PhysicsComponent physicsComponent;
+
+        public void Initialise()
+        {
+
+        }
+
+        public void PostInitialise()
+        {
+            player = ParentObject as Player;
+            this.physicsComponent = ParentObject.GetComponent<PhysicsComponent>();
+
+            mover = new EntityMover(physicsComponent.PhysicsEntity);
+            rotator = new EntityRotator(physicsComponent.PhysicsEntity);
+            SystemCore.PhysicsSimulation.Add(mover);
+            SystemCore.PhysicsSimulation.Add(rotator);
+
+
+            mover.LinearMotor.Settings.Servo.SpringSettings.Stiffness /= 10000;
+            mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 1000;
+
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if (player.Dead)
+                return;
+
+            TurnToDesiredHeading();
 
 
             mover.TargetPosition = player.DesiredPosition.ToBepuVector();

@@ -10,6 +10,8 @@ using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.GameObject.Components.RenderComponents;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGameEngineCore.Procedural;
+using MonoGameEngineCore.Rendering;
 
 namespace MSRestMatch.GameServer
 {
@@ -27,24 +29,36 @@ namespace MSRestMatch.GameServer
         }
     }
 
+    public class GameTile
+    {
+        public Vector3 Center { get; set; }
+        public float Scale { get; set; }
+        public List<GameTile> Neighbours { get; set; }
+
+        public GameTile()
+        {
+            Neighbours = new List<GameTile>();
+        }
+    }
+
     class GameSimulation : IGameSubSystem
     {
         public bool TrainingMode { get; set; }
         public Dictionary<Player, DateTime> deadPlayers;
         private GameSimRules ruleSet;
 
+        public List<GameTile> gameTiles;
+
         public GameSimulation(GameSimRules ruleset)
         {
             deadPlayers = new Dictionary<Player, DateTime>();
             ruleSet = ruleset;
+            gameTiles = new List<GameTile>();
         }
 
         public void Initalise()
         {
-            //AddPlayer(new Vector3(-100,0,0), "Nick", Color.Red);
-            // AddPlayer(new Vector3(0, 0, 0), "Jim", Color.Blue);
-            //AddPlayer(new Vector3(0,0,10), "Neil", Color.Orange);
-            //AddPlayer(new Vector3(10,0,10), "Arran", Color.Blue);
+            AddPlayer(Vector3.Zero, "Nick", true);
 
         }
 
@@ -75,13 +89,21 @@ namespace MSRestMatch.GameServer
                     p.Transform.AbsoluteTransform.Translation + p.Transform.AbsoluteTransform.Forward * 1.5f, p.PlayerColor);
 
             }
+
+            //foreach (GameTile t in gameTiles)
+            //{
+            //    foreach (GameTile n in t.Neighbours)
+            //    {
+            //        DebugShapeRenderer.AddLine(t.Center, n.Center, Color.Blue);
+            //    }
+            //}
         }
 
         public void Update(GameTime gameTime)
         {
             //find all the dead players
             var players = SystemCore.GameObjectManager.GetAllObjects().FindAll(x => x is Player);
-            
+
             foreach (Player p in players)
             {
                 if (p.Dead)
@@ -95,12 +117,12 @@ namespace MSRestMatch.GameServer
             }
 
             var deadPlayerList = deadPlayers.Keys.ToList();
-            foreach(Player p in deadPlayerList)
+            foreach (Player p in deadPlayerList)
             {
                 DateTime deathTime = deadPlayers[p];
 
                 TimeSpan timeSinceDeath = DateTime.Now - deathTime;
-                if(timeSinceDeath.TotalSeconds > ruleSet.RespawnTime)
+                if (timeSinceDeath.TotalSeconds > ruleSet.RespawnTime)
                 {
                     p.Respawn();
                     deadPlayers.Remove(p);
@@ -110,9 +132,9 @@ namespace MSRestMatch.GameServer
             }
         }
 
-        public void AddPlayer(Vector3 startPos, string playerName)
+        public void AddPlayer(Vector3 startPos, string playerName, bool manualControl = false)
         {
-            Player p = new Player(RandomHelper.RandomColor);
+            Player p = new Player(RandomHelper.RandomColor, manualControl);
             p.Transform.AbsoluteTransform.Translation = startPos;
             p.Name = playerName;
             p.DesiredPosition = startPos;
@@ -121,47 +143,91 @@ namespace MSRestMatch.GameServer
 
         }
 
-        internal void CreateFloor(int x, int y, float scale)
+        internal void CreateTrainingArena(int x, int y, float scale)
         {
-
-            for (int i = -x / 2; i < x / 2; i++)
+            for (float i = -x / 2; i < x / 2; i++)
             {
-                for (int j = -y / 2; j < y / 2; j++)
+                for (float j = -y / 2; j < y / 2; j++)
                 {
-                    GameObject o = new GameObject();
-                    o.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
-                    MaterialFactory.ApplyMaterialComponent(o, "Grid");
-                    o.AddComponent(new ShadowCasterComponent());
-                    o.Transform.Scale = scale;
-                    o.Transform.Translate(new Vector3(i * scale * 2, -5, j * scale * 2));
-                    SystemCore.GameObjectManager.AddAndInitialiseGameObject(o);
+                    var pos = new Vector3(i * scale + (scale / 2), -2, j * scale + (scale / 2));
+
+                    GameTile t = new GameTile();
+                    t.Center = pos;
+                    t.Scale = scale;
+                    gameTiles.Add(t);
+                   
                 }
             }
 
-
-            //GameObject gameObject = new GameObject();
-            //gameObject.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
-            //MaterialFactory.ApplyMaterialComponent(gameObject, "SciFiFloor");
-            //gameObject.AddComponent(new ShadowCasterComponent());
-            //gameObject.Transform.Scale = 10f;
-            //gameObject.Transform.Translate(new Vector3(0, -5, 0));
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject);
-
-            //GameObject gameObject2 = new GameObject();
-            //gameObject2.AddComponent(new ModelComponent(SystemCore.ContentManager.Load<Model>("Models/Sci-Fi-Floor-1-OBJ")));
-            //MaterialFactory.ApplyMaterialComponent(gameObject2, "SciFiFloor");
-            //gameObject2.AddComponent(new ShadowCasterComponent());
-            //gameObject2.Transform.Scale = 10f;
-            //gameObject2.Transform.Translate(new Vector3(20, -5, 0));
-            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(gameObject2);
+            GenerateFloorObjectFromFloorShapes(gameTiles);
+            GenerateConnectivity();
         }
 
-        internal void CreateTrainingArena()
+        private void GenerateConnectivity()
+        {
+            foreach (GameTile t in gameTiles)
+            {
+                foreach (GameTile o in gameTiles)
+                {
+                    if (t == o)
+                        continue;
+
+                    float distance = (t.Center - o.Center).Length();
+                    if (distance == 10)
+                    {
+                        t.Neighbours.Add(o);
+                        o.Neighbours.Add(t);
+                    }
+                }
+            }
+        }
+
+        private void GenerateFloorObjectFromFloorShapes(List<GameTile> tiles)
         {
 
+
+            GameObject finalFloorShape = new GameObject();
+            ProceduralShape finalShape = new ProceduralShape();
+
+            ProceduralPlane plane = new ProceduralPlane();
+            plane.SetColor(Color.LightGray.ChangeTone(RandomHelper.GetRandomInt(-20, 20)));
+            plane.Scale(tiles[0].Scale);
+            plane.Translate(tiles[0].Center);
+
+
+            finalShape = plane;
+            AddLineBatch(plane);
+
+         
+            for (int i = 1; i < tiles.Count; i++)
+            {
+                ProceduralPlane newPlane = new ProceduralPlane();
+                newPlane.SetColor(Color.LightGray.ChangeTone(RandomHelper.GetRandomInt(-20, 20)));
+                newPlane.Scale(tiles[i].Scale);
+                newPlane.Translate(tiles[i].Center);
+                finalShape = ProceduralShape.Combine(finalShape, newPlane);
+                AddLineBatch(newPlane);
+               
+            }
+
+            finalFloorShape.AddComponent(new RenderGeometryComponent(finalShape));
+            finalFloorShape.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
+            finalFloorShape.AddComponent(new ShadowCasterComponent());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(finalFloorShape);
+
         }
 
+        private static void AddLineBatch(ProceduralPlane proceduralPlane)
+        {
+            LineBatch l = new LineBatch(proceduralPlane.GetLineBatchVerts().ToArray());
+            for (int i = 0; i < l.Vertices.Count(); i++)
+            {
+                l.Vertices[i].Position = l.Vertices[i].Position.ReplaceYComponent(-1.9f);
+            }
 
+            GameObject lineObject = SystemCore.GameObjectManager.AddLineBatchToScene(l);
+
+        }
 
         internal void AddTrainingDummy()
         {

@@ -474,16 +474,19 @@ namespace MonoGameEngineCore.Procedural
             return avg;
         }
 
-        internal List<Vector3> GetEdgeVertices()
+        public List<Vector3> GetEdgeVertices()
         {
             var edges = GetExternalEdges();
 
             var vectors = new List<Vector3>();
 
             for (int i = 0; i < edges.Count; i++)
+            {
                 vectors.Add(edges[i].a);
+                vectors.Add(edges[i].b);
+            }
 
-            return vectors;
+            return vectors.Distinct().ToList();
 
         }
 
@@ -929,6 +932,17 @@ namespace MonoGameEngineCore.Procedural
             SetColor(Color.White);
         }
 
+        public List<Vector3> GetLineBatchVerts()
+        {
+            List<Vector3> cornerList = new List<Vector3>();
+            cornerList.Add(Vertices[0].Position);
+            cornerList.Add(Vertices[1].Position);
+            cornerList.Add(Vertices[2].Position);
+            cornerList.Add(Vertices[3].Position);
+            cornerList.Add(Vertices[0].Position);
+            return cornerList;
+        }
+
     }
 
     public class ProceduralDiamond : ProceduralShape
@@ -1193,6 +1207,11 @@ namespace MonoGameEngineCore.Procedural
 
     public class LineBatch : ProceduralShape
     {
+        public LineBatch()
+        {
+
+        }
+
         public LineBatch(params Vector3 [] linePoints)
         {
             Indices = new short[linePoints.Length*2-2];
@@ -1200,7 +1219,7 @@ namespace MonoGameEngineCore.Procedural
 
             for (int i = 0; i < linePoints.Length; i++)
             {
-                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.Red, Vector2.Zero, Vector3.Zero);
+                Vertices[i] = new VertexPositionColorTextureNormal(linePoints[i], Color.Black, Vector2.Zero, Vector3.Zero);
 
                 if (i < linePoints.Length - 1)
                 {
@@ -1215,7 +1234,40 @@ namespace MonoGameEngineCore.Procedural
             PrimitiveCount = linePoints.Length - 1;
         }
 
-     
+        public static LineBatch Combine(params LineBatch[] shapes)
+        {
+            LineBatch newShape = new LineBatch();
+
+            newShape.Vertices = new VertexPositionColorTextureNormal[shapes.Sum(x => x.Vertices.Length)];
+            newShape.Indices = new short[shapes.Sum(x => x.Indices.Length)];
+
+
+
+            int VertexOffset = 0;
+            int IndexOffset = 0;
+
+            foreach (ProceduralShape s in shapes)
+            {
+                for (int v = 0; v < s.Vertices.Length; v++)
+                {
+                    newShape.Vertices[VertexOffset + v] = s.Vertices[v];
+                }
+
+                for (int i = 0; i < s.Indices.Length; i++)
+                {
+                    newShape.Indices[IndexOffset + i] = (short)(s.Indices[i] + VertexOffset);
+                }
+
+                VertexOffset += s.Vertices.Length;
+                IndexOffset += s.Indices.Length;
+            }
+
+            newShape.PrimitiveCount = shapes.Sum(x => x.PrimitiveCount);
+            return newShape;
+        }
+
+
+
     }
    
 

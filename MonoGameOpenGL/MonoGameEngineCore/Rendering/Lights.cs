@@ -33,7 +33,7 @@ namespace MonoGameEngineCore.Rendering
             LightsInScene.Clear();
 
             AmbientLight = new AmbientLight(Color.White, 0.2f);
-            Vector3 lightDir = new Vector3(1, 0, 0f);
+            Vector3 lightDir = new Vector3(1, 1, 1f);
             lightDir.Normalize();
             LightsInScene.Add(new DiffuseLight(lightDir, Color.White, 0.5f));
 
