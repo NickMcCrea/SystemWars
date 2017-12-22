@@ -90,13 +90,13 @@ namespace MSRestMatch.GameServer
 
             }
 
-            //foreach (GameTile t in gameTiles)
-            //{
-            //    foreach (GameTile n in t.Neighbours)
-            //    {
-            //        DebugShapeRenderer.AddLine(t.Center, n.Center, Color.Blue);
-            //    }
-            //}
+            foreach (GameTile t in gameTiles)
+            {
+                foreach (GameTile n in t.Neighbours)
+                {
+                    DebugShapeRenderer.AddLine(t.Center, n.Center, Color.Blue);
+                }
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -155,12 +155,95 @@ namespace MSRestMatch.GameServer
                     t.Center = pos;
                     t.Scale = scale;
                     gameTiles.Add(t);
-                   
+
                 }
             }
 
             GenerateFloorObjectFromFloorShapes(gameTiles);
             GenerateConnectivity();
+            GenerateWalls();
+        }
+
+        private void GenerateWalls()
+        {
+
+            List<ProceduralCuboid> cuboids = new List<ProceduralCuboid>();
+            foreach (GameTile t in gameTiles)
+            {
+
+                //surrounded
+                if (t.Neighbours.Count == 4)
+                    continue;
+
+                bool northWallNeeded, southWallNeeded, westWallNeeded, eastWallNeeded;
+                northWallNeeded = southWallNeeded = westWallNeeded = eastWallNeeded = true;
+
+                foreach (GameTile n in t.Neighbours)
+                {
+                    //it's north / south
+                    if (t.Center.X == n.Center.X)
+                    {
+                        if (t.Center.Z > n.Center.Z)
+                            southWallNeeded = false;
+                        else
+                            northWallNeeded = false;
+                    }
+                    //east / west neighbour
+                    if (t.Center.Z == n.Center.Z)
+                    {
+                        if (t.Center.X > n.Center.X)
+                            westWallNeeded = false;
+                        else
+                            eastWallNeeded = false;
+                    }
+
+                }
+
+                if (northWallNeeded)
+                {
+                    Vector3 wallCenterPoint = t.Center + new Vector3(0, t.Scale / 2, t.Scale / 2 + 1);
+                    ProceduralCuboid cuboid = new ProceduralCuboid(t.Scale / 2, 1, t.Scale / 2);
+                    cuboid.Translate(wallCenterPoint);
+                    cuboids.Add(cuboid);
+                   // CreateWallObject(wallCenterPoint, cuboid);
+                }
+                if (southWallNeeded)
+                {
+                    Vector3 wallCenterPoint = t.Center + new Vector3(0, t.Scale / 2, -t.Scale / 2 - 1);
+                    ProceduralCuboid cuboid = new ProceduralCuboid(t.Scale / 2, 1, t.Scale / 2);
+                    cuboid.Translate(wallCenterPoint);
+                    cuboids.Add(cuboid);
+                    //  CreateWallObject(wallCenterPoint, cuboid);
+                }
+                if (eastWallNeeded)
+                {
+                    Vector3 wallCenterPoint = t.Center + new Vector3(t.Scale / 2 + 1, t.Scale / 2, 0);
+                    ProceduralCuboid cuboid = new ProceduralCuboid(1, t.Scale/2, t.Scale / 2);
+                    cuboid.Translate(wallCenterPoint);
+                    cuboids.Add(cuboid);
+                    // CreateWallObject(wallCenterPoint, cuboid);
+                }
+                if (westWallNeeded)
+                {
+                    Vector3 wallCenterPoint = t.Center + new Vector3(-t.Scale / 2 - 1, t.Scale / 2, 0);
+                    ProceduralCuboid cuboid = new ProceduralCuboid(1, t.Scale / 2, t.Scale / 2);
+                    cuboid.Translate(wallCenterPoint);
+                    cuboids.Add(cuboid);
+                    // CreateWallObject(wallCenterPoint, cuboid);
+                }
+            }
+
+
+        }
+
+        private static void CreateWallObject(Vector3 wallCenterPoint, ProceduralCuboid cuboid)
+        {
+            cuboid.SetColor(RandomHelper.RandomColor);
+            GameObject wallObject = GameObjectFactory.CreateRenderableGameObjectFromShape(cuboid, EffectLoader.LoadSM5Effect("flatshaded"));
+            wallObject.Transform.Translate(wallCenterPoint);
+            wallObject.AddComponent(new ShadowCasterComponent());
+           // wallObject.AddComponent(new StaticMeshColliderComponent())
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(wallObject);
         }
 
         private void GenerateConnectivity()
@@ -175,8 +258,11 @@ namespace MSRestMatch.GameServer
                     float distance = (t.Center - o.Center).Length();
                     if (distance == 10)
                     {
-                        t.Neighbours.Add(o);
-                        o.Neighbours.Add(t);
+                        if (!t.Neighbours.Contains(o))
+                            t.Neighbours.Add(o);
+
+                        if (!o.Neighbours.Contains(t))
+                            o.Neighbours.Add(t);
                     }
                 }
             }
@@ -198,7 +284,7 @@ namespace MSRestMatch.GameServer
             finalShape = plane;
             AddLineBatch(plane);
 
-         
+
             for (int i = 1; i < tiles.Count; i++)
             {
                 ProceduralPlane newPlane = new ProceduralPlane();
@@ -207,7 +293,7 @@ namespace MSRestMatch.GameServer
                 newPlane.Translate(tiles[i].Center);
                 finalShape = ProceduralShape.Combine(finalShape, newPlane);
                 AddLineBatch(newPlane);
-               
+
             }
 
             finalFloorShape.AddComponent(new RenderGeometryComponent(finalShape));

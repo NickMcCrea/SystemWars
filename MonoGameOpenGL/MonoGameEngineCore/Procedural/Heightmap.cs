@@ -123,6 +123,7 @@ namespace MonoGameEngineCore.Procedural
 
         }
 
+
         private void Initialize()
         {
             heights = new float[size, size];

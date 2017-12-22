@@ -17,15 +17,9 @@ namespace MonoGameEngineCore.Rendering.Camera
         public Matrix Projection { get; set; }
         public Matrix World;
         public Vector3 Position { get { return World.Translation; } }
-        public float FarZ
-        {
-            get; set;
-        }
+        public float NearZ { get; set; }
+        public float FarZ { get; set; }
 
-        public float NearZ
-        {
-            get; set;
-        }
         public Vector3 Right
         {
             get
@@ -44,14 +38,14 @@ namespace MonoGameEngineCore.Rendering.Camera
         const float rotationSpeed = 0.0003f;
         public float moveSpeed = 0.1f;
         Vector3 moveVector = new Vector3(0, 0, 0);
-    
+
 
         public MouseFreeCamera(Vector3 startPosition)
         {
             FarZ = 250f;
             NearZ = 0.25f;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, NearZ, FarZ);
-            World.Translation = startPosition;   
+            World.Translation = startPosition;
             UpdateViewMatrix();
         }
 
@@ -66,7 +60,7 @@ namespace MonoGameEngineCore.Rendering.Camera
 
         public void Update(GameTime gameTime, float xDifference, float yDifference)
         {
-         
+
             leftrightRot -= rotationSpeed * xDifference * gameTime.ElapsedGameTime.Milliseconds;
             updownRot -= rotationSpeed * yDifference * gameTime.ElapsedGameTime.Milliseconds;
 
@@ -76,7 +70,7 @@ namespace MonoGameEngineCore.Rendering.Camera
                 moveVector *= 0.01f;
 
             AddToCameraPosition(moveVector * gameTime.ElapsedGameTime.Milliseconds);
-           
+
             //zero out for next frame
             moveVector = new Vector3(0, 0, 0);
         }
@@ -112,7 +106,6 @@ namespace MonoGameEngineCore.Rendering.Camera
         private void UpdateViewMatrix()
         {
             Matrix cameraRotation = Matrix.CreateRotationX(updownRot) * Matrix.CreateRotationY(leftrightRot);
-
             Vector3 cameraOriginalTarget = Vector3.Forward;
             Vector3 cameraOriginalUpVector = Vector3.Up;
 

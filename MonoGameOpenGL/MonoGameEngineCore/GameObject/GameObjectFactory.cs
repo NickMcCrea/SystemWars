@@ -24,7 +24,6 @@ namespace MonoGameEngineCore.GameObject
             ob.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape), BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
 
 
-
             if (shape is LineBatch)
                 ob.AddComponent(new LineRenderComponent(effect as BasicEffect));
 

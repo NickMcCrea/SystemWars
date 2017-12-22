@@ -82,10 +82,10 @@ namespace MonoGameDirectX11.Screens
             var heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 1, 100, 1, 1, 1);
             return heightMap.CreateRenderableHeightMap(Color.MonoGameOrange, EffectLoader.LoadSM5Effect("flatshaded"));
         }
-
+    
         private void SetupVehicle()
         {
-            float width = 2.5f;
+            float width = 2.5f; 
             float height = 0.75f;
             float length = 4.5f;
             float scale = 1f;
