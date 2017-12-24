@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace BoidWar.Gameplay
 {
 
-    public class MainBase : GameObject
+    public class MainBase : Building
     {
 
 
@@ -28,8 +28,9 @@ namespace BoidWar.Gameplay
             var physicsComponent = new PhysicsComponent(false, false, PhysicsMeshType.box);
             AddComponent(physicsComponent);
 
-            
-          
+
+            Health = 100;
+
         }
 
         public void Update(GameTime gameTime)
@@ -40,6 +41,12 @@ namespace BoidWar.Gameplay
     }
 
 
+    public class Building : GameObject
+    {
+        public int Health { get; set; }
 
-    
+    }
+
+
+
 }

@@ -106,7 +106,7 @@ namespace MSRestMatch.Screens
 
 
             arenaObject.AddComponent(new StaticMeshColliderComponent(arenaObject, final.GetVertices(),
-                final.GetIndicesAsInt().ToArray()));
+                final.GetIndicesAsInt().ToArray(), Vector3.Zero));
 
             arenaObject.AddComponent(new ShadowCasterComponent());
 

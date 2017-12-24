@@ -8,6 +8,7 @@ using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Helper;
 
 namespace GridForgeResurrected.Screens
 {
@@ -263,9 +264,15 @@ namespace GridForgeResurrected.Screens
             var indices = BufferBuilder.IndexBufferBuild(inds);
 
 
+            List<Vector3> verticesList = new List<Vector3>();
+
+            foreach (VertexPositionColorTextureNormal v1 in v)
+                verticesList.Add(v1.Position);
+
 
             terrainObject.AddComponent(new RenderGeometryComponent(verts, indices, indices.IndexCount / 3));
             terrainObject.AddComponent(new EffectRenderComponent(planetEffect));
+            terrainObject.AddComponent(new StaticMeshColliderComponent("", verticesList, MonoMathHelper.ConvertShortToInt(inds), startPosition));
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainObject);
             planetPieces.Add(terrainObject);
         }
@@ -287,28 +294,31 @@ namespace GridForgeResurrected.Screens
 
         public void Update(GameTime gameTime, float heightAbovePlanetSurface, Vector3 cameraPos)
         {
-            DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
-
-            if (groundScatteringHelper != null)
+            if (SystemCore.ActiveScene.LightsInScene.Count > 0)
             {
-                groundScatteringHelper.Update(heightAbovePlanetSurface, light.LightDirection,
-                    cameraPos - CurrentCenterPosition);
+                DiffuseLight light = SystemCore.ActiveScene.LightsInScene[0] as DiffuseLight;
 
-                if (atmosphere != null)
-                    atmosphere.Update(light.LightDirection, cameraPos, heightAbovePlanetSurface);
-            }
+                if (groundScatteringHelper != null)
+                {
+                    groundScatteringHelper.Update(heightAbovePlanetSurface, light.LightDirection,
+                        cameraPos - CurrentCenterPosition);
 
-            if (CurrentOrbit != null)
-            {
-                Vector3 pointToOrbit = CurrentOrbit.OrbitPoint;
-                if (CurrentOrbit.BodyToOrbit != null)
-                    pointToOrbit = CurrentOrbit.BodyToOrbit.CurrentCenterPosition;
+                    if (atmosphere != null)
+                        atmosphere.Update(light.LightDirection, cameraPos, heightAbovePlanetSurface);
+                }
 
-                CalculateOrbit(pointToOrbit, CurrentOrbit.Axis, CurrentOrbit.Speed);
-            }
-            if (CurrentSpin != null)
-            {
-                CalculateRotation(CurrentSpin.Axis, CurrentSpin.Speed);
+                if (CurrentOrbit != null)
+                {
+                    Vector3 pointToOrbit = CurrentOrbit.OrbitPoint;
+                    if (CurrentOrbit.BodyToOrbit != null)
+                        pointToOrbit = CurrentOrbit.BodyToOrbit.CurrentCenterPosition;
+
+                    CalculateOrbit(pointToOrbit, CurrentOrbit.Axis, CurrentOrbit.Speed);
+                }
+                if (CurrentSpin != null)
+                {
+                    CalculateRotation(CurrentSpin.Axis, CurrentSpin.Speed);
+                }
             }
 
         }

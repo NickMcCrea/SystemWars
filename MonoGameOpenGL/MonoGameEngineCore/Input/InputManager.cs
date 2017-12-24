@@ -165,14 +165,16 @@ namespace MonoGameEngineCore
 
     public class InputManager : IGameSubSystem
     {
-
-        PlayerIndex currentIndex = PlayerIndex.One;
+        
         private MouseState currentMouseState;
         private MouseState oldMouseState;
         private KeyboardState currentKeyboardState;
         private KeyboardState oldKeyboardState;
-        private GamePadState oldGamePadState;
-        private GamePadState currentGamePadState;
+      
+
+        private Dictionary<PlayerIndex, GamePadState> currentGamePadStates;
+        private Dictionary<PlayerIndex, GamePadState> oldGamePadStates;
+
         private Dictionary<string,List<InputBinding>> inputBindings;
         private Point screenMidPoint;
         public Point MouseDelta { get; private set; }
@@ -188,13 +190,19 @@ namespace MonoGameEngineCore
         {
             currentMouseState = Mouse.GetState();
             currentKeyboardState = Keyboard.GetState();
-            currentGamePadState = GamePad.GetState(currentIndex);
             inputBindings =new Dictionary<string, List<InputBinding>>();
             screenMidPoint = new Point(SystemCore.GraphicsDevice.Viewport.Width/2,
                 SystemCore.GraphicsDevice.Viewport.Height/2);
 
+            currentGamePadStates = new Dictionary<PlayerIndex, GamePadState>();
+            oldGamePadStates = new Dictionary<PlayerIndex, GamePadState>();
 
-
+            for (int i = 0; i < 4; i++)
+            {
+                PlayerIndex current = (PlayerIndex)i;
+                oldGamePadStates.Add(current, GamePad.GetState(current));
+                currentGamePadStates.Add(current, GamePad.GetState(current));
+            }
 
         }
 
@@ -236,12 +244,21 @@ namespace MonoGameEngineCore
 
         private void RefreshInputStates()
         {
-            oldGamePadState = currentGamePadState;
-            currentGamePadState = GamePad.GetState(currentIndex); 
+            
             oldMouseState = currentMouseState;
             currentMouseState = Mouse.GetState();
             oldKeyboardState = currentKeyboardState;
             currentKeyboardState = Keyboard.GetState();
+
+
+            for(int i = 0; i < currentGamePadStates.Count; i++)
+            {
+                PlayerIndex current = (PlayerIndex)i;
+                oldGamePadStates[current] = currentGamePadStates[current];
+                currentGamePadStates[current] = GamePad.GetState(current);
+            }
+
+
         }
 
         public void Render(GameTime gameTime)
@@ -306,44 +323,44 @@ namespace MonoGameEngineCore
           
         }
 
-        public Vector2 GetLeftStickState()
+        public Vector2 GetLeftStickState(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.ThumbSticks.Left;
+            return currentGamePadStates[index].ThumbSticks.Left;
         }
 
-        public Vector2 GetRightStickState()
+        public Vector2 GetRightStickState(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.ThumbSticks.Right;
+            return currentGamePadStates[index].ThumbSticks.Right;
         }
 
-        public Vector2 GetLeftStickDelta()
+        public Vector2 GetLeftStickDelta(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.ThumbSticks.Left - oldGamePadState.ThumbSticks.Left;
+            return currentGamePadStates[index].ThumbSticks.Left - oldGamePadStates[index].ThumbSticks.Left;
         }
 
-        public Vector2 GetRightStickDelta()
+        public Vector2 GetRightStickDelta(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.ThumbSticks.Right - oldGamePadState.ThumbSticks.Right;
+            return currentGamePadStates[index].ThumbSticks.Right - oldGamePadStates[index].ThumbSticks.Right;
         }
 
-        public bool RightStickClick()
+        public bool RightStickClick(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.Buttons.RightStick == ButtonState.Pressed && oldGamePadState.Buttons.RightStick == ButtonState.Released;
+            return currentGamePadStates[index].Buttons.RightStick == ButtonState.Pressed && oldGamePadStates[index].Buttons.RightStick == ButtonState.Released;
         }
 
-        public bool LeftStickClick()
+        public bool LeftStickClick(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.Buttons.LeftStick == ButtonState.Pressed && oldGamePadState.Buttons.LeftStick == ButtonState.Released;
+            return currentGamePadStates[index].Buttons.LeftStick == ButtonState.Pressed && oldGamePadStates[index].Buttons.LeftStick == ButtonState.Released;
         }
 
-        public float GetLeftTrigger()
+        public float GetLeftTrigger(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.Triggers.Left;
+            return currentGamePadStates[index].Triggers.Left;
         }
 
-        public float GetRightTrigger()
+        public float GetRightTrigger(PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.Triggers.Right;
+            return currentGamePadStates[index].Triggers.Right;
         }
 
         internal bool MouseInRectangle(Rectangle Rect)
@@ -408,17 +425,17 @@ namespace MonoGameEngineCore
             }
         }
 
-        public bool GamePadButtonPress(Buttons button)
+        public bool GamePadButtonPress(Buttons button, PlayerIndex index = PlayerIndex.One)
         {
-            if (currentGamePadState.IsButtonDown(button))
-                if (oldGamePadState.IsButtonUp(button))
+            if (currentGamePadStates[index].IsButtonDown(button))
+                if (oldGamePadStates[index].IsButtonUp(button))
                     return true;
             return false;
         }
 
-        public bool GamePadButtonDown(Buttons button)
+        public bool GamePadButtonDown(Buttons button, PlayerIndex index = PlayerIndex.One)
         {
-            return currentGamePadState.IsButtonDown(button);
+            return currentGamePadStates[index].IsButtonDown(button);
         }
 
         public Ray GetProjectedMouseRay()

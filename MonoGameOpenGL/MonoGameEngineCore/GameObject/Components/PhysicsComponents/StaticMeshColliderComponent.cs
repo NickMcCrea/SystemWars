@@ -17,7 +17,7 @@ namespace MonoGameEngineCore.GameObject.Components
 
         public object Tag { get; set; }
 
-        public StaticMeshColliderComponent(object tag, List<Microsoft.Xna.Framework.Vector3> verts, int[] indices)
+        public StaticMeshColliderComponent(object tag, List<Microsoft.Xna.Framework.Vector3> verts, int[] indices, Microsoft.Xna.Framework.Vector3 translation)
         {
             if (tag != null)
                 Tag = tag;
@@ -27,6 +27,11 @@ namespace MonoGameEngineCore.GameObject.Components
             List<BEPUutilities.Vector3> bepuVerts =
                 MathConverter.Convert(verts.ToArray())
                     .ToList();
+
+           for(int i = 0; i < bepuVerts.Count; i++)
+            {
+                bepuVerts[i] = bepuVerts[i] + translation.ToBepuVector();
+            }
 
             staticMesh = new StaticMesh(bepuVerts.ToArray(), indices, AffineTransform.Identity);
             offset = staticMesh.WorldTransform.Translation.ToXNAVector();

@@ -262,7 +262,7 @@ namespace MonoGameEngineCore.Procedural
             EffectRenderComponent renderComponent = new EffectRenderComponent(effect);
             heightMapObject.AddComponent(renderGeom);
             heightMapObject.AddComponent(renderComponent);
-            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray()));
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray(), Vector3.Zero));
             return heightMapObject;
         }
 
@@ -277,7 +277,7 @@ namespace MonoGameEngineCore.Procedural
             EffectRenderComponent renderComponent = new EffectRenderComponent(effect);
             heightMapObject.AddComponent(renderGeom);
             heightMapObject.AddComponent(renderComponent);
-            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray()));
+            heightMapObject.AddComponent(new StaticMeshColliderComponent(heightMapObject, GetVertices(), GetIndices().ToArray(), Vector3.Zero));
             return heightMapObject;
         }
 

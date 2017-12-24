@@ -85,6 +85,11 @@ namespace MonoGameEngineCore.GameObject.Components
             if (ParentObject.ContainsComponent<PhysicsComponent>())
                 ParentObject.GetComponent<PhysicsComponent>().SetPosition(position);
 
+            if (ParentObject.ContainsComponent<StaticMeshColliderComponent>())
+            {
+                ParentObject.GetComponent<StaticMeshColliderComponent>().staticMesh.UpdateBoundingBox();
+            }
+
         }
 
         public void Translate(Vector3 translation)

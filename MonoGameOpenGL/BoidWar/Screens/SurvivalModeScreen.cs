@@ -8,149 +8,26 @@ using MonoGameEngineCore.Rendering;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.Helper;
-
 using MonoGameEngineCore.GameObject.Components;
-using BEPUphysics.UpdateableSystems;
-using System.Collections.Generic;
-using BoidWar;
 using BoidWar.Gameplay;
-using BEPUphysics.Vehicle;
+using MonoGameEngineCore.Camera;
+using GridForgeResurrected.Screens;
+using BEPUphysics.UpdateableSystems.ForceFields;
+using System.Collections.Generic;
 
 namespace BoidWar.Screens
 {
 
-    public class DuneBuggy
-    {
-        private Vehicle vehicle;
-        private GameObject body;
-        private List<GameObject> wheels;
-        /// <summary>
-        /// Speed that the Vehicle tries towreach when moving backward.
-        /// </summary>
-        public float BackwardSpeed = -13;
-
-        /// <summary>
-        /// Speed that the Vehicle tries to reach when moving forward.
-        /// </summary>
-        public float ForwardSpeed = 30;
-
-        /// <summary>
-        /// Whether or not to use the Vehicle's input.
-        /// </summary>
-        public bool IsActive;
-
-
-        /// <summary>
-        /// Maximum turn angle of the wheels.
-        /// </summary>
-        public float MaximumTurnAngle = (float)Math.PI / 6;
-
-        /// <summary>
-        /// Turning speed of the wheels in radians per second.
-        /// </summary>
-        public float TurnSpeed = MathHelper.Pi;
-
-
-        public DuneBuggy()
-        {
-            this.vehicle = VehicleFactory.Create(new BEPUutilities.Vector3(20, 20, 20));
-            SystemCore.PhysicsSimulation.Add(vehicle);
-
-            var shape = new ProceduralCuboid(2.5f/2, 4.5f/2, .75f/2);
-            shape.SetColor(Color.Maroon);
-            body = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
-            body.AddComponent(new ShadowCasterComponent());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(body);
-
-
-        }
-
-
-        public void Update(GameTime gameTime)
-        {
-            body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
-
-
-
-            if (SystemCore.Input.IsKeyDown(Keys.E))
-            {
-                //Drive
-                vehicle.Wheels[1].DrivingMotor.TargetSpeed = ForwardSpeed;
-                vehicle.Wheels[3].DrivingMotor.TargetSpeed = ForwardSpeed;
-            }
-            else if (SystemCore.Input.IsKeyDown(Keys.D))
-            {
-                //Reverse
-                vehicle.Wheels[1].DrivingMotor.TargetSpeed = BackwardSpeed;
-                vehicle.Wheels[3].DrivingMotor.TargetSpeed = BackwardSpeed;
-            }
-            else
-            {
-                //Idle
-                vehicle.Wheels[1].DrivingMotor.TargetSpeed = 0;
-                vehicle.Wheels[3].DrivingMotor.TargetSpeed = 0;
-            }
-            if (SystemCore.Input.IsKeyDown(Keys.Space))
-            {
-                //Brake
-                foreach (Wheel wheel in vehicle.Wheels)
-                {
-                    wheel.Brake.IsBraking = true;
-                }
-            }
-            else
-            {
-                //Release brake
-                foreach (Wheel wheel in vehicle.Wheels)
-                {
-                    wheel.Brake.IsBraking = false;
-                }
-            }
-            //Use smooth steering; while held down, move towards maximum.
-            //When not pressing any buttons, smoothly return to facing forward.
-            float angle;
-            bool steered = false;
-            if (SystemCore.Input.IsKeyDown(Keys.S))
-            {
-                steered = true;
-                angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, -MaximumTurnAngle);
-                vehicle.Wheels[1].Shape.SteeringAngle = angle;
-                vehicle.Wheels[3].Shape.SteeringAngle = angle;
-            }
-            if (SystemCore.Input.IsKeyDown(Keys.F))
-            {
-                steered = true;
-                angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, MaximumTurnAngle);
-                vehicle.Wheels[1].Shape.SteeringAngle = angle;
-                vehicle.Wheels[3].Shape.SteeringAngle = angle;
-            }
-            if (!steered)
-            {
-                //Neither key was pressed, so de-steer.
-                if (vehicle.Wheels[1].Shape.SteeringAngle > 0)
-                {
-                    angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, 0);
-                    vehicle.Wheels[1].Shape.SteeringAngle = angle;
-                    vehicle.Wheels[3].Shape.SteeringAngle = angle;
-                }
-                else
-                {
-                    angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, 0);
-                    vehicle.Wheels[1].Shape.SteeringAngle = angle;
-                    vehicle.Wheels[3].Shape.SteeringAngle = angle;
-                }
-            }
-        }
-       
-    }
 
     class SurvivalModeScreen : Screen
     {
-
+        private List<MiniPlanet> planets;
         MouseFreeCamera mouseCamera;
         GameObject cameraObject;
-        DuneBuggy vehicleRenderer;
+        DuneBuggy duneBuggyOne, duneBuggyTwo, duneBuggyThree;
         MainBase b;
+        ChaseCamera chaseCamera;
+
         public SurvivalModeScreen() : base()
         {
 
@@ -158,23 +35,43 @@ namespace BoidWar.Screens
 
         public override void OnInitialise()
         {
-            SystemCore.CursorVisible = false;
-
+            fpsLabel.Visible = true;
             SystemCore.ActiveScene.SetUpBasicAmbientAndKey();
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f, 1, 0.01f));
             SystemCore.ActiveScene.FogEnabled = false;
 
-            mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0), 0.5f, 500f);
-            SystemCore.SetActiveCamera(mouseCamera);
+
+
+
+            //mouse camera
+            mouseCamera = new MouseFreeCamera(new Vector3(10000, 0, 0), 0.5f, 500f);
             mouseCamera.moveSpeed = 0.1f;
-            mouseCamera.SetPositionAndLook(new Vector3(50, 30, -20), (float)Math.PI, (float)-Math.PI / 5);
+            mouseCamera.SetPositionAndLook(new Vector3(10000, 200, -200), (float)Math.PI, (float)-Math.PI / 5);
+            SystemCore.SetActiveCamera(mouseCamera);
 
 
 
+            //component camera
             cameraObject = new GameObject();
             cameraObject.AddComponent(new ComponentCamera());
-            cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(0, 10, 0), Vector3.Down, Vector3.Backward);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
+            cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(10000, 80, -150), Vector3.Backward, Vector3.Up);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);        
+            cameraObject.Transform.Rotate(Vector3.Up, (float)Math.PI / 4);
+            cameraObject.Transform.Rotate(cameraObject.Transform.AbsoluteTransform.Right, -(float)Math.PI / 8);
+
+
+
+            // Create the chase camera
+            chaseCamera = new ChaseCamera();
+
+            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40.0f, 35.0f);
+            chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+            chaseCamera.Stiffness = 1000;
+            chaseCamera.Damping = 600;
+            chaseCamera.Mass = 50f;
+            chaseCamera.NearZ = 0.5f;
+            chaseCamera.FarZ = 1000.0f;
+            //SystemCore.SetActiveCamera(chaseCamera);
 
             AddInputBindings();
 
@@ -216,29 +113,48 @@ namespace BoidWar.Screens
 
         private void SetUpGameWorld()
         {
+
             //Sky dome first (depth buffer will be disabled on draw for this)
-            var skyDome = new GradientSkyDome(Color.MediumBlue, Color.Black);
-            SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+            // var skyDome = new GradientSkyDome(Color.MediumBlue, Color.Black);
+            // SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+
+            //Heightmap heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 5, 20, 1, 1, 1);
+            //var terrainObject = heightMap.CreateTranslatedRenderableHeightMap(Color.OrangeRed, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(-250, 0, -250));
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainObject);
 
 
 
-            Heightmap heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 3, 20, 1, 1, 1);
-            var terrainObject = heightMap.CreateTranslatedRenderableHeightMap(Color.OrangeRed, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(-150,0,-150));     
-          
-               
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainObject);
+            planets = new List<MiniPlanet>();
 
-            b = new MainBase();
-            b.Transform.AbsoluteTransform.Translation = new Vector3(0, 10, 0);
-          
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(b);
+            float radius = 200;
 
+            var earth = new MiniPlanet(new Vector3(10000, 0, 0), radius,
+               NoiseGenerator.ParameterisedFastPlanet(radius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+               Color.Orange, Color.DarkOrange, false, 0.97f, 1.05f, 10, 4);
+            planets.Add(earth);
 
-            AddEnemies();
+            MiniPlanet moon = new MiniPlanet(new Vector3(400, 0, 0), 40,
+                NoiseGenerator.RidgedMultiFractal(0.01f), 41, 2,
+                Color.DarkGray, Color.DarkGray);
+            //moon.SetOrbit(earth, Vector3.Up, 0.001f);
+            planets.Add(moon);
+
+            var field = new GravitationalField(new InfiniteForceFieldShape(), earth.CurrentCenterPosition.ToBepuVector(), 1000000, 100);
+            SystemCore.PhysicsSimulation.Add(field);
+
+            //b = new MainBase();
+            //b.Transform.AbsoluteTransform.Translation = new Vector3(0, 10, 0);
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(b);
+
+            //AddEnemies();
 
             AddPhysicsCubes();
 
-            vehicleRenderer = new DuneBuggy();
+            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(10000, radius * 1.05f, 0));
+            // duneBuggyTwo = new DuneBuggy(PlayerIndex.Two, Color.Blue, new Vector3(20, 20, 0));
+            // duneBuggyThree = new DuneBuggy(PlayerIndex.Three, Color.Green, new Vector3(0, 20, 20));
+
+
 
 
         }
@@ -264,7 +180,7 @@ namespace BoidWar.Screens
         {
             for (int i = 0; i < 100; i++)
             {
-                float range = 150;
+                float range = 500;
                 ProceduralCube shape = new ProceduralCube();
                 var gameObject = new GameObject();
                 gameObject.AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape),
@@ -272,7 +188,7 @@ namespace BoidWar.Screens
                 gameObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
                 gameObject.AddComponent(new ShadowCasterComponent());
                 gameObject.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.box));
-                gameObject.Transform.SetPosition(RandomHelper.GetRandomVector3(new Vector3(-range, 50, -range), new Vector3(range, 50, range)));
+                gameObject.Transform.SetPosition(planets[0].CurrentCenterPosition +  RandomHelper.GetRandomVector3(new Vector3(-range, 50, -range), new Vector3(range, 50, range)));
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
             }
         }
@@ -292,12 +208,31 @@ namespace BoidWar.Screens
             EvaluateMouseCamControls(gameTime);
 
 
-
             if (input.EvaluateInputBinding("MainMenu"))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
-            vehicleRenderer.Update(gameTime);
 
+            Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - planets[0].CurrentCenterPosition;
+            upVector.Normalize();
+            duneBuggyOne.Update(gameTime);
+            duneBuggyOne.uprightSpringConstraint.LocalUpVector = upVector.ToBepuVector();
+            //duneBuggyTwo.Update(gameTime);
+            //duneBuggyThree.Update(gameTime);
+
+            chaseCamera.Update(gameTime);
+            chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
+            chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
+            chaseCamera.Up = duneBuggyOne.body.Transform.AbsoluteTransform.Up;
+
+
+
+            foreach (MiniPlanet miniPlanet in planets)
+            {
+                float distanceFromSurface =
+                 (SystemCore.ActiveCamera.Position - miniPlanet.CurrentCenterPosition).Length();
+
+                miniPlanet.Update(gameTime, distanceFromSurface, SystemCore.ActiveCamera.Position);
+            }
 
             base.Update(gameTime);
         }
@@ -320,22 +255,9 @@ namespace BoidWar.Screens
 
 
                 mouseCamera.Update(gameTime, input.MouseDelta.X, input.MouseDelta.Y);
-                input.CenterMouse();
-            }
-            else
-            {
-                if (input.EvaluateInputBinding("CameraForward"))
-                    cameraObject.Transform.Translate(-Vector3.Forward * 0.1f);
-                if (input.EvaluateInputBinding("CameraBackward"))
-                    cameraObject.Transform.Translate(-Vector3.Backward * 0.1f);
-                if (input.EvaluateInputBinding("CameraLeft"))
-                    cameraObject.Transform.Translate(-Vector3.Left * 0.1f);
-                if (input.EvaluateInputBinding("CameraRight"))
-                    cameraObject.Transform.Translate(-Vector3.Right * 0.1f);
 
-
-                cameraObject.Transform.Translate(new Vector3(0, -input.ScrollDelta * 0.01f, 0));
             }
+
 
 
 
@@ -344,8 +266,8 @@ namespace BoidWar.Screens
 
         public override void Render(GameTime gameTime)
         {
-            DebugText.Write(SystemCore.ActiveCamera.Position.ToString());
 
+            DebugText.Write(duneBuggyOne.body.Transform.AbsoluteTransform.Translation.ToString());
             base.Render(gameTime);
         }
 

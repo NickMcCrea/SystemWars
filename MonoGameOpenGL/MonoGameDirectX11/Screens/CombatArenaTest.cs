@@ -149,7 +149,7 @@ namespace GridForgeResurrected.Screens
 
 
             arenaObject.AddComponent(new StaticMeshColliderComponent(arenaObject, final.GetVertices(),
-                final.GetIndicesAsInt().ToArray()));
+                final.GetIndicesAsInt().ToArray(), Vector3.Zero));
 
 
            // arenaObject.AddComponent(new RotatorComponent(Vector3.Up, 0.0001f));

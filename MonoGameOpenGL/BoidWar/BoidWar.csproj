@@ -55,8 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gameplay\Building.cs" />
+    <Compile Include="Gameplay\DuneBuggy.cs" />
+    <Compile Include="Gameplay\GravitationalForceField.cs" />
     <Compile Include="Gameplay\SimpleEnemy.cs" />
-    <Compile Include="Gameplay\Vehicle.cs" />
+    <Compile Include="Gameplay\VehicleFactory.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
