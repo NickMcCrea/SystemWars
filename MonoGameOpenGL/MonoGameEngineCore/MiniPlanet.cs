@@ -15,7 +15,7 @@ namespace GridForgeResurrected.Screens
     public class MiniPlanet
     {
         private readonly Vector3 startPosition;
-        private readonly float planetRadius;
+        public readonly float planetRadius;
         private readonly IModule noiseModule;
         private int heightMapVertCount;
         private float heightMapScale;
@@ -34,7 +34,7 @@ namespace GridForgeResurrected.Screens
         public Vector3 CurrentCenterPosition { get; private set; }
         public Orbit CurrentOrbit { get; set; }
         public Spin CurrentSpin { get; set; }
-        private List<MiniPlanet> childPlanets; 
+        private List<MiniPlanet> childPlanets;
 
         public class Spin
         {
@@ -49,14 +49,14 @@ namespace GridForgeResurrected.Screens
             public float Speed { get; set; }
         }
 
-        public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color landColor, Color oceanColour, bool useAtmosphere=false,
-            float innerAtmosphereRatio = 0.97f, float outerAtmosphereRatio=1.1f, float atmosphericScale=30, float groundScale=20)
+        public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color landColor, Color oceanColour, bool useAtmosphere = false,
+            float innerAtmosphereRatio = 0.97f, float outerAtmosphereRatio = 1.1f, float atmosphericScale = 30, float groundScale = 20)
         {
 
-            
+
             this.startPosition = startPosition;
             this.planetRadius = planetRadius;
-          
+
             this.noiseModule = noiseModule;
             this.heightMapVertCount = heightMapVertCount;
             this.heightMapScale = heightMapScale;
@@ -87,7 +87,7 @@ namespace GridForgeResurrected.Screens
         {
 
             planetEffect = EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone();
-            groundScatteringHelper = new GroundScatteringHelper(planetEffect, planetRadius*outerAtmosphereRatio,
+            groundScatteringHelper = new GroundScatteringHelper(planetEffect, planetRadius * outerAtmosphereRatio,
                 planetRadius * innerAtmosphereRatio, groundScale);
 
             atmosphere = new Atmosphere(planetRadius * outerAtmosphereRatio, planetRadius * innerAtmosphereRatio, atmosphericScale);
@@ -100,7 +100,7 @@ namespace GridForgeResurrected.Screens
         {
 
             planetPieces = new List<GameObject>();
-         
+
 
             //top
             GameObject oTop;
@@ -217,7 +217,7 @@ namespace GridForgeResurrected.Screens
 
         public void SetOrbit(Vector3 point, Vector3 axis, float speed)
         {
-            CurrentOrbit = new Orbit() {Axis = axis, OrbitPoint = point, Speed = speed};
+            CurrentOrbit = new Orbit() { Axis = axis, OrbitPoint = point, Speed = speed };
         }
 
         public void SetOrbit(MiniPlanet bodyToOrbit, Vector3 axis, float speed)
@@ -228,12 +228,12 @@ namespace GridForgeResurrected.Screens
 
         public void AddChildBody(MiniPlanet miniPlanet)
         {
-           childPlanets.Add(miniPlanet);
+            childPlanets.Add(miniPlanet);
         }
 
         public void SetRotation(Vector3 axis, float speed)
         {
-            CurrentSpin = new Spin() {Axis = axis, Speed = speed};
+            CurrentSpin = new Spin() { Axis = axis, Speed = speed };
         }
 
         private void ModifyHeight(VertexPositionColorTextureNormal[] v, int i)
@@ -384,7 +384,7 @@ namespace GridForgeResurrected.Screens
         {
             if (lodLevel > 5 || lodLevel < 1)
                 return;
-            
+
             DestroyGeometry();
 
 
@@ -401,7 +401,7 @@ namespace GridForgeResurrected.Screens
 
 
 
-            heightMapScale = originalHeightMapScale*lodLevel;
+            heightMapScale = originalHeightMapScale * lodLevel;
 
             if (useAtmosphere)
                 GenerateAtmosphereAndGeometry(innerAtmosphereRatio, outerAtmosphereRatio, atmosphericScale, groundScale);
@@ -411,6 +411,6 @@ namespace GridForgeResurrected.Screens
             }
         }
 
-    
+
     }
 }

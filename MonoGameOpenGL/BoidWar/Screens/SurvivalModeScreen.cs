@@ -27,6 +27,9 @@ namespace BoidWar.Screens
         DuneBuggy duneBuggyOne, duneBuggyTwo, duneBuggyThree;
         MainBase b;
         ChaseCamera chaseCamera;
+        int currentPlanetIndex = 0;
+        GravitationalField field;
+       
 
         public SurvivalModeScreen() : base()
         {
@@ -40,13 +43,13 @@ namespace BoidWar.Screens
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f, 1, 0.01f));
             SystemCore.ActiveScene.FogEnabled = false;
 
-
+         
 
 
             //mouse camera
-            mouseCamera = new MouseFreeCamera(new Vector3(10000, 0, 0), 0.5f, 500f);
+            mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0), 50f, 1000f);
             mouseCamera.moveSpeed = 0.1f;
-            mouseCamera.SetPositionAndLook(new Vector3(10000, 200, -200), (float)Math.PI, (float)-Math.PI / 5);
+            mouseCamera.SetPositionAndLook(new Vector3(0, 200, -200), (float)Math.PI, (float)-Math.PI / 5);
             SystemCore.SetActiveCamera(mouseCamera);
 
 
@@ -55,7 +58,7 @@ namespace BoidWar.Screens
             cameraObject = new GameObject();
             cameraObject.AddComponent(new ComponentCamera());
             cameraObject.Transform.AbsoluteTransform = Matrix.CreateWorld(new Vector3(10000, 80, -150), Vector3.Backward, Vector3.Up);
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);        
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(cameraObject);
             cameraObject.Transform.Rotate(Vector3.Up, (float)Math.PI / 4);
             cameraObject.Transform.Rotate(cameraObject.Transform.AbsoluteTransform.Right, -(float)Math.PI / 8);
 
@@ -64,14 +67,14 @@ namespace BoidWar.Screens
             // Create the chase camera
             chaseCamera = new ChaseCamera();
 
-            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40.0f, 35.0f);
+            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 100.0f, 50.0f);
             chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
             chaseCamera.Stiffness = 1000;
             chaseCamera.Damping = 600;
             chaseCamera.Mass = 50f;
             chaseCamera.NearZ = 0.5f;
             chaseCamera.FarZ = 1000.0f;
-            //SystemCore.SetActiveCamera(chaseCamera);
+            SystemCore.SetActiveCamera(chaseCamera);
 
             AddInputBindings();
 
@@ -114,6 +117,7 @@ namespace BoidWar.Screens
         private void SetUpGameWorld()
         {
 
+
             //Sky dome first (depth buffer will be disabled on draw for this)
             // var skyDome = new GradientSkyDome(Color.MediumBlue, Color.Black);
             // SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
@@ -123,36 +127,54 @@ namespace BoidWar.Screens
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainObject);
 
 
-
-            planets = new List<MiniPlanet>();
-
-            float radius = 200;
-
-            var earth = new MiniPlanet(new Vector3(10000, 0, 0), radius,
-               NoiseGenerator.ParameterisedFastPlanet(radius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-               Color.Orange, Color.DarkOrange, false, 0.97f, 1.05f, 10, 4);
-            planets.Add(earth);
-
-            MiniPlanet moon = new MiniPlanet(new Vector3(400, 0, 0), 40,
-                NoiseGenerator.RidgedMultiFractal(0.01f), 41, 2,
-                Color.DarkGray, Color.DarkGray);
-            //moon.SetOrbit(earth, Vector3.Up, 0.001f);
-            planets.Add(moon);
-
-            var field = new GravitationalField(new InfiniteForceFieldShape(), earth.CurrentCenterPosition.ToBepuVector(), 1000000, 100);
-            SystemCore.PhysicsSimulation.Add(field);
-
             //b = new MainBase();
             //b.Transform.AbsoluteTransform.Translation = new Vector3(0, 10, 0);
             //SystemCore.GameObjectManager.AddAndInitialiseGameObject(b);
 
             //AddEnemies();
 
-            AddPhysicsCubes();
+            //AddPhysicsCubes();
 
-            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(10000, radius * 1.05f, 0));
-            // duneBuggyTwo = new DuneBuggy(PlayerIndex.Two, Color.Blue, new Vector3(20, 20, 0));
-            // duneBuggyThree = new DuneBuggy(PlayerIndex.Three, Color.Green, new Vector3(0, 20, 20));
+
+            planets = new List<MiniPlanet>();
+
+
+
+            var sunShape = new ProceduralSphere(10, 10);
+            sunShape.SetColor(Color.Red);
+            var sun = GameObjectFactory.CreateRenderableGameObjectFromShape(sunShape, EffectLoader.LoadSM5Effect("flatshaded"));
+            sun.Transform.Scale = 100f;
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(sun);
+
+            float planetARadius = 200;
+            var planetA = new MiniPlanet(new Vector3(700, 0, 0), planetARadius,
+               NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+               RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+            planets.Add(planetA);
+
+            MiniPlanet moonA = new MiniPlanet(new Vector3(1300, 0, 0), 40,
+                NoiseGenerator.RidgedMultiFractal(0.01f), 41, 2,
+                RandomHelper.RandomColor, RandomHelper.RandomColor);
+            planets.Add(moonA);
+
+            var planetB = new MiniPlanet(new Vector3(2700, 0, 0), planetARadius,
+              NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+            planets.Add(planetB);
+
+
+            var planetC = new MiniPlanet(new Vector3(3700, 0, 0), planetARadius,
+              NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+              RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+            planets.Add(planetC);
+
+            field = new GravitationalField(new InfiniteForceFieldShape(), planetA.CurrentCenterPosition.ToBepuVector(), 1000000, 100);
+            SystemCore.PhysicsSimulation.Add(field);
+
+
+
+            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(planetA.CurrentCenterPosition.X, planetARadius * 1.05f, planetA.CurrentCenterPosition.Z));
+
 
 
 
@@ -188,7 +210,7 @@ namespace BoidWar.Screens
                 gameObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
                 gameObject.AddComponent(new ShadowCasterComponent());
                 gameObject.AddComponent(new PhysicsComponent(true, true, PhysicsMeshType.box));
-                gameObject.Transform.SetPosition(planets[0].CurrentCenterPosition +  RandomHelper.GetRandomVector3(new Vector3(-range, 50, -range), new Vector3(range, 50, range)));
+                gameObject.Transform.SetPosition(planets[0].CurrentCenterPosition + RandomHelper.GetRandomVector3(new Vector3(-range, 50, -range), new Vector3(range, 50, range)));
                 SystemCore.GetSubsystem<GameObjectManager>().AddAndInitialiseGameObject(gameObject);
             }
         }
@@ -212,7 +234,7 @@ namespace BoidWar.Screens
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
 
 
-            Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - planets[0].CurrentCenterPosition;
+            Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - planets[currentPlanetIndex].CurrentCenterPosition;
             upVector.Normalize();
             duneBuggyOne.Update(gameTime);
             duneBuggyOne.uprightSpringConstraint.LocalUpVector = upVector.ToBepuVector();
@@ -220,11 +242,18 @@ namespace BoidWar.Screens
             //duneBuggyThree.Update(gameTime);
 
             chaseCamera.Update(gameTime);
+
+
+
             chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
             chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
-            chaseCamera.Up = duneBuggyOne.body.Transform.AbsoluteTransform.Up;
+            //chaseCamera.ChasePosition = duneBuggyOne.smoothedPosition;
+            //chaseCamera.ChaseDirection = duneBuggyOne.smoothedForward;
+            chaseCamera.Up = upVector;
 
 
+            if (input.KeyPress(Keys.N))
+                SwitchToNextPlanet();
 
             foreach (MiniPlanet miniPlanet in planets)
             {
@@ -235,6 +264,30 @@ namespace BoidWar.Screens
             }
 
             base.Update(gameTime);
+        }
+
+        private void SwitchToNextPlanet()
+        {
+            currentPlanetIndex++;
+            MiniPlanet next;
+            if (currentPlanetIndex < planets.Count)
+            {
+                next = planets[currentPlanetIndex];
+            }
+            else
+            {
+                next = planets[0];
+                currentPlanetIndex = 0;
+            }
+
+
+            //switch camera, gravity and dune buggy
+            field.Origin = next.CurrentCenterPosition.ToBepuVector();
+
+            duneBuggyOne.Teleport(next.CurrentCenterPosition + new Vector3(0, 220, 0));
+
+            mouseCamera.SetPositionAndLook(next.CurrentCenterPosition + new Vector3(0, 320, -100), (float)Math.PI, (float)-Math.PI / 5);
+
         }
 
         private void EvaluateMouseCamControls(GameTime gameTime)
@@ -266,9 +319,16 @@ namespace BoidWar.Screens
 
         public override void Render(GameTime gameTime)
         {
-
             DebugText.Write(duneBuggyOne.body.Transform.AbsoluteTransform.Translation.ToString());
+
+            Vector3 toCenter = planets[currentPlanetIndex].CurrentCenterPosition - duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
+
+            float height = toCenter.Length();
+
+            DebugText.Write(height.ToString());
+
             base.Render(gameTime);
+        
         }
 
 

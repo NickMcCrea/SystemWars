@@ -1,4 +1,5 @@
-﻿using BEPUphysics.Vehicle;
+﻿using BEPUphysics.Entities;
+using BEPUphysics.Vehicle;
 using BEPUphysicsDemos.SampleCode;
 using BEPUutilities;
 using Microsoft.Xna.Framework;
@@ -20,6 +21,12 @@ namespace BoidWar.Gameplay
 
     public class DuneBuggy
     {
+
+        public Microsoft.Xna.Framework.Vector3 smoothedPosition;
+        public Microsoft.Xna.Framework.Vector3 smoothedForward;
+        private List<Microsoft.Xna.Framework.Vector3> positions;
+        private List<Microsoft.Xna.Framework.Vector3> forwards;
+
         private Vehicle vehicle;
         public GameObject body;
         UprightSpring uprightSpring;
@@ -56,7 +63,11 @@ namespace BoidWar.Gameplay
 
         public DuneBuggy(PlayerIndex player, Color color, Microsoft.Xna.Framework.Vector3 position)
         {
+            positions = new List<Microsoft.Xna.Framework.Vector3>();
+            forwards = new List<Microsoft.Xna.Framework.Vector3>();
+
             this.playerIndex = player;
+
             this.vehicle = VehicleFactory.Create(position.ToBepuVector());
             SystemCore.PhysicsSimulation.Add(vehicle);
 
@@ -87,12 +98,43 @@ namespace BoidWar.Gameplay
         public void Update(GameTime gameTime)
         {
             body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
-
             for (int i = 0; i < vehicle.Wheels.Count; i++)
             {
                 Wheel w = vehicle.Wheels[i];
                 wheels[i].Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(w.Shape.WorldTransform);
             }
+
+            positions.Add(body.Transform.AbsoluteTransform.Translation);
+            forwards.Add(body.Transform.AbsoluteTransform.Forward);
+
+            if (positions.Count > 120)
+            {
+                positions.RemoveRange(0, 60);
+                forwards.RemoveRange(0, 60);
+            }
+
+
+
+            if(positions.Count > 60)
+            {
+                smoothedPosition = Microsoft.Xna.Framework.Vector3.Zero;
+                smoothedForward = Microsoft.Xna.Framework.Vector3.Zero;
+                int count = 0;
+                for (int i = positions.Count - 1; i > 0; i--)
+                {
+                    smoothedPosition += positions[i];
+                    smoothedForward += forwards[i];
+                    count++;
+                    if (count >= 60)
+                        break;
+                    
+                }
+                smoothedPosition /= count;
+                smoothedForward /= count;
+            }
+        
+
+       
 
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
@@ -142,14 +184,14 @@ namespace BoidWar.Gameplay
             if (SystemCore.Input.IsKeyDown(Keys.S) || SystemCore.Input.GetLeftStickState(playerIndex).X < 0)
             {
                 steered = true;
-                angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, -MaximumTurnAngle);
+                angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, -MaximumTurnAngle);
                 vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 vehicle.Wheels[3].Shape.SteeringAngle = angle;
             }
             if (SystemCore.Input.IsKeyDown(Keys.F) || SystemCore.Input.GetLeftStickState(playerIndex).X > 0)
             {
                 steered = true;
-                angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, MaximumTurnAngle);
+                angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, MaximumTurnAngle);
                 vehicle.Wheels[1].Shape.SteeringAngle = angle;
                 vehicle.Wheels[3].Shape.SteeringAngle = angle;
             }
@@ -158,18 +200,27 @@ namespace BoidWar.Gameplay
                 //Neither key was pressed, so de-steer.
                 if (vehicle.Wheels[1].Shape.SteeringAngle > 0)
                 {
-                    angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, 0);
+                    angle = Math.Max(vehicle.Wheels[1].Shape.SteeringAngle - TurnSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
                     vehicle.Wheels[1].Shape.SteeringAngle = angle;
                     vehicle.Wheels[3].Shape.SteeringAngle = angle;
                 }
                 else
                 {
-                    angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * gameTime.ElapsedGameTime.Milliseconds, 0);
+                    angle = Math.Min(vehicle.Wheels[1].Shape.SteeringAngle + TurnSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
                     vehicle.Wheels[1].Shape.SteeringAngle = angle;
                     vehicle.Wheels[3].Shape.SteeringAngle = angle;
                 }
             }
         }
 
+        internal void Teleport(Microsoft.Xna.Framework.Vector3 vector3)
+        {
+            BEPUutilities.Vector3 v = vector3.ToBepuVector();
+            
+            foreach(Entity e in vehicle.InvolvedEntities)
+            {
+                e.Position = v;
+            }
+        }
     }
 }

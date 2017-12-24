@@ -18,7 +18,7 @@ namespace MonoGameEngineCore.Camera
     public class ChaseCamera : ICamera
     {
         #region Chased object properties (set externally each frame)
-
+       
         /// <summary>
         /// Position of object being chased.
         /// </summary>
@@ -153,6 +153,8 @@ namespace MonoGameEngineCore.Camera
             get { return position; }
         }
         private Vector3 position;
+
+        private Vector3 newPosition;
 
         /// <summary>
         /// Velocity of camera.
@@ -317,6 +319,8 @@ namespace MonoGameEngineCore.Camera
 
             // Apply velocity
             position += velocity * elapsed;
+
+           
 
             UpdateMatrices();
         }

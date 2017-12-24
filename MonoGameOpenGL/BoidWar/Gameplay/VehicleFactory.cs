@@ -21,7 +21,7 @@ namespace BoidWar.Gameplay
                     new CompoundShapeEntry(new BoxShape(2.5f, .3f, 2f), new BEPUutilities.Vector3(0, .75f / 2 + .3f / 2, .5f), 1)
                 };
             var body = new CompoundBody(bodies, 61);
-            body.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, .5f, 0);
+            body.CollisionInformation.LocalPosition = new BEPUutilities.Vector3(0, 0.5f, 0);
             body.Position = position; //At first, just keep it out of the way.
             var Vehicle = new Vehicle(body);
 
