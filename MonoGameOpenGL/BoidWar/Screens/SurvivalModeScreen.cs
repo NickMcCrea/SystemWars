@@ -29,7 +29,7 @@ namespace BoidWar.Screens
         ChaseCamera chaseCamera;
         int currentPlanetIndex = 0;
         GravitationalField field;
-       
+
 
         public SurvivalModeScreen() : base()
         {
@@ -43,7 +43,7 @@ namespace BoidWar.Screens
             SystemCore.ActiveScene.SetDiffuseLightDir(0, new Vector3(0.01f, 1, 0.01f));
             SystemCore.ActiveScene.FogEnabled = false;
 
-         
+
 
 
             //mouse camera
@@ -67,7 +67,7 @@ namespace BoidWar.Screens
             // Create the chase camera
             chaseCamera = new ChaseCamera();
 
-            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 100.0f, 50.0f);
+            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 100.0f, 45);
             chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
             chaseCamera.Stiffness = 1000;
             chaseCamera.Damping = 600;
@@ -149,7 +149,7 @@ namespace BoidWar.Screens
             float planetARadius = 200;
             var planetA = new MiniPlanet(new Vector3(700, 0, 0), planetARadius,
                NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-               RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+               RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
             planets.Add(planetA);
 
             MiniPlanet moonA = new MiniPlanet(new Vector3(1300, 0, 0), 40,
@@ -159,14 +159,20 @@ namespace BoidWar.Screens
 
             var planetB = new MiniPlanet(new Vector3(2700, 0, 0), planetARadius,
               NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
             planets.Add(planetB);
 
 
             var planetC = new MiniPlanet(new Vector3(3700, 0, 0), planetARadius,
               NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-              RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4);
+              RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
             planets.Add(planetC);
+
+
+            MiniPlanet moonB = new MiniPlanet(new Vector3(5000, 0, 0), 150,
+             NoiseGenerator.RidgedMultiFractal(0.01f), 101, 4,
+             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 5);
+            planets.Add(moonB);
 
             field = new GravitationalField(new InfiniteForceFieldShape(), planetA.CurrentCenterPosition.ToBepuVector(), 1000000, 100);
             SystemCore.PhysicsSimulation.Add(field);
@@ -237,7 +243,7 @@ namespace BoidWar.Screens
             Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - planets[currentPlanetIndex].CurrentCenterPosition;
             upVector.Normalize();
             duneBuggyOne.Update(gameTime);
-            duneBuggyOne.uprightSpringConstraint.LocalUpVector = upVector.ToBepuVector();
+            //duneBuggyOne.uprightSpringConstraint.LocalUpVector = upVector.ToBepuVector();
             //duneBuggyTwo.Update(gameTime);
             //duneBuggyThree.Update(gameTime);
 
@@ -328,7 +334,7 @@ namespace BoidWar.Screens
             DebugText.Write(height.ToString());
 
             base.Render(gameTime);
-        
+
         }
 
 

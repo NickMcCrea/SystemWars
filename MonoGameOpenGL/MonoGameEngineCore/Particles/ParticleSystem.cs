@@ -28,7 +28,7 @@ namespace Particle3DSample
       
 
         // Settings class controls the appearance and animation of this particle system.
-        ParticleSettings settings = new ParticleSettings();
+        public ParticleSettings settings = new ParticleSettings();
 
 
         // For loading the effect and particle texture.

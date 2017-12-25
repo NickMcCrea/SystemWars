@@ -35,6 +35,7 @@ namespace GridForgeResurrected.Screens
         public Orbit CurrentOrbit { get; set; }
         public Spin CurrentSpin { get; set; }
         private List<MiniPlanet> childPlanets;
+        private float verticalScale = 1f;
 
         public class Spin
         {
@@ -50,10 +51,10 @@ namespace GridForgeResurrected.Screens
         }
 
         public MiniPlanet(Vector3 startPosition, float planetRadius, IModule noiseModule, int heightMapVertCount, float heightMapScale, Color landColor, Color oceanColour, bool useAtmosphere = false,
-            float innerAtmosphereRatio = 0.97f, float outerAtmosphereRatio = 1.1f, float atmosphericScale = 30, float groundScale = 20)
+            float innerAtmosphereRatio = 0.97f, float outerAtmosphereRatio = 1.1f, float atmosphericScale = 30, float groundScale = 20, float verticalScale = 1f)
         {
 
-
+            this.verticalScale = verticalScale;
             this.startPosition = startPosition;
             this.planetRadius = planetRadius;
 
@@ -239,7 +240,7 @@ namespace GridForgeResurrected.Screens
         private void ModifyHeight(VertexPositionColorTextureNormal[] v, int i)
         {
             double heightValue = noiseModule.GetValue(v[i].Position.X, v[i].Position.Y, v[i].Position.Z);
-            v[i].Position = (Vector3.Normalize(v[i].Position) * (planetRadius + (float)heightValue));
+            v[i].Position = (Vector3.Normalize(v[i].Position) * (planetRadius + ((float)heightValue) * verticalScale));
 
             float finalHeight = v[i].Position.Length();
             if (finalHeight < planetRadius)

@@ -10,6 +10,7 @@ using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using Particle3DSample;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +76,7 @@ namespace BoidWar.Gameplay
             shape.SetColor(color);
             body = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
             body.AddComponent(new ShadowCasterComponent());
+
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(body);
 
             wheels = new List<GameObject>();
@@ -84,14 +86,22 @@ namespace BoidWar.Gameplay
                 cube.SetColor(Color.Maroon);
                 var wheel = GameObjectFactory.CreateRenderableGameObjectFromShape(cube, EffectLoader.LoadSM5Effect("flatshaded"));
                 wheel.AddComponent(new ShadowCasterComponent());
+
+                var particles = new SquareParticleSystem();
+               
+                wheel.AddComponent(particles);
+
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(wheel);
+
+
+
                 wheels.Add(wheel);
             }
 
 
 
-            uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 1000f);
-            SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
+            //uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 10000f);
+            // SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
         }
 
 
@@ -102,10 +112,18 @@ namespace BoidWar.Gameplay
             {
                 Wheel w = vehicle.Wheels[i];
                 wheels[i].Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(w.Shape.WorldTransform);
+
+                var particleSystem = wheels[i].GetComponent<SquareParticleSystem>();
+
+                if (particleSystem != null && (w.DrivingMotor.TargetSpeed == ForwardSpeed || w.DrivingMotor.TargetSpeed == BackwardSpeed))
+                    particleSystem.AddParticle(wheels[i].Transform.AbsoluteTransform.Translation, Microsoft.Xna.Framework.Vector3.Zero);
+
             }
 
             positions.Add(body.Transform.AbsoluteTransform.Translation);
             forwards.Add(body.Transform.AbsoluteTransform.Forward);
+
+
 
             if (positions.Count > 120)
             {
@@ -115,7 +133,7 @@ namespace BoidWar.Gameplay
 
 
 
-            if(positions.Count > 60)
+            if (positions.Count > 60)
             {
                 smoothedPosition = Microsoft.Xna.Framework.Vector3.Zero;
                 smoothedForward = Microsoft.Xna.Framework.Vector3.Zero;
@@ -127,14 +145,14 @@ namespace BoidWar.Gameplay
                     count++;
                     if (count >= 60)
                         break;
-                    
+
                 }
                 smoothedPosition /= count;
                 smoothedForward /= count;
             }
-        
 
-       
+
+
 
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
@@ -216,8 +234,8 @@ namespace BoidWar.Gameplay
         internal void Teleport(Microsoft.Xna.Framework.Vector3 vector3)
         {
             BEPUutilities.Vector3 v = vector3.ToBepuVector();
-            
-            foreach(Entity e in vehicle.InvolvedEntities)
+
+            foreach (Entity e in vehicle.InvolvedEntities)
             {
                 e.Position = v;
             }

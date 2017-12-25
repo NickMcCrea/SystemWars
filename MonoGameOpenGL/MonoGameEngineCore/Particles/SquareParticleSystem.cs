@@ -21,8 +21,20 @@ namespace Particle3DSample
     /// </summary>
     public class SquareParticleSystem : ParticleSystem
     {
-        public SquareParticleSystem()    
-        { }
+        private Color max;
+        private Color min;
+
+        public SquareParticleSystem()
+        {
+            min = Color.DarkGray;
+            max = Color.LightGray;
+        }
+
+        public SquareParticleSystem(Color min,Color max)    
+        {
+            this.min = min;
+            this.max = max;
+        }
 
 
         protected override void InitializeSettings(ParticleSettings settings)
@@ -44,8 +56,8 @@ namespace Particle3DSample
             // Set gravity upside down, so the flames will 'fall' upward.
             settings.Gravity = new Vector3(0, 0, 0);
 
-            settings.MinColor = Color.Green;
-            settings.MaxColor = Color.Green;
+            settings.MinColor = min;
+            settings.MaxColor = max;
 
             settings.MinStartSize = 0.1f;
             settings.MaxStartSize = 1;
