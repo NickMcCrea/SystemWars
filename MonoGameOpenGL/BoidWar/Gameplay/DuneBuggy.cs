@@ -88,12 +88,13 @@ namespace BoidWar.Gameplay
                 wheel.AddComponent(new ShadowCasterComponent());
 
                 var particles = new SquareParticleSystem();
-               
+
                 wheel.AddComponent(particles);
 
                 SystemCore.GameObjectManager.AddAndInitialiseGameObject(wheel);
 
 
+                particles.settings.Duration = TimeSpan.FromSeconds(2f);
 
                 wheels.Add(wheel);
             }
@@ -107,16 +108,24 @@ namespace BoidWar.Gameplay
 
         public void Update(GameTime gameTime)
         {
+
             body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
+
+
             for (int i = 0; i < vehicle.Wheels.Count; i++)
             {
                 Wheel w = vehicle.Wheels[i];
                 wheels[i].Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(w.Shape.WorldTransform);
 
+
                 var particleSystem = wheels[i].GetComponent<SquareParticleSystem>();
 
-                if (particleSystem != null && (w.DrivingMotor.TargetSpeed == ForwardSpeed || w.DrivingMotor.TargetSpeed == BackwardSpeed))
-                    particleSystem.AddParticle(wheels[i].Transform.AbsoluteTransform.Translation, Microsoft.Xna.Framework.Vector3.Zero);
+                if (w.HasSupport)
+                {
+                    if (particleSystem != null && (w.DrivingMotor.TargetSpeed == ForwardSpeed || w.DrivingMotor.TargetSpeed == BackwardSpeed))
+                        particleSystem.AddParticle(wheels[i].Transform.AbsoluteTransform.Translation, Microsoft.Xna.Framework.Vector3.Zero);
+
+                }
 
             }
 
