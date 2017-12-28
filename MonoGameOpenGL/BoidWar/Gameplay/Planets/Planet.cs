@@ -75,7 +75,7 @@ namespace MonoGameEngineCore.Procedural
         public float orbitAngle;
         public bool HasAtmosphere { get; private set; }
         public Atmosphere atmosphere;
-        Vector3 sunDirection = Vector3.One;
+        Vector3 sunDirection = Vector3.Up;
         private GroundScatteringHelper atmosphericScatteringHelper;
         public int DrawOrder { get; set; }
 
@@ -379,25 +379,23 @@ namespace MonoGameEngineCore.Procedural
 
 
             Vector3 planetCenter = Transform.AbsoluteTransform.Translation;
+            Vector3 toCenterOfPlanet = Transform.AbsoluteTransform.Translation - SystemCore.ActiveCamera.Position;
+            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
+            float surfaceDistance = distanceToCenterOfPlanet - radius;
 
             if (HasAtmosphere)
             {
 
 
-                atmosphere.Update(sunDirection, SystemCore.ActiveCamera.Position,
-                    (SystemCore.ActiveCamera.Position - Transform.AbsoluteTransform.Translation).Length());
-
-                atmosphericScatteringHelper.Update((SystemCore.ActiveCamera.Position - Transform.AbsoluteTransform.Translation).Length(),
-                sunDirection, SystemCore.ActiveCamera.Position);
+                atmosphere.Update(sunDirection, SystemCore.ActiveCamera.Position, distanceToCenterOfPlanet);
+                atmosphericScatteringHelper.Update(distanceToCenterOfPlanet, sunDirection, SystemCore.ActiveCamera.Position - Transform.AbsoluteTransform.Translation);
 
             }
 
 
 
 
-            Vector3 toCenterOfPlanet = Transform.AbsoluteTransform.Translation - SystemCore.ActiveCamera.Position;
-            float distanceToCenterOfPlanet = toCenterOfPlanet.Length();
-            float surfaceDistance = distanceToCenterOfPlanet - radius;
+
             float farPlaneMultiplier = MonoMathHelper.MapFloatRange(radius, radius * 2, 0.3f, 1f, surfaceDistance);
             GenerateCustomProjectionMatrix(distanceToCenterOfPlanet * farPlaneMultiplier);
             var frustrum = new BoundingFrustum(SystemCore.ActiveCamera.View * customProjection);

@@ -87,9 +87,9 @@ namespace BoidWar.Screens
             float radius = 3000;
             earth = new Planet("earth", new Vector3(0, 0, 0),
                 NoiseGenerator.FastPlanet(radius),
-               EffectLoader.LoadSM5Effect("flatshaded").Clone(),
+               EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone(),
                 radius, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0);
-           // earth.AddAtmosphere();
+            earth.AddAtmosphere();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
 
 
@@ -153,6 +153,8 @@ namespace BoidWar.Screens
 
                 if (input.IsKeyDown(Keys.RightShift))
                     mouseCamera.moveSpeed = 10f;
+                else if (input.IsKeyDown(Keys.RightControl))
+                    mouseCamera.moveSpeed = 0.1f;
                 else
                     mouseCamera.moveSpeed = 1f;
 
