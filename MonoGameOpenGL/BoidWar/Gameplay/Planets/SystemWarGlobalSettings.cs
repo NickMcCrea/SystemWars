@@ -13,7 +13,7 @@ namespace SystemWar
         public static bool RepairSeams = false;
         public static bool VisualisePatches = false;
         public static bool RenderQuadtreeConnectivity = false;
-        public static bool TerrainCollisionsEnabled = false;
+        public static bool TerrainCollisionsEnabled = true;
         public static bool EnableQuadTreeInterconnections = true;
     }
 }

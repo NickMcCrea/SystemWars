@@ -21,9 +21,10 @@ namespace BoidWar.Screens
 
     class PlanetTest : Screen
     {
-      
+        DuneBuggy duneBuggyOne;
         MouseFreeCamera mouseCamera;
         Planet earth;
+        GravitationalField field;
 
         private string currentVehicle = "buggy";
 
@@ -93,14 +94,19 @@ namespace BoidWar.Screens
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
 
 
-            mouseCamera.SetPositionAndLook(new Vector3(0, radius + 20000, -500), (float)Math.PI, (float)-Math.PI / 5);
+            mouseCamera.SetPositionAndLook(new Vector3(0, radius + 200, 0), (float)Math.PI, (float)-Math.PI / 5);
 
+
+            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(0, radius + 100, 0));
+
+            field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 40000 * radius, 100);
+            SystemCore.PhysicsSimulation.Add(field);
 
         }
 
-      
 
-     
+
+
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
@@ -115,6 +121,7 @@ namespace BoidWar.Screens
 
             EvaluateMouseCamControls(gameTime);
 
+            duneBuggyOne.Update(gameTime);
 
             PlanetBuilder.Update();
             earth.Update(gameTime);
