@@ -22,15 +22,17 @@ namespace BoidWar.Screens
     class PlanetTest : Screen
     {
         DuneBuggy duneBuggyOne;
+        SpaceShip spaceShipOne;
         MouseFreeCamera mouseCamera;
         Planet earth;
         GravitationalField field;
-
+        ChaseCamera chaseCamera;
         private string currentVehicle = "buggy";
+
 
         public PlanetTest() : base()
         {
-            
+
         }
 
         public override void OnInitialise()
@@ -48,7 +50,7 @@ namespace BoidWar.Screens
 
 
 
-           
+
 
             AddInputBindings();
 
@@ -78,19 +80,20 @@ namespace BoidWar.Screens
             binding.InputEventActivated += (x, y) => { SystemCore.Wireframe = !SystemCore.Wireframe; };
 
 
-           
+
 
         }
 
         private void SetUpGameWorld()
         {
+            //AtmosphericScatteringGround
 
-            float radius = 3000;
+            float radius = 4000;
             earth = new Planet("earth", new Vector3(0, 0, 0),
                 NoiseGenerator.FastPlanet(radius),
-               EffectLoader.LoadSM5Effect("AtmosphericScatteringGround").Clone(),
+               EffectLoader.LoadSM5Effect("flatshaded").Clone(),
                 radius, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0);
-            earth.AddAtmosphere();
+            //earth.AddAtmosphere();
             SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
 
 
@@ -98,14 +101,46 @@ namespace BoidWar.Screens
 
 
             duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(0, radius + 100, 0));
+            spaceShipOne = new SpaceShip(PlayerIndex.One, Color.Red, new Vector3(0, radius + 2000, 0));
 
-            field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 40000 * radius, 100);
+
+            field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 100000 * radius, 100);
             SystemCore.PhysicsSimulation.Add(field);
+
+            chaseCamera = new ChaseCamera();
+
+            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
+            chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+            chaseCamera.Stiffness = 1000;
+            chaseCamera.Damping = 600;
+            chaseCamera.Mass = 50f;
+            chaseCamera.NearZ = 0.5f;
+            chaseCamera.FarZ = 10000.0f;
+            SystemCore.SetActiveCamera(chaseCamera);
 
         }
 
+        private void SwitchVehicle()
+        {
+            if (currentVehicle == "buggy")
+            {
+                Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
+                upVector.Normalize();
+                currentVehicle = "ship";
 
+                spaceShipOne.Activate();
+                spaceShipOne.Teleport(duneBuggyOne.body.Transform.AbsoluteTransform.Translation + (upVector * 50));
 
+                duneBuggyOne.Deactivate();
+            }
+            else
+            {
+                currentVehicle = "buggy";
+                spaceShipOne.Deactivate();
+                duneBuggyOne.Teleport(spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation);
+                duneBuggyOne.Activate();
+            }
+        }
 
         public override void OnRemove()
         {
@@ -121,8 +156,36 @@ namespace BoidWar.Screens
 
             EvaluateMouseCamControls(gameTime);
 
+            Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
+            if (upVector != Vector3.Zero)
+                upVector.Normalize();
             duneBuggyOne.Update(gameTime);
+            spaceShipOne.Update(gameTime);
 
+
+            if (currentVehicle == "buggy")
+            {
+
+                chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
+                chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
+                if (upVector != Vector3.Zero)
+                    chaseCamera.Up = upVector;
+                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
+                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+            }
+            else
+            {
+                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 0, 200);
+                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+                chaseCamera.ChasePosition = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation;
+                chaseCamera.ChaseDirection = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Forward * 0.1f;
+                chaseCamera.Up = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Up;
+            }
+
+
+
+
+            chaseCamera.Update(gameTime);
             PlanetBuilder.Update();
             earth.Update(gameTime);
 
@@ -135,12 +198,9 @@ namespace BoidWar.Screens
             base.Update(gameTime);
         }
 
-        private void SwitchVehicle()
-        {
-            
-        }
+      
 
-     
+
 
         private void EvaluateMouseCamControls(GameTime gameTime)
         {
@@ -158,6 +218,9 @@ namespace BoidWar.Screens
                     mouseCamera.MoveRight();
 
 
+
+              
+
                 if (input.IsKeyDown(Keys.RightShift))
                     mouseCamera.moveSpeed = 10f;
                 else if (input.IsKeyDown(Keys.RightControl))
@@ -170,6 +233,14 @@ namespace BoidWar.Screens
             }
 
 
+            if (input.KeyPress(Keys.V))
+            {
+                duneBuggyOne.Teleport(new Vector3(0, 4050, 0));
+            }
+            if (input.KeyPress(Keys.B))
+            {
+                SwitchVehicle();
+            }
 
 
 
@@ -177,7 +248,7 @@ namespace BoidWar.Screens
 
         public override void Render(GameTime gameTime)
         {
-           
+
 
             base.Render(gameTime);
 
