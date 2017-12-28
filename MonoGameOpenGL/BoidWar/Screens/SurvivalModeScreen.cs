@@ -24,12 +24,14 @@ namespace BoidWar.Screens
         private List<MiniPlanet> planets;
         MouseFreeCamera mouseCamera;
         GameObject cameraObject;
-        DuneBuggy duneBuggyOne, duneBuggyTwo, duneBuggyThree;
+        DuneBuggy duneBuggyOne;
+        SpaceShip spaceShipOne;
         MainBase b;
         ChaseCamera chaseCamera;
         int currentPlanetIndex = 0;
         GravitationalField field;
 
+        private string currentVehicle = "buggy";
 
         public SurvivalModeScreen() : base()
         {
@@ -67,7 +69,7 @@ namespace BoidWar.Screens
             // Create the chase camera
             chaseCamera = new ChaseCamera();
 
-            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 100.0f, 45);
+            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
             chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
             chaseCamera.Stiffness = 1000;
             chaseCamera.Damping = 600;
@@ -109,7 +111,10 @@ namespace BoidWar.Screens
                 if (SystemCore.ActiveCamera is MouseFreeCamera)
                     SystemCore.SetActiveCamera(cameraObject.GetComponent<ComponentCamera>());
                 else
+                {
                     SystemCore.SetActiveCamera(mouseCamera);
+                    mouseCamera.SetPositionAndLook(chaseCamera.Position, (float)Math.PI, (float)-Math.PI / 5);
+                }
             };
 
         }
@@ -140,48 +145,52 @@ namespace BoidWar.Screens
 
 
 
-            var sunShape = new ProceduralSphere(10, 10);
-            sunShape.SetColor(Color.Red);
-            var sun = GameObjectFactory.CreateRenderableGameObjectFromShape(sunShape, EffectLoader.LoadSM5Effect("flatshaded"));
-            sun.Transform.Scale = 100f;
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(sun);
+            //var sunShape = new ProceduralSphere(10, 10);
+            //sunShape.SetColor(Color.Red);
+            //var sun = GameObjectFactory.CreateRenderableGameObjectFromShape(sunShape, EffectLoader.LoadSM5Effect("flatshaded"));
+            //sun.Transform.Scale = 100f;
+            //SystemCore.GameObjectManager.AddAndInitialiseGameObject(sun);
 
-            float planetARadius = 200;
-            var planetA = new MiniPlanet(new Vector3(700, 0, 0), planetARadius,
-               NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-               RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
+            float planetARadius = 3000;
+            //var planetA = new MiniPlanet(new Vector3(100, 0, 0), planetARadius,
+            //   NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, planetARadius / 50,
+            //   RandomHelper.RandomColor, RandomHelper.RandomColor, true, 0.97f, 1.05f, 10, 4, 1);
+            //planets.Add(planetA);
+            var planetA = new MiniPlanet(new Vector3(100, 0, 0), planetARadius,
+              NoiseGenerator.RidgedMultiFractal(0.006f), 101, planetARadius/50,
+            RandomHelper.RandomColor, RandomHelper.RandomColor, true, 0.95f, 1.1f, 20, 4,10);
             planets.Add(planetA);
 
-            MiniPlanet moonA = new MiniPlanet(new Vector3(1300, 0, 0), 40,
-                NoiseGenerator.RidgedMultiFractal(0.01f), 41, 2,
-                RandomHelper.RandomColor, RandomHelper.RandomColor);
-            planets.Add(moonA);
+            //MiniPlanet moonA = new MiniPlanet(new Vector3(1300, 0, 0), 40,
+            //    NoiseGenerator.RidgedMultiFractal(0.01f), 41, 2,
+            //    RandomHelper.RandomColor, RandomHelper.RandomColor);
+            //planets.Add(moonA);
 
-            var planetB = new MiniPlanet(new Vector3(2700, 0, 0), planetARadius,
-              NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
-            planets.Add(planetB);
-
-
-            var planetC = new MiniPlanet(new Vector3(3700, 0, 0), planetARadius,
-              NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
-              RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
-            planets.Add(planetC);
+            //var planetB = new MiniPlanet(new Vector3(2700, 0, 0), planetARadius,
+            //  NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+            // RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
+            //planets.Add(planetB);
 
 
-            MiniPlanet moonB = new MiniPlanet(new Vector3(5000, 0, 0), 150,
-             NoiseGenerator.RidgedMultiFractal(0.01f), 101, 4,
-             RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 5);
-            planets.Add(moonB);
+            //var planetC = new MiniPlanet(new Vector3(3700, 0, 0), planetARadius,
+            //  NoiseGenerator.ParameterisedFastPlanet(planetARadius, NoiseGenerator.miniPlanetParameters, RandomHelper.GetRandomInt(1000)), 101, 4,
+            //  RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 1);
+            //planets.Add(planetC);
 
-            field = new GravitationalField(new InfiniteForceFieldShape(), planetA.CurrentCenterPosition.ToBepuVector(), 1000000, 100);
+
+            //MiniPlanet moonB = new MiniPlanet(new Vector3(5000, 0, 0), 150,
+            // NoiseGenerator.RidgedMultiFractal(0.01f), 101, 4,
+            // RandomHelper.RandomColor, RandomHelper.RandomColor, false, 0.97f, 1.05f, 10, 4, 5);
+            //planets.Add(moonB);
+
+            field = new GravitationalField(new InfiniteForceFieldShape(), planetA.CurrentCenterPosition.ToBepuVector(), 20000 * planetARadius, 100);
             SystemCore.PhysicsSimulation.Add(field);
 
 
 
             duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(planetA.CurrentCenterPosition.X, planetARadius * 1.05f, planetA.CurrentCenterPosition.Z));
 
-
+            spaceShipOne = new SpaceShip(PlayerIndex.One, Color.Red, new Vector3(planetA.CurrentCenterPosition.X, planetARadius * 1.2f, planetA.CurrentCenterPosition.Z));
 
 
 
@@ -243,6 +252,7 @@ namespace BoidWar.Screens
             Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - planets[currentPlanetIndex].CurrentCenterPosition;
             upVector.Normalize();
             duneBuggyOne.Update(gameTime);
+            spaceShipOne.Update(gameTime);
             //duneBuggyOne.uprightSpringConstraint.LocalUpVector = upVector.ToBepuVector();
             //duneBuggyTwo.Update(gameTime);
             //duneBuggyThree.Update(gameTime);
@@ -250,16 +260,32 @@ namespace BoidWar.Screens
             chaseCamera.Update(gameTime);
 
 
+            if (currentVehicle == "buggy")
+            {
 
-            chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
-            chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
-            //chaseCamera.ChasePosition = duneBuggyOne.smoothedPosition;
-            //chaseCamera.ChaseDirection = duneBuggyOne.smoothedForward;
-            chaseCamera.Up = upVector;
+                chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
+                chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
+                chaseCamera.Up = upVector;
+                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
+                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+            }
+            else
+            {
+                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 0, 200);
+                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
+                chaseCamera.ChasePosition = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation;
+                chaseCamera.ChaseDirection = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Forward * 0.1f;
+                chaseCamera.Up = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Up;
+            }
 
 
             if (input.KeyPress(Keys.N))
                 SwitchToNextPlanet();
+
+            if (input.KeyPress(Keys.V))
+            {
+                SwitchVehicle();
+            }
 
             foreach (MiniPlanet miniPlanet in planets)
             {
@@ -270,6 +296,22 @@ namespace BoidWar.Screens
             }
 
             base.Update(gameTime);
+        }
+
+        private void SwitchVehicle()
+        {
+            if (currentVehicle == "buggy")
+            {
+                currentVehicle = "ship";
+                spaceShipOne.IsActive = true;
+                duneBuggyOne.IsActive = false;
+            }
+            else
+            {
+                currentVehicle = "buggy";
+                spaceShipOne.IsActive = false;
+                duneBuggyOne.IsActive = true;
+            }
         }
 
         private void SwitchToNextPlanet()

@@ -46,6 +46,13 @@ public class GravitationalField : ForceField
     /// <param name="impulse">Force to apply at the given position.</param>
     protected override void CalculateImpulse(Entity e, float dt, out Vector3 impulse)
     {
+
+        if (e.Tag == "spaceship")
+        {
+            impulse = new Vector3();
+            return;
+        }
+
         Vector3 r = e.Position - Origin;
         float length = r.Length();
         if (length > Toolbox.BigEpsilon)
