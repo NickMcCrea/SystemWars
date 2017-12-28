@@ -178,7 +178,7 @@ namespace MonoGameEngineCore.Camera
             get { return aspectRatio; }
             set { aspectRatio = value; }
         }
-        private float aspectRatio = 4.0f / 3.0f;
+        private float aspectRatio = SystemCore.GraphicsDevice.Viewport.AspectRatio;
 
         /// <summary>
         /// Perspective field of view.
@@ -188,7 +188,7 @@ namespace MonoGameEngineCore.Camera
             get { return fieldOfView; }
             set { fieldOfView = value; }
         }
-        private float fieldOfView = MathHelper.ToRadians(45.0f);
+        private float fieldOfView = MathHelper.PiOver4;
 
         /// <summary>
         /// Distance to the near clipping plane.

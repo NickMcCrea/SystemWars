@@ -108,8 +108,9 @@ namespace BoidWar.Gameplay
         public void Update(GameTime gameTime)
         {
 
-            body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
+            
 
+            body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
 
             for (int i = 0; i < vehicle.Wheels.Count; i++)
             {
@@ -130,7 +131,8 @@ namespace BoidWar.Gameplay
 
 
 
-
+            if (!IsActive)
+                return;
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
             {
@@ -208,6 +210,16 @@ namespace BoidWar.Gameplay
             }
         }
 
+        internal void Activate()
+        {
+            IsActive = true;
+        }
+
+        internal void Deactivate()
+        {
+            IsActive = false;
+        }
+
         internal void Teleport(Microsoft.Xna.Framework.Vector3 vector3)
         {
             BEPUutilities.Vector3 v = vector3.ToBepuVector();
@@ -223,7 +235,7 @@ namespace BoidWar.Gameplay
     public class SpaceShip
     {
 
-        private float forwardThrust = 3f;
+        private float forwardThrust = 30f;
 
         private PlayerIndex playerIndex;
         public GameObject ShipObject { get; set; }
@@ -311,7 +323,6 @@ namespace BoidWar.Gameplay
             }
 
 
-
         }
 
         internal void Teleport(Microsoft.Xna.Framework.Vector3 vector3)
@@ -319,6 +330,17 @@ namespace BoidWar.Gameplay
             BEPUutilities.Vector3 v = vector3.ToBepuVector();
             PhysicsBody.Position = v;
 
+        }
+
+        internal void Activate()
+        {
+            IsActive = true;
+           
+        }
+
+        internal void Deactivate()
+        {
+            IsActive = false;
         }
     }
 
