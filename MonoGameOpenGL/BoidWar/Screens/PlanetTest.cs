@@ -101,7 +101,7 @@ namespace BoidWar.Screens
 
 
             duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(0, radius + 100, 0));
-            spaceShipOne = new SpaceShip(PlayerIndex.One, Color.Red, new Vector3(0, radius + 2000, 0));
+            spaceShipOne = new SpaceShip(PlayerIndex.One, Color.Red, new Vector3(0, radius + 200, 0));
 
 
             field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 100000 * radius, 100);
@@ -214,7 +214,10 @@ namespace BoidWar.Screens
             {
                 SwitchVehicle();
             }
-
+            if (input.KeyPress(Keys.F))
+            {
+                duneBuggyOne.Flip();
+            }
 
 
         }

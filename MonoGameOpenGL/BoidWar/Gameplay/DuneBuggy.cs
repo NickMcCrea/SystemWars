@@ -25,6 +25,8 @@ namespace BoidWar.Gameplay
         public GameObject BuggyObject;
         public GameObject CameraObject;
         UprightSpring uprightSpring;
+        float xTilt;
+        float yTilt;
 
         private List<GameObject> wheels;
         /// <summary>
@@ -138,13 +140,37 @@ namespace BoidWar.Gameplay
             desiredCameraPos.Normalize();
             desiredCameraPos *= (radius + 200f);
 
-            Vector3 desiredForward = BuggyObject.Transform.AbsoluteTransform.Translation - desiredCameraPos;
+        
+
+         
+
+            CameraObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(desiredCameraPos, BuggyObject.Transform.AbsoluteTransform.Translation);
+
+
+
+            Vector3 desiredForward = planet.Position - BuggyObject.Transform.AbsoluteTransform.Translation;
             desiredForward.Normalize();
 
             Vector3 desiredUp = Vector3.Cross(desiredForward, Vector3.Right);
             desiredUp.Normalize();
 
-            CameraObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(desiredCameraPos, BuggyObject.Transform.AbsoluteTransform.Translation);
+            Vector3 desiredRight = Vector3.Cross(desiredUp, desiredForward);
+            desiredRight.Normalize();
+
+
+            CameraObject.Transform.RotateAround(desiredUp, BuggyObject.Transform.AbsoluteTransform.Translation, xTilt);
+            CameraObject.Transform.RotateAround(desiredRight, BuggyObject.Transform.AbsoluteTransform.Translation, yTilt);
+
+
+            if (SystemCore.Input.GetRightStickState(playerIndex).X > 0)
+                xTilt += 0.01f;
+            if (SystemCore.Input.GetRightStickState(playerIndex).X < 0)
+                xTilt -= 0.01f;
+
+            if (SystemCore.Input.GetRightStickState(playerIndex).Y > 0)
+                yTilt += 0.01f;
+            if (SystemCore.Input.GetRightStickState(playerIndex).Y < 0)
+                yTilt -= 0.01f;
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
             {
@@ -222,7 +248,12 @@ namespace BoidWar.Gameplay
             }
         }
 
-       
+      
+        public void Flip()
+        {
+            vehicle.Body.AngularVelocity += BEPUutilities.Vector3.Right * 10f;
+        }
+
 
         internal void Activate()
         {

@@ -83,6 +83,7 @@ namespace MonoGameEngineCore.Procedural
 
         public Planet(string name, Vector3 position, IModule module, Effect testEffect, float radius, Color sea, Color land, Color mountains)
         {
+            this.Position = position;
             nodesBeingBuilt = new Dictionary<Vector3, PatchMinMax>();
             neighbourTracker = new NeighbourTracker();
             this.Name = name;
