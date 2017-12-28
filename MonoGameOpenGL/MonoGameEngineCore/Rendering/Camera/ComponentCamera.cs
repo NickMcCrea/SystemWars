@@ -43,7 +43,7 @@ namespace MonoGameEngineCore.Rendering.Camera
 
         public ComponentCamera()
         {
-            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 0.3f, 1000.0f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, SystemCore.GraphicsDevice.Viewport.AspectRatio, 10f, 1000.0f);
             HighPrecisionMode = false;
         }
 

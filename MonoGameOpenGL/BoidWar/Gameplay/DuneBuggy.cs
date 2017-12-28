@@ -1,11 +1,6 @@
-﻿using BEPUphysics.CollisionShapes;
-using BEPUphysics.CollisionShapes.ConvexShapes;
-using BEPUphysics.Entities;
-using BEPUphysics.Entities.Prefabs;
-using BEPUphysics.UpdateableSystems;
+﻿using BEPUphysics.Entities;
 using BEPUphysics.Vehicle;
 using BEPUphysicsDemos.SampleCode;
-using BEPUutilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameEngineCore;
@@ -14,12 +9,10 @@ using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Helper;
 using MonoGameEngineCore.Procedural;
 using MonoGameEngineCore.Rendering;
+using MonoGameEngineCore.Rendering.Camera;
 using Particle3DSample;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BoidWar.Gameplay
 {
@@ -28,9 +21,9 @@ namespace BoidWar.Gameplay
     {
 
 
-
         private Vehicle vehicle;
-        public GameObject body;
+        public GameObject BuggyObject;
+        public GameObject CameraObject;
         UprightSpring uprightSpring;
 
         private List<GameObject> wheels;
@@ -74,10 +67,10 @@ namespace BoidWar.Gameplay
 
             var shape = new ProceduralCuboid(2.5f / 2, 4.5f / 2, .75f / 2);
             shape.SetColor(color);
-            body = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
-            body.AddComponent(new ShadowCasterComponent());
+            BuggyObject = GameObjectFactory.CreateRenderableGameObjectFromShape(shape, EffectLoader.LoadSM5Effect("flatshaded"));
+            BuggyObject.AddComponent(new ShadowCasterComponent());
 
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(body);
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(BuggyObject);
 
             wheels = new List<GameObject>();
             foreach (Wheel w in vehicle.Wheels)
@@ -99,18 +92,21 @@ namespace BoidWar.Gameplay
             }
 
 
+            CameraObject = new GameObject();
+            CameraObject.AddComponent(new ComponentCamera());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(CameraObject);
 
             //uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 10000f);
             // SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
         }
 
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Planet planet)
         {
 
-            
 
-            body.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
+
+            BuggyObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(vehicle.Body.WorldTransform);
 
             for (int i = 0; i < vehicle.Wheels.Count; i++)
             {
@@ -133,6 +129,22 @@ namespace BoidWar.Gameplay
 
             if (!IsActive)
                 return;
+
+
+
+            float radius = planet.radius;
+
+            Vector3 desiredCameraPos = BuggyObject.Transform.AbsoluteTransform.Translation;
+            desiredCameraPos.Normalize();
+            desiredCameraPos *= (radius + 200f);
+
+            Vector3 desiredForward = BuggyObject.Transform.AbsoluteTransform.Translation - desiredCameraPos;
+            desiredForward.Normalize();
+
+            Vector3 desiredUp = Vector3.Cross(desiredForward, Vector3.Right);
+            desiredUp.Normalize();
+
+            CameraObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(desiredCameraPos, BuggyObject.Transform.AbsoluteTransform.Translation);
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
             {
@@ -210,9 +222,12 @@ namespace BoidWar.Gameplay
             }
         }
 
+       
+
         internal void Activate()
         {
             IsActive = true;
+            SystemCore.SetActiveCamera(CameraObject.GetComponent<ComponentCamera>());
         }
 
         internal void Deactivate()
@@ -232,204 +247,5 @@ namespace BoidWar.Gameplay
     }
 
 
-    public class SpaceShip
-    {
 
-        private float forwardThrust = 30f;
-
-        private PlayerIndex playerIndex;
-        public GameObject ShipObject { get; set; }
-
-        public CompoundBody PhysicsBody { get; set; }
-        private List<CompoundShapeEntry> bodies;
-
-        public bool IsActive = false;
-
-
-        public SpaceShip(PlayerIndex player, Color color, Microsoft.Xna.Framework.Vector3 position)
-        {
-
-
-            this.playerIndex = player;
-
-
-
-            var shape = new ProceduralCuboid(1, 1, 1);
-            shape.SetColor(color);
-
-            ShipObject = new GameObject();
-
-            ShipObject.AddComponent(new RenderGeometryComponent(shape));
-            ShipObject.AddComponent(new EffectRenderComponent(EffectLoader.LoadSM5Effect("flatshaded")));
-            ShipObject.AddComponent(new ShadowCasterComponent());
-
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(ShipObject);
-
-            //Build the ship
-            var shipFuselage = new CompoundShapeEntry(new BoxShape(1, 1f, 1), new BEPUutilities.Vector3(0, 0, 0), 4);
-
-            bodies = new List<CompoundShapeEntry>();
-            bodies.Add(shipFuselage);
-
-
-            PhysicsBody = new CompoundBody(bodies, 10);
-
-
-
-
-
-            PhysicsBody.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Right, (float)Math.PI / 2) * BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Forward, (float)Math.PI / 2);
-            PhysicsBody.Position = position.ToBepuVector();
-            SystemCore.PhysicsSimulation.Add(PhysicsBody);
-            PhysicsBody.IsAffectedByGravity = false;
-            PhysicsBody.Tag = "spaceship";
-
-
-
-            PhysicsBody.AngularDamping = 0.99f;
-            PhysicsBody.LinearDamping = 0.99f;
-        }
-
-
-        public void Update(GameTime gameTime)
-        {
-
-            ShipObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateMonoMatrixFromBepu(PhysicsBody.WorldTransform);
-
-            if (IsActive)
-            {
-
-                var currentLeft = PhysicsBody.WorldTransform.Left;
-                var currentForward = PhysicsBody.WorldTransform.Forward;
-                var currentUp = PhysicsBody.WorldTransform.Up;
-
-                Microsoft.Xna.Framework.Vector2 leftStick = SystemCore.Input.GetLeftStickState(playerIndex);
-                leftStick.X = -leftStick.X;
-                Microsoft.Xna.Framework.Vector2 rightStick = SystemCore.Input.GetRightStickState(playerIndex);
-
-                float rightTrigger = SystemCore.Input.GetRightTrigger(playerIndex);
-
-                if (rightTrigger > 0)
-                {
-                    PhysicsBody.LinearVelocity += PhysicsBody.WorldTransform.Forward * (rightTrigger * (forwardThrust));
-                }
-
-                float speed = 0.1f;
-                PhysicsBody.AngularVelocity += currentLeft * leftStick.Y * speed;
-                PhysicsBody.AngularVelocity += currentForward * rightStick.X * speed;
-                PhysicsBody.AngularVelocity += currentUp * leftStick.X * speed;
-
-
-            }
-
-
-        }
-
-        internal void Teleport(Microsoft.Xna.Framework.Vector3 vector3)
-        {
-            BEPUutilities.Vector3 v = vector3.ToBepuVector();
-            PhysicsBody.Position = v;
-
-        }
-
-        internal void Activate()
-        {
-            IsActive = true;
-           
-        }
-
-        internal void Deactivate()
-        {
-            IsActive = false;
-        }
-    }
-
-
-    public class Thruster : Updateable, IDuringForcesUpdateable
-    {
-        private float age;
-        private float lifeSpan;
-
-        /// <summary>
-        /// Constructs a thruster originating at the given position, pushing in the given direction.
-        /// </summary>
-        /// <param name="targetEntity">Entity that the force will be applied to.</param>
-        /// <param name="pos">Origin of the force.</param>
-        /// <param name="dir">Direction of the force.</param>
-        /// <param name="time">Total lifespan of the force.  A lifespan of zero is infinite.</param>
-        public Thruster(Entity targetEntity, BEPUutilities.Vector3 pos, BEPUutilities.Vector3 dir, float time)
-        {
-            Target = targetEntity;
-            Position = pos;
-            Direction = dir;
-            LifeSpan = time;
-        }
-
-        /// <summary>
-        /// Gets or sets the position of the thruster in the local space of the target entity.
-        /// </summary>
-        public BEPUutilities.Vector3 Position { get; set; }
-
-        /// <summary>
-        /// Gets or sets the direction of the force in the local space of the target entity.  Magnitude of the force is equal to the magnitude of the direction.
-        /// </summary>
-        public BEPUutilities.Vector3 Direction { get; set; }
-
-        /// <summary>
-        /// Gets or sets the entity to apply force to.
-        /// </summary>
-        public Entity Target { get; set; }
-
-        /// <summary>
-        /// Gets or sets the length of time that the thruster has been firing.
-        /// This can be reset to 'refresh' the life of the force.
-        /// </summary>
-        public float Age
-        {
-            get { return age; }
-            set
-            {
-                age = value;
-                if (age < LifeSpan)
-                    IsUpdating = true; //IsUpdating is a property of the Updateable class.  The updateDuringForces method won't be called if IsUpdating is false.
-            }
-        }
-
-        /// <summary>
-        /// Maximum life span of the force, after which the thruster will deactivate.
-        /// Set to 0 for infinite lifespan.
-        /// </summary>
-        public float LifeSpan
-        {
-            get { return lifeSpan; }
-            set
-            {
-                lifeSpan = value;
-                if (lifeSpan > Age || lifeSpan == 0)
-                    IsUpdating = true; //Wake the thruster up if it's young again.
-            }
-        }
-
-
-        /// <summary>
-        /// Applies the thruster forces.
-        /// Called automatically by the owning space during a space update.
-        /// </summary>
-        /// <param name="dt">Simulation timestep.</param>
-        void IDuringForcesUpdateable.Update(float dt)
-        {
-            //Transform the local position and direction into world space.
-            BEPUutilities.Vector3 worldPosition = Target.Position + Matrix3x3.Transform(Position, Target.OrientationMatrix);
-            BEPUutilities.Vector3 worldDirection = Matrix3x3.Transform(Direction, Target.OrientationMatrix);
-            //Apply the force.
-            Target.ApplyImpulse(worldPosition, worldDirection * dt);
-
-
-            Age += dt;
-            if (LifeSpan > 0 && Age > LifeSpan)
-            {
-                IsUpdating = false; //The thruster has finished firing.
-            }
-        }
-    }
 }

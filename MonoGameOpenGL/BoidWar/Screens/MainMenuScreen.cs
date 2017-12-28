@@ -28,7 +28,7 @@ namespace BoidWar
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
             b.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new SurvivalModeScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new PlanetTest());
             };
 
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;

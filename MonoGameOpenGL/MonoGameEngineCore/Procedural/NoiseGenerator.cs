@@ -154,9 +154,9 @@ namespace MonoGameEngineCore.Procedural
         }
 
         //biased for realistic scale planets of thousands of units radius
-        public static IModule FastPlanet(float planetRadius)
+        public static IModule FastPlanet(float planetRadius, int seed=3)
         {
-            int seed = RandomHelper.GetRandomInt(1000);
+           
             FastNoise fastPlanetContinents = new FastNoise(seed);
             fastPlanetContinents.Frequency = 0.0001f;
 

@@ -26,8 +26,8 @@ namespace BoidWar.Screens
         MouseFreeCamera mouseCamera;
         Planet earth;
         GravitationalField field;
-        ChaseCamera chaseCamera;
-        private string currentVehicle = "buggy";
+      
+        private string currentVehicle = "spaceship";
 
 
         public PlanetTest() : base()
@@ -88,7 +88,7 @@ namespace BoidWar.Screens
         {
             //AtmosphericScatteringGround
 
-            float radius = 4000;
+            float radius = 6000;
             earth = new Planet("earth", new Vector3(0, 0, 0),
                 NoiseGenerator.FastPlanet(radius),
                EffectLoader.LoadSM5Effect("flatshaded").Clone(),
@@ -107,16 +107,8 @@ namespace BoidWar.Screens
             field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 100000 * radius, 100);
             SystemCore.PhysicsSimulation.Add(field);
 
-            chaseCamera = new ChaseCamera();
+            spaceShipOne.Activate();
 
-            chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
-            chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
-            chaseCamera.Stiffness = 1000;
-            chaseCamera.Damping = 600;
-            chaseCamera.Mass = 50f;
-            chaseCamera.NearZ = 0.5f;
-            chaseCamera.FarZ = 10000.0f;
-            SystemCore.SetActiveCamera(chaseCamera);
 
         }
 
@@ -124,12 +116,12 @@ namespace BoidWar.Screens
         {
             if (currentVehicle == "buggy")
             {
-                Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
+                Vector3 upVector = duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
                 upVector.Normalize();
                 currentVehicle = "ship";
 
                 spaceShipOne.Activate();
-                spaceShipOne.Teleport(duneBuggyOne.body.Transform.AbsoluteTransform.Translation + (upVector * 50));
+                spaceShipOne.Teleport(duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation + (upVector * 50));
 
                 duneBuggyOne.Deactivate();
             }
@@ -156,36 +148,17 @@ namespace BoidWar.Screens
 
             EvaluateMouseCamControls(gameTime);
 
-            Vector3 upVector = duneBuggyOne.body.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
+            Vector3 upVector = duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
+            Vector3 lengthVector = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation; ;
             if (upVector != Vector3.Zero)
                 upVector.Normalize();
-            duneBuggyOne.Update(gameTime);
-            spaceShipOne.Update(gameTime);
+            duneBuggyOne.Update(gameTime, earth);
+
+            spaceShipOne.Update(gameTime, (lengthVector.Length() < (earth.radius * 1.05f)));
 
 
-            if (currentVehicle == "buggy")
-            {
-
-                chaseCamera.ChasePosition = duneBuggyOne.body.Transform.AbsoluteTransform.Translation;
-                chaseCamera.ChaseDirection = duneBuggyOne.body.Transform.AbsoluteTransform.Forward;
-                if (upVector != Vector3.Zero)
-                    chaseCamera.Up = upVector;
-                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 40f, 55f);
-                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
-            }
-            else
-            {
-                chaseCamera.DesiredPositionOffset = new Vector3(0.0f, 0, 200);
-                chaseCamera.LookAtOffset = new Vector3(0.0f, 0.0f, 0);
-                chaseCamera.ChasePosition = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation;
-                chaseCamera.ChaseDirection = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Forward * 0.1f;
-                chaseCamera.Up = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Up;
-            }
-
-
-
-
-            chaseCamera.Update(gameTime);
+   
+          
             PlanetBuilder.Update();
             earth.Update(gameTime);
 
