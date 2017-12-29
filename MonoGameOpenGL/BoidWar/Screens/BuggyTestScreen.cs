@@ -19,20 +19,15 @@ namespace BoidWar.Screens
 {
 
 
-    class PlanetTest : Screen
+    class BuggyTestScreen : Screen
     {
         DuneBuggy duneBuggyOne;
-        DuneBuggyPlanetCamera duneBuggyCamera;
-        SpaceShip spaceShipOne;
-        SpaceShipCamera spaceShipCamera;
         MouseFreeCamera mouseCamera;
-        Planet earth;
-        GravitationalField field;
-      
+       
         private string currentVehicle = "spaceship";
 
 
-        public PlanetTest() : base()
+        public BuggyTestScreen() : base()
         {
 
         }
@@ -45,7 +40,7 @@ namespace BoidWar.Screens
             SystemCore.ActiveScene.FogEnabled = false;
 
             //mouse camera
-            mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0), 1f, 50000f);
+            mouseCamera = new MouseFreeCamera(new Vector3(0, 0, 0), 1f, 500f);
             mouseCamera.moveSpeed = 1f;
             mouseCamera.SetPositionAndLook(new Vector3(0, 200, -200), (float)Math.PI, (float)-Math.PI / 5);
             SystemCore.SetActiveCamera(mouseCamera);
@@ -88,57 +83,25 @@ namespace BoidWar.Screens
 
         private void SetUpGameWorld()
         {
-            //AtmosphericScatteringGround
-
-            float radius = 6000;
-            earth = new Planet("earth", new Vector3(0, 0, 0),
-                NoiseGenerator.FastPlanet(radius),
-               EffectLoader.LoadSM5Effect("flatshaded").Clone(),
-                radius, Color.DarkSeaGreen.ChangeTone(-100), Color.SaddleBrown, Color.SaddleBrown.ChangeTone(-10), 0);
-            //earth.AddAtmosphere();
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(earth);
+            
 
 
-            mouseCamera.SetPositionAndLook(new Vector3(0, radius + 200, 0), (float)Math.PI, (float)-Math.PI / 5);
+            SystemCore.PhysicsSimulation.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+            Heightmap heightMap = NoiseGenerator.CreateHeightMap(NoiseGenerator.RidgedMultiFractal(0.03f), 100, 5, 20, 1, 1, 1);
+            var terrainObject = heightMap.CreateTranslatedRenderableHeightMap(Color.OrangeRed, EffectLoader.LoadSM5Effect("flatshaded"), new Vector3(-250, 0, -250));
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(terrainObject);
+
+            mouseCamera.SetPositionAndLook(new Vector3(0,50,0), (float)Math.PI, (float)-Math.PI / 5);
 
 
-            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(0, radius + 100, 0));
-            spaceShipOne = new SpaceShip(PlayerIndex.One, Color.Red, new Vector3(0, radius + 200, 0));
+            duneBuggyOne = new DuneBuggy(PlayerIndex.One, Color.Red, new Vector3(0, 20, 0));
 
-
-            field = new GravitationalField(new InfiniteForceFieldShape(), Vector3.Zero.ToBepuVector(), 100000 * radius, 100);
-            SystemCore.PhysicsSimulation.Add(field);
-
-            spaceShipOne.Activate();
-
-            duneBuggyCamera = new DuneBuggyPlanetCamera(duneBuggyOne);
-            spaceShipCamera = new SpaceShipCamera(spaceShipOne);
+            duneBuggyOne.Activate();
+           
 
         }
 
-        private void SwitchVehicle()
-        {
-            if (currentVehicle == "buggy")
-            {
-                Vector3 upVector = duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
-                upVector.Normalize();
-                currentVehicle = "ship";
-
-                spaceShipOne.Activate();
-                spaceShipOne.Teleport(duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation + (upVector * 50));
-                spaceShipCamera.Activate();
-                duneBuggyOne.Deactivate();
-            }
-            else
-            {
-                currentVehicle = "buggy";
-                spaceShipOne.Deactivate();
-                duneBuggyOne.Teleport(spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation);
-                duneBuggyOne.Activate();
-                duneBuggyCamera.Activate();
-            }
-        }
-
+     
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
@@ -153,19 +116,9 @@ namespace BoidWar.Screens
 
             EvaluateMouseCamControls(gameTime);
 
-            Vector3 upVector = duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation;
-            Vector3 lengthVector = spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation - earth.Transform.AbsoluteTransform.Translation; ;
-            if (upVector != Vector3.Zero)
-                upVector.Normalize();
+            
             duneBuggyOne.Update(gameTime);
 
-            spaceShipOne.Update(gameTime, (lengthVector.Length() < (earth.radius * 1.05f)));
-
-            duneBuggyCamera.Update(gameTime, earth, PlayerIndex.One);
-            spaceShipCamera.Update(gameTime);
-
-            PlanetBuilder.Update();
-            earth.Update(gameTime);
 
             if (input.EvaluateInputBinding("MainMenu"))
                 SystemCore.ScreenManager.AddAndSetActive(new MainMenuScreen());
@@ -193,7 +146,7 @@ namespace BoidWar.Screens
 
 
 
-              
+
 
                 if (input.IsKeyDown(Keys.RightShift))
                     mouseCamera.moveSpeed = 10f;
@@ -207,14 +160,6 @@ namespace BoidWar.Screens
             }
 
 
-            if (input.KeyPress(Keys.V))
-            {
-                duneBuggyOne.Teleport(new Vector3(0, 4050, 0));
-            }
-            if (input.KeyPress(Keys.B))
-            {
-                SwitchVehicle();
-            }
             if (input.KeyPress(Keys.F))
             {
                 duneBuggyOne.Flip();

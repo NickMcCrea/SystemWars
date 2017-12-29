@@ -66,6 +66,7 @@
     <Compile Include="Gameplay\SimpleEnemy.cs" />
     <Compile Include="Gameplay\Spaceship.cs" />
     <Compile Include="Gameplay\VehicleFactory.cs" />
+    <Compile Include="Screens\BuggyTestScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

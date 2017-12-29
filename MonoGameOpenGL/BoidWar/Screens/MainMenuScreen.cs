@@ -18,7 +18,7 @@ namespace BoidWar
             : base()
         {
 
-            string screenOne = "Survival";
+            string screenOne = "BuggyTest";
             string screenTwo = "PlanetTest";
 
 
@@ -28,7 +28,7 @@ namespace BoidWar
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
             b.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new PlanetTest());
+                SystemCore.ScreenManager.AddAndSetActive(new BuggyTestScreen());
             };
 
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;

@@ -84,7 +84,7 @@ namespace BoidWar.Gameplay
         private List<GameObject> wheels;
         public float BackwardSpeed = -13;       
         public float ForwardSpeed = 30;
-        public bool IsActive;
+        private bool IsActive;
         public float MaximumTurnAngle = (float)Math.PI / 6;
         public float TurnSpeed = BEPUutilities.MathHelper.Pi;
         private PlayerIndex playerIndex;
@@ -131,7 +131,7 @@ namespace BoidWar.Gameplay
         }
 
 
-        public void Update(GameTime gameTime, Planet planet)
+        public void Update(GameTime gameTime)
         {
 
 
