@@ -82,10 +82,10 @@ namespace BoidWar.Gameplay
         private Vehicle vehicle;
         private UprightSpring uprightSpring;
         private List<GameObject> wheels;
-        public float BackwardSpeed = -13;       
+        public float BackwardSpeed = -13;
         public float ForwardSpeed = 30;
         private bool IsActive;
-        public float MaximumTurnAngle = (float)Math.PI / 6;
+        public float MaximumTurnAngle = (float)Math.PI / 3;
         public float TurnSpeed = BEPUutilities.MathHelper.Pi;
         private PlayerIndex playerIndex;
         public UprightSpring uprightSpringConstraint;
@@ -126,8 +126,8 @@ namespace BoidWar.Gameplay
                 wheels.Add(wheel);
             }
 
-            //uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 10000f);
-            // SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
+            uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 1000f);
+            SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
         }
 
 
@@ -163,9 +163,9 @@ namespace BoidWar.Gameplay
 
 
 
-         
 
-           
+
+
 
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
@@ -243,7 +243,7 @@ namespace BoidWar.Gameplay
                 }
             }
         }
-     
+
         public void Flip()
         {
             vehicle.Body.AngularVelocity += BEPUutilities.Vector3.Right * 10f;
@@ -252,7 +252,7 @@ namespace BoidWar.Gameplay
         internal void Activate()
         {
             IsActive = true;
-            
+
         }
 
         internal void Deactivate()

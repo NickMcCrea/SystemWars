@@ -27,32 +27,70 @@ namespace BoidWar.Gameplay
 
             var localWheelRotation = BEPUutilities.Quaternion.CreateFromAxisAngle(new BEPUutilities.Vector3(0, 0, 1), BEPUutilities.MathHelper.PiOver2);
 
+            /* original values
+            float wheelRadius = .375f;
+            float wheelWidth = .2f;
+            float restLength = 0.325f;
+            float wheelStiffness = 2000;
+            float wheelDamping = 100;
+            float gripFriction = 2.5f;
+            float maxForwardForce = 30000;
+            float maxBackwardForce = 10000;
+            float dynamicBrakingCoeff = 1.5f;
+            float staticBrakingCoeff = 2;
+            float rollingFrictionCoeff = 0.02f;
+            float wheelSlidingDynamicCoeff = 4;
+            float wheelSlidingStaticCoeff = 5;
+
+            float wheelLateralPlacement = 1.1f;
+            float wheelForeAftPlacement = 1.8f;
+            float wheelHeightPlacement = 0.1f;
+            */
+
+            float wheelRadius = .375f;
+            float wheelWidth = .2f;
+            float restLength = 0.325f;
+            float wheelStiffness = 2000;
+            float wheelDamping = 100;
+            float gripFriction = 2.5f;
+            float maxForwardForce = 30000;
+            float maxBackwardForce = 10000;
+            float dynamicBrakingCoeff = 1.5f;
+            float staticBrakingCoeff = 2;
+            float rollingFrictionCoeff = 0.02f;
+            float wheelSlidingDynamicCoeff = 4;
+            float wheelSlidingStaticCoeff = 5;
+
+            float wheelLateralPlacement = 1.1f;
+            float wheelForeAftPlacement = 1.8f;
+            float wheelHeightPlacement = 0.1f;
+
             //The wheel model used is not aligned initially with how a wheel would normally look, so rotate them.
             BEPUutilities.Matrix wheelGraphicRotation = BEPUutilities.Matrix.CreateFromAxisAngle(BEPUutilities.Vector3.Forward, BEPUutilities.MathHelper.PiOver2);
             Vehicle.AddWheel(new Wheel(
-                                 new CylinderCastWheelShape(.375f, 0.2f, localWheelRotation, wheelGraphicRotation, false),
-                                 new WheelSuspension(2000, 100f, BEPUutilities.Vector3.Down, 0.325f, new BEPUutilities.Vector3(-1.1f, -0.1f, 1.8f)),
-                                 new WheelDrivingMotor(2.5f, 30000, 10000),
-                                 new WheelBrake(1.5f, 2, .02f),
-                                 new WheelSlidingFriction(4, 5)));
+                                 new CylinderCastWheelShape(wheelRadius, wheelWidth, localWheelRotation, wheelGraphicRotation, false),
+                                 new WheelSuspension(wheelStiffness, wheelDamping, BEPUutilities.Vector3.Down, restLength, new BEPUutilities.Vector3(-wheelLateralPlacement, -wheelHeightPlacement, wheelForeAftPlacement)),
+                                 new WheelDrivingMotor(gripFriction, maxForwardForce, maxBackwardForce),
+                                 new WheelBrake(dynamicBrakingCoeff, staticBrakingCoeff, rollingFrictionCoeff),
+                                 new WheelSlidingFriction(wheelSlidingDynamicCoeff, wheelSlidingStaticCoeff)));
             Vehicle.AddWheel(new Wheel(
-                                 new CylinderCastWheelShape(.375f, 0.2f, localWheelRotation, wheelGraphicRotation, false),
-                                 new WheelSuspension(2000, 100f, BEPUutilities.Vector3.Down, 0.325f, new BEPUutilities.Vector3(-1.1f, -0.1f, -1.8f)),
-                                 new WheelDrivingMotor(2.5f, 30000, 10000),
-                                 new WheelBrake(1.5f, 2, .02f),
-                                 new WheelSlidingFriction(4, 5)));
+                                 new CylinderCastWheelShape(wheelRadius, wheelWidth, localWheelRotation, wheelGraphicRotation, false),
+                                 new WheelSuspension(wheelStiffness, wheelDamping, BEPUutilities.Vector3.Down, restLength, new BEPUutilities.Vector3(-wheelLateralPlacement, -wheelHeightPlacement, -wheelForeAftPlacement)),
+                                 new WheelDrivingMotor(gripFriction, maxForwardForce, maxBackwardForce),
+                                    new WheelBrake(dynamicBrakingCoeff, staticBrakingCoeff, rollingFrictionCoeff),
+                                new WheelSlidingFriction(wheelSlidingDynamicCoeff, wheelSlidingStaticCoeff)));
             Vehicle.AddWheel(new Wheel(
-                                 new CylinderCastWheelShape(.375f, 0.2f, localWheelRotation, wheelGraphicRotation, false),
-                                 new WheelSuspension(2000, 100f, BEPUutilities.Vector3.Down, 0.325f, new BEPUutilities.Vector3(1.1f, -0.1f, 1.8f)),
-                                 new WheelDrivingMotor(2.5f, 30000, 10000),
-                                 new WheelBrake(1.5f, 2, .02f),
-                                 new WheelSlidingFriction(4, 5)));
+                                 new CylinderCastWheelShape(wheelRadius, wheelWidth, localWheelRotation, wheelGraphicRotation, false),
+                                 new WheelSuspension(wheelStiffness, wheelDamping, BEPUutilities.Vector3.Down, restLength, new BEPUutilities.Vector3(wheelLateralPlacement, -wheelHeightPlacement, wheelForeAftPlacement)),
+                                 new WheelDrivingMotor(gripFriction, maxForwardForce, maxBackwardForce),
+                                    new WheelBrake(dynamicBrakingCoeff, staticBrakingCoeff, rollingFrictionCoeff),
+                                 new WheelSlidingFriction(wheelSlidingDynamicCoeff, wheelSlidingStaticCoeff)));
             Vehicle.AddWheel(new Wheel(
-                                 new CylinderCastWheelShape(.375f, 0.2f, localWheelRotation, wheelGraphicRotation, false),
-                                 new WheelSuspension(2000, 100f, BEPUutilities.Vector3.Down, 0.325f, new BEPUutilities.Vector3(1.1f, -0.1f, -1.8f)),
-                                 new WheelDrivingMotor(2.5f, 30000, 10000),
-                                 new WheelBrake(1.5f, 2, .02f),
-                                 new WheelSlidingFriction(4, 5)));
+                                 new CylinderCastWheelShape(wheelRadius, wheelWidth, localWheelRotation, wheelGraphicRotation, false),
+                                 new WheelSuspension(wheelStiffness, wheelDamping, BEPUutilities.Vector3.Down, restLength, new BEPUutilities.Vector3(wheelLateralPlacement, -wheelHeightPlacement, -wheelForeAftPlacement)),
+                                 new WheelDrivingMotor(gripFriction, maxForwardForce, maxBackwardForce),
+                                   new WheelBrake(dynamicBrakingCoeff, staticBrakingCoeff, rollingFrictionCoeff),
+                               new WheelSlidingFriction(wheelSlidingDynamicCoeff, wheelSlidingStaticCoeff)));
 
 
             foreach (Wheel wheel in Vehicle.Wheels)

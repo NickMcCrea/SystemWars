@@ -24,8 +24,7 @@ namespace BoidWar.Screens
         DuneBuggy duneBuggyOne;
         MouseFreeCamera mouseCamera;
        
-        private string currentVehicle = "spaceship";
-
+        
 
         public BuggyTestScreen() : base()
         {
@@ -45,17 +44,9 @@ namespace BoidWar.Screens
             mouseCamera.SetPositionAndLook(new Vector3(0, 200, -200), (float)Math.PI, (float)-Math.PI / 5);
             SystemCore.SetActiveCamera(mouseCamera);
 
-
-
-
-
             AddInputBindings();
 
-
-
             SetUpGameWorld();
-
-
 
             base.OnInitialise();
         }
@@ -100,8 +91,7 @@ namespace BoidWar.Screens
            
 
         }
-
-     
+    
         public override void OnRemove()
         {
             SystemCore.GUIManager.ClearAllControls();
