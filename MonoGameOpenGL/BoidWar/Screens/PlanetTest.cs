@@ -22,7 +22,9 @@ namespace BoidWar.Screens
     class PlanetTest : Screen
     {
         DuneBuggy duneBuggyOne;
+        DuneBuggyPlanetCamera duneBuggyCamera;
         SpaceShip spaceShipOne;
+        SpaceShipCamera spaceShipCamera;
         MouseFreeCamera mouseCamera;
         Planet earth;
         GravitationalField field;
@@ -109,6 +111,8 @@ namespace BoidWar.Screens
 
             spaceShipOne.Activate();
 
+            duneBuggyCamera = new DuneBuggyPlanetCamera(duneBuggyOne);
+            spaceShipCamera = new SpaceShipCamera(spaceShipOne);
 
         }
 
@@ -122,7 +126,7 @@ namespace BoidWar.Screens
 
                 spaceShipOne.Activate();
                 spaceShipOne.Teleport(duneBuggyOne.BuggyObject.Transform.AbsoluteTransform.Translation + (upVector * 50));
-
+                spaceShipCamera.Activate();
                 duneBuggyOne.Deactivate();
             }
             else
@@ -131,6 +135,7 @@ namespace BoidWar.Screens
                 spaceShipOne.Deactivate();
                 duneBuggyOne.Teleport(spaceShipOne.ShipObject.Transform.AbsoluteTransform.Translation);
                 duneBuggyOne.Activate();
+                duneBuggyCamera.Activate();
             }
         }
 
@@ -156,9 +161,9 @@ namespace BoidWar.Screens
 
             spaceShipOne.Update(gameTime, (lengthVector.Length() < (earth.radius * 1.05f)));
 
+            duneBuggyCamera.Update(gameTime, earth, PlayerIndex.One);
+            spaceShipCamera.Update(gameTime);
 
-   
-          
             PlanetBuilder.Update();
             earth.Update(gameTime);
 
@@ -170,10 +175,6 @@ namespace BoidWar.Screens
 
             base.Update(gameTime);
         }
-
-      
-
-
 
         private void EvaluateMouseCamControls(GameTime gameTime)
         {

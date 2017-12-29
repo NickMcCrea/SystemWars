@@ -17,42 +17,75 @@ using System.Collections.Generic;
 namespace BoidWar.Gameplay
 {
 
+    public class DuneBuggyPlanetCamera
+    {
+        float xTilt;
+        float yTilt;
+        public GameObject CameraObject;
+        private DuneBuggy buggy;
+
+        public DuneBuggyPlanetCamera(DuneBuggy buggy)
+        {
+            this.buggy = buggy;
+            CameraObject = new GameObject();
+            CameraObject.AddComponent(new ComponentCamera());
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(CameraObject);
+        }
+
+        public void Update(GameTime gameTime, Planet currentPlanet, PlayerIndex playerIndex)
+        {
+            float radius = currentPlanet.radius;
+
+            Vector3 desiredCameraPos = buggy.BuggyObject.Transform.AbsoluteTransform.Translation;
+            desiredCameraPos.Normalize();
+            desiredCameraPos *= (radius + 200f);
+
+
+            CameraObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(desiredCameraPos, buggy.BuggyObject.Transform.AbsoluteTransform.Translation);
+
+            Vector3 desiredForward = currentPlanet.Position - buggy.BuggyObject.Transform.AbsoluteTransform.Translation;
+            desiredForward.Normalize();
+
+            Vector3 desiredUp = Vector3.Cross(desiredForward, Vector3.Right);
+            desiredUp.Normalize();
+
+            Vector3 desiredRight = Vector3.Cross(desiredUp, desiredForward);
+            desiredRight.Normalize();
+
+
+            CameraObject.Transform.RotateAround(desiredUp, buggy.BuggyObject.Transform.AbsoluteTransform.Translation, xTilt);
+            CameraObject.Transform.RotateAround(desiredRight, buggy.BuggyObject.Transform.AbsoluteTransform.Translation, yTilt);
+
+
+            if (SystemCore.Input.GetRightStickState(playerIndex).X > 0)
+                xTilt += 0.01f;
+            if (SystemCore.Input.GetRightStickState(playerIndex).X < 0)
+                xTilt -= 0.01f;
+
+            if (SystemCore.Input.GetRightStickState(playerIndex).Y > 0)
+                yTilt += 0.01f;
+            if (SystemCore.Input.GetRightStickState(playerIndex).Y < 0)
+                yTilt -= 0.01f;
+
+        }
+
+        public void Activate()
+        {
+            SystemCore.SetActiveCamera(CameraObject.GetComponent<ComponentCamera>());
+        }
+    }
+
     public class DuneBuggy
     {
 
-
+        public GameObject BuggyObject { get; set; }
         private Vehicle vehicle;
-        public GameObject BuggyObject;
-        public GameObject CameraObject;
-        UprightSpring uprightSpring;
-        float xTilt;
-        float yTilt;
-
+        private UprightSpring uprightSpring;
         private List<GameObject> wheels;
-        /// <summary>
-        /// Speed that the Vehicle tries towreach when moving backward.
-        /// </summary>
-        public float BackwardSpeed = -13;
-
-        /// <summary>
-        /// Speed that the Vehicle tries to reach when moving forward.
-        /// </summary>
+        public float BackwardSpeed = -13;       
         public float ForwardSpeed = 30;
-
-        /// <summary>
-        /// Whether or not to use the Vehicle's input.
-        /// </summary>
         public bool IsActive;
-
-
-        /// <summary>
-        /// Maximum turn angle of the wheels.
-        /// </summary>
         public float MaximumTurnAngle = (float)Math.PI / 6;
-
-        /// <summary>
-        /// Turning speed of the wheels in radians per second.
-        /// </summary>
         public float TurnSpeed = BEPUutilities.MathHelper.Pi;
         private PlayerIndex playerIndex;
         public UprightSpring uprightSpringConstraint;
@@ -93,11 +126,6 @@ namespace BoidWar.Gameplay
                 wheels.Add(wheel);
             }
 
-
-            CameraObject = new GameObject();
-            CameraObject.AddComponent(new ComponentCamera());
-            SystemCore.GameObjectManager.AddAndInitialiseGameObject(CameraObject);
-
             //uprightSpringConstraint = new UprightSpring(vehicle.Body, BEPUutilities.Vector3.Up, 0.1f, (float)Math.PI, 10000f);
             // SystemCore.PhysicsSimulation.Add(uprightSpringConstraint);
         }
@@ -134,43 +162,11 @@ namespace BoidWar.Gameplay
 
 
 
-            float radius = planet.radius;
-
-            Vector3 desiredCameraPos = BuggyObject.Transform.AbsoluteTransform.Translation;
-            desiredCameraPos.Normalize();
-            desiredCameraPos *= (radius + 200f);
-
-        
 
          
 
-            CameraObject.Transform.AbsoluteTransform = MonoMathHelper.GenerateWorldMatrixFromPositionAndTarget(desiredCameraPos, BuggyObject.Transform.AbsoluteTransform.Translation);
+           
 
-
-
-            Vector3 desiredForward = planet.Position - BuggyObject.Transform.AbsoluteTransform.Translation;
-            desiredForward.Normalize();
-
-            Vector3 desiredUp = Vector3.Cross(desiredForward, Vector3.Right);
-            desiredUp.Normalize();
-
-            Vector3 desiredRight = Vector3.Cross(desiredUp, desiredForward);
-            desiredRight.Normalize();
-
-
-            CameraObject.Transform.RotateAround(desiredUp, BuggyObject.Transform.AbsoluteTransform.Translation, xTilt);
-            CameraObject.Transform.RotateAround(desiredRight, BuggyObject.Transform.AbsoluteTransform.Translation, yTilt);
-
-
-            if (SystemCore.Input.GetRightStickState(playerIndex).X > 0)
-                xTilt += 0.01f;
-            if (SystemCore.Input.GetRightStickState(playerIndex).X < 0)
-                xTilt -= 0.01f;
-
-            if (SystemCore.Input.GetRightStickState(playerIndex).Y > 0)
-                yTilt += 0.01f;
-            if (SystemCore.Input.GetRightStickState(playerIndex).Y < 0)
-                yTilt -= 0.01f;
 
             if (SystemCore.Input.IsKeyDown(Keys.E) || SystemCore.Input.GamePadButtonDown(Buttons.RightTrigger, playerIndex))
             {
@@ -247,18 +243,16 @@ namespace BoidWar.Gameplay
                 }
             }
         }
-
-      
+     
         public void Flip()
         {
             vehicle.Body.AngularVelocity += BEPUutilities.Vector3.Right * 10f;
         }
 
-
         internal void Activate()
         {
             IsActive = true;
-            SystemCore.SetActiveCamera(CameraObject.GetComponent<ComponentCamera>());
+            
         }
 
         internal void Deactivate()

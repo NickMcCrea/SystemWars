@@ -18,28 +18,62 @@ using System.Collections.Generic;
 
 namespace BoidWar.Gameplay
 {
+
+
+    public class SpaceShipCamera
+    {
+        private ChaseCamera chaseCamera;
+        private SpaceShip ship;
+
+        public SpaceShipCamera(SpaceShip ship)
+        {
+            this.ship = ship;
+            chaseCamera = new ChaseCamera();
+            chaseCamera.DesiredPositionOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 40f, 55f);
+            chaseCamera.LookAtOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0.0f, 0);
+            chaseCamera.Stiffness = 2000;
+            chaseCamera.Damping = 600;
+            chaseCamera.Mass = 50f;
+            chaseCamera.NearZ = 0.5f;
+            chaseCamera.FarZ = 10000.0f;
+            SystemCore.SetActiveCamera(chaseCamera);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+
+            chaseCamera.DesiredPositionOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0, 200);
+            chaseCamera.LookAtOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0.0f, 0);
+            chaseCamera.ChasePosition = ship.ShipObject.Transform.AbsoluteTransform.Translation;
+            chaseCamera.ChaseDirection = ship.ShipObject.Transform.AbsoluteTransform.Forward * 0.1f;
+            chaseCamera.Up = ship.ShipObject.Transform.AbsoluteTransform.Up;
+            chaseCamera.Update(gameTime);
+        }
+
+        public void Activate()
+        {
+            SystemCore.SetActiveCamera(chaseCamera);
+        }
+    }
+
+
     public class SpaceShip
     {
+        public GameObject ShipObject { get; set; }
 
         private float forwardThrustInSpace = 30f;
         private float forwardThrustInAtmosphere = 3f;
-
-        private PlayerIndex playerIndex;
-        public GameObject ShipObject { get; set; }
-
-        public CompoundBody PhysicsBody { get; set; }
+        private PlayerIndex playerIndex; 
+        private CompoundBody PhysicsBody { get; set; }
         private List<CompoundShapeEntry> bodies;
-
-        public bool IsActive = false;
-        ChaseCamera chaseCamera;
+        private bool IsActive = false;
+       
 
         public SpaceShip(PlayerIndex player, Color color, Microsoft.Xna.Framework.Vector3 position)
         {
 
 
             this.playerIndex = player;
-
-
 
             var shape = new ProceduralCuboid(1, 1, 1);
             shape.SetColor(color);
@@ -61,14 +95,12 @@ namespace BoidWar.Gameplay
 
             PhysicsBody = new CompoundBody(bodies, 10);
 
-
-
-
-
             PhysicsBody.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Right, (float)Math.PI / 2) * BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Forward, (float)Math.PI / 2);
             PhysicsBody.Position = position.ToBepuVector();
             SystemCore.PhysicsSimulation.Add(PhysicsBody);
             PhysicsBody.IsAffectedByGravity = false;
+
+            //used by the gravitational field to opt out of its effects
             PhysicsBody.Tag = "spaceship";
 
 
@@ -78,15 +110,7 @@ namespace BoidWar.Gameplay
 
 
 
-            chaseCamera = new ChaseCamera();
-            chaseCamera.DesiredPositionOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 40f, 55f);
-            chaseCamera.LookAtOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0.0f, 0);
-            chaseCamera.Stiffness = 2000;
-            chaseCamera.Damping = 600;
-            chaseCamera.Mass = 50f;
-            chaseCamera.NearZ = 0.5f;
-            chaseCamera.FarZ = 10000.0f;
-            SystemCore.SetActiveCamera(chaseCamera);
+           
         }
 
 
@@ -136,12 +160,6 @@ namespace BoidWar.Gameplay
                 PhysicsBody.LinearVelocity += PhysicsBody.WorldTransform.Up * rightStick.Y;
                 PhysicsBody.LinearVelocity -= PhysicsBody.WorldTransform.Left * rightStick.X;
 
-                chaseCamera.DesiredPositionOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0, 200);
-                chaseCamera.LookAtOffset = new Microsoft.Xna.Framework.Vector3(0.0f, 0.0f, 0);
-                chaseCamera.ChasePosition = ShipObject.Transform.AbsoluteTransform.Translation;
-                chaseCamera.ChaseDirection = ShipObject.Transform.AbsoluteTransform.Forward * 0.1f;
-                chaseCamera.Up = ShipObject.Transform.AbsoluteTransform.Up;
-                chaseCamera.Update(gameTime);
             }
 
 
@@ -157,7 +175,7 @@ namespace BoidWar.Gameplay
         internal void Activate()
         {
             IsActive = true;
-            SystemCore.SetActiveCamera(chaseCamera);
+         
 
         }
 
