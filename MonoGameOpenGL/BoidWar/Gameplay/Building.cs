@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGameEngineCore;
 using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using MonoGameEngineCore.Procedural;
@@ -18,8 +19,11 @@ namespace BoidWar.Gameplay
 
         public MainBase()
         {
+            Health = 100;
+            Size = 8;
+
             ProceduralCube shape = new ProceduralCube();
-            shape.Scale(5f);
+            shape.Scale(Size);
             shape.SetColor(Color.Blue);
             AddComponent(new RenderGeometryComponent(BufferBuilder.VertexBufferBuild(shape),
                 BufferBuilder.IndexBufferBuild(shape), shape.PrimitiveCount));
@@ -28,13 +32,26 @@ namespace BoidWar.Gameplay
             var physicsComponent = new PhysicsComponent(false, false, PhysicsMeshType.box);
             AddComponent(physicsComponent);
 
+            SystemCore.GameObjectManager.AddAndInitialiseGameObject(this);
+            GetComponent<PhysicsComponent>().PhysicsEntity.CollisionInformation.Events.DetectingInitialCollision += Events_DetectingInitialCollision;
 
-            Health = 100;
+           
+        }
 
+        private void Events_DetectingInitialCollision(BEPUphysics.BroadPhaseEntries.MobileCollidables.EntityCollidable sender, BEPUphysics.BroadPhaseEntries.Collidable other, BEPUphysics.NarrowPhaseSystems.Pairs.CollidablePairHandler pair)
+        {
+            Health--;  
+            if(other.Tag is IEnemy)
+            {
+                ((IEnemy)other.Tag).Destroy();
+            }
         }
 
         public void Update(GameTime gameTime)
         {
+
+
+
 
         }
 
@@ -44,6 +61,7 @@ namespace BoidWar.Gameplay
     public class Building : GameObject
     {
         public int Health { get; set; }
+        public int Size { get; set; }
 
     }
 

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BoidWar.Gameplay
 {
-    public class SimpleEnemy : GameObject
+    public class SimpleEnemy : GameObject, IEnemy
     {
 
         public Vector3 DesiredPosiiton { get; set; }
@@ -32,9 +32,18 @@ namespace BoidWar.Gameplay
 
             AddComponent(new SimpleEnemyComponent(physicsComponent));
 
-
+            
         }
 
+        public void Destroy()
+        {
+            SystemCore.GameObjectManager.RemoveObject(this);
+        }
+    }
+
+    public interface IEnemy
+    {
+        void Destroy();
     }
 
     public class SimpleEnemyComponent : IComponent, IUpdateable
@@ -82,7 +91,7 @@ namespace BoidWar.Gameplay
 
             mover.LinearMotor.Settings.Servo.SpringSettings.Stiffness /= 10000;
             mover.LinearMotor.Settings.Servo.SpringSettings.Damping /= 1000;
-
+            
             e = ParentObject as SimpleEnemy;
 
         }

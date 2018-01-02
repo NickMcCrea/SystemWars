@@ -56,6 +56,8 @@
   <ItemGroup>
     <Compile Include="Gameplay\Building.cs" />
     <Compile Include="Gameplay\DuneBuggy.cs" />
+    <Compile Include="Gameplay\EnemyManager.cs" />
+    <Compile Include="Gameplay\GameSimulation.cs" />
     <Compile Include="Gameplay\GravitationalForceField.cs" />
     <Compile Include="Gameplay\Planets\NeighbourTracker.cs" />
     <Compile Include="Gameplay\Planets\NeighbourTrackerNode.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\PlanetTest.cs" />
+    <Compile Include="Screens\RTSTestScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="..\Content\EngineContent.mgcb">

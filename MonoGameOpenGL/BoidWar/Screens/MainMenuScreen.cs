@@ -20,9 +20,10 @@ namespace BoidWar
 
             string screenOne = "BuggyTest";
             string screenTwo = "PlanetTest";
+            string screenThree = "RTS Test";
 
 
-            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Boid War", SystemCore.ActiveColorScheme, screenOne, screenTwo);
+            SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Boid War", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
             SystemCore.CursorVisible = true;
 
             Button b = SystemCore.GetSubsystem<GUIManager>().GetControl(screenOne) as Button;
@@ -36,6 +37,14 @@ namespace BoidWar
             {
                 SystemCore.ScreenManager.AddAndSetActive(new PlanetTest());
             };
+
+            Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
+            c.OnClick += (sender, args) =>
+            {
+                SystemCore.ScreenManager.AddAndSetActive(new RTSTestScreen());
+            };
+
+
             input.AddKeyPressBinding("Escape", Microsoft.Xna.Framework.Input.Keys.Escape).InputEventActivated += (x, y) =>
             {
                 SystemCore.Game.Exit();
