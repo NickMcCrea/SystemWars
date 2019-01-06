@@ -104,6 +104,7 @@ namespace MonoGameEngineCore.Helper
             messageText.position = DetermineMessagePosition(text);
             messageText.text = text;
             messageText.col = Color.White;
+            messageText.firstShown = DateTime.Now;
             messageText.intendedDuration = new TimeSpan(0, 0, messageTime);
         }
 
