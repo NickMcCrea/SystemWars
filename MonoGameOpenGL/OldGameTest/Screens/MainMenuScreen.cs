@@ -19,7 +19,7 @@ namespace OldGameTest
         {
 
             string screenOne = "Pong";
-            string screenTwo = "Two";
+            string screenTwo = "Chip 8 Emulator";
             string screenThree = "Three";
 
 
@@ -35,7 +35,7 @@ namespace OldGameTest
             Button a = SystemCore.GetSubsystem<GUIManager>().GetControl(screenTwo) as Button;
             a.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new Chip8Screen());
             };
 
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;

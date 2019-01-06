@@ -1,15 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using MonoGameDirectX11.Screens.Doom;
-using MonoGameDirectX11.Screens.Doom.DoomLib;
-using MonoGameEngineCore.GameObject;
-using MonoGameEngineCore.Helper;
-using NickLib.Pathfinding;
-using RestSharp;
+﻿using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoGameEngineCore.DoomLib
 {
