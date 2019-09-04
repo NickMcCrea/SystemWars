@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MonoGameEngineCore.GameObject;
+﻿using MonoGameEngineCore.GameObject;
 using MonoGameEngineCore.GameObject.Components;
 using Moq;
 using MonoGameEngineCore;
