@@ -85,7 +85,11 @@ namespace MonoGameEngineCore
             DebugShapeRenderer.Initialize(SystemCore.GraphicsDevice);
             SystemCore.GraphicsDeviceManager.ApplyChanges();
 
+
+
             InstantiateSystems();
+
+            SystemCore.ContentManager.RootDirectory = "";
 
             SystemCore.Viewport = SystemCore.GraphicsDevice.Viewport;
             SystemCore.ScreenManager = GetSubsystem<ScreenManager>();

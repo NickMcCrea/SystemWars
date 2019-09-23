@@ -76,3 +76,7 @@ MonoGameOpenGL/SystemWarsContent/SystemWarsContentContent/bin/
 *.user
 *.vsp
 MonoGameOpenGL/MonoGameProject.sln.DotSettings.user
+MonoGameOpenGL/.vs/MonoGameProject/v15/Server/sqlite3/storage.ide-wal
+MonoGameOpenGL/.vs/MonoGameProject/v15/Server/sqlite3/storage.ide-shm
+MonoGameOpenGL/.vs/MonoGameProject/v15/Server/sqlite3/storage.ide
+MonoGameOpenGL/.vs/MonoGameProject/v15/Server/sqlite3/db.lock
