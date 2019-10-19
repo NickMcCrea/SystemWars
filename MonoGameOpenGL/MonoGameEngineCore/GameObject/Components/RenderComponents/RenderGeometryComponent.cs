@@ -106,6 +106,19 @@ namespace MonoGameEngineCore.GameObject.Components
             return list;
         }
 
+        public void SetColour(Color colour)
+        {
+            var list = new VertexPositionColorTextureNormal[VertexBuffer.VertexCount];
+            VertexBuffer.GetData(list);
+            for (int i = 0; i < list.Length; i++)
+            {
+                list[i].Color = colour;
+            }
+
+            VertexBuffer.SetData(list);
+
+        }
+
         public void Dispose()
         {
             VertexBuffer.Dispose();

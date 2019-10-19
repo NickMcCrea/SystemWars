@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MonoGameDirectX11;
+using MonoGameDirectX11.Screens;
 using MonoGameEngineCore;
 using MonoGameEngineCore.GUI;
 using MonoGameEngineCore.GUI.Controls;
@@ -20,7 +21,7 @@ namespace OldGameTest
 
             string screenOne = "Pong";
             string screenTwo = "Chip 8 Emulator";
-            string screenThree = "Three";
+            string screenThree = "Simulation Challenge";
 
 
             SystemCore.GetSubsystem<GUIManager>().CreateDefaultMenuScreen("Main Menu", SystemCore.ActiveColorScheme, screenOne, screenTwo, screenThree);
@@ -41,8 +42,9 @@ namespace OldGameTest
             Button c = SystemCore.GetSubsystem<GUIManager>().GetControl(screenThree) as Button;
             c.OnClick += (sender, args) =>
             {
-                SystemCore.ScreenManager.AddAndSetActive(new RenderTestScreen());
+                SystemCore.ScreenManager.AddAndSetActive(new SimChalleneScreen());
             };
+
 
 
 
@@ -57,6 +59,11 @@ namespace OldGameTest
 
         public override void Update(GameTime gameTime)
         {
+            input.AddKeyPressBinding("Escape", Microsoft.Xna.Framework.Input.Keys.Escape).InputEventActivated += (x, y) =>
+            {
+                SystemCore.Game.Exit();
+            };
+
             base.Update(gameTime);
         }
 
