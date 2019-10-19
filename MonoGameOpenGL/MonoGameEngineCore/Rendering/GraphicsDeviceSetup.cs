@@ -32,8 +32,8 @@ namespace MonoGameEngineCore.Rendering
             var resolution = CreateResolution(resolutionName);
             gd.PreferredBackBufferHeight = resolution.height;
             gd.PreferredBackBufferWidth = resolution.width;
-            //gd.PreferMultiSampling = true;
-
+            gd.PreferMultiSampling = true;
+            
             if (!fixedTimeStep)
             {
                 gd.SynchronizeWithVerticalRetrace = false;

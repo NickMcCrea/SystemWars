@@ -89,7 +89,7 @@ namespace MonoGameEngineCore
 
             InstantiateSystems();
 
-            SystemCore.ContentManager.RootDirectory = "Content";
+            SystemCore.ContentManager.RootDirectory = "";
 
             SystemCore.Viewport = SystemCore.GraphicsDevice.Viewport;
             SystemCore.ScreenManager = GetSubsystem<ScreenManager>();

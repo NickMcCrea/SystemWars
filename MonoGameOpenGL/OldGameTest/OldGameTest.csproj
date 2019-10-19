@@ -84,11 +84,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Screens\GameOfLife\GameOfLifeComponent.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screens\OutdoorScene.cs" />
-    <Compile Include="Screens\SimChallengeScreen.cs" />
+    <Compile Include="Screens\GameOfLife\SimChallengeScreen.cs" />
     <Compile Include="Screens\Pong\Chip8Screen.cs" />
     <Compile Include="Screens\Pong\PongScreen.cs" />
     <Compile Include="Screens\TestScreen.cs" />

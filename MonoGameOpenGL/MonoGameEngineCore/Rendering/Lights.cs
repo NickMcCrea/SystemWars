@@ -95,6 +95,14 @@ namespace MonoGameEngineCore.Rendering
             && ((DiffuseLight)x).DiffuseType == DiffuseLightType.Key) as DiffuseLight;
         }
 
+        public void UpdateBackandFillLights(Vector3 camForward, Vector3 camRight)
+        {
+            DiffuseLight backlight = GetBackLight();
+            backlight.LightDirection = camForward;
+
+           
+        }
+
         public void SetDiffuseLightDir(int index, Vector3 lightDir)
         {
             if (LightsInScene[index] is DiffuseLight)

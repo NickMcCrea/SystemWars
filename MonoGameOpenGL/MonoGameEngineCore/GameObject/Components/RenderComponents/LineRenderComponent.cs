@@ -14,17 +14,17 @@ namespace MonoGameEngineCore.GameObject.Components
         public LineRenderComponent(BasicEffect effect)
         {
             this.effect = effect;
-            effect.EnableDefaultLighting();
+            //effect.EnableDefaultLighting();
             effect.VertexColorEnabled = true;
-            effect.PreferPerPixelLighting = true;
-            effect.DirectionalLight1.Enabled = false;
-            effect.DirectionalLight2.Enabled = false;
-            effect.AmbientLightColor = SystemCore.ActiveScene.AmbientLight.LightColor.ToVector3();
-            effect.AmbientLightColor *= 0.1f;
-            effect.FogEnabled = true;
-            effect.FogColor = Color.CornflowerBlue.ToVector3();
-            effect.FogStart = 50;
-            effect.FogEnd = 1000;
+            //effect.PreferPerPixelLighting = true;
+            //effect.DirectionalLight1.Enabled = false;
+            //effect.DirectionalLight2.Enabled = false;
+            //effect.AmbientLightColor = SystemCore.ActiveScene.AmbientLight.LightColor.ToVector3();
+            //effect.AmbientLightColor *= 0.1f;
+            //effect.FogEnabled = true;
+            //effect.FogColor = Color.CornflowerBlue.ToVector3();
+            //effect.FogStart = 50;
+            //effect.FogEnd = 1000;
             Visible = true;
         }
         public void PostInitialise()
@@ -39,8 +39,8 @@ namespace MonoGameEngineCore.GameObject.Components
 
             var transform = ParentObject.GetComponent<TransformComponent>();
             var renderGeometry = ParentObject.GetComponent<RenderGeometryComponent>();
-
-            effect.World = Matrix.CreateScale(ParentObject.Transform.Scale)  * transform.AbsoluteTransform;
+            
+            effect.World = Matrix.CreateScale(ParentObject.Transform.Scale * 1.01f)  * transform.AbsoluteTransform;
             effect.View = SystemCore.ActiveCamera.View;
             effect.Projection = SystemCore.ActiveCamera.Projection;
 
